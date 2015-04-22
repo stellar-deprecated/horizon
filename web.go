@@ -9,22 +9,30 @@ import (
 )
 
 type Web struct {
+	app    *App
 	router *web.Mux
 
 	requestTimer metrics.Timer
-	errorMeter   metrics.Meter
+	failureMeter metrics.Meter
 	successMeter metrics.Meter
 }
 
-func NewWeb() (*Web, error) {
+func NewWeb(app *App) (*Web, error) {
 
 	api := web.New()
 	result := Web{
+		app:          app,
 		router:       api,
 		requestTimer: metrics.NewTimer(),
-		errorMeter:   metrics.NewMeter(),
+		failureMeter: metrics.NewMeter(),
 		successMeter: metrics.NewMeter(),
 	}
+
+	app.metrics.Register("requests.succeeded", result.successMeter)
+	app.metrics.Register("requests.failed", result.failureMeter)
+
+	api.Use(appMiddleware(app))
+	api.Use(requestMetricsMiddleware)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -33,6 +41,7 @@ func NewWeb() (*Web, error) {
 
 	// define routes
 	api.Get("/", rootAction)
+	api.Get("/metrics", metricsAction)
 
 	return &result, nil
 }
