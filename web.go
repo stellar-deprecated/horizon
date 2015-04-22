@@ -1,10 +1,10 @@
 package horizon
 
 import (
+	"encoding/json"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/zenazn/goji/web"
-	"io"
 	"net/http"
 )
 
@@ -32,11 +32,18 @@ func NewWeb() (*Web, error) {
 	api.Use(c.Handler)
 
 	// define routes
-	api.Get("/", helloWorld)
+	api.Get("/", rootAction)
 
 	return &result, nil
 }
 
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Hello world")
+func renderHAL(w http.ResponseWriter, data interface{}) {
+	js, err := json.Marshal(data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/hal+json")
+	w.Write(js)
 }
