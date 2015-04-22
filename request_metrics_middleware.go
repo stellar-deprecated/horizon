@@ -34,8 +34,10 @@ func requestMetricsMiddleware(c *web.C, h http.Handler) http.Handler {
 		})
 
 		if 200 <= mw.status && mw.status < 400 {
+			// a success is in [200, 400)
 			app.web.successMeter.Mark(1)
 		} else if 400 <= mw.status && mw.status < 600 {
+			// a success is in [400, 600)
 			app.web.failureMeter.Mark(1)
 		}
 
