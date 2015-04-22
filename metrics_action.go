@@ -2,7 +2,7 @@ package horizon
 
 import (
 	"github.com/jagregory/halgo"
-	. "github.com/rcrowley/go-metrics"
+	"github.com/rcrowley/go-metrics"
 	"github.com/zenazn/goji/web"
 	"net/http"
 )
@@ -18,26 +18,26 @@ func metricsAction(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 // Copied from metrics MarshalJSON
-func newMetricsSnapshot(r Registry) map[string]interface{} {
+func newMetricsSnapshot(r metrics.Registry) map[string]interface{} {
 
 	data := make(map[string]interface{})
 
 	r.Each(func(name string, i interface{}) {
 		values := make(map[string]interface{})
 		switch metric := i.(type) {
-		case Counter:
+		case metrics.Counter:
 			values["count"] = metric.Count()
-		case Gauge:
+		case metrics.Gauge:
 			values["value"] = metric.Value()
-		case GaugeFloat64:
+		case metrics.GaugeFloat64:
 			values["value"] = metric.Value()
-		case Healthcheck:
+		case metrics.Healthcheck:
 			values["error"] = nil
 			metric.Check()
 			if err := metric.Error(); nil != err {
 				values["error"] = metric.Error().Error()
 			}
-		case Histogram:
+		case metrics.Histogram:
 			h := metric.Snapshot()
 			ps := h.Percentiles([]float64{0.5, 0.75, 0.95, 0.99, 0.999})
 			values["count"] = h.Count()
@@ -50,14 +50,14 @@ func newMetricsSnapshot(r Registry) map[string]interface{} {
 			values["95%"] = ps[2]
 			values["99%"] = ps[3]
 			values["99.9%"] = ps[4]
-		case Meter:
+		case metrics.Meter:
 			m := metric.Snapshot()
 			values["count"] = m.Count()
 			values["1m.rate"] = m.Rate1()
 			values["5m.rate"] = m.Rate5()
 			values["15m.rate"] = m.Rate15()
 			values["mean.rate"] = m.RateMean()
-		case Timer:
+		case metrics.Timer:
 			t := metric.Snapshot()
 			ps := t.Percentiles([]float64{0.5, 0.75, 0.95, 0.99, 0.999})
 			values["count"] = t.Count()
