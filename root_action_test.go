@@ -11,7 +11,9 @@ import (
 func TestRootAction(t *testing.T) {
 
 	Convey("GET /", t, func() {
-		app, err := NewApp(Config{})
+		app, err := NewApp(Config{
+			DatabaseUrl: "postgres://localhost:5432/horizon_test?sslmode=disable",
+		})
 		So(err, ShouldBeNil)
 
 		r, _ := http.NewRequest("GET", "/", nil)

@@ -5,6 +5,7 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/zenazn/goji/web"
+	"github.com/zenazn/goji/web/middleware"
 	"net/http"
 )
 
@@ -30,6 +31,10 @@ func NewWeb(app *App) (*Web, error) {
 	app.metrics.Register("requests.succeeded", result.successMeter)
 	app.metrics.Register("requests.failed", result.failureMeter)
 
+	api.Use(middleware.RequestID)
+	api.Use(middleware.Logger)
+	api.Use(middleware.Recoverer)
+	api.Use(middleware.AutomaticOptions)
 	api.Use(appMiddleware(app))
 	api.Use(requestMetricsMiddleware)
 
