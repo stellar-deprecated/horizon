@@ -5,11 +5,13 @@ import (
 	"github.com/stellar/go-horizon"
 	"github.com/zenazn/goji"
 	"os"
+	"runtime"
 )
 
 var app *horizon.App
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	ccli := cli.NewApp()
 	ccli.Name = "horizon"
