@@ -9,7 +9,6 @@ import (
 )
 
 type Web struct {
-	app    *App
 	router *web.Mux
 
 	requestTimer metrics.Timer
@@ -21,13 +20,13 @@ func NewWeb(app *App) (*Web, error) {
 
 	api := web.New()
 	result := Web{
-		app:          app,
 		router:       api,
 		requestTimer: metrics.NewTimer(),
 		failureMeter: metrics.NewMeter(),
 		successMeter: metrics.NewMeter(),
 	}
 
+	app.metrics.Register("requests.total", result.requestTimer)
 	app.metrics.Register("requests.succeeded", result.successMeter)
 	app.metrics.Register("requests.failed", result.failureMeter)
 
