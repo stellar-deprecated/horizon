@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-//
 type metricsResponseWriter struct {
 	status int
 	http.ResponseWriter
@@ -24,6 +23,9 @@ func (w metricsResponseWriter) WriteHeader(statusCode int) {
 	w.ResponseWriter.WriteHeader(statusCode)
 }
 
+// Middleware that records metrics.
+//
+// It records success and failures using a meter, and times every request
 func requestMetricsMiddleware(c *web.C, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		app := c.Env["app"].(*App)
