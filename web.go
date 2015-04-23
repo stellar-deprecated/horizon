@@ -46,6 +46,8 @@ func NewWeb(app *App) (*Web, error) {
 	// define routes
 	api.Get("/", rootAction)
 	api.Get("/metrics", metricsAction)
+	api.Get("/ledgers", ledgerIndexAction)
+	api.Get("/ledgers/:id", ledgerShowAction)
 
 	return &result, nil
 }
