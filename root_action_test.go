@@ -5,14 +5,20 @@ import (
 	"github.com/zenazn/goji/web"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
 func TestRootAction(t *testing.T) {
 
 	Convey("GET /", t, func() {
+		databaseUrl := os.Getenv("DATABASE_URL")
+		if databaseUrl == "" {
+			databaseUrl = "postgres://localhost:5432/horizon_test?sslmode=disable"
+		}
+
 		app, err := NewApp(Config{
-			DatabaseUrl: "postgres://localhost:5432/horizon_test?sslmode=disable",
+			DatabaseUrl: databaseUrl,
 		})
 		So(err, ShouldBeNil)
 

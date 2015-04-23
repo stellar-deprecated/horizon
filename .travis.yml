@@ -4,3 +4,5 @@ go:
 - '1.4'
 before_script:
 - psql -c 'create database "horizon_test";'
+env:
+- DATABASE_URL=postgres://localhost:5432/horizon_test?sslmode=disable"
