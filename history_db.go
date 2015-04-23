@@ -5,26 +5,18 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type HistoryDb struct {
-	gdb gorm.DB
-}
-
-func NewHistoryDb(app *App) (*HistoryDb, error) {
-	result := HistoryDb{}
-
+func NewHistoryDb(app *App) (gorm.DB, error) {
 	db, err := gorm.Open("postgres", app.config.DatabaseUrl)
 
 	if err != nil {
-		return nil, err
+		return db, err
 	}
-
-	result.gdb = db
 
 	err = db.DB().Ping()
 
 	if err != nil {
-		return nil, err
+		return db, err
 	}
 
-	return &result, nil
+	return db, nil
 }

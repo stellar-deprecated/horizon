@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"github.com/rcrowley/go-metrics"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
@@ -13,7 +14,7 @@ type App struct {
 	config    Config
 	metrics   metrics.Registry
 	web       *Web
-	historyDb *HistoryDb
+	historyDb gorm.DB
 }
 
 func NewApp(config Config) (*App, error) {
