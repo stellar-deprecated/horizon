@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"./hal"
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 	"github.com/zenazn/goji/web"
@@ -29,7 +30,7 @@ func (l ledgerResource) FromRecord(record db.LedgerRecord) ledgerResource {
 }
 
 func ledgerIndexAction(w http.ResponseWriter, r *http.Request) {
-	renderHAL(w, ledgerResource{})
+	hal.Render(w, ledgerResource{})
 }
 
 func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -59,5 +60,5 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	record := records[0].(db.LedgerRecord)
 
-	renderHAL(w, ledgerResource{}.FromRecord(record))
+	hal.Render(w, ledgerResource{}.FromRecord(record))
 }

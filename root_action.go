@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"./hal"
 	"github.com/jagregory/halgo"
 	"net/http"
 )
@@ -15,5 +16,5 @@ func rootAction(w http.ResponseWriter, r *http.Request) {
 		Link("metrics", "/metrics").
 		Link("friendbot", "/friendbot{?addr}")
 
-	renderHAL(w, root)
+	hal.Render(w, root)
 }

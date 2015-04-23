@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"./hal"
 	"github.com/jagregory/halgo"
 	"github.com/rcrowley/go-metrics"
 	"github.com/zenazn/goji/web"
@@ -14,7 +15,7 @@ func metricsAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	snapshot["_links"] = map[string]interface{}{
 		"self": halgo.Link{Href: "/metrics"},
 	}
-	renderHAL(w, snapshot)
+	hal.Render(w, snapshot)
 }
 
 // Copied from metrics MarshalJSON

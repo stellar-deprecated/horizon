@@ -1,12 +1,10 @@
 package horizon
 
 import (
-	"encoding/json"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
-	"net/http"
 )
 
 type Web struct {
@@ -50,15 +48,4 @@ func NewWeb(app *App) (*Web, error) {
 	api.Get("/ledgers/:id", ledgerShowAction)
 
 	return &result, nil
-}
-
-func renderHAL(w http.ResponseWriter, data interface{}) {
-	js, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/hal+json")
-	w.Write(js)
 }
