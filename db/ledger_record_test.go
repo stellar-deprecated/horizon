@@ -1,9 +1,9 @@
 package db
 
 import (
-	"../test"
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/go-horizon/test"
 	"testing"
 )
 
