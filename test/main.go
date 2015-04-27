@@ -6,11 +6,13 @@ package test
 import (
 	"bytes"
 	"database/sql"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 )
+
+//go:generate go get github.com/jteeuwen/go-bindata/...
+//go:generate go-bindata -pkg test scenarios
 
 const (
 	DefaultTestDatabaseUrl            = "postgres://localhost:5432/horizon_test?sslmode=disable"
@@ -48,7 +50,7 @@ func OpenDatabase(dsn string) *sql.DB {
 }
 
 func LoadScenario(scenarioName string) {
-	scenarioBasePath := "./test/scenarios/" + scenarioName
+	scenarioBasePath := "scenarios/" + scenarioName
 	horizonPath := scenarioBasePath + "-horizon.sql"
 	stellarCorePath := scenarioBasePath + "-core.sql"
 
@@ -57,7 +59,7 @@ func LoadScenario(scenarioName string) {
 }
 
 func loadSqlFile(url string, path string) {
-	sql, err := ioutil.ReadFile(path)
+	sql, err := Asset(path)
 
 	if err != nil {
 		log.Panic(err)
