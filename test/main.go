@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	DefaultTestDatabaseUrl = "postgres://localhost:5432/horizon_test?sslmode=disable"
+	DefaultTestDatabaseUrl            = "postgres://localhost:5432/horizon_test?sslmode=disable"
+	DefaultTestStellarCoreDatabaseUrl = "postgres://localhost:5432/stellar-core_test?sslmode=disable"
 )
 
 func DatabaseUrl() string {
@@ -21,6 +22,16 @@ func DatabaseUrl() string {
 
 	if databaseUrl == "" {
 		databaseUrl = DefaultTestDatabaseUrl
+	}
+
+	return databaseUrl
+}
+
+func StellarCoreDatabaseUrl() string {
+	databaseUrl := os.Getenv("STELLAR_CORE_DATABASE_URL")
+
+	if databaseUrl == "" {
+		databaseUrl = DefaultTestStellarCoreDatabaseUrl
 	}
 
 	return databaseUrl
@@ -39,8 +50,10 @@ func OpenDatabase(dsn string) *sql.DB {
 func LoadScenario(scenarioName string) {
 	scenarioBasePath := "./test/scenarios/" + scenarioName
 	horizonPath := scenarioBasePath + "-horizon.sql"
+	stellarCorePath := scenarioBasePath + "-core.sql"
 
 	loadSqlFile(DatabaseUrl(), horizonPath)
+	loadSqlFile(StellarCoreDatabaseUrl(), stellarCorePath)
 }
 
 func loadSqlFile(url string, path string) {
