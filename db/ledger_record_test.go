@@ -11,9 +11,7 @@ func TestLedgerRecordQueries(t *testing.T) {
 
 	Convey("LedgeRecord Queries", t, func() {
 		test.LoadScenario("base")
-		db, err := OpenTestDatabase()
-		db.LogMode(true)
-		So(err, ShouldBeNil)
+		db := OpenTestDatabase()
 
 		Convey("LedgerBySequenceQuery", func() {
 			Convey("Existing record behavior", func() {
