@@ -27,5 +27,9 @@ func First(query Query) (interface{}, error) {
 		return nil, err
 	}
 
-	return res[0], nil
+	if len(res) == 0 {
+		return nil, nil
+	} else {
+		return res[0], nil
+	}
 }

@@ -32,6 +32,21 @@ func TestLedgerActions(t *testing.T) {
 			So(result.Sequence, ShouldEqual, 1)
 		})
 
+		Convey("GET /ledgers/100", func() {
+			test.LoadScenario("base")
+			app := NewTestApp()
+
+			r, _ := http.NewRequest("GET", "/ledgers/100", nil)
+			w := httptest.NewRecorder()
+			c := web.C{
+				Env: map[interface{}]interface{}{},
+			}
+
+			app.web.router.ServeHTTPC(c, w, r)
+
+			So(w.Code, ShouldEqual, 404)
+		})
+
 		Convey("GET /ledgers", func() {
 			test.LoadScenario("base")
 			app := NewTestApp()

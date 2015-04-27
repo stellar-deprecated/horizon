@@ -93,7 +93,7 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	sequence64, err := strconv.ParseInt(sequenceStr, 10, 32)
 
 	if err != nil {
-		http.Error(w, "not found", http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -101,19 +101,19 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	app := c.Env["app"].(*App)
 	query := db.LedgerBySequenceQuery{db.GormQuery{&app.historyDb}, sequence}
 
-	records, err := query.Get()
+	result, err := db.First(query)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if len(records) == 0 {
-		http.Error(w, "not found", http.StatusNotFound)
+	if result == nil {
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	record := records[0].(db.LedgerRecord)
+	record := result.(db.LedgerRecord)
 
 	hal.Render(w, ledgerResource{}.FromRecord(record))
 }
