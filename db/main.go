@@ -4,10 +4,28 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type GormQuery struct {
+	DB *gorm.DB
+}
+
 type Query interface {
-	Run(db gorm.DB) ([]interface{}, error)
+	Get() ([]interface{}, error)
 }
 
 type Pageable interface {
 	PagingToken() interface{}
+}
+
+func Results(query Query) ([]interface{}, error) {
+	return query.Get()
+}
+
+func First(query Query) (interface{}, error) {
+	res, err := query.Get()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res[0], nil
 }

@@ -65,9 +65,14 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	app := c.Env["app"].(*App)
-	query := db.LedgerPageQuery{int32(after), order, limit}
+	query := db.LedgerPageQuery{
+		db.GormQuery{&app.historyDb},
+		int32(after),
+		order,
+		limit,
+	}
 
-	records, err := query.Run(app.historyDb)
+	records, err := query.Get()
 
 	resources := make([]interface{}, len(records))
 	for i := range records {
@@ -94,9 +99,9 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	sequence := int32(sequence64)
 	app := c.Env["app"].(*App)
-	query := db.LedgerBySequenceQuery{sequence}
+	query := db.LedgerBySequenceQuery{db.GormQuery{&app.historyDb}, sequence}
 
-	records, err := query.Run(app.historyDb)
+	records, err := query.Get()
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

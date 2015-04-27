@@ -1,6 +1,7 @@
 package db
 
 import (
+	"../test"
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -9,6 +10,7 @@ import (
 func TestLedgerRecordQueries(t *testing.T) {
 
 	Convey("LedgeRecord Queries", t, func() {
+		test.LoadScenario("base")
 		db, err := OpenTestDatabase()
 		db.LogMode(true)
 		So(err, ShouldBeNil)
@@ -16,8 +18,11 @@ func TestLedgerRecordQueries(t *testing.T) {
 		Convey("LedgerBySequenceQuery", func() {
 			Convey("Existing record behavior", func() {
 				sequence := int32(2)
-				q := LedgerBySequenceQuery{sequence}
-				ledgers, err := q.Run(db)
+				q := LedgerBySequenceQuery{
+					GormQuery{&db},
+					sequence,
+				}
+				ledgers, err := Results(q)
 
 				So(err, ShouldBeNil)
 				So(len(ledgers), ShouldEqual, 1)
@@ -28,8 +33,11 @@ func TestLedgerRecordQueries(t *testing.T) {
 
 			Convey("Missing record behavior", func() {
 				sequence := int32(-1)
-				var q Query = LedgerBySequenceQuery{sequence}
-				ledgers, err := q.Run(db)
+				var q Query = LedgerBySequenceQuery{
+					GormQuery{&db},
+					sequence,
+				}
+				ledgers, err := Results(q)
 
 				So(err, ShouldBeNil)
 				So(len(ledgers), ShouldEqual, 0)
@@ -37,8 +45,8 @@ func TestLedgerRecordQueries(t *testing.T) {
 		})
 
 		Convey("LedgerPageQuery", func() {
-			q := LedgerPageQuery{0, "asc", 3}
-			ledgers, err := q.Run(db)
+			q := LedgerPageQuery{GormQuery{&db}, 0, "asc", 3}
+			ledgers, err := Results(q)
 
 			So(err, ShouldBeNil)
 			So(len(ledgers), ShouldEqual, 3)
@@ -51,10 +59,10 @@ func TestLedgerRecordQueries(t *testing.T) {
 			lastLedger := ledgers[len(ledgers)-1].(Pageable)
 			q.After = lastLedger.PagingToken().(int32)
 
-			ledgers, err = q.Run(db)
+			ledgers, err = Results(q)
 
 			So(err, ShouldBeNil)
-			So(len(ledgers), ShouldEqual, 3)
+			So(len(ledgers), ShouldEqual, 1)
 
 			for i, ledger := range ledgers {
 				ledger := ledger.(LedgerRecord)

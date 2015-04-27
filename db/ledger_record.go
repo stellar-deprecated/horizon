@@ -27,12 +27,13 @@ func (lr LedgerRecord) PagingToken() interface{} {
 }
 
 type LedgerBySequenceQuery struct {
+	GormQuery
 	Sequence int32
 }
 
-func (l LedgerBySequenceQuery) Run(db gorm.DB) ([]interface{}, error) {
+func (l LedgerBySequenceQuery) Get() ([]interface{}, error) {
 	var ledgers []LedgerRecord
-	err := db.Where("sequence = ?", l.Sequence).Find(&ledgers).Error
+	err := l.GormQuery.DB.Where("sequence = ?", l.Sequence).Find(&ledgers).Error
 
 	if err != nil {
 		return nil, err
@@ -47,20 +48,21 @@ func (l LedgerBySequenceQuery) Run(db gorm.DB) ([]interface{}, error) {
 }
 
 type LedgerPageQuery struct {
+	GormQuery
 	After int32
 	Order string
 	Limit int32
 }
 
-func (l LedgerPageQuery) Run(db gorm.DB) (results []interface{}, err error) {
+func (l LedgerPageQuery) Get() (results []interface{}, err error) {
 	var ledgers []LedgerRecord
 	var baseScope *gorm.DB
 
 	switch l.Order {
 	case "asc":
-		baseScope = db.Where("sequence > ?", l.After).Order("sequence asc")
+		baseScope = l.GormQuery.DB.Where("sequence > ?", l.After).Order("sequence asc")
 	case "desc":
-		baseScope = db.Where("sequence < ?", l.After).Order("sequence desc")
+		baseScope = l.GormQuery.DB.Where("sequence < ?", l.After).Order("sequence desc")
 	default:
 		err = errors.New("Invalid sort: " + l.Order)
 		return
