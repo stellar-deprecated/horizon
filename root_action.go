@@ -1,8 +1,8 @@
 package horizon
 
 import (
-	"./hal"
 	"github.com/jagregory/halgo"
+	"github.com/stellar/go-horizon/hal"
 	"net/http"
 )
 

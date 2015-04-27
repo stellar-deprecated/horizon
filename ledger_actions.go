@@ -1,10 +1,10 @@
 package horizon
 
 import (
-	"./hal"
 	"fmt"
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/hal"
 	"github.com/zenazn/goji/web"
 	"math"
 	"net/http"

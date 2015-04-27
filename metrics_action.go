@@ -1,9 +1,9 @@
 package horizon
 
 import (
-	"./hal"
 	"github.com/jagregory/halgo"
 	"github.com/rcrowley/go-metrics"
+	"github.com/stellar/go-horizon/hal"
 	"github.com/zenazn/goji/web"
 	"net/http"
 )
