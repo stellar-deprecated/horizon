@@ -1,9 +1,9 @@
 package horizon
 
 import (
-	"./test"
 	"encoding/json"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/go-horizon/test"
 	"github.com/zenazn/goji/web"
 	"net/http"
 	"net/http/httptest"

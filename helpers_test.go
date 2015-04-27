@@ -1,7 +1,7 @@
 package horizon
 
 import (
-	"./test"
+	"github.com/stellar/go-horizon/test"
 	"log"
 )
 
