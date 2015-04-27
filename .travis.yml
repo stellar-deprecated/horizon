@@ -6,5 +6,6 @@ before_script:
 - psql -c 'create database "horizon_test";' -U postgres
 - psql -c 'create database "stellar-core_test";' -U postgres
 env:
-- DATABASE_URL=postgres://localhost:5432/horizon_test?sslmode=disable&user=postgres
-- STELLAR_CORE_DATABASE_URL=postgres://localhost:5432/stellar-core_test?sslmode=disable&user=postgres
+  global:
+    - DATABASE_URL=postgres://localhost:5432/horizon_test?sslmode=disable&user=postgres
+    - STELLAR_CORE_DATABASE_URL=postgres://localhost:5432/stellar-core_test?sslmode=disable&user=postgres
