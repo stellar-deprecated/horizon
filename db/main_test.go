@@ -33,21 +33,3 @@ func TestMain(t *testing.T) {
 		})
 	})
 }
-
-type mockQuery struct {
-	resultCount int
-}
-
-type mockResult struct {
-	index int
-}
-
-func (q *mockQuery) Get() ([]interface{}, error) {
-	results := make([]interface{}, q.resultCount)
-
-	for i := 0; i < q.resultCount; i++ {
-		results[i] = mockResult{i}
-	}
-
-	return results, nil
-}
