@@ -29,6 +29,13 @@ func NewWeb(app *App) (*Web, error) {
 	app.metrics.Register("requests.succeeded", result.successMeter)
 	app.metrics.Register("requests.failed", result.failureMeter)
 
+	installMiddleware(api, app)
+	installActions(api)
+
+	return &result, nil
+}
+
+func installMiddleware(api *web.Mux, app *App) {
 	api.Use(middleware.RequestID)
 	api.Use(middleware.Logger)
 	api.Use(middleware.Recoverer)
@@ -40,12 +47,11 @@ func NewWeb(app *App) (*Web, error) {
 		AllowedOrigins: []string{"*"},
 	})
 	api.Use(c.Handler)
+}
 
-	// define routes
+func installActions(api *web.Mux) {
 	api.Get("/", rootAction)
 	api.Get("/metrics", metricsAction)
 	api.Get("/ledgers", ledgerIndexAction)
 	api.Get("/ledgers/:id", ledgerShowAction)
-
-	return &result, nil
 }
