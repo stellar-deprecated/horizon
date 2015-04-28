@@ -5,6 +5,8 @@ go:
 before_script:
 - psql -c 'create database "horizon_test";' -U postgres
 - psql -c 'create database "stellar-core_test";' -U postgres
+script:
+- go test -p 1 -v ./...
 env:
   global:
     - DATABASE_URL=postgres://localhost:5432/horizon_test?sslmode=disable&user=postgres
