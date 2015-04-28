@@ -54,4 +54,5 @@ func installActions(api *web.Mux) {
 	api.Get("/metrics", metricsAction)
 	api.Get("/ledgers", ledgerIndexAction)
 	api.Get("/ledgers/:id", ledgerShowAction)
+	api.Get("/stream", streamAction)
 }
