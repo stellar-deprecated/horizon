@@ -24,11 +24,11 @@ func TestLedgerActions(t *testing.T) {
 			}
 
 			app.web.router.ServeHTTPC(c, w, r)
+			So(w.Code, ShouldEqual, 200)
 
 			var result ledgerResource
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
-			So(w.Code, ShouldEqual, 200)
 			So(result.Sequence, ShouldEqual, 1)
 		})
 
