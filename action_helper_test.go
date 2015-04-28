@@ -12,6 +12,7 @@ func TestActionHelper(t *testing.T) {
 	Convey("Action Helper", t, func() {
 		c := web.C{}
 		c.URLParams = map[string]string{
+			"blank": "",
 			"zero":  "0",
 			"two":   "2",
 			"32min": fmt.Sprint(math.MinInt32),
@@ -24,7 +25,11 @@ func TestActionHelper(t *testing.T) {
 		ah := &ActionHelper{c: c}
 
 		Convey("GetInt32", func() {
-			result := ah.GetInt32("zero")
+			result := ah.GetInt32("blank")
+			So(ah.Err(), ShouldBeNil)
+			So(result, ShouldEqual, 0)
+
+			result = ah.GetInt32("zero")
 			So(ah.Err(), ShouldBeNil)
 			So(result, ShouldEqual, 0)
 
@@ -48,7 +53,11 @@ func TestActionHelper(t *testing.T) {
 		})
 
 		Convey("GetInt64", func() {
-			result := ah.GetInt64("zero")
+			result := ah.GetInt64("blank")
+			So(ah.Err(), ShouldBeNil)
+			So(result, ShouldEqual, 0)
+
+			result = ah.GetInt64("zero")
 			So(ah.Err(), ShouldBeNil)
 			So(result, ShouldEqual, 0)
 

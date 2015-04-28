@@ -45,6 +45,11 @@ func (a *ActionHelper) GetInt64(name string) int64 {
 	}
 
 	asStr := a.c.URLParams[name]
+
+	if asStr == "" {
+		return 0
+	}
+
 	asI64, err := strconv.ParseInt(asStr, 10, 64)
 
 	if err != nil {
@@ -61,6 +66,11 @@ func (a *ActionHelper) GetInt32(name string) int32 {
 	}
 
 	asStr := a.c.URLParams[name]
+
+	if asStr == "" {
+		return 0
+	}
+
 	asI64, err := strconv.ParseInt(asStr, 10, 32)
 
 	if err != nil {
