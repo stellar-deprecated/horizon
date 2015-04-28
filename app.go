@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/rcrowley/go-metrics"
+	"github.com/stellar/go-horizon/db"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
 	"log"
@@ -60,4 +61,8 @@ func (a *App) Serve() {
 	}
 
 	graceful.Wait()
+}
+
+func (a *App) HistoryQuery() db.GormQuery {
+	return db.GormQuery{&a.historyDb}
 }
