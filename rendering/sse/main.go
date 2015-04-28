@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// If a struct that we want to stream to the connected client implements this
+// If the value that we want to stream to the connected client implements this
 // interface we will include the Id and Event fields in the payload, if they are
 // set.
 type Event interface {
@@ -32,13 +32,8 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, cancel := context.WithCancel(s.Ctx)
-	defer cancel()
-	close := w.(http.CloseNotifier).CloseNotify()
-	go func() {
-		<-close
-		cancel()
-	}()
+	// Setup cancelation signal that gets triggered if the client disconnects
+	ctx := cancelAtClose(s.Ctx, w)
 
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
@@ -94,4 +89,18 @@ func getJson(val interface{}) string {
 	}
 
 	return string(js)
+}
+
+func cancelAtClose(parent context.Context, w http.ResponseWriter) context.Context {
+	ctx, cancel := context.WithCancel(parent)
+
+	close := w.(http.CloseNotifier).CloseNotify()
+
+	// listen for the connection to close, trigger cancelation
+	go func() {
+		<-close
+		cancel()
+	}()
+
+	return ctx
 }
