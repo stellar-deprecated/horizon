@@ -12,5 +12,7 @@ func NewTestApp() *App {
 		log.Panic(err)
 	}
 
+	app.historyDb.LogMode(true)
+
 	return app
 }
