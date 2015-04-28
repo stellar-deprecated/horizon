@@ -23,6 +23,14 @@ func (w metricsResponseWriter) WriteHeader(statusCode int) {
 	w.ResponseWriter.WriteHeader(statusCode)
 }
 
+func (w metricsResponseWriter) Flush() {
+	w.ResponseWriter.(http.Flusher).Flush()
+}
+
+func (w metricsResponseWriter) CloseNotify() <-chan bool {
+	return w.ResponseWriter.(http.CloseNotifier).CloseNotify()
+}
+
 // Middleware that records metrics.
 //
 // It records success and failures using a meter, and times every request
