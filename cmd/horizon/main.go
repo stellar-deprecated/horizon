@@ -24,10 +24,11 @@ func main() {
 			EnvVar: "DATABASE_URL",
 		},
 
-		cli.StringFlag{
+		cli.IntFlag{
 			Name:   "port",
 			Usage:  "url of the postgres database to connect with",
 			EnvVar: "PORT",
+			Value:  8000,
 		},
 	}
 
@@ -46,6 +47,7 @@ func main() {
 		// Prep the application
 		config := horizon.Config{
 			DatabaseUrl: c.String("db"),
+			Port:        c.Int("port"),
 		}
 		app, err = horizon.NewApp(config)
 		return
