@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/zenazn/goji/web"
+	"net/http"
 	"strconv"
 )
 
@@ -28,6 +29,7 @@ const (
 //
 type ActionHelper struct {
 	c   web.C
+	r   *http.Request
 	err error
 }
 
@@ -39,12 +41,30 @@ func (a *ActionHelper) App() *App {
 	return a.c.Env["app"].(*App)
 }
 
+// Gets a string from either the URLParams or query string.
+// This method prioritizes the URLParams over the Query.
+//
+// TODO: Add form support, prioritized over query
+func (a *ActionHelper) GetString(name string) string {
+	if a.err != nil {
+		return ""
+	}
+
+	fromUrl, ok := a.c.URLParams[name]
+
+	if ok {
+		return fromUrl
+	}
+
+	return a.r.URL.Query().Get(name)
+}
+
 func (a *ActionHelper) GetInt64(name string) int64 {
 	if a.err != nil {
 		return 0
 	}
 
-	asStr := a.c.URLParams[name]
+	asStr := a.GetString(name)
 
 	if asStr == "" {
 		return 0
@@ -65,7 +85,7 @@ func (a *ActionHelper) GetInt32(name string) int32 {
 		return 0
 	}
 
-	asStr := a.c.URLParams[name]
+	asStr := a.GetString(name)
 
 	if asStr == "" {
 		return 0
@@ -86,8 +106,8 @@ func (a *ActionHelper) GetPagingParams() (after string, order string, limit int3
 		return
 	}
 
-	after = a.c.URLParams["after"]
-	order = a.c.URLParams["order"]
+	after = a.GetString("after")
+	order = a.GetString("order")
 	limit = a.GetInt32("limit")
 
 	if limit == 0 {

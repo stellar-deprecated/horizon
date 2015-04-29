@@ -33,17 +33,36 @@ func TestLedgerActions(t *testing.T) {
 
 		Convey("GET /ledgers", func() {
 
-			w := rh.Get("/ledgers", test.RequestHelperNoop)
+			Convey("With Default Params", func() {
+				w := rh.Get("/ledgers", test.RequestHelperNoop)
 
-			var result map[string]interface{}
-			err := json.Unmarshal(w.Body.Bytes(), &result)
-			So(err, ShouldBeNil)
-			So(w.Code, ShouldEqual, 200)
+				var result map[string]interface{}
+				err := json.Unmarshal(w.Body.Bytes(), &result)
+				So(err, ShouldBeNil)
+				So(w.Code, ShouldEqual, 200)
 
-			embedded := result["_embedded"].(map[string]interface{})
-			records := embedded["records"].([]interface{})
+				embedded := result["_embedded"].(map[string]interface{})
+				records := embedded["records"].([]interface{})
 
-			So(len(records), ShouldEqual, 4)
+				So(len(records), ShouldEqual, 4)
+
+			})
+
+			Convey("With A Limit", func() {
+				w := rh.Get("/ledgers?limit=1", test.RequestHelperNoop)
+
+				var result map[string]interface{}
+				err := json.Unmarshal(w.Body.Bytes(), &result)
+				So(err, ShouldBeNil)
+				So(w.Code, ShouldEqual, 200)
+
+				embedded := result["_embedded"].(map[string]interface{})
+				records := embedded["records"].([]interface{})
+
+				So(len(records), ShouldEqual, 1)
+
+			})
+
 		})
 	})
 }

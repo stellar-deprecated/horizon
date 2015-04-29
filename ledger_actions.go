@@ -30,7 +30,7 @@ func (l ledgerResource) FromRecord(record db.LedgerRecord) ledgerResource {
 }
 
 func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c}
+	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
 	_, order, limit := ah.GetPagingParams()
 	after := ah.GetInt32("after")
@@ -50,7 +50,7 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c}
+	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
 	sequence := ah.GetInt32("id")
 

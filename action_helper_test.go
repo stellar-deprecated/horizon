@@ -5,12 +5,15 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/zenazn/goji/web"
 	"math"
+	"net/http"
 	"testing"
 )
 
 func TestActionHelper(t *testing.T) {
 	Convey("Action Helper", t, func() {
 		c := web.C{}
+		r, _ := http.NewRequest("GET", "/?limit=2&after=hello", nil)
+
 		c.URLParams = map[string]string{
 			"blank": "",
 			"zero":  "0",
@@ -22,7 +25,7 @@ func TestActionHelper(t *testing.T) {
 		}
 		c.Env = make(map[interface{}]interface{})
 
-		ah := &ActionHelper{c: c}
+		ah := &ActionHelper{c: c, r: r}
 
 		Convey("GetInt32", func() {
 			result := ah.GetInt32("blank")
@@ -45,11 +48,16 @@ func TestActionHelper(t *testing.T) {
 			So(ah.Err(), ShouldBeNil)
 			So(result, ShouldEqual, math.MinInt32)
 
+			result = ah.GetInt32("limit")
+			So(ah.Err(), ShouldBeNil)
+			So(result, ShouldEqual, 2)
+
 			result = ah.GetInt32("64max")
 			So(ah.Err(), ShouldNotBeNil)
 
 			result = ah.GetInt32("64min")
 			So(ah.Err(), ShouldNotBeNil)
+
 		})
 
 		Convey("GetInt64", func() {
@@ -72,6 +80,21 @@ func TestActionHelper(t *testing.T) {
 			result = ah.GetInt64("64min")
 			So(ah.Err(), ShouldBeNil)
 			So(result, ShouldEqual, math.MinInt64)
+		})
+
+		Convey("GetPagingParams", func() {
+			// TODO: Just a smoke test for now.  Fill this out later
+			c := web.C{
+				Env: make(map[interface{}]interface{}),
+			}
+			r, _ := http.NewRequest("GET", "/?limit=2&after=hello", nil)
+
+			ah := &ActionHelper{c: c, r: r}
+
+			after, order, limit := ah.GetPagingParams()
+			So(after, ShouldEqual, "hello")
+			So(limit, ShouldEqual, 2)
+			So(order, ShouldEqual, "asc")
 		})
 
 	})
