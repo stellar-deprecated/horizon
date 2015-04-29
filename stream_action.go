@@ -1,7 +1,7 @@
 package horizon
 
 import (
-	"github.com/stellar/go-horizon/rendering/sse"
+	"github.com/stellar/go-horizon/render/sse"
 	"github.com/zenazn/goji/web"
 	"golang.org/x/net/context"
 	"net/http"

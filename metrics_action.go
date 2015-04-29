@@ -3,7 +3,7 @@ package horizon
 import (
 	"github.com/jagregory/halgo"
 	"github.com/rcrowley/go-metrics"
-	"github.com/stellar/go-horizon/hal"
+	"github.com/stellar/go-horizon/render/hal"
 	"github.com/zenazn/goji/web"
 	"net/http"
 )

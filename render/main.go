@@ -1,8 +1,8 @@
-package rendering
+package render
 
 import (
 	"github.com/stellar/go-horizon/db"
-	"github.com/stellar/go-horizon/hal"
+	"github.com/stellar/go-horizon/render/hal"
 	"net/http"
 )
 

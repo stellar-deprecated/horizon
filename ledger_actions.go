@@ -3,8 +3,8 @@ package horizon
 import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
-	"github.com/stellar/go-horizon/hal"
-	"github.com/stellar/go-horizon/rendering"
+	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/hal"
 	"github.com/zenazn/goji/web"
 	"math"
 	"net/http"
@@ -47,7 +47,7 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	query := db.LedgerPageQuery{app.HistoryQuery(), after, order, limit}
 
-	rendering.Collection(w, r, query, func(record interface{}) interface{} {
+	render.Collection(w, r, query, func(record interface{}) interface{} {
 		return ledgerResource{}.FromRecord(record.(db.LedgerRecord))
 	})
 }

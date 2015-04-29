@@ -2,7 +2,7 @@ package horizon
 
 import (
 	"github.com/jagregory/halgo"
-	"github.com/stellar/go-horizon/hal"
+	"github.com/stellar/go-horizon/render/hal"
 	"net/http"
 )
 
