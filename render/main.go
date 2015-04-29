@@ -1,43 +1,48 @@
 package render
 
 import (
- "bitbucket.org/ww/goautoneg"
+	"bitbucket.org/ww/goautoneg"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"net/http"
 )
 
 const (
- MimeEventStream = "text/event-stream"
- MimeHal         = "application/hal+json"
- MimeJson        = "application/json"
+	MimeEventStream = "text/event-stream"
+	MimeHal         = "application/hal+json"
+	MimeJson        = "application/json"
 )
 
 type Transform func(interface{}) interface{}
 
 func Collection(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
-	// TODO: negotiate, see if we should stream
+	contentType := Negotiate(r)
 
-	records, err := db.Results(q)
-	if err != nil {
-		panic(err)
+	switch contentType {
+	case MimeHal, MimeJson:
+		records, err := db.Results(q)
+		if err != nil {
+			panic(err)
+		}
+
+		resources := make([]interface{}, len(records))
+		for i, record := range records {
+			resources[i] = t(record)
+		}
+
+		page := hal.Page{
+			Records: resources,
+		}
+
+		hal.RenderPage(w, page)
+	case MimeEventStream:
+		http.Error(w, "bad accept", http.StatusNotAcceptable)
+	default:
+		http.Error(w, "bad accept", http.StatusNotAcceptable)
 	}
-
-	resources := make([]interface{}, len(records))
-	for i, record := range records {
-		resources[i] = t(record)
-	}
-
-	page := hal.Page{
-		Records: resources,
-	}
-
-	hal.RenderPage(w, page)
 }
 
 func Single(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
-	// TODO: negotiate, see if we should stream
-
 	record, err := db.First(q)
 
 	if err != nil {
@@ -51,12 +56,12 @@ func Single(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
 }
 
 func Negotiate(r *http.Request) string {
- alternatives := []string{MimeHal, MimeJson, MimeEventStream}
- accept := r.Header.Get("Accept")
+	alternatives := []string{MimeHal, MimeJson, MimeEventStream}
+	accept := r.Header.Get("Accept")
 
- if accept == "" {
-   return MimeHal
- }
+	if accept == "" {
+		return MimeHal
+	}
 
- return goautoneg.Negotiate(r.Header.Get("Accept"), alternatives)
+	return goautoneg.Negotiate(r.Header.Get("Accept"), alternatives)
 }
