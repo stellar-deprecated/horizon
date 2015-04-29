@@ -21,9 +21,10 @@ func TestStreamingManager(t *testing.T) {
 
 		Convey("Streams results", func() {
 			query := mockDumpQuery{}
-			stream := Stream(context.Background(), query)
-			_ = stream
-			go PumpStreamer()
+			stream := manager.Add(context.Background(), query)
+			So(len(manager.queries), ShouldEqual, 1)
+
+			go manager.Pump()
 
 			record, _ := <-stream.Get()
 			So(record.Err, ShouldBeNil)
@@ -43,6 +44,10 @@ func TestStreamingManager(t *testing.T) {
 
 			_, ok := <-stream.Get()
 			So(ok, ShouldBeFalse)
+
+			Convey("Removes finished queries", func() {
+				So(len(manager.queries), ShouldEqual, 0)
+			})
 		})
 	})
 }

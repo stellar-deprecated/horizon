@@ -10,6 +10,7 @@ type GormQuery struct {
 
 type Query interface {
 	Get() ([]interface{}, error)
+	IsComplete(int) bool
 }
 
 type Pageable interface {

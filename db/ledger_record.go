@@ -47,6 +47,10 @@ func (l LedgerBySequenceQuery) Get() ([]interface{}, error) {
 	return results, nil
 }
 
+func (l LedgerBySequenceQuery) IsComplete(alreadyDelivered int) bool {
+	return alreadyDelivered > 0
+}
+
 type LedgerPageQuery struct {
 	GormQuery
 	After int32
@@ -80,4 +84,8 @@ func (l LedgerPageQuery) Get() (results []interface{}, err error) {
 	}
 
 	return
+}
+
+func (l LedgerPageQuery) IsComplete(alreadyDelivered int) bool {
+	return alreadyDelivered >= int(l.Limit)
 }

@@ -29,17 +29,40 @@ func (sm *streamManager) Pump() {
 			results, err := query.Get()
 
 			if err != nil {
+				// TODO: log an error
+				sm.removeQuery(query)
 				return
 			}
 
-			for _, listener := range listeners {
+			for sq, listener := range listeners {
 				listener.Deliver(results)
-				//TODO: we shouldn't always close...
-				listener.Close()
+
+				if query.IsComplete(listener.sentCount) {
+					sm.removeListener(query, sq)
+				}
+
 			}
 		}
 
 	})
+}
+
+func (sm *streamManager) removeQuery(q Query) {
+	listeners := sm.queries[q]
+
+	for sq, _ := range listeners {
+		sm.removeListener(q, sq)
+	}
+}
+
+func (sm *streamManager) removeListener(q Query, sq StreamedQuery) {
+	listener := sm.queries[q][sq]
+	listener.Close()
+	delete(sm.queries[q], sq)
+
+	if len(sm.queries[q]) == 0 {
+		delete(sm.queries, q)
+	}
 }
 
 func (sm *streamManager) Run() {

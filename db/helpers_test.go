@@ -20,13 +20,17 @@ func OpenTestDatabase() gorm.DB {
 type mockDumpQuery struct{}
 type mockStreamedQuery struct{}
 
-func (mockDumpQuery) Get() ([]interface{}, error) {
+func (q mockDumpQuery) Get() ([]interface{}, error) {
 	return []interface{}{
 		"hello",
 		"world",
 		"from",
 		"go",
 	}, nil
+}
+
+func (q mockDumpQuery) IsComplete(alreadyDelivered int) bool {
+	return alreadyDelivered >= 4
 }
 
 type mockQuery struct {
@@ -37,7 +41,7 @@ type mockResult struct {
 	index int
 }
 
-func (q *mockQuery) Get() ([]interface{}, error) {
+func (q mockQuery) Get() ([]interface{}, error) {
 	results := make([]interface{}, q.resultCount)
 
 	for i := 0; i < q.resultCount; i++ {
@@ -45,4 +49,8 @@ func (q *mockQuery) Get() ([]interface{}, error) {
 	}
 
 	return results, nil
+}
+
+func (q mockQuery) IsComplete(alreadyDelivered int) bool {
+	return alreadyDelivered >= q.resultCount
 }
