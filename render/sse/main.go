@@ -13,19 +13,26 @@ import (
 // interface we will include the Id and Event fields in the payload, if they are
 // set.
 type Event interface {
+	Err() error
 	Data() interface{}
-	Id() *string
-	Event() *string
+}
+
+type HasId interface {
+	Id() string
+}
+
+type HasEvent interface {
+	Event() string
 }
 
 type Streamer struct {
 	Ctx  context.Context
-	Data <-chan interface{}
+	Data <-chan Event
 }
 
 func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	flusher, flushable := w.(http.Flusher)
+	_, flushable := w.(http.Flusher)
 
 	if !flushable {
 		//TODO: render a problem struct instead of simple string
@@ -47,39 +54,33 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// or the data provider closes the channel
 	for {
 		select {
-		case record, more := <-s.Data:
+		case event, more := <-s.Data:
 			if !more {
 				return
 			}
-
-			asEvent, isEvent := record.(Event)
-
-			// if we can extract an event interface, use that
-			// to populate this chunk
-			if isEvent {
-				id := asEvent.Id()
-				event := asEvent.Event()
-
-				if id != nil {
-					fmt.Fprintf(w, "id: %s\n", *id)
-				}
-
-				if event != nil {
-					fmt.Fprintf(w, "event: %s\n", *event)
-				}
-
-				fmt.Fprintf(w, "data: %s\n\n", getJson(asEvent.Data()))
-
-			} else {
-				// otherwise, just render the provided data
-				fmt.Fprintf(w, "data: %s\n\n", getJson(record))
-			}
-
-			flusher.Flush()
+			writeEvent(w, event)
 		case <-ctx.Done():
 			return
 		}
 	}
+}
+
+func writeEvent(w http.ResponseWriter, e Event) {
+	if e.Err() != nil {
+		fmt.Fprint(w, "event: error\n")
+		fmt.Fprintf(w, "data: %s\n\n", e.Err().Error())
+	}
+
+	if e, ok := e.(HasId); ok {
+		fmt.Fprintf(w, "id: %s\n", e.Id())
+	}
+
+	if e, ok := e.(HasEvent); ok {
+		fmt.Fprintf(w, "event: %s\n", e.Event())
+	}
+
+	fmt.Fprintf(w, "data: %s\n\n", getJson(e.Data()))
+	w.(http.Flusher).Flush()
 }
 
 func getJson(val interface{}) string {
