@@ -2,6 +2,7 @@ package db
 
 import (
 	"golang.org/x/net/context"
+	"time"
 )
 
 func init() {
@@ -19,6 +20,15 @@ type StreamedQuery interface {
 type StreamRecord struct {
 	Record interface{}
 	Err    error
+}
+
+func AutoPump() {
+	go func() {
+		for {
+			<-time.After(1 * time.Second)
+			PumpStreamer()
+		}
+	}()
 }
 
 func Stream(ctx context.Context, query Query) StreamedQuery {

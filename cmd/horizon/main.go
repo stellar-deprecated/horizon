@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/codegangsta/cli"
 	"github.com/stellar/go-horizon"
+	"github.com/stellar/go-horizon/db"
 	"os"
 	"runtime"
 )
@@ -30,6 +31,12 @@ func main() {
 			EnvVar: "PORT",
 			Value:  8000,
 		},
+
+		cli.BoolFlag{
+			Name:   "autopump",
+			Usage:  "pump streams every second, instead of once per ledger close",
+			EnvVar: "AUTOPUMP",
+		},
 	}
 
 	ccli.Before = func(c *cli.Context) (err error) {
@@ -54,6 +61,11 @@ func main() {
 	}
 
 	ccli.Action = func(c *cli.Context) {
+
+		if c.Bool("autopump") {
+			db.AutoPump()
+		}
+
 		app.Serve()
 	}
 
