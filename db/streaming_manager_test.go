@@ -46,7 +46,9 @@ func TestStreamingManager(t *testing.T) {
 			So(ok, ShouldBeFalse)
 
 			Convey("Removes finished queries", func() {
-				So(len(manager.queries), ShouldEqual, 0)
+				var queryCount int
+				manager.Do(func() { queryCount = len(manager.queries) })
+				So(queryCount, ShouldEqual, 0)
 			})
 		})
 	})
