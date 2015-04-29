@@ -4,7 +4,6 @@ import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
-	"github.com/stellar/go-horizon/render/hal"
 	"github.com/zenazn/goji/web"
 	"math"
 	"net/http"
@@ -64,14 +63,7 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	query := db.LedgerBySequenceQuery{app.HistoryQuery(), sequence}
 
-	result, err := db.First(query)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	} else if result == nil {
-		w.WriteHeader(http.StatusNotFound)
-	} else {
-		record := result.(db.LedgerRecord)
-		hal.Render(w, ledgerResource{}.FromRecord(record))
-	}
+	render.Single(w, r, query, func(record interface{}) interface{} {
+		return ledgerResource{}.FromRecord(record.(db.LedgerRecord))
+	})
 }

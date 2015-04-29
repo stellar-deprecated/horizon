@@ -27,3 +27,18 @@ func Collection(w http.ResponseWriter, r *http.Request, q db.Query, t Transform)
 
 	hal.RenderPage(w, page)
 }
+
+func Single(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
+	// TODO: negotiate, see if we should stream
+
+	record, err := db.First(q)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	} else if record == nil {
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		resource := t(record)
+		hal.Render(w, resource)
+	}
+}
