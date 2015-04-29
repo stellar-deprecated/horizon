@@ -4,26 +4,19 @@ import (
 	"encoding/json"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"github.com/zenazn/goji/web"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
 func TestLedgerActions(t *testing.T) {
 
 	Convey("Ledger Actions:", t, func() {
+		test.LoadScenario("base")
+		app := NewTestApp()
+		rh := NewRequestHelper(app)
+
 		Convey("GET /ledgers/1", func() {
-			test.LoadScenario("base")
-			app := NewTestApp()
+			w := rh.Get("/ledgers/1", test.RequestHelperNoop)
 
-			r, _ := http.NewRequest("GET", "/ledgers/1", nil)
-			w := httptest.NewRecorder()
-			c := web.C{
-				Env: map[interface{}]interface{}{},
-			}
-
-			app.web.router.ServeHTTPC(c, w, r)
 			So(w.Code, ShouldEqual, 200)
 
 			var result ledgerResource
@@ -33,24 +26,12 @@ func TestLedgerActions(t *testing.T) {
 		})
 
 		Convey("GET /ledgers/100", func() {
-			test.LoadScenario("base")
-			app := NewTestApp()
-
-			r, _ := http.NewRequest("GET", "/ledgers/100", nil)
-			w := httptest.NewRecorder()
-			c := web.C{
-				Env: map[interface{}]interface{}{},
-			}
-
-			app.web.router.ServeHTTPC(c, w, r)
+			w := rh.Get("/ledgers/100", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 404)
 		})
 
 		Convey("GET /ledgers", func() {
-			test.LoadScenario("base")
-			app := NewTestApp()
-			rh := NewRequestHelper(app)
 
 			w := rh.Get("/ledgers", test.RequestHelperNoop)
 
