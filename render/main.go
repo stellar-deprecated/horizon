@@ -1,9 +1,16 @@
 package render
 
 import (
+ "bitbucket.org/ww/goautoneg"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"net/http"
+)
+
+const (
+ MimeEventStream = "text/event-stream"
+ MimeHal         = "application/hal+json"
+ MimeJson        = "application/json"
 )
 
 type Transform func(interface{}) interface{}
@@ -41,4 +48,15 @@ func Single(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
 		resource := t(record)
 		hal.Render(w, resource)
 	}
+}
+
+func Negotiate(r *http.Request) string {
+ alternatives := []string{MimeHal, MimeJson, MimeEventStream}
+ accept := r.Header.Get("Accept")
+
+ if accept == "" {
+   return MimeHal
+ }
+
+ return goautoneg.Negotiate(r.Header.Get("Accept"), alternatives)
 }
