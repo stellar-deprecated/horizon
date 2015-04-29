@@ -4,6 +4,7 @@ import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/hal"
+	"github.com/stellar/go-horizon/rendering"
 	"github.com/zenazn/goji/web"
 	"math"
 	"net/http"
@@ -46,25 +47,9 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	query := db.LedgerPageQuery{app.HistoryQuery(), after, order, limit}
 
-	records, err := db.Results(query)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	resources := make([]interface{}, len(records))
-	for i := range records {
-		record := records[i].(db.LedgerRecord)
-		resource := ledgerResource{}.FromRecord(record)
-		resources[i] = resource
-	}
-
-	page := hal.Page{
-		Records: resources,
-	}
-
-	hal.RenderPage(w, page)
+	rendering.Collection(w, r, query, func(record interface{}) interface{} {
+		return ledgerResource{}.FromRecord(record.(db.LedgerRecord))
+	})
 }
 
 func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
