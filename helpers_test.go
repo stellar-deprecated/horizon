@@ -16,3 +16,7 @@ func NewTestApp() *App {
 
 	return app
 }
+
+func NewRequestHelper(app *App) test.RequestHelper {
+	return test.NewRequestHelper(app.web.router)
+}

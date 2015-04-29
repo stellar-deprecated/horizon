@@ -50,14 +50,9 @@ func TestLedgerActions(t *testing.T) {
 		Convey("GET /ledgers", func() {
 			test.LoadScenario("base")
 			app := NewTestApp()
+			rh := NewRequestHelper(app)
 
-			r, _ := http.NewRequest("GET", "/ledgers", nil)
-			w := httptest.NewRecorder()
-			c := web.C{
-				Env: map[interface{}]interface{}{},
-			}
-
-			app.web.router.ServeHTTPC(c, w, r)
+			w := rh.Get("/ledgers", test.RequestHelperNoop)
 
 			var result map[string]interface{}
 			err := json.Unmarshal(w.Body.Bytes(), &result)
