@@ -3,9 +3,6 @@ package horizon
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"github.com/zenazn/goji/web"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
@@ -14,14 +11,9 @@ func TestRootAction(t *testing.T) {
 	Convey("GET /", t, func() {
 		test.LoadScenario("base")
 		app := NewTestApp()
+		rh := NewRequestHelper(app)
 
-		r, _ := http.NewRequest("GET", "/", nil)
-		w := httptest.NewRecorder()
-		c := web.C{
-			Env: map[interface{}]interface{}{},
-		}
-
-		app.web.router.ServeHTTPC(c, w, r)
+		w := rh.Get("/", test.RequestHelperNoop)
 
 		So(w.Code, ShouldEqual, 200)
 	})
