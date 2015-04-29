@@ -22,7 +22,7 @@ func TestLedgerActions(t *testing.T) {
 			var result ledgerResource
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
-			So(result.Sequence, ShouldEqual, 1)
+			So(result.Attributes.Sequence, ShouldEqual, 1)
 		})
 
 		Convey("GET /ledgers/100", func() {

@@ -35,9 +35,9 @@ func (sm *streamManager) Pump() {
 			}
 
 			for sq, listener := range listeners {
-				listener.Deliver(results)
+				ok := listener.Deliver(results)
 
-				if query.IsComplete(listener.sentCount) {
+				if !ok || query.IsComplete(listener.sentCount) {
 					sm.removeListener(query, sq)
 				}
 

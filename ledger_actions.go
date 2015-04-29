@@ -11,21 +11,35 @@ import (
 )
 
 type ledgerResource struct {
-	halgo.Links
-	Id               string    `json:"id"`
-	Hash             string    `json:"hash"`
-	PrevHash         string    `json:"prev_hash"`
-	Sequence         int32     `json:"sequence"`
-	TransactionCount int32     `json:"transaction_count"`
-	OperationCount   int32     `json:"operation_count"`
-	ClosedAt         time.Time `json:"closed_at"`
+	Attributes struct {
+		halgo.Links
+		Id               string    `json:"id"`
+		Hash             string    `json:"hash"`
+		PrevHash         string    `json:"prev_hash"`
+		Sequence         int32     `json:"sequence"`
+		TransactionCount int32     `json:"transaction_count"`
+		OperationCount   int32     `json:"operation_count"`
+		ClosedAt         time.Time `json:"closed_at"`
+	}
+}
+
+func (l ledgerResource) Data() interface{} {
+	return l.Attributes
+}
+
+func (l ledgerResource) Err() error {
+	return nil
+}
+
+func (l ledgerResource) Id() string {
+	return l.Attributes.Id //TODO: return the paging token for the ledger, not the id
 }
 
 func (l ledgerResource) FromRecord(record db.LedgerRecord) ledgerResource {
-	l.Id = record.LedgerHash
-	l.Hash = record.LedgerHash
-	l.PrevHash = record.PreviousLedgerHash
-	l.Sequence = record.Sequence
+	l.Attributes.Id = record.LedgerHash
+	l.Attributes.Hash = record.LedgerHash
+	l.Attributes.PrevHash = record.PreviousLedgerHash
+	l.Attributes.Sequence = record.Sequence
 	return l
 }
 
@@ -64,6 +78,6 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	render.Single(w, r, query, ledgerRecordToResource)
 }
 
-func ledgerRecordToResource(record interface{}) interface{} {
-	return ledgerResource{}.FromRecord(record.(db.LedgerRecord))
+func ledgerRecordToResource(record interface{}) (interface{}, error) {
+	return ledgerResource{}.FromRecord(record.(db.LedgerRecord)), nil
 }

@@ -2,8 +2,12 @@ package render
 
 import (
 	"bitbucket.org/ww/goautoneg"
+	"errors"
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/httpx"
 	"github.com/stellar/go-horizon/render/hal"
+	"github.com/stellar/go-horizon/render/sse"
+	"golang.org/x/net/context"
 	"net/http"
 )
 
@@ -13,7 +17,16 @@ const (
 	MimeJson        = "application/json"
 )
 
-type Transform func(interface{}) interface{}
+var (
+	InvalidStreamEvent error
+)
+
+func init() {
+	InvalidStreamEvent = errors.New("provided `Transform` did not return an implementer of `sse.Event`")
+}
+
+type Transform func(interface{}) (interface{}, error)
+type ToEvent func(interface{}) sse.Event
 
 func Collection(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
 	contentType := Negotiate(r)
@@ -25,18 +38,48 @@ func Collection(w http.ResponseWriter, r *http.Request, q db.Query, t Transform)
 			panic(err)
 		}
 
+		// map the found records to hal compatible resources
+		// using `t`
 		resources := make([]interface{}, len(records))
 		for i, record := range records {
-			resources[i] = t(record)
+			resource, err := t(record)
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+
+			resources[i] = resource
 		}
 
+		// TODO: add paging links
 		page := hal.Page{
 			Records: resources,
 		}
 
 		hal.RenderPage(w, page)
 	case MimeEventStream:
-		http.Error(w, "bad accept", http.StatusNotAcceptable)
+
+		ctx := httpx.CancelWhenClosed(context.Background(), w)
+
+		records := db.Stream(ctx, q)
+		events := recordToEvent(records.Get(), func(r interface{}) sse.Event {
+			resource, err := t(r)
+
+			if err != nil {
+				return sse.ErrorEvent{err}
+			}
+
+			event, ok := resource.(sse.Event)
+
+			if !ok {
+				return sse.ErrorEvent{InvalidStreamEvent}
+			}
+
+			return event
+		})
+
+		streamer := &sse.Streamer{ctx, events}
+		streamer.ServeHTTP(w, r)
 	default:
 		http.Error(w, "bad accept", http.StatusNotAcceptable)
 	}
@@ -50,7 +93,12 @@ func Single(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
 	} else if record == nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		resource := t(record)
+		resource, err := t(record)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
 		hal.Render(w, resource)
 	}
 }
@@ -64,4 +112,24 @@ func Negotiate(r *http.Request) string {
 	}
 
 	return goautoneg.Negotiate(r.Header.Get("Accept"), alternatives)
+}
+
+func recordToEvent(in <-chan db.StreamRecord, t ToEvent) <-chan sse.Event {
+	chn := make(chan sse.Event)
+
+	go func() {
+		for sr := range in {
+			err := sr.Err
+
+			if err != nil {
+				chn <- sse.ErrorEvent{err}
+			} else {
+				chn <- t(sr.Record)
+			}
+
+		}
+		close(chn)
+	}()
+
+	return chn
 }

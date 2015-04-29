@@ -59,6 +59,7 @@ func (s *streamedQuery) Cancel() {
 type streamedQueryListener struct {
 	ctx       context.Context
 	sentCount int
+	cancelled bool
 	send      chan<- StreamRecord
 	receive   chan StreamRecord
 }
@@ -74,17 +75,24 @@ func (sl *streamedQueryListener) Run() {
 			}
 			sl.send <- record
 		case <-sl.ctx.Done():
+			sl.cancelled = true
 			return
 		}
 	}
 }
 
-func (sl *streamedQueryListener) Deliver(results []interface{}) {
+func (sl *streamedQueryListener) Deliver(results []interface{}) bool {
+	if sl.cancelled {
+		return false
+	}
+
 	toSend := results[sl.sentCount:len(results)]
 	for _, r := range toSend {
 		sl.receive <- StreamRecord{Record: r}
 		sl.sentCount++
 	}
+
+	return true
 }
 
 func (sl *streamedQueryListener) Close() {

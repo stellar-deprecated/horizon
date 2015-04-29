@@ -30,6 +30,18 @@ type Streamer struct {
 	Data <-chan Event
 }
 
+type ErrorEvent struct {
+	Error error
+}
+
+func (e ErrorEvent) Data() interface{} {
+	return e.Error.Error()
+}
+
+func (e ErrorEvent) Err() error {
+	return e.Error
+}
+
 func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_, flushable := w.(http.Flusher)
