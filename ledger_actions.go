@@ -46,9 +46,7 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	query := db.LedgerPageQuery{app.HistoryQuery(), after, order, limit}
 
-	render.Collection(w, r, query, func(record interface{}) interface{} {
-		return ledgerResource{}.FromRecord(record.(db.LedgerRecord))
-	})
+	render.Collection(w, r, query, ledgerRecordToResource)
 }
 
 func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -63,7 +61,9 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	query := db.LedgerBySequenceQuery{app.HistoryQuery(), sequence}
 
-	render.Single(w, r, query, func(record interface{}) interface{} {
-		return ledgerResource{}.FromRecord(record.(db.LedgerRecord))
-	})
+	render.Single(w, r, query, ledgerRecordToResource)
+}
+
+func ledgerRecordToResource(record interface{}) (interface{}, error) {
+	return ledgerResource{}.FromRecord(record.(db.LedgerRecord)), nil
 }
