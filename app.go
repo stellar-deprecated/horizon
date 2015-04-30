@@ -77,6 +77,9 @@ func (a *App) Serve() {
 		db.AutoPump(a.ctx)
 	}
 
+	// initiate the ledger close pumper
+	db.LedgerClosePump(a.ctx, a.historyDb.DB())
+
 	err := graceful.Serve(listener, http.DefaultServeMux)
 
 	if err != nil {

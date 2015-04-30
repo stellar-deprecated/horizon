@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"golang.org/x/net/context"
 	"log"
 	"time"
@@ -31,6 +32,35 @@ func AutoPump(ctx context.Context) {
 				PumpStreamer()
 			case <-ctx.Done():
 				log.Println("canceling autopump")
+				return
+			}
+		}
+	}()
+}
+
+func LedgerClosePump(ctx context.Context, db *sql.DB) {
+	go func() {
+		var lastSeenLedger int32
+		for {
+			select {
+			case <-time.After(1 * time.Second):
+				var latestLedger int32
+				row := db.QueryRow("SELECT MAX(sequence) FROM history_ledgers")
+				err := row.Scan(&latestLedger)
+
+				if err != nil {
+					log.Println("Failed to check latest ledger: " + err.Error())
+					break
+				}
+
+				if latestLedger > lastSeenLedger {
+					log.Printf("saw new ledger: %d, prev: %d", latestLedger, lastSeenLedger)
+					PumpStreamer()
+					lastSeenLedger = latestLedger
+				}
+
+			case <-ctx.Done():
+				log.Println("canceling ledger pump")
 				return
 			}
 		}
