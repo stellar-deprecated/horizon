@@ -19,11 +19,21 @@ type StreamedQuery interface {
 	Cancel()
 }
 
+// The streaming query system flows errors that occur while executing queries
+// in the background to connected clients.  `StreamRecord` is the means to do
+// this and any consumer of streaming query results should check every message
+// that comes through their channel for an error.
 type StreamRecord struct {
 	Record interface{}
 	Err    error
 }
 
+// 	Autopump starts a background proc that triggers the streaming query
+// 	system to run once per second.
+//
+// 	Canceling the provided context will also cancel the pump.
+//
+// 	Useful for development.
 func AutoPump(ctx context.Context) {
 	go func() {
 		for {
@@ -76,12 +86,12 @@ func LedgerClosePump(ctx context.Context, db *sql.DB) {
 	}()
 }
 
+// Registers a query with the streaming database system.  Everytime that the
+// streaming system is pumped (either through the LedgerClosePump or Autopump)
+// the provided query will be executed again and any new records will be pushed
+// onto the channel provided in the returned `StreamedQuery` interface.
 func Stream(ctx context.Context, query Query) StreamedQuery {
 	return globalStreamManager.Add(ctx, query)
-}
-
-func CancelStream(q StreamedQuery) {
-	q.Cancel()
 }
 
 // Triggers an execution cycle of any in-progress streaming queries
@@ -95,10 +105,6 @@ type streamedQuery struct {
 
 func (s *streamedQuery) Get() <-chan StreamRecord {
 	return s.records
-}
-
-func (s *streamedQuery) Cancel() {
-
 }
 
 type streamedQueryListener struct {
