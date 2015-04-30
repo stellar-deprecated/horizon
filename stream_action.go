@@ -17,11 +17,11 @@ func (s streamTemp) Err() error {
 	return nil
 }
 
-func (s streamTemp) Data() interface{} {
+func (s streamTemp) SseData() interface{} {
 	return s.Message
 }
 
-func (s streamTemp) Id() string {
+func (s streamTemp) SseId() string {
 	return s.ID
 }
 

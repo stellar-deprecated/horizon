@@ -13,35 +13,33 @@ import (
 )
 
 type LedgerResource struct {
-	Attributes struct {
-		halgo.Links
-		Id               string    `json:"id"`
-		Hash             string    `json:"hash"`
-		PrevHash         string    `json:"prev_hash"`
-		Sequence         int32     `json:"sequence"`
-		TransactionCount int32     `json:"transaction_count"`
-		OperationCount   int32     `json:"operation_count"`
-		ClosedAt         time.Time `json:"closed_at"`
-	}
+	halgo.Links
+	Id               string    `json:"id"`
+	Hash             string    `json:"hash"`
+	PrevHash         string    `json:"prev_hash"`
+	Sequence         int32     `json:"sequence"`
+	TransactionCount int32     `json:"transaction_count"`
+	OperationCount   int32     `json:"operation_count"`
+	ClosedAt         time.Time `json:"closed_at"`
 }
 
-func (l LedgerResource) Data() interface{} {
-	return l.Attributes
+func (l LedgerResource) SseData() interface{} {
+	return l
 }
 
 func (l LedgerResource) Err() error {
 	return nil
 }
 
-func (l LedgerResource) Id() string {
-	return l.Attributes.Id //TODO: return the paging token for the ledger, not the id
+func (l LedgerResource) SseId() string {
+	return l.Id //TODO: return the paging token for the ledger, not the id
 }
 
 func (l LedgerResource) FromRecord(record db.LedgerRecord) LedgerResource {
-	l.Attributes.Id = record.LedgerHash
-	l.Attributes.Hash = record.LedgerHash
-	l.Attributes.PrevHash = record.PreviousLedgerHash
-	l.Attributes.Sequence = record.Sequence
+	l.Id = record.LedgerHash
+	l.Hash = record.LedgerHash
+	l.PrevHash = record.PreviousLedgerHash
+	l.Sequence = record.Sequence
 	return l
 }
 

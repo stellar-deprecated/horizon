@@ -14,15 +14,15 @@ import (
 // set.
 type Event interface {
 	Err() error
-	Data() interface{}
+	SseData() interface{}
 }
 
 type HasId interface {
-	Id() string
+	SseId() string
 }
 
 type HasEvent interface {
-	Event() string
+	SseEvent() string
 }
 
 type Streamer struct {
@@ -34,7 +34,7 @@ type ErrorEvent struct {
 	Error error
 }
 
-func (e ErrorEvent) Data() interface{} {
+func (e ErrorEvent) SseData() interface{} {
 	return e.Error.Error()
 }
 
@@ -84,14 +84,14 @@ func writeEvent(w http.ResponseWriter, e Event) {
 	}
 
 	if e, ok := e.(HasId); ok {
-		fmt.Fprintf(w, "id: %s\n", e.Id())
+		fmt.Fprintf(w, "id: %s\n", e.SseId())
 	}
 
 	if e, ok := e.(HasEvent); ok {
-		fmt.Fprintf(w, "event: %s\n", e.Event())
+		fmt.Fprintf(w, "event: %s\n", e.SseEvent())
 	}
 
-	fmt.Fprintf(w, "data: %s\n\n", getJson(e.Data()))
+	fmt.Fprintf(w, "data: %s\n\n", getJson(e.SseData()))
 	w.(http.Flusher).Flush()
 }
 
