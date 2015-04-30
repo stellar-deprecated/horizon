@@ -16,6 +16,7 @@ type App struct {
 	metrics   metrics.Registry
 	web       *Web
 	historyDb gorm.DB
+	coreDb    gorm.DB
 }
 
 func NewApp(config Config) (*App, error) {
@@ -30,7 +31,13 @@ func NewApp(config Config) (*App, error) {
 		return nil, err
 	}
 
-	historyDb, err := NewHistoryDb(&result)
+	historyDb, err := db.Open(config.DatabaseUrl)
+
+	if err != nil {
+		return nil, err
+	}
+
+	coreDb, err := db.Open(config.StellarCoreDatabaseUrl)
 
 	if err != nil {
 		return nil, err
@@ -38,6 +45,7 @@ func NewApp(config Config) (*App, error) {
 
 	result.web = web
 	result.historyDb = historyDb
+	result.coreDb = coreDb
 	return &result, nil
 }
 
@@ -63,6 +71,14 @@ func (a *App) Serve() {
 	graceful.Wait()
 }
 
+// Returns a GormQuery that can be embedded in a parent query
+// to specify the query should run against the history database
 func (a *App) HistoryQuery() db.GormQuery {
 	return db.GormQuery{&a.historyDb}
+}
+
+// Returns a GormQuery that can be embedded in a parent query
+// to specify the query should run against the connected stellar core database
+func (a *App) CoreQuery() db.GormQuery {
+	return db.GormQuery{&a.coreDb}
 }

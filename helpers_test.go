@@ -6,7 +6,10 @@ import (
 )
 
 func NewTestApp() *App {
-	app, err := NewApp(Config{DatabaseUrl: test.DatabaseUrl()})
+	app, err := NewApp(Config{
+		DatabaseUrl:            test.DatabaseUrl(),
+		StellarCoreDatabaseUrl: test.StellarCoreDatabaseUrl(),
+	})
 
 	if err != nil {
 		log.Panic(err)

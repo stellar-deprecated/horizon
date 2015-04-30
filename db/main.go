@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/jinzhu/gorm"
+	_ "github.com/lib/pq"
 )
 
 type GormQuery struct {
@@ -15,6 +16,22 @@ type Query interface {
 
 type Pageable interface {
 	PagingToken() interface{}
+}
+
+func Open(url string) (gorm.DB, error) {
+	db, err := gorm.Open("postgres", url)
+
+	if err != nil {
+		return db, err
+	}
+
+	err = db.DB().Ping()
+
+	if err != nil {
+		return db, err
+	}
+
+	return db, nil
 }
 
 func Results(query Query) ([]interface{}, error) {

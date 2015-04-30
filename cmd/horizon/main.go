@@ -25,6 +25,12 @@ func main() {
 			EnvVar: "DATABASE_URL",
 		},
 
+		cli.StringFlag{
+			Name:   "stellar-core-db",
+			Usage:  "url of the stellar-core postgres database to connect with",
+			EnvVar: "STELLAR_CORE_DATABASE_URL",
+		},
+
 		cli.IntFlag{
 			Name:   "port",
 			Usage:  "url of the postgres database to connect with",
@@ -53,8 +59,9 @@ func main() {
 
 		// Prep the application
 		config := horizon.Config{
-			DatabaseUrl: c.String("db"),
-			Port:        c.Int("port"),
+			DatabaseUrl:            c.String("db"),
+			StellarCoreDatabaseUrl: c.String("stellar-core-db"),
+			Port: c.Int("port"),
 		}
 		app, err = horizon.NewApp(config)
 		return
