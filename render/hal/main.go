@@ -12,8 +12,17 @@ type Page struct {
 	Records []interface{}
 }
 
+func RenderToString(data interface{}, pretty bool) ([]byte, error) {
+	if pretty {
+		return json.MarshalIndent(data, "", "  ")
+	} else {
+		return json.Marshal(data)
+	}
+}
+
 func Render(w http.ResponseWriter, data interface{}) {
-	js, err := json.Marshal(data)
+	js, err := RenderToString(data, true)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -34,12 +43,5 @@ func RenderPage(w http.ResponseWriter, page Page) {
 		},
 	}
 
-	js, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/hal+json")
-	w.Write(js)
+	Render(w, data)
 }

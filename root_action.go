@@ -6,8 +6,14 @@ import (
 	"net/http"
 )
 
-func rootAction(w http.ResponseWriter, r *http.Request) {
-	root := halgo.Links{}.
+type RootResource struct {
+	halgo.Links
+}
+
+var globalRootResource RootResource
+
+func init() {
+	links := halgo.Links{}.
 		Self("/").
 		Link("account", "/accounts/{address}").
 		Link("account_transactions", "/accounts/{address}/transactions{?after}{?limit}{?order}").
@@ -16,5 +22,11 @@ func rootAction(w http.ResponseWriter, r *http.Request) {
 		Link("metrics", "/metrics").
 		Link("friendbot", "/friendbot{?addr}")
 
-	hal.Render(w, root)
+	globalRootResource = RootResource{
+		Links: links,
+	}
+}
+
+func rootAction(w http.ResponseWriter, r *http.Request) {
+	hal.Render(w, globalRootResource)
 }
