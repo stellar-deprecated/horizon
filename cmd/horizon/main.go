@@ -52,7 +52,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		if !c.IsSet("db") {
+		if !c.IsSet("stellar-core-db") {
 			cli.ShowAppHelp(c)
 			os.Exit(1)
 		}
