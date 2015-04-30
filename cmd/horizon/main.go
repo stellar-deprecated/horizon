@@ -1,75 +1,98 @@
 package main
 
 import (
-	"github.com/codegangsta/cli"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/stellar/go-horizon"
+	"log"
 	"os"
 	"runtime"
 )
 
 var app *horizon.App
+var rootCmd *cobra.Command
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	rootCmd.Execute()
+}
 
-	ccli := cli.NewApp()
-	ccli.Name = "horizon"
-	ccli.Usage = "client-facing api server for the stellar network"
-	ccli.Author = "Scott Fleckenstein <scott@stellar.org>"
-	ccli.Version = "0.0.1"
-	ccli.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:   "db",
-			Usage:  "url of the postgres database to connect with",
-			EnvVar: "DATABASE_URL",
-		},
+func init() {
+	viper.SetDefault("port", 8000)
+	viper.SetDefault("autopump", false)
 
-		cli.StringFlag{
-			Name:   "stellar-core-db",
-			Usage:  "url of the stellar-core postgres database to connect with",
-			EnvVar: "STELLAR_CORE_DATABASE_URL",
-		},
+	viper.BindEnv("port", "PORT")
+	viper.BindEnv("autopump", "AUTOPUMP")
+	viper.BindEnv("db-url", "DATABASE_URL")
+	viper.BindEnv("stellar-core-db-url", "STELLAR_CORE_DATABASE_URL")
+	viper.BindEnv("stellar-core-url", "STELLAR_CORE_URL")
+	viper.BindEnv("friendbot-secret", "FRIENDBOT_SECRET")
 
-		cli.IntFlag{
-			Name:   "port",
-			Usage:  "url of the postgres database to connect with",
-			EnvVar: "PORT",
-			Value:  8000,
-		},
-
-		cli.BoolFlag{
-			Name:   "autopump",
-			Usage:  "pump streams every second, instead of once per ledger close",
-			EnvVar: "AUTOPUMP",
-		},
+	rootCmd = &cobra.Command{
+		Use:   "horizon",
+		Short: "client-facing api server for the stellar network",
+		Long:  "client-facing api server for the stellar network",
+		Run:   run,
 	}
 
-	ccli.Before = func(c *cli.Context) (err error) {
+	rootCmd.Flags().String(
+		"db-url",
+		"",
+		"horizon postgres database to connect with",
+	)
 
-		if !c.IsSet("db") {
-			cli.ShowAppHelp(c)
-			os.Exit(1)
-		}
+	rootCmd.Flags().String(
+		"stellar-core-db-url",
+		"",
+		"stellar-core postgres database to connect with",
+	)
 
-		if !c.IsSet("stellar-core-db") {
-			cli.ShowAppHelp(c)
-			os.Exit(1)
-		}
+	rootCmd.Flags().String(
+		"stellar-core-url",
+		"",
+		"stellar-core to connect with (for http commands)",
+	)
 
-		// Prep the application
-		config := horizon.Config{
-			DatabaseUrl:            c.String("db"),
-			StellarCoreDatabaseUrl: c.String("stellar-core-db"),
-			Autopump:               c.Bool("autopump"),
-			Port:                   c.Int("port"),
-		}
-		app, err = horizon.NewApp(config)
-		return
+	rootCmd.Flags().Int(
+		"port",
+		8000,
+		"tcp port to listen on for http requests",
+	)
+
+	rootCmd.Flags().Bool(
+		"autopump",
+		false,
+		"pump streams every second, instead of once per ledger close",
+	)
+
+	viper.BindPFlags(rootCmd.Flags())
+}
+
+func run(cmd *cobra.Command, args []string) {
+
+	if viper.GetString("db-url") == "" {
+		rootCmd.Help()
+		os.Exit(1)
 	}
 
-	ccli.Action = func(c *cli.Context) {
-		app.Serve()
+	if viper.GetString("stellar-core-db-url") == "" {
+		rootCmd.Help()
+		os.Exit(1)
 	}
 
-	ccli.RunAndExitOnError()
+	config := horizon.Config{
+		DatabaseUrl:            viper.GetString("db-url"),
+		StellarCoreDatabaseUrl: viper.GetString("stellar-core-db-url"),
+		Autopump:               viper.GetBool("autopump"),
+		Port:                   viper.GetInt("port"),
+	}
+
+	var err error
+	app, err = horizon.NewApp(config)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	app.Serve()
 }
