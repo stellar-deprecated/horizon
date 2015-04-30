@@ -16,7 +16,6 @@ var globalStreamManager *streamManager = newStreamManager()
 
 type StreamedQuery interface {
 	Get() <-chan StreamRecord
-	Cancel()
 }
 
 // The streaming query system flows errors that occur while executing queries
