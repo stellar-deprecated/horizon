@@ -52,8 +52,32 @@ func installMiddleware(api *web.Mux, app *App) {
 func installActions(api *web.Mux) {
 	api.Get("/", rootAction)
 	api.Get("/metrics", metricsAction)
+
+	// ledger actions
 	api.Get("/ledgers", ledgerIndexAction)
 	api.Get("/ledgers/:id", ledgerShowAction)
+	api.Get("/ledgers/:ledger_id/transactions", notFoundAction)
+	api.Get("/ledgers/:ledger_id/operations", notFoundAction)
+	api.Get("/ledgers/:ledger_id/effects", notFoundAction)
+
+	// account actions
+	api.Get("/accounts", notFoundAction)
+	api.Get("/accounts/:id", notFoundAction)
+	api.Get("/accounts/:account_id/transactions", notFoundAction)
+	api.Get("/accounts/:account_id/operations", notFoundAction)
+	api.Get("/accounts/:account_id/effects", notFoundAction)
+
+	// transaction actions
+	api.Get("/transactions", notFoundAction)
+	api.Get("/transactions/:id", notFoundAction)
+	api.Get("/transactions/:tx_id/operations", notFoundAction)
+	api.Get("/transactions/:tx_id/effects", notFoundAction)
+
+	// transaction actions
+	api.Get("/operations", notFoundAction)
+	api.Get("/operations/:id", notFoundAction)
+	api.Get("/operations/:tx_id/effects", notFoundAction)
+
 	api.Get("/stream", streamAction)
 
 	api.NotFound(notFoundAction)
