@@ -19,7 +19,7 @@ func TestLedgerActions(t *testing.T) {
 
 			So(w.Code, ShouldEqual, 200)
 
-			var result ledgerResource
+			var result LedgerResource
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
 			So(result.Attributes.Sequence, ShouldEqual, 1)

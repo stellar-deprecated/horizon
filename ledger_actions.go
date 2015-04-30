@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type ledgerResource struct {
+type LedgerResource struct {
 	Attributes struct {
 		halgo.Links
 		Id               string    `json:"id"`
@@ -23,19 +23,19 @@ type ledgerResource struct {
 	}
 }
 
-func (l ledgerResource) Data() interface{} {
+func (l LedgerResource) Data() interface{} {
 	return l.Attributes
 }
 
-func (l ledgerResource) Err() error {
+func (l LedgerResource) Err() error {
 	return nil
 }
 
-func (l ledgerResource) Id() string {
+func (l LedgerResource) Id() string {
 	return l.Attributes.Id //TODO: return the paging token for the ledger, not the id
 }
 
-func (l ledgerResource) FromRecord(record db.LedgerRecord) ledgerResource {
+func (l LedgerResource) FromRecord(record db.LedgerRecord) LedgerResource {
 	l.Attributes.Id = record.LedgerHash
 	l.Attributes.Hash = record.LedgerHash
 	l.Attributes.PrevHash = record.PreviousLedgerHash
@@ -79,5 +79,5 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func ledgerRecordToResource(record interface{}) (interface{}, error) {
-	return ledgerResource{}.FromRecord(record.(db.LedgerRecord)), nil
+	return LedgerResource{}.FromRecord(record.(db.LedgerRecord)), nil
 }
