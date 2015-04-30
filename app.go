@@ -7,6 +7,7 @@ import (
 	"github.com/stellar/go-horizon/db"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
+	"golang.org/x/net/context"
 	"log"
 	"net/http"
 )
@@ -17,12 +18,18 @@ type App struct {
 	web       *Web
 	historyDb gorm.DB
 	coreDb    gorm.DB
+	ctx       context.Context
+	cancel    func()
 }
 
 func NewApp(config Config) (*App, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+
 	result := App{
 		config:  config,
 		metrics: metrics.NewRegistry(),
+		ctx:     ctx,
+		cancel:  cancel,
 	}
 
 	web, err := NewWeb(&result)
@@ -50,6 +57,7 @@ func NewApp(config Config) (*App, error) {
 }
 
 func (a *App) Serve() {
+
 	a.web.router.Compile()
 	http.Handle("/", a.web.router)
 
@@ -60,7 +68,14 @@ func (a *App) Serve() {
 	graceful.HandleSignals()
 	bind.Ready()
 	graceful.PreHook(func() { log.Printf("received signal, gracefully stopping") })
-	graceful.PostHook(func() { log.Printf("stopped") })
+	graceful.PostHook(func() {
+		a.Cancel()
+		log.Printf("stopped")
+	})
+
+	if a.config.Autopump {
+		db.AutoPump(a.ctx)
+	}
 
 	err := graceful.Serve(listener, http.DefaultServeMux)
 
@@ -69,6 +84,10 @@ func (a *App) Serve() {
 	}
 
 	graceful.Wait()
+}
+
+func (a *App) Cancel() {
+	a.cancel()
 }
 
 // Returns a GormQuery that can be embedded in a parent query

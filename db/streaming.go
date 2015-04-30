@@ -2,6 +2,7 @@ package db
 
 import (
 	"golang.org/x/net/context"
+	"log"
 	"time"
 )
 
@@ -22,11 +23,16 @@ type StreamRecord struct {
 	Err    error
 }
 
-func AutoPump() {
+func AutoPump(ctx context.Context) {
 	go func() {
 		for {
-			<-time.After(1 * time.Second)
-			PumpStreamer()
+			select {
+			case <-time.After(1 * time.Second):
+				PumpStreamer()
+			case <-ctx.Done():
+				log.Println("canceling autopump")
+				return
+			}
 		}
 	}()
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/codegangsta/cli"
 	"github.com/stellar/go-horizon"
-	"github.com/stellar/go-horizon/db"
 	"os"
 	"runtime"
 )
@@ -61,18 +60,14 @@ func main() {
 		config := horizon.Config{
 			DatabaseUrl:            c.String("db"),
 			StellarCoreDatabaseUrl: c.String("stellar-core-db"),
-			Port: c.Int("port"),
+			Autopump:               c.Bool("autopump"),
+			Port:                   c.Int("port"),
 		}
 		app, err = horizon.NewApp(config)
 		return
 	}
 
 	ccli.Action = func(c *cli.Context) {
-
-		if c.Bool("autopump") {
-			db.AutoPump()
-		}
-
 		app.Serve()
 	}
 
