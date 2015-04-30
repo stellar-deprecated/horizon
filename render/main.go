@@ -6,6 +6,7 @@ import (
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/httpx"
 	"github.com/stellar/go-horizon/render/hal"
+	"github.com/stellar/go-horizon/render/problem"
 	"github.com/stellar/go-horizon/render/sse"
 	"golang.org/x/net/context"
 	"net/http"
@@ -15,6 +16,7 @@ const (
 	MimeEventStream = "text/event-stream"
 	MimeHal         = "application/hal+json"
 	MimeJson        = "application/json"
+	MimeProblem     = "application/problem+json"
 )
 
 var (
@@ -91,12 +93,15 @@ func Single(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	} else if record == nil {
-		w.WriteHeader(http.StatusNotFound)
+		problem.Render(context.TODO(), w, problem.NotFound)
+		return
 	} else {
 		resource, err := t(record)
 
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			p := problem.FromError(context.TODO(), err)
+			problem.Render(context.TODO(), w, p)
+			return
 		}
 
 		hal.Render(w, resource)

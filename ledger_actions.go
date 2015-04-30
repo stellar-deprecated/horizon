@@ -4,7 +4,9 @@ import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
+	"golang.org/x/net/context"
 	"math"
 	"net/http"
 	"time"
@@ -69,7 +71,7 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	sequence := ah.GetInt32("id")
 
 	if ah.Err() != nil {
-		w.WriteHeader(http.StatusNotFound)
+		problem.Render(context.TODO(), w, problem.NotFound)
 		return
 	}
 

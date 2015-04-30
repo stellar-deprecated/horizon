@@ -55,4 +55,6 @@ func installActions(api *web.Mux) {
 	api.Get("/ledgers", ledgerIndexAction)
 	api.Get("/ledgers/:id", ledgerShowAction)
 	api.Get("/stream", streamAction)
+
+	api.NotFound(notFoundAction)
 }
