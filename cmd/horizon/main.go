@@ -25,9 +25,22 @@ func main() {
 		},
 
 		cli.StringFlag{
+			Name:   "stellar-core-db",
+			Usage:  "url of the stellar-core postgres database to connect with",
+			EnvVar: "STELLAR_CORE_DATABASE_URL",
+		},
+
+		cli.IntFlag{
 			Name:   "port",
 			Usage:  "url of the postgres database to connect with",
 			EnvVar: "PORT",
+			Value:  8000,
+		},
+
+		cli.BoolFlag{
+			Name:   "autopump",
+			Usage:  "pump streams every second, instead of once per ledger close",
+			EnvVar: "AUTOPUMP",
 		},
 	}
 
@@ -38,14 +51,17 @@ func main() {
 			os.Exit(1)
 		}
 
-		if !c.IsSet("db") {
+		if !c.IsSet("stellar-core-db") {
 			cli.ShowAppHelp(c)
 			os.Exit(1)
 		}
 
 		// Prep the application
 		config := horizon.Config{
-			DatabaseUrl: c.String("db"),
+			DatabaseUrl:            c.String("db"),
+			StellarCoreDatabaseUrl: c.String("stellar-core-db"),
+			Autopump:               c.Bool("autopump"),
+			Port:                   c.Int("port"),
 		}
 		app, err = horizon.NewApp(config)
 		return

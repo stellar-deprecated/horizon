@@ -1,6 +1,8 @@
 package horizon
 
 type Config struct {
-	DatabaseUrl string
-	Port        int
+	DatabaseUrl            string
+	StellarCoreDatabaseUrl string
+	Port                   int
+	Autopump               bool
 }

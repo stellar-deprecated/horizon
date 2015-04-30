@@ -1,12 +1,10 @@
 package horizon
 
 import (
-	"encoding/json"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
-	"net/http"
 )
 
 type Web struct {
@@ -31,6 +29,13 @@ func NewWeb(app *App) (*Web, error) {
 	app.metrics.Register("requests.succeeded", result.successMeter)
 	app.metrics.Register("requests.failed", result.failureMeter)
 
+	installMiddleware(api, app)
+	installActions(api)
+
+	return &result, nil
+}
+
+func installMiddleware(api *web.Mux, app *App) {
 	api.Use(middleware.RequestID)
 	api.Use(middleware.Logger)
 	api.Use(middleware.Recoverer)
@@ -42,21 +47,14 @@ func NewWeb(app *App) (*Web, error) {
 		AllowedOrigins: []string{"*"},
 	})
 	api.Use(c.Handler)
-
-	// define routes
-	api.Get("/", rootAction)
-	api.Get("/metrics", metricsAction)
-
-	return &result, nil
 }
 
-func renderHAL(w http.ResponseWriter, data interface{}) {
-	js, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+func installActions(api *web.Mux) {
+	api.Get("/", rootAction)
+	api.Get("/metrics", metricsAction)
+	api.Get("/ledgers", ledgerIndexAction)
+	api.Get("/ledgers/:id", ledgerShowAction)
+	api.Get("/stream", streamAction)
 
-	w.Header().Set("Content-Type", "application/hal+json")
-	w.Write(js)
+	api.NotFound(notFoundAction)
 }
