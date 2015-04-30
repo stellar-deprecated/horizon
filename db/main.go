@@ -21,6 +21,7 @@ type Pageable interface {
 // Open the postgres database at the provided url and performing an initial
 // ping to ensure we can connect to it.
 func Open(url string) (gorm.DB, error) {
+
 	db, err := gorm.Open("postgres", url)
 
 	if err != nil {
@@ -46,13 +47,13 @@ func Results(query Query) ([]interface{}, error) {
 func First(query Query) (interface{}, error) {
 	res, err := query.Get()
 
+	if err == gorm.RecordNotFound || len(res) == 0 {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(res) == 0 {
-		return nil, nil
-	} else {
-		return res[0], nil
-	}
+	return res[0], nil
 }

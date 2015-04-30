@@ -17,6 +17,17 @@ func OpenTestDatabase() gorm.DB {
 	return result
 }
 
+func OpenStellarCoreTestDatabase() gorm.DB {
+
+	result, err := gorm.Open("postgres", test.StellarCoreDatabaseUrl())
+
+	if err != nil {
+		log.Panic(err)
+	}
+	result.LogMode(true)
+	return result
+}
+
 type mockDumpQuery struct{}
 type mockStreamedQuery struct{}
 

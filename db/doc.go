@@ -13,7 +13,7 @@
 //
 // You would then implement the query's execution like so:
 //
-//    func (q AccountByAddress) Get() []interface{} {
+//    func (q AccountByAddress) Get() ([]interface{}, error) {
 //      var account Account
 //      err := q.GormQuery.DB.Where("address = ?", q.Address).First(&account).Error
 //      if err != nil {
