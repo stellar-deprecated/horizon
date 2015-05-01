@@ -3,6 +3,7 @@ package horizon
 import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
+	"github.com/stellar/go-horizon/db"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
 )
@@ -28,6 +29,8 @@ func NewWeb(app *App) (*Web, error) {
 	app.metrics.Register("requests.total", result.requestTimer)
 	app.metrics.Register("requests.succeeded", result.successMeter)
 	app.metrics.Register("requests.failed", result.failureMeter)
+
+	app.metrics.Register("db.live_streaming_query", db.QueryGauge())
 
 	installMiddleware(api, app)
 	installActions(api)

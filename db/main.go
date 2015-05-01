@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
+	"github.com/rcrowley/go-metrics"
 )
 
 type GormQuery struct {
@@ -58,4 +59,8 @@ func First(query Query) (interface{}, error) {
 	}
 
 	return res[0], nil
+}
+
+func QueryGauge() metrics.Gauge {
+	return globalStreamManager.queryGauge
 }

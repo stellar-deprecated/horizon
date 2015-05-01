@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/rcrowley/go-metrics"
 	"golang.org/x/net/context"
 )
 
@@ -12,19 +13,22 @@ type streamManagerCommand struct {
 type listenerMap map[StreamedQuery]*streamedQueryListener
 
 type streamManager struct {
-	cmds    chan streamManagerCommand
-	queries map[Query]listenerMap
+	cmds       chan streamManagerCommand
+	queries    map[Query]listenerMap
+	queryGauge metrics.Gauge
 }
 
 func newStreamManager() *streamManager {
 	return &streamManager{
-		cmds:    make(chan streamManagerCommand),
-		queries: make(map[Query]listenerMap),
+		cmds:       make(chan streamManagerCommand),
+		queries:    make(map[Query]listenerMap),
+		queryGauge: metrics.NewGauge(),
 	}
 }
 
 func (sm *streamManager) Pump() {
 	sm.Do(func() {
+		sm.sampleQueryCount()
 		for query, listeners := range sm.queries {
 			results, err := query.Get()
 
@@ -43,7 +47,7 @@ func (sm *streamManager) Pump() {
 
 			}
 		}
-
+		sm.sampleQueryCount()
 	})
 }
 
@@ -108,7 +112,17 @@ func (sm *streamManager) Add(ctx context.Context, q Query) StreamedQuery {
 
 		go newListener.Run()
 		sm.queries[q][result] = newListener
+		sm.sampleQueryCount()
 	})
 
 	return result
+}
+
+func (sm *streamManager) sampleQueryCount() {
+	var queryCount int64
+	for _, l := range sm.queries {
+		queryCount += int64(len(l))
+	}
+
+	sm.queryGauge.Update(queryCount)
 }
