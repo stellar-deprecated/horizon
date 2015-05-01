@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"fmt"
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
@@ -23,24 +24,25 @@ type LedgerResource struct {
 	ClosedAt         time.Time `json:"closed_at"`
 }
 
-func (l LedgerResource) SseData() interface{} {
-	return l
-}
+func (l LedgerResource) SseData() interface{} { return l }
+func (l LedgerResource) Err() error           { return nil }
 
-func (l LedgerResource) Err() error {
-	return nil
-}
+//TODO: return the paging token for the ledger, not the id
+func (l LedgerResource) SseId() string { return l.Id }
 
-func (l LedgerResource) SseId() string {
-	return l.Id //TODO: return the paging token for the ledger, not the id
-}
-
-func (l LedgerResource) FromRecord(record db.LedgerRecord) LedgerResource {
-	l.Id = record.LedgerHash
-	l.Hash = record.LedgerHash
-	l.PrevHash = record.PreviousLedgerHash
-	l.Sequence = record.Sequence
-	return l
+func NewLedgerResource(in db.LedgerRecord) LedgerResource {
+	self := fmt.Sprintf("/ledgers/%d", in.Sequence)
+	return LedgerResource{
+		Links: halgo.Links{}.
+			Self(self).
+			Link("transactions", self+"/transactions{?after}{?limit}{?order}").
+			Link("operations", self+"/operations{?after}{?limit}{?order}").
+			Link("effects", self+"/effects{?after}{?limit}{?order}"),
+		Id:       in.LedgerHash,
+		Hash:     in.LedgerHash,
+		PrevHash: in.PreviousLedgerHash,
+		Sequence: in.Sequence,
+	}
 }
 
 func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -79,5 +81,5 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func ledgerRecordToResource(record db.Record) (render.Resource, error) {
-	return LedgerResource{}.FromRecord(record.(db.LedgerRecord)), nil
+	return NewLedgerResource(record.(db.LedgerRecord)), nil
 }
