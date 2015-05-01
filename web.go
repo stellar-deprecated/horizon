@@ -36,11 +36,12 @@ func NewWeb(app *App) (*Web, error) {
 }
 
 func installMiddleware(api *web.Mux, app *App) {
+	api.Use(middleware.EnvInit)
 	api.Use(middleware.RequestID)
-	api.Use(middleware.Logger)
-	api.Use(middleware.Recoverer)
-	api.Use(middleware.AutomaticOptions)
 	api.Use(app.Middleware)
+	api.Use(middleware.Logger)
+	api.Use(RecoverMiddleware)
+	api.Use(middleware.AutomaticOptions)
 	api.Use(requestMetricsMiddleware)
 
 	c := cors.New(cors.Options{
