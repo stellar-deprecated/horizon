@@ -27,7 +27,8 @@ func init() {
 	InvalidStreamEvent = errors.New("provided `Transform` did not return an implementer of `sse.Event`")
 }
 
-type Transform func(interface{}) (interface{}, error)
+type Resource interface{}
+type Transform func(db.Record) (Resource, error)
 type ToEvent func(interface{}) sse.Event
 
 func Collection(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {

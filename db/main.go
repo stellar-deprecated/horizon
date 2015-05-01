@@ -18,6 +18,8 @@ type Pageable interface {
 	PagingToken() interface{}
 }
 
+type Record interface{}
+
 // Open the postgres database at the provided url and performing an initial
 // ping to ensure we can connect to it.
 func Open(url string) (gorm.DB, error) {

@@ -78,6 +78,6 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	render.Single(w, r, query, ledgerRecordToResource)
 }
 
-func ledgerRecordToResource(record interface{}) (interface{}, error) {
+func ledgerRecordToResource(record db.Record) (render.Resource, error) {
 	return LedgerResource{}.FromRecord(record.(db.LedgerRecord)), nil
 }
