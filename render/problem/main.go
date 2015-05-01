@@ -50,6 +50,7 @@ var (
 	NotFound          P
 	ServerError       P
 	RateLimitExceeded P
+	NotImplemented    P
 )
 
 func init() {
@@ -81,5 +82,14 @@ func init() {
 			"limit.  The allowed limit and requests left per time period are " +
 			"communicated to clients via the http response headers 'X-RateLimit-*' " +
 			"headers.",
+	}
+
+	NotImplemented = P{
+		Type:   "not_implemented",
+		Title:  "Resource Not Yet Implemented",
+		Status: http.StatusNotFound,
+		Detail: "While the requested URL is expected to eventually point to a " +
+			"valid resource, the work to implement the resource has not yet " +
+			"been completed.",
 	}
 }
