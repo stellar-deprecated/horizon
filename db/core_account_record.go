@@ -14,17 +14,17 @@ func (r CoreAccountRecord) TableName() string {
 	return "accounts"
 }
 
-type AccountByAddressQuery struct {
+type CoreAccountByAddressQuery struct {
 	GormQuery
 	Address string
 }
 
-func (q AccountByAddressQuery) Get() ([]interface{}, error) {
+func (q CoreAccountByAddressQuery) Get() ([]interface{}, error) {
 	var account CoreAccountRecord
 	err := q.GormQuery.DB.Where("accountid = ?", q.Address).First(&account).Error
 	return []interface{}{account}, err
 }
 
-func (q AccountByAddressQuery) IsComplete(alreadyDelivered int) bool {
+func (q CoreAccountByAddressQuery) IsComplete(alreadyDelivered int) bool {
 	return alreadyDelivered > 0
 }

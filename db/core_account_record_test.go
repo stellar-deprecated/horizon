@@ -16,7 +16,7 @@ func TestCoreAccountRecordQueries(t *testing.T) {
 		Convey("AccountByAddress", func() {
 			Convey("Existing record behavior", func() {
 				address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
-				q := AccountByAddressQuery{
+				q := CoreAccountByAddressQuery{
 					GormQuery{&db},
 					address,
 				}
@@ -29,7 +29,7 @@ func TestCoreAccountRecordQueries(t *testing.T) {
 
 			Convey("Missing record behavior", func() {
 				address := "not real"
-				q := AccountByAddressQuery{
+				q := CoreAccountByAddressQuery{
 					GormQuery{&db},
 					address,
 				}
