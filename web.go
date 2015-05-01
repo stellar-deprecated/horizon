@@ -40,7 +40,7 @@ func installMiddleware(api *web.Mux, app *App) {
 	api.Use(middleware.Logger)
 	api.Use(middleware.Recoverer)
 	api.Use(middleware.AutomaticOptions)
-	api.Use(appMiddleware(app))
+	api.Use(app.Middleware)
 	api.Use(requestMetricsMiddleware)
 
 	c := cors.New(cors.Options{
