@@ -8,6 +8,7 @@ import (
 
 type LedgerRecord struct {
 	ID                 int32
+	Order              int64
 	Sequence           int32
 	LedgerHash         string
 	PreviousLedgerHash string
@@ -23,7 +24,7 @@ func (lr LedgerRecord) TableName() string {
 }
 
 func (lr LedgerRecord) PagingToken() interface{} {
-	return lr.Sequence
+	return lr.Order
 }
 
 type LedgerBySequenceQuery struct {
@@ -53,7 +54,7 @@ func (l LedgerBySequenceQuery) IsComplete(alreadyDelivered int) bool {
 
 type LedgerPageQuery struct {
 	GormQuery
-	After int32
+	After int64
 	Order string
 	Limit int32
 }
@@ -64,9 +65,9 @@ func (l LedgerPageQuery) Get() (results []interface{}, err error) {
 
 	switch l.Order {
 	case "asc":
-		baseScope = l.GormQuery.DB.Where("sequence > ?", l.After).Order("sequence asc")
+		baseScope = l.GormQuery.DB.Where("\"order\" > ?", l.After).Order("\"order\" asc")
 	case "desc":
-		baseScope = l.GormQuery.DB.Where("sequence < ?", l.After).Order("sequence desc")
+		baseScope = l.GormQuery.DB.Where("\"order\" < ?", l.After).Order("\"order\" desc")
 	default:
 		err = errors.New("Invalid sort: " + l.Order)
 		return

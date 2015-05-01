@@ -49,22 +49,29 @@ func TestLedgerRecordQueries(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(len(ledgers), ShouldEqual, 3)
 
-			for i, ledger := range ledgers {
+			// ensure each record is after the previous
+			current := q.After
+
+			for _, ledger := range ledgers {
 				ledger := ledger.(LedgerRecord)
-				So(ledger.Sequence, ShouldEqual, i+1)
+				So(ledger.Order, ShouldBeGreaterThan, current)
+				current = ledger.Order
 			}
 
 			lastLedger := ledgers[len(ledgers)-1].(Pageable)
-			q.After = lastLedger.PagingToken().(int32)
+			q.After = lastLedger.PagingToken().(int64)
 
 			ledgers, err = Results(q)
 
 			So(err, ShouldBeNil)
 			So(len(ledgers), ShouldEqual, 1)
 
-			for i, ledger := range ledgers {
+			current = q.After
+
+			for _, ledger := range ledgers {
 				ledger := ledger.(LedgerRecord)
-				So(ledger.Sequence, ShouldEqual, i+int(q.After)+1)
+				So(ledger.Order, ShouldBeGreaterThan, current)
+				current = ledger.Order
 			}
 		})
 
