@@ -50,6 +50,8 @@ func NewApp(config Config) (*App, error) {
 		return nil, err
 	}
 
+	result.metrics.Register("db.active_query_count", db.QueryGauge())
+
 	result.web = web
 	result.historyDb = historyDb
 	result.coreDb = coreDb
