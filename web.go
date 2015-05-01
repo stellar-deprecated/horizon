@@ -62,7 +62,7 @@ func installActions(api *web.Mux) {
 
 	// account actions
 	api.Get("/accounts", notImplementedAction)
-	api.Get("/accounts/:id", notImplementedAction)
+	api.Get("/accounts/:id", accountShowAction)
 	api.Get("/accounts/:account_id/transactions", notImplementedAction)
 	api.Get("/accounts/:account_id/operations", notImplementedAction)
 	api.Get("/accounts/:account_id/effects", notImplementedAction)
