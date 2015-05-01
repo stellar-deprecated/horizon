@@ -22,11 +22,17 @@ func (r AccountResource) SseData() interface{} { return r }
 func (r AccountResource) Err() error           { return nil }
 func (r AccountResource) SseId() string        { return r.Id }
 
-func (r AccountResource) FromRecord(record db.CoreAccountRecord) AccountResource {
-	r.Id = record.Accountid
-	r.Address = record.Accountid
-	r.Sequence = record.Seqnum
-	return r
+func NewAccountResource(in db.CoreAccountRecord) AccountResource {
+	return AccountResource{
+		Links: halgo.Links{}.
+			Self("/accounts/"+in.Accountid).
+			Link("transactions", "/accounts/"+in.Accountid+"/transactions{?after}{?limit}{?order}").
+			Link("operations", "/accounts/"+in.Accountid+"/operations{?after}{?limit}{?order}").
+			Link("effects", "/accounts/"+in.Accountid+"/effects{?after}{?limit}{?order}"),
+		Id:       in.Accountid,
+		Address:  in.Accountid,
+		Sequence: in.Seqnum,
+	}
 }
 
 func accountShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -44,6 +50,6 @@ func accountShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Single(w, r, q, func(r db.Record) (render.Resource, error) {
-		return AccountResource{}.FromRecord(r.(db.CoreAccountRecord)), nil
+		return NewAccountResource(r.(db.CoreAccountRecord)), nil
 	})
 }
