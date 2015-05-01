@@ -56,27 +56,27 @@ func installActions(api *web.Mux) {
 	// ledger actions
 	api.Get("/ledgers", ledgerIndexAction)
 	api.Get("/ledgers/:id", ledgerShowAction)
-	api.Get("/ledgers/:ledger_id/transactions", notFoundAction)
-	api.Get("/ledgers/:ledger_id/operations", notFoundAction)
-	api.Get("/ledgers/:ledger_id/effects", notFoundAction)
+	api.Get("/ledgers/:ledger_id/transactions", notImplementedAction)
+	api.Get("/ledgers/:ledger_id/operations", notImplementedAction)
+	api.Get("/ledgers/:ledger_id/effects", notImplementedAction)
 
 	// account actions
-	api.Get("/accounts", notFoundAction)
-	api.Get("/accounts/:id", notFoundAction)
-	api.Get("/accounts/:account_id/transactions", notFoundAction)
-	api.Get("/accounts/:account_id/operations", notFoundAction)
-	api.Get("/accounts/:account_id/effects", notFoundAction)
+	api.Get("/accounts", notImplementedAction)
+	api.Get("/accounts/:id", notImplementedAction)
+	api.Get("/accounts/:account_id/transactions", notImplementedAction)
+	api.Get("/accounts/:account_id/operations", notImplementedAction)
+	api.Get("/accounts/:account_id/effects", notImplementedAction)
 
 	// transaction actions
-	api.Get("/transactions", notFoundAction)
-	api.Get("/transactions/:id", notFoundAction)
-	api.Get("/transactions/:tx_id/operations", notFoundAction)
-	api.Get("/transactions/:tx_id/effects", notFoundAction)
+	api.Get("/transactions", notImplementedAction)
+	api.Get("/transactions/:id", notImplementedAction)
+	api.Get("/transactions/:tx_id/operations", notImplementedAction)
+	api.Get("/transactions/:tx_id/effects", notImplementedAction)
 
 	// transaction actions
-	api.Get("/operations", notFoundAction)
-	api.Get("/operations/:id", notFoundAction)
-	api.Get("/operations/:tx_id/effects", notFoundAction)
+	api.Get("/operations", notImplementedAction)
+	api.Get("/operations/:id", notImplementedAction)
+	api.Get("/operations/:tx_id/effects", notImplementedAction)
 
 	api.Get("/stream", streamAction)
 
