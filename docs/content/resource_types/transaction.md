@@ -6,9 +6,9 @@ weight = 100
 menu = ["main"]
 +++
 
-All changes to the Stellar Network's ledger  
+**Transaction** resources are the basic unit of change in the Stellar Network.
 
-A Transaction Resource represents a transaction that was submitted to the Stellar Network at some point in the past. 
+A transaction is a grouping of [operations][operations]. 
 
 ## Attributes
 
@@ -23,8 +23,8 @@ A Transaction Resource represents a transaction that was submitted to the Stella
 | max_fee           | number | The maximum fee willing to be paid by the transaction creator, expressed in a native currency amount.                           |
 | fee_paid          | number | The fee paid by the source account of this transaction when the transaction was applied to the ledger.                          |
 | operation_count   | number | The number of operations that are contained within this transaction.                                                            |
-| result_code       | number |                                                                                                                                |
-| result_code_s     | string |                                                                                                                                |
+| result_code       | number | The numeric result code for this transaction                                                                                                                               |
+| result_code_s     | string |                                                                                                                                 |
 | result_code_human | string |                                                                                                                                |
 
 ## Links
@@ -40,7 +40,7 @@ A Transaction Resource represents a transaction that was submitted to the Stella
 | [succeeds][transactions/many]            | `/transactions?cursor=12884905984&order=desc`                                               | A collection of transactions that occur before this transaction. |
 
 
-## Example Resources
+## Example
 
 ```json
 //TODO
@@ -61,5 +61,6 @@ A Transaction Resource represents a transaction that was submitted to the Stella
 [accounts/one]:               {{< relref "/resources/accounts/one.md" >}}
 [operations/for_transaction]: {{< relref "/resources/operations/for_transaction.md" >}}
 [effects/for_transaction]:    {{< relref "/resources/effects/for_transaction.md" >}}
+[operations]:                 {{< relref "/resource_types/operation.md" >}}
 
 
