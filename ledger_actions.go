@@ -49,7 +49,7 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
 	_, order, limit := ah.GetPagingParams()
-	after := ah.GetInt32("after")
+	after := ah.GetInt64("after")
 
 	if ah.Err() != nil {
 		http.Error(w, ah.Err().Error(), http.StatusBadRequest)
@@ -57,10 +57,15 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if after == 0 && order == "desc" {
-		after = math.MaxInt32
+		after = math.MaxInt64
 	}
 
-	query := db.LedgerPageQuery{app.HistoryQuery(), after, order, limit}
+	query := db.LedgerPageQuery{
+		app.HistoryQuery(),
+		after,
+		order,
+		limit,
+	}
 
 	render.Collection(w, r, query, ledgerRecordToResource)
 }
