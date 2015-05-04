@@ -1,0 +1,3 @@
+baseurl = "https://www.stellar.org/api/horizon"
+languageCode = "en-us"
+title = "Horizon"
