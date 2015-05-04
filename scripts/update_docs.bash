@@ -8,9 +8,12 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
+pushd docs
+hugo -t hyde
+popd
 
 git checkout gh-pages
-cp -R tmp/docs/* ./
+cp -R docs/public/* ./
 git add -A .
 git commit -m "Update docs"
 git push
