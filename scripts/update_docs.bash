@@ -3,7 +3,7 @@
 set -e
 
 # ensure no git changes are outstanding
-if [ -n "$(git status --porcelain -uno)" ]; then 
+if [ -n "$(git status --porcelain)" ]; then 
   echo "dirty working directory"; 
   exit 1
 fi
