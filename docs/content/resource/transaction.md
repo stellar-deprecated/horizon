@@ -1,9 +1,7 @@
 +++
-date   = "2015-05-04T08:02:32-07:00"
-draft  = true
-title  = "Transaction Resource Type"
-weight = 100
-menu = ["main"]
+title  = "Transaction"
+draft  = false
+weight = -1
 +++
 
 **Transaction** resources are the basic unit of change in the Stellar Network.
@@ -25,7 +23,6 @@ A transaction is a grouping of [operations][operations].
 | operation_count   | number | The number of operations that are contained within this transaction.                                                            |
 | result_code       | number | The numeric result code for this transaction                                                                                                                               |
 | result_code_s     | string |                                                                                                                                 |
-| result_code_human | string |                                                                                                                                |
 
 ## Links
 
@@ -39,28 +36,30 @@ A transaction is a grouping of [operations][operations].
 | [precedes][transactions/many]            | `/transactions?cursor=12884905984&order=asc`                                                | A collection of transactions that occure after this transaction. |
 | [succeeds][transactions/many]            | `/transactions?cursor=12884905984&order=desc`                                               | A collection of transactions that occur before this transaction. |
 
-
 ## Example
 
 ```json
 //TODO
 ```
 
-## Resources that provide transactions
+## Endpoints
 
-|                 Resource                |    Type    |     Resource URL    |
-| --------------------------------------- | ---------- | ------------------- |
-| [All Transactions][transactions/many]   | Collection | `/transactions`     |
-| [Transaction Details][transactions/one] | Single     | `/transactions/:id` |
-|                                         |            |                     |
+|                   Resource                   |    Type    |             Resource URL             |
+| -------------------------------------------- | ---------- | ------------------------------------ |
+| [All Transactions][transactions/many]        | Collection | `/transactions`                      |
+| [Transaction Details][transactions/one]      | Single     | `/transactions/:id`                  |
+| [Account Transactions][transactions/account] | Collection | `/accounts/:account_id/transactions` |
+| [Ledger Transactions][transactions/ledger]   | Collection | `/ledgers/:ledger_id/transactions`   |
 
-[page_token]:                 {{< relref "/guides/paging.md#tokens" >}}
-[transactions/many]:          {{< relref "/resources/transactions/many.md" >}}
-[transactions/one]:           {{< relref "/resources/transactions/one.md" >}}
-[ledgers/one]:                {{< relref "/resources/ledgers/one.md" >}}
-[accounts/one]:               {{< relref "/resources/accounts/one.md" >}}
-[operations/for_transaction]: {{< relref "/resources/operations/for_transaction.md" >}}
-[effects/for_transaction]:    {{< relref "/resources/effects/for_transaction.md" >}}
-[operations]:                 {{< relref "/resource_types/operation.md" >}}
+[page_token]:                 {{< relref "guide/paging.md#tokens" >}}
+[transactions/many]:          {{< relref "endpoint/transactions_all.md" >}}
+[transactions/one]:           {{< relref "endpoint/transactions_single.md" >}}
+[transactions/account]:       {{< relref "endpoint/transactions_for_account.md" >}}
+[transactions/ledgers]:       {{< relref "endpoint/transactions_for_ledger.md" >}}
+[ledgers/one]:                {{< relref "endpoint/ledgers_single.md" >}}
+[accounts/one]:               {{< relref "endpoint/accounts_single.md" >}}
+[operations/for_transaction]: {{< relref "endpoint/operations_for_transaction.md" >}}
+[effects/for_transaction]:    {{< relref "endpoint/effects_for_transaction.md" >}}
+[operations]:                 {{< relref "resource/operation.md" >}}
 
 
