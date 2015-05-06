@@ -61,3 +61,7 @@ valid URI before navigating to it.
 ## Pages
 
 TODO
+
+## Streaming via Server-Sent Events
+
+TODO

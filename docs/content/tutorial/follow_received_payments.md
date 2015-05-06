@@ -101,7 +101,8 @@ terminal.
 
 ## Following payments
 
+TODO
 
 ## Testing it out
 
-
+TODO
