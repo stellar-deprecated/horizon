@@ -10,19 +10,22 @@ A transaction is a grouping of [operations][operations].
 
 ## Attributes
 
-|     Attribute     |  Type  |                                                                                                                                |
-| ----------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| id                | string | The canonical id of this transaction, suitable for use as the :id parameter for url templates that require a transaction's ID. |
-| paging_token      | string | A [paging token][page_token] suitable for use as the `cursor` parameter to transaction collection resources.                    |
-| hash              | string | A hex-encoded SHA-256 hash of the transaction's XDR-encoded form.                                                              |
-| ledger            | number | Sequence number of the ledger in which this transaction was applied. `null` if the transaction is failed or unvalidated.        |
-| account           | string |                                                                                                                                |
-| account_sequence  | number |                                                                                                                                |
-| max_fee           | number | The maximum fee willing to be paid by the transaction creator, expressed in a native currency amount.                           |
-| fee_paid          | number | The fee paid by the source account of this transaction when the transaction was applied to the ledger.                          |
-| operation_count   | number | The number of operations that are contained within this transaction.                                                            |
-| result_code       | number | The numeric result code for this transaction                                                                                                                               |
-| result_code_s     | string |                                                                                                                                 |
+|    Attribute     |  Type  |                                                                                                                                |
+| ---------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| id               | string | The canonical id of this transaction, suitable for use as the :id parameter for url templates that require a transaction's ID. |
+| paging_token     | string | A [paging token][page_token] suitable for use as the `cursor` parameter to transaction collection resources.                   |
+| hash             | string | A hex-encoded SHA-256 hash of the transaction's XDR-encoded form.                                                              |
+| ledger           | number | Sequence number of the ledger in which this transaction was applied. `null` if the transaction is failed or unvalidated.       |
+| account          | string |                                                                                                                                |
+| account_sequence | number |                                                                                                                                |
+| max_fee          | number | The maximum fee willing to be paid by the transaction creator, expressed in a native currency amount.                          |
+| fee_paid         | number | The fee paid by the source account of this transaction when the transaction was applied to the ledger.                         |
+| operation_count  | number | The number of operations that are contained within this transaction.                                                           |
+| result_code      | number | The numeric result code for this transaction                                                                                   |
+| result_code_s    | string |                                                                                                                                |
+| envelope_xdr     | string | A base64 encoded string of the raw `TransactionEnvelope` xdr struct for this transaction                                       |
+| result_xdr       | string | A base64 encoded string of the raw `TransactionResultPair` xdr struct for this transaction                                     |
+| result_meta_xdr  | string | A base64 encoded string of the raw `TransactionMeta` xdr struct for this transaction                                           |
 
 ## Links
 
