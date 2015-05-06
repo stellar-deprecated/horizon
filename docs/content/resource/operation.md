@@ -50,6 +50,8 @@ There are sevent different operation types:
 Each operation type will have a different set of attributes, in addition to the 
 common attributes listed above.
 
+<a id="payment"></a>
+
 ### Payment
 
 A payment operation represents a payment from one account to another.  This payment
@@ -74,6 +76,40 @@ can be either a simple native currency payment or a fiat currency payment.
 | -------- | ------------------------------------------------------------- | ----------------- |
 | sender   | /accounts/gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA  | Sending account   |
 | receiver | /accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC | Receiving account |
+
+#### Example
+
+```json
+{
+  "_links": {
+    "self": {
+      "href": "/operations/12884905984"
+    },
+    "transaction": {
+      "href": "/transaction/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a"
+    },
+    "precedes": {
+      "href": "/account/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC/payments?cursor=12884905984&order=asc{?limit}",
+      "templated": true
+    },
+    "succeeds": {
+      "href": "/account/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC/payments?cursor=12884905984&order=desc{?limit}",
+      "templated": true
+    }
+  },
+  "id": 12884905984,
+  "paging_token": "12884905984",
+  "type": 0,
+  "type_s": "payment",
+  "sender": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
+  "receiver": "gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ",
+  "currency": {
+    "code": "XLM"
+  },
+  "amount": 1000000000,
+  "amount_f": 100.00
+}
+```
 
 ### Create Offer
 

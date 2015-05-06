@@ -1,6 +1,7 @@
 +++
-draft = false
-title = "XDR"
+draft  = false
+title  = "XDR"
+weight = 2
 +++
 
 **XDR**, also known as _External Data Representation_, is used extensively in 
