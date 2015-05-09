@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"github.com/PuerkitoBio/throttled"
 	"github.com/stellar/go-horizon/test"
 	"log"
 )
@@ -9,6 +10,7 @@ func NewTestApp() *App {
 	app, err := NewApp(Config{
 		DatabaseUrl:            test.DatabaseUrl(),
 		StellarCoreDatabaseUrl: test.StellarCoreDatabaseUrl(),
+		RateLimit:              throttled.PerMin(10),
 	})
 
 	if err != nil {

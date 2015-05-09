@@ -32,11 +32,7 @@ func NewApp(config Config) (*App, error) {
 		cancel:  cancel,
 	}
 
-	web, err := NewWeb(&result)
-
-	if err != nil {
-		return nil, err
-	}
+	NewWeb(&result)
 
 	historyDb, err := db.Open(config.DatabaseUrl)
 
@@ -52,7 +48,6 @@ func NewApp(config Config) (*App, error) {
 
 	result.metrics.Register("db.active_query_count", db.QueryGauge())
 
-	result.web = web
 	result.historyDb = historyDb
 	result.coreDb = coreDb
 	return &result, nil
