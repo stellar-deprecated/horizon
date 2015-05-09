@@ -10,4 +10,5 @@ type Config struct {
 	Port                   int
 	Autopump               bool
 	RateLimit              throttled.Quota
+	RedisUrl               string
 }

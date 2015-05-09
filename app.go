@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"github.com/jinzhu/gorm"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
@@ -20,6 +21,7 @@ type App struct {
 	coreDb    gorm.DB
 	ctx       context.Context
 	cancel    func()
+	redis     *redis.Pool
 }
 
 func NewApp(config Config) (*App, error) {
@@ -33,6 +35,11 @@ func NewApp(config Config) (*App, error) {
 	}
 
 	NewWeb(&result)
+	err := NewRedis(&result)
+
+	if err != nil {
+		return nil, err
+	}
 
 	historyDb, err := db.Open(config.DatabaseUrl)
 
