@@ -23,10 +23,16 @@ func NewWeb(app *App) {
 
 	api := web.New()
 
+	rateLimitStore := store.NewMemStore(1000)
+
+	if app.redis != nil {
+		rateLimitStore = store.NewRedisStore(app.redis, "throttle:", 0)
+	}
+
 	rateLimiter := throttled.RateLimit(
 		app.config.RateLimit,
 		&throttled.VaryBy{RemoteAddr: true},
-		store.NewMemStore(1000),
+		rateLimitStore,
 	)
 
 	result := Web{

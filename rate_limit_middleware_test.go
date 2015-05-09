@@ -48,4 +48,22 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		})
 	})
+
+	Convey("Rate Limiting works with redis", t, func() {
+		c := NewTestConfig()
+		c.RedisUrl = "redis://127.0.0.1:6379/"
+		app, _ := NewApp(c)
+		rh := NewRequestHelper(app)
+
+		for i := 0; i < 10; i++ {
+			w := rh.Get("/", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+		}
+
+		w := rh.Get("/", test.RequestHelperNoop)
+		So(w.Code, ShouldEqual, 429)
+
+		w = rh.Get("/", test.RequestHelperRemoteAddr("127.0.0.2"))
+		So(w.Code, ShouldEqual, 200)
+	})
 }
