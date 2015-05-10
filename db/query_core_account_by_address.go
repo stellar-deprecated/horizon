@@ -1,19 +1,5 @@
 package db
 
-type CoreAccountRecord struct {
-	Accountid     string
-	Balance       int64
-	Seqnum        int64
-	Numsubentries int32
-	Inflationdest string
-	Thresholds    string
-	Flags         int32
-}
-
-func (r CoreAccountRecord) TableName() string {
-	return "accounts"
-}
-
 type CoreAccountByAddressQuery struct {
 	GormQuery
 	Address string
