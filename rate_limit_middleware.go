@@ -5,6 +5,7 @@ import (
 	"github.com/PuerkitoBio/throttled/store"
 	"github.com/zenazn/goji/web"
 	"net/http"
+	"strings"
 )
 
 func (web *Web) RateLimitMiddleware(c *web.C, next http.Handler) http.Handler {
@@ -28,5 +29,6 @@ func installRateLimiter(web *Web, app *App) {
 }
 
 func remoteAddrIp(r *http.Request) string {
-	return r.RemoteAddr
+	ip := strings.SplitN(r.RemoteAddr, ":", 2)[0]
+	return ip
 }

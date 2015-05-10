@@ -30,6 +30,10 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 			w = rh.Get("/", test.RequestHelperRemoteAddr("127.0.0.2"))
 			So(w.Code, ShouldEqual, 200)
+
+			// Ignores ports
+			w = rh.Get("/", test.RequestHelperRemoteAddr("127.0.0.1:4312"))
+			So(w.Code, ShouldEqual, 429)
 		})
 
 		Convey("Restrict based upon X-Forwarded-For correctly", func() {
