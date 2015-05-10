@@ -34,6 +34,11 @@ func TestRateLimitMiddleware(t *testing.T) {
 			}
 		})
 
+		Convey("sets X-RateLimit-Reset header correctly", func() {
+			w := rh.Get("/", test.RequestHelperNoop)
+			So(w.Header().Get("X-RateLimit-Reset"), ShouldEqual, "3599")
+		})
+
 		Convey("Restricts based on RemoteAddr IP after too many requests", func() {
 			for i := 0; i < 10; i++ {
 				w := rh.Get("/", test.RequestHelperNoop)
