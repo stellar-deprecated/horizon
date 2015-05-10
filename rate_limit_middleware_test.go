@@ -3,6 +3,7 @@ package horizon
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
+	"strconv"
 	"testing"
 )
 
@@ -17,6 +18,20 @@ func TestRateLimitMiddleware(t *testing.T) {
 			w := rh.Get("/", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Header().Get("X-RateLimit-Limit"), ShouldEqual, "10")
+		})
+
+		Convey("sets X-RateLimit-Remaining headers correctly", func() {
+			for i := 0; i < 10; i++ {
+				w := rh.Get("/", test.RequestHelperNoop)
+				expected := 10 - (i + 1)
+				So(w.Header().Get("X-RateLimit-Remaining"), ShouldEqual, strconv.Itoa(expected))
+			}
+
+			// confirm remaining stays at 0
+			for i := 0; i < 10; i++ {
+				w := rh.Get("/", test.RequestHelperNoop)
+				So(w.Header().Get("X-RateLimit-Remaining"), ShouldEqual, "0")
+			}
 		})
 
 		Convey("Restricts based on RemoteAddr IP after too many requests", func() {
