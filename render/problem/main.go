@@ -77,7 +77,7 @@ func init() {
 	RateLimitExceeded = P{
 		Type:   "rate_limit_exceeded",
 		Title:  "Rate limit exceeded",
-		Status: http.StatusForbidden,
+		Status: 429,
 		Detail: "The rate limit for the requesting IP address is over its alloted " +
 			"limit.  The allowed limit and requests left per time period are " +
 			"communicated to clients via the http response headers 'X-RateLimit-*' " +

@@ -24,7 +24,7 @@ func installRateLimiter(web *Web, app *App) {
 		&throttled.VaryBy{Custom: remoteAddrIp},
 		rateLimitStore,
 	)
-
+	rateLimiter.DeniedHandler = http.HandlerFunc(rateLimitExceededAction)
 	web.rateLimiter = rateLimiter
 }
 
