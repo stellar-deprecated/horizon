@@ -2,7 +2,6 @@ package horizon
 
 import (
 	"github.com/PuerkitoBio/throttled"
-	"github.com/PuerkitoBio/throttled/store"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/sebest/xff"
@@ -23,24 +22,11 @@ func NewWeb(app *App) {
 
 	api := web.New()
 
-	rateLimitStore := store.NewMemStore(1000)
-
-	if app.redis != nil {
-		rateLimitStore = store.NewRedisStore(app.redis, "throttle:", 0)
-	}
-
-	rateLimiter := throttled.RateLimit(
-		app.config.RateLimit,
-		&throttled.VaryBy{RemoteAddr: true},
-		rateLimitStore,
-	)
-
 	result := Web{
 		router:       api,
 		requestTimer: metrics.NewTimer(),
 		failureMeter: metrics.NewMeter(),
 		successMeter: metrics.NewMeter(),
-		rateLimiter:  rateLimiter,
 	}
 	app.web = &result
 
@@ -48,6 +34,7 @@ func NewWeb(app *App) {
 	app.metrics.Register("requests.succeeded", result.successMeter)
 	app.metrics.Register("requests.failed", result.failureMeter)
 
+	installRateLimiter(&result, app)
 	installMiddleware(api, app)
 	installActions(api)
 }

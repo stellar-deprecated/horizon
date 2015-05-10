@@ -34,7 +34,6 @@ func NewApp(config Config) (*App, error) {
 		cancel:  cancel,
 	}
 
-	NewWeb(&result)
 	err := NewRedis(&result)
 
 	if err != nil {
@@ -57,6 +56,9 @@ func NewApp(config Config) (*App, error) {
 
 	result.historyDb = historyDb
 	result.coreDb = coreDb
+
+	NewWeb(&result)
+
 	return &result, nil
 }
 
@@ -94,6 +96,8 @@ func (a *App) Serve() {
 }
 
 func (a *App) Cancel() {
+	a.historyDb.Close()
+	a.coreDb.Close()
 	a.cancel()
 }
 

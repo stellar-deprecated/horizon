@@ -12,6 +12,7 @@ func TestRedis(t *testing.T) {
 		c := NewTestConfig()
 		c.RedisUrl = "redis://127.0.0.1:6379/"
 		app, _ := NewApp(c)
+		defer app.Cancel()
 		So(app.redis, ShouldNotBeNil)
 	})
 
@@ -19,6 +20,7 @@ func TestRedis(t *testing.T) {
 		c := NewTestConfig()
 		c.RedisUrl = ""
 		app, _ := NewApp(c)
+		defer app.Cancel()
 		So(app.redis, ShouldBeNil)
 	})
 
@@ -26,6 +28,7 @@ func TestRedis(t *testing.T) {
 		conf := NewTestConfig()
 		conf.RedisUrl = "redis://127.0.0.1:6379/"
 		app, _ := NewApp(conf)
+		defer app.Cancel()
 
 		c := app.redis.Get()
 		defer c.Close()
