@@ -79,7 +79,5 @@ func installActions(api *web.Mux) {
 	api.Get("/operations/:id", notImplementedAction)
 	api.Get("/operations/:tx_id/effects", notImplementedAction)
 
-	api.Get("/stream", streamAction)
-
 	api.NotFound(notFoundAction)
 }
