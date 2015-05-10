@@ -24,42 +24,90 @@ type App struct {
 	redis     *redis.Pool
 }
 
-func NewApp(config Config) (*App, error) {
+func initAppCancel(app *App) {
 	ctx, cancel := context.WithCancel(context.Background())
+	app.ctx = ctx
+	app.cancel = cancel
+}
 
-	result := App{
-		config:  config,
-		metrics: metrics.NewRegistry(),
-		ctx:     ctx,
-		cancel:  cancel,
-	}
+func NewApp(config Config) (*App, error) {
 
-	err := NewRedis(&result)
+	init := &AppInit{}
+	init.Add(Initializer{
+		"cancel",
+		initAppCancel,
+		nil,
+	})
+	init.Add(Initializer{
+		"metrics",
+		initMetrics,
+		nil,
+	})
+	init.Add(Initializer{
+		"redis",
+		initRedis,
+		nil,
+	})
+	init.Add(Initializer{
+		"history-db",
+		initHistoryDb,
+		nil,
+	})
+	init.Add(Initializer{
+		"core-db",
+		initCoreDb,
+		nil,
+	})
+	init.Add(Initializer{
+		"query-metric",
+		initQueryMetric,
+		[]string{
+			"metrics",
+			"history-db",
+			"core-db",
+		},
+	})
+	init.Add(Initializer{
+		"web.init",
+		initWeb,
+		nil,
+	})
+	init.Add(Initializer{
+		"web.metrics",
+		initWebMetrics,
+		[]string{
+			"web.init",
+			"metrics",
+		},
+	})
+	init.Add(Initializer{
+		"web.rate-limiter",
+		initWebRateLimiter,
+		[]string{
+			"web.init",
+		},
+	})
+	init.Add(Initializer{
+		"web.middleware",
+		initWebMiddleware,
+		[]string{
+			"web.init",
+			"web.rate-limiter",
+			"web.metrics",
+		},
+	})
+	init.Add(Initializer{
+		"web.actions",
+		initWebActions,
+		[]string{
+			"web.init",
+		},
+	})
 
-	if err != nil {
-		return nil, err
-	}
+	result := &App{config: config}
+	init.Run(result)
 
-	historyDb, err := db.Open(config.DatabaseUrl)
-
-	if err != nil {
-		return nil, err
-	}
-
-	coreDb, err := db.Open(config.StellarCoreDatabaseUrl)
-
-	if err != nil {
-		return nil, err
-	}
-
-	result.metrics.Register("db.active_query_count", db.QueryGauge())
-
-	result.historyDb = historyDb
-	result.coreDb = coreDb
-
-	NewWeb(&result)
-
-	return &result, nil
+	return result, nil
 }
 
 func (a *App) Serve() {
