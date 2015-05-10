@@ -12,7 +12,7 @@ func (web *Web) RateLimitMiddleware(c *web.C, next http.Handler) http.Handler {
 	return web.rateLimiter.Throttle(next)
 }
 
-func installRateLimiter(web *Web, app *App) {
+func initWebRateLimiter(app *App) {
 	rateLimitStore := store.NewMemStore(1000)
 
 	if app.redis != nil {
@@ -25,7 +25,7 @@ func installRateLimiter(web *Web, app *App) {
 		rateLimitStore,
 	)
 	rateLimiter.DeniedHandler = http.HandlerFunc(rateLimitExceededAction)
-	web.rateLimiter = rateLimiter
+	app.web.rateLimiter = rateLimiter
 }
 
 func remoteAddrIp(r *http.Request) string {

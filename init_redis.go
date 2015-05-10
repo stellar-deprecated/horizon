@@ -2,19 +2,20 @@ package horizon
 
 import (
 	"github.com/garyburd/redigo/redis"
+	"log"
 	"net/url"
 	"time"
 )
 
-func NewRedis(app *App) error {
+func initRedis(app *App) {
 	if app.config.RedisUrl == "" {
-		return nil
+		return
 	}
 
 	redisUrl, err := url.Parse(app.config.RedisUrl)
 
 	if err != nil {
-		return err
+		log.Panic(err)
 	}
 
 	app.redis = &redis.Pool{
@@ -29,7 +30,10 @@ func NewRedis(app *App) error {
 	defer c.Close()
 
 	_, err = c.Do("PING")
-	return err
+
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
 func dialRedis(redisUrl *url.URL) func() (redis.Conn, error) {
