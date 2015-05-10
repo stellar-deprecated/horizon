@@ -73,8 +73,8 @@ func initWebActions(app *App) {
 	app.web.router.Get("/accounts/:account_id/effects", notImplementedAction)
 
 	// transaction actions
-	app.web.router.Get("/transactions", notImplementedAction)
-	app.web.router.Get("/transactions/:id", notImplementedAction)
+	app.web.router.Get("/transactions", transactionIndexAction)
+	app.web.router.Get("/transactions/:id", transactionShowAction)
 	app.web.router.Get("/transactions/:tx_id/operations", notImplementedAction)
 	app.web.router.Get("/transactions/:tx_id/effects", notImplementedAction)
 
