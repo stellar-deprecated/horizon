@@ -4,6 +4,7 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
+	"strconv"
 	"testing"
 )
 
@@ -29,7 +30,8 @@ func TestLedgerPageQuery(t *testing.T) {
 		}
 
 		lastLedger := ledgers[len(ledgers)-1].(Pageable)
-		q.Cursor = lastLedger.PagingToken().(int64)
+		cursor, _ := strconv.ParseInt(lastLedger.PagingToken(), 10, 64)
+		q.Cursor = cursor
 
 		ledgers, err = Results(q)
 

@@ -16,7 +16,7 @@ type Query interface {
 }
 
 type Pageable interface {
-	PagingToken() interface{}
+	PagingToken() string
 }
 
 type Record interface{}

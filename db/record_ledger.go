@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -16,10 +17,10 @@ type LedgerRecord struct {
 	UpdatedAt          time.Time
 }
 
-func (lr LedgerRecord) TableName() string {
+func (r LedgerRecord) TableName() string {
 	return "history_ledgers"
 }
 
-func (lr LedgerRecord) PagingToken() interface{} {
-	return lr.Id
+func (r LedgerRecord) PagingToken() string {
+	return fmt.Sprintf("%d", r.Id)
 }

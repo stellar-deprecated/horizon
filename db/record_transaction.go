@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -23,6 +24,6 @@ func (r TransactionRecord) TableName() string {
 	return "history_transactions"
 }
 
-func (r TransactionRecord) PagingToken() interface{} {
-	return r.Id
+func (r TransactionRecord) PagingToken() string {
+	return fmt.Sprintf("%d", r.Id)
 }
