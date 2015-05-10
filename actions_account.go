@@ -26,9 +26,9 @@ func NewAccountResource(in db.CoreAccountRecord) AccountResource {
 	return AccountResource{
 		Links: halgo.Links{}.
 			Self("/accounts/"+in.Accountid).
-			Link("transactions", "/accounts/"+in.Accountid+"/transactions{?after}{?limit}{?order}").
-			Link("operations", "/accounts/"+in.Accountid+"/operations{?after}{?limit}{?order}").
-			Link("effects", "/accounts/"+in.Accountid+"/effects{?after}{?limit}{?order}"),
+			Link("transactions", "/accounts/"+in.Accountid+"/transactions{?cursor}{?limit}{?order}").
+			Link("operations", "/accounts/"+in.Accountid+"/operations{?cursor}{?limit}{?order}").
+			Link("effects", "/accounts/"+in.Accountid+"/effects{?cursor}{?limit}{?order}"),
 		Id:       in.Accountid,
 		Address:  in.Accountid,
 		Sequence: in.Seqnum,
