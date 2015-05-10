@@ -5,8 +5,7 @@ import (
 )
 
 type LedgerRecord struct {
-	ID                 int32
-	Order              int64
+	Id                 int64
 	Sequence           int32
 	LedgerHash         string
 	PreviousLedgerHash string
@@ -22,5 +21,5 @@ func (lr LedgerRecord) TableName() string {
 }
 
 func (lr LedgerRecord) PagingToken() interface{} {
-	return lr.Order
+	return lr.Id
 }

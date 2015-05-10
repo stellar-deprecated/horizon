@@ -7,9 +7,9 @@ import (
 
 type LedgerPageQuery struct {
 	GormQuery
-	After int64
-	Order string
-	Limit int32
+	Cursor int64
+	Order  string
+	Limit  int32
 }
 
 func (l LedgerPageQuery) Get() (results []interface{}, err error) {
@@ -18,9 +18,9 @@ func (l LedgerPageQuery) Get() (results []interface{}, err error) {
 
 	switch l.Order {
 	case "asc":
-		baseScope = l.GormQuery.DB.Where("\"order\" > ?", l.After).Order("\"order\" asc")
+		baseScope = l.GormQuery.DB.Where("id > ?", l.Cursor).Order("id asc")
 	case "desc":
-		baseScope = l.GormQuery.DB.Where("\"order\" < ?", l.After).Order("\"order\" desc")
+		baseScope = l.GormQuery.DB.Where("id < ?", l.Cursor).Order("id desc")
 	default:
 		err = errors.New("Invalid sort: " + l.Order)
 		return

@@ -20,28 +20,28 @@ func TestLedgerPageQuery(t *testing.T) {
 		So(len(ledgers), ShouldEqual, 3)
 
 		// ensure each record is after the previous
-		current := q.After
+		current := q.Cursor
 
 		for _, ledger := range ledgers {
 			ledger := ledger.(LedgerRecord)
-			So(ledger.Order, ShouldBeGreaterThan, current)
-			current = ledger.Order
+			So(ledger.Id, ShouldBeGreaterThan, current)
+			current = ledger.Id
 		}
 
 		lastLedger := ledgers[len(ledgers)-1].(Pageable)
-		q.After = lastLedger.PagingToken().(int64)
+		q.Cursor = lastLedger.PagingToken().(int64)
 
 		ledgers, err = Results(q)
 
 		So(err, ShouldBeNil)
 		So(len(ledgers), ShouldEqual, 1)
 
-		current = q.After
+		current = q.Cursor
 
 		for _, ledger := range ledgers {
 			ledger := ledger.(LedgerRecord)
-			So(ledger.Order, ShouldBeGreaterThan, current)
-			current = ledger.Order
+			So(ledger.Id, ShouldBeGreaterThan, current)
+			current = ledger.Id
 		}
 
 	})
