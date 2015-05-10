@@ -12,6 +12,7 @@ func TestLedgerActions(t *testing.T) {
 	Convey("Ledger Actions:", t, func() {
 		test.LoadScenario("base")
 		app := NewTestApp()
+		defer app.Cancel()
 		rh := NewRequestHelper(app)
 
 		Convey("GET /ledgers/1", func() {

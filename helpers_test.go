@@ -1,15 +1,13 @@
 package horizon
 
 import (
+	"github.com/PuerkitoBio/throttled"
 	"github.com/stellar/go-horizon/test"
 	"log"
 )
 
 func NewTestApp() *App {
-	app, err := NewApp(Config{
-		DatabaseUrl:            test.DatabaseUrl(),
-		StellarCoreDatabaseUrl: test.StellarCoreDatabaseUrl(),
-	})
+	app, err := NewApp(NewTestConfig())
 
 	if err != nil {
 		log.Panic(err)
@@ -18,6 +16,14 @@ func NewTestApp() *App {
 	app.historyDb.LogMode(true)
 
 	return app
+}
+
+func NewTestConfig() Config {
+	return Config{
+		DatabaseUrl:            test.DatabaseUrl(),
+		StellarCoreDatabaseUrl: test.StellarCoreDatabaseUrl(),
+		RateLimit:              throttled.PerHour(10),
+	}
 }
 
 func NewRequestHelper(app *App) test.RequestHelper {

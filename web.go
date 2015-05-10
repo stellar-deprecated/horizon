@@ -1,43 +1,48 @@
 package horizon
 
 import (
+	"github.com/PuerkitoBio/throttled"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
+	"github.com/sebest/xff"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
 )
 
 type Web struct {
-	router *web.Mux
+	router      *web.Mux
+	rateLimiter *throttled.Throttler
 
 	requestTimer metrics.Timer
 	failureMeter metrics.Meter
 	successMeter metrics.Meter
 }
 
-func NewWeb(app *App) (*Web, error) {
+func NewWeb(app *App) {
 
 	api := web.New()
+
 	result := Web{
 		router:       api,
 		requestTimer: metrics.NewTimer(),
 		failureMeter: metrics.NewMeter(),
 		successMeter: metrics.NewMeter(),
 	}
+	app.web = &result
 
 	app.metrics.Register("requests.total", result.requestTimer)
 	app.metrics.Register("requests.succeeded", result.successMeter)
 	app.metrics.Register("requests.failed", result.failureMeter)
 
+	installRateLimiter(&result, app)
 	installMiddleware(api, app)
 	installActions(api)
-
-	return &result, nil
 }
 
 func installMiddleware(api *web.Mux, app *App) {
 	api.Use(middleware.EnvInit)
 	api.Use(middleware.RequestID)
+	api.Use(xff.XFF)
 	api.Use(app.Middleware)
 	api.Use(middleware.Logger)
 	api.Use(RecoverMiddleware)
@@ -48,6 +53,8 @@ func installMiddleware(api *web.Mux, app *App) {
 		AllowedOrigins: []string{"*"},
 	})
 	api.Use(c.Handler)
+
+	api.Use(app.web.RateLimitMiddleware)
 }
 
 func installActions(api *web.Mux) {

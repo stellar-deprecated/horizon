@@ -30,7 +30,7 @@ func TestMain(t *testing.T) {
 
 		Convey("RateLimitExceeded", func() {
 			w := render(RateLimitExceeded)
-			So(w.Code, ShouldEqual, 403)
+			So(w.Code, ShouldEqual, 429)
 			t.Log(w.Body.String())
 		})
 	})

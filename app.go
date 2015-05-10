@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"github.com/jinzhu/gorm"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
@@ -20,6 +21,7 @@ type App struct {
 	coreDb    gorm.DB
 	ctx       context.Context
 	cancel    func()
+	redis     *redis.Pool
 }
 
 func NewApp(config Config) (*App, error) {
@@ -32,7 +34,7 @@ func NewApp(config Config) (*App, error) {
 		cancel:  cancel,
 	}
 
-	web, err := NewWeb(&result)
+	err := NewRedis(&result)
 
 	if err != nil {
 		return nil, err
@@ -52,9 +54,11 @@ func NewApp(config Config) (*App, error) {
 
 	result.metrics.Register("db.active_query_count", db.QueryGauge())
 
-	result.web = web
 	result.historyDb = historyDb
 	result.coreDb = coreDb
+
+	NewWeb(&result)
+
 	return &result, nil
 }
 
@@ -92,6 +96,8 @@ func (a *App) Serve() {
 }
 
 func (a *App) Cancel() {
+	a.historyDb.Close()
+	a.coreDb.Close()
 	a.cancel()
 }
 
