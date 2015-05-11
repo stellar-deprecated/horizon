@@ -4,6 +4,7 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
+	"strconv"
 	"testing"
 )
 
@@ -12,36 +13,39 @@ func TestLedgerPageQuery(t *testing.T) {
 	Convey("LedgerPageQuery", t, func() {
 		test.LoadScenario("base")
 		db := OpenTestDatabase()
+		pq, err := NewPageQuery("0", "asc", 3)
+		So(err, ShouldBeNil)
 
-		q := LedgerPageQuery{GormQuery{&db}, 0, "asc", 3}
+		q := LedgerPageQuery{GormQuery{&db}, pq}
 		ledgers, err := Results(q)
 
 		So(err, ShouldBeNil)
 		So(len(ledgers), ShouldEqual, 3)
 
 		// ensure each record is after the previous
-		current := q.After
+		current := q.Cursor
 
 		for _, ledger := range ledgers {
 			ledger := ledger.(LedgerRecord)
-			So(ledger.Order, ShouldBeGreaterThan, current)
-			current = ledger.Order
+			So(ledger.Id, ShouldBeGreaterThan, current)
+			current = ledger.Id
 		}
 
 		lastLedger := ledgers[len(ledgers)-1].(Pageable)
-		q.After = lastLedger.PagingToken().(int64)
+		cursor, _ := strconv.ParseInt(lastLedger.PagingToken(), 10, 64)
+		q.Cursor = cursor
 
 		ledgers, err = Results(q)
 
 		So(err, ShouldBeNil)
 		So(len(ledgers), ShouldEqual, 1)
 
-		current = q.After
+		current = q.Cursor
 
 		for _, ledger := range ledgers {
 			ledger := ledger.(LedgerRecord)
-			So(ledger.Order, ShouldBeGreaterThan, current)
-			current = ledger.Order
+			So(ledger.Id, ShouldBeGreaterThan, current)
+			current = ledger.Id
 		}
 
 	})

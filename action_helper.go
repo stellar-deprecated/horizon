@@ -1,13 +1,10 @@
 package horizon
 
 import (
+	"github.com/stellar/go-horizon/db"
 	"github.com/zenazn/goji/web"
 	"net/http"
 	"strconv"
-)
-
-const (
-	DefaultPageSize = 10
 )
 
 // ActionHelper wraps the goji context and provides helper functions
@@ -101,22 +98,20 @@ func (a *ActionHelper) GetInt32(name string) int32 {
 	return int32(asI64)
 }
 
-func (a *ActionHelper) GetPagingParams() (after string, order string, limit int32) {
+func (a *ActionHelper) GetPagingParams() (cursor string, order string, limit int32) {
 	if a.err != nil {
 		return
 	}
 
-	after = a.GetString("after")
+	cursor = a.GetString("cursor")
 	order = a.GetString("order")
 	limit = a.GetInt32("limit")
 
-	if limit == 0 {
-		limit = DefaultPageSize
-	}
-
-	if order == "" {
-		order = "asc"
-	}
-
 	return
+}
+
+func (a *ActionHelper) GetPageQuery() db.PageQuery {
+	r, err := db.NewPageQuery(a.GetPagingParams())
+	a.err = err
+	return r
 }

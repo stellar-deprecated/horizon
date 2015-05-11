@@ -12,7 +12,7 @@ import (
 func TestActionHelper(t *testing.T) {
 	Convey("Action Helper", t, func() {
 		c := web.C{}
-		r, _ := http.NewRequest("GET", "/?limit=2&after=hello", nil)
+		r, _ := http.NewRequest("GET", "/?limit=2&cursor=hello", nil)
 
 		c.URLParams = map[string]string{
 			"blank": "",
@@ -87,14 +87,14 @@ func TestActionHelper(t *testing.T) {
 			c := web.C{
 				Env: make(map[interface{}]interface{}),
 			}
-			r, _ := http.NewRequest("GET", "/?limit=2&after=hello", nil)
+			r, _ := http.NewRequest("GET", "/?limit=2&cursor=hello", nil)
 
 			ah := &ActionHelper{c: c, r: r}
 
-			after, order, limit := ah.GetPagingParams()
-			So(after, ShouldEqual, "hello")
+			cursor, order, limit := ah.GetPagingParams()
+			So(cursor, ShouldEqual, "hello")
 			So(limit, ShouldEqual, 2)
-			So(order, ShouldEqual, "asc")
+			So(order, ShouldEqual, "")
 		})
 
 	})

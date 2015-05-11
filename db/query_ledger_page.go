@@ -1,45 +1,39 @@
 package db
 
 import (
-	"errors"
 	"github.com/jinzhu/gorm"
 )
 
 type LedgerPageQuery struct {
 	GormQuery
-	After int64
-	Order string
-	Limit int32
+	PageQuery
 }
 
-func (l LedgerPageQuery) Get() (results []interface{}, err error) {
-	var ledgers []LedgerRecord
+func (q LedgerPageQuery) Get() (results []interface{}, err error) {
+	var records []LedgerRecord
 	var baseScope *gorm.DB
 
-	switch l.Order {
+	switch q.Order {
 	case "asc":
-		baseScope = l.GormQuery.DB.Where("\"order\" > ?", l.After).Order("\"order\" asc")
+		baseScope = q.GormQuery.DB.Where("id > ?", q.Cursor).Order("id asc")
 	case "desc":
-		baseScope = l.GormQuery.DB.Where("\"order\" < ?", l.After).Order("\"order\" desc")
-	default:
-		err = errors.New("Invalid sort: " + l.Order)
-		return
+		baseScope = q.GormQuery.DB.Where("id < ?", q.Cursor).Order("id desc")
 	}
 
-	err = baseScope.Limit(l.Limit).Find(&ledgers).Error
+	err = baseScope.Limit(q.Limit).Find(&records).Error
 
 	if err != nil {
 		return
 	}
 
-	results = make([]interface{}, len(ledgers))
-	for i := range ledgers {
-		results[i] = ledgers[i]
+	results = make([]interface{}, len(records))
+	for i := range records {
+		results[i] = records[i]
 	}
 
 	return
 }
 
-func (l LedgerPageQuery) IsComplete(alreadyDelivered int) bool {
-	return alreadyDelivered >= int(l.Limit)
+func (q LedgerPageQuery) IsComplete(alreadyDelivered int) bool {
+	return alreadyDelivered >= int(q.Limit)
 }

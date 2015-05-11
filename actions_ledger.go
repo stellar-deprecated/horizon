@@ -8,7 +8,6 @@ import (
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
 	"golang.org/x/net/context"
-	"math"
 	"net/http"
 	"time"
 )
@@ -35,9 +34,9 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 	return LedgerResource{
 		Links: halgo.Links{}.
 			Self(self).
-			Link("transactions", self+"/transactions{?after}{?limit}{?order}").
-			Link("operations", self+"/operations{?after}{?limit}{?order}").
-			Link("effects", self+"/effects{?after}{?limit}{?order}"),
+			Link("transactions", self+"/transactions{?cursor}{?limit}{?order}").
+			Link("operations", self+"/operations{?cursor}{?limit}{?order}").
+			Link("effects", self+"/effects{?cursor}{?limit}{?order}"),
 		Id:       in.LedgerHash,
 		Hash:     in.LedgerHash,
 		PrevHash: in.PreviousLedgerHash,
@@ -48,23 +47,15 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
-	_, order, limit := ah.GetPagingParams()
-	after := ah.GetInt64("after")
+
+	query := db.LedgerPageQuery{
+		app.HistoryQuery(),
+		ah.GetPageQuery(),
+	}
 
 	if ah.Err() != nil {
 		http.Error(w, ah.Err().Error(), http.StatusBadRequest)
 		return
-	}
-
-	if after == 0 && order == "desc" {
-		after = math.MaxInt64
-	}
-
-	query := db.LedgerPageQuery{
-		app.HistoryQuery(),
-		after,
-		order,
-		limit,
 	}
 
 	render.Collection(w, r, query, ledgerRecordToResource)

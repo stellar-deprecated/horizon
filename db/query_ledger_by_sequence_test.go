@@ -12,6 +12,7 @@ func TestLedgerBySequenceQuery(t *testing.T) {
 	Convey("LedgerBySequenceQuery", t, func() {
 		test.LoadScenario("base")
 		db := OpenTestDatabase()
+		defer db.Close()
 
 		Convey("Existing record behavior", func() {
 			sequence := int32(2)
