@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -30,6 +31,14 @@ func TestMain(t *testing.T) {
 			output, err := First(query)
 			So(err, ShouldBeNil)
 			So(output, ShouldBeNil)
+		})
+
+		Convey("Properly forwards non-RecordNotFound errors", func() {
+			query := &BrokenQuery{errors.New("Some error")}
+			_, err := First(query)
+
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldEqual, "Some error")
 		})
 	})
 }

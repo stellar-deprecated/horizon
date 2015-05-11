@@ -50,15 +50,16 @@ func Results(query Query) ([]interface{}, error) {
 func First(query Query) (interface{}, error) {
 	res, err := query.Get()
 
-	if err == gorm.RecordNotFound || len(res) == 0 {
+	switch {
+	case err == gorm.RecordNotFound:
 		return nil, nil
-	}
-
-	if err != nil {
+	case err != nil:
 		return nil, err
+	case len(res) == 0:
+		return nil, nil
+	default:
+		return res[0], nil
 	}
-
-	return res[0], nil
 }
 
 func QueryGauge() metrics.Gauge {

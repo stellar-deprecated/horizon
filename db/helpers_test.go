@@ -65,3 +65,35 @@ func (q mockQuery) Get() ([]interface{}, error) {
 func (q mockQuery) IsComplete(alreadyDelivered int) bool {
 	return alreadyDelivered >= q.resultCount
 }
+
+type BrokenQuery struct {
+	Err error
+}
+
+func (q BrokenQuery) Get() ([]interface{}, error) {
+	return nil, q.Err
+}
+
+func (q BrokenQuery) IsComplete(alreadyDelivered int) bool {
+	return alreadyDelivered > 0
+}
+
+func MustFirst(q Query) interface{} {
+	result, err := First(q)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return result
+}
+
+func MustResults(q Query) []interface{} {
+	result, err := Results(q)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return result
+}
