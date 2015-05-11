@@ -44,6 +44,8 @@ func transactionIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	q := db.TransactionPageQuery{
 		app.HistoryQuery(),
 		ah.GetPageQuery(),
+		ah.GetString("account_id"),
+		0,
 	}
 
 	if ah.Err() != nil {

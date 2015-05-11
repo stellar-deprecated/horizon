@@ -1,34 +1,46 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
+	sq "github.com/lann/squirrel"
 )
 
 type TransactionPageQuery struct {
 	GormQuery
 	PageQuery
+	AccountAddress string
+	LedgerSequence int32
 }
 
 func (q TransactionPageQuery) Get() (results []interface{}, err error) {
-	var records []TransactionRecord
-	var baseScope *gorm.DB
+	sql := TransactionRecordSelect.
+		Limit(uint64(q.Limit)).
+		PlaceholderFormat(sq.Dollar).
+		RunWith(q.DB.DB())
 
 	switch q.Order {
 	case "asc":
-		baseScope = q.GormQuery.DB.Where("id > ?", q.Cursor).Order("id asc")
+		sql = sql.Where("ht.id > ?", q.Cursor).OrderBy("ht.id asc")
 	case "desc":
-		baseScope = q.GormQuery.DB.Where("id < ?", q.Cursor).Order("id desc")
+		sql = sql.Where("ht.id < ?", q.Cursor).OrderBy("ht.id desc")
 	}
 
-	err = baseScope.Limit(q.Limit).Find(&records).Error
-
+	rows, err := sql.Query()
 	if err != nil {
 		return
 	}
 
-	results = make([]interface{}, len(records))
-	for i := range records {
-		results[i] = records[i]
+	defer rows.Close()
+
+	results = []interface{}{}
+	for rows.Next() {
+		record := &TransactionRecord{}
+		err = record.ScanFrom(rows)
+
+		if err != nil {
+			return
+		}
+
+		results = append(results, *record)
 	}
 
 	return

@@ -12,6 +12,7 @@ func TestTransactionByHashQuery(t *testing.T) {
 	Convey("TransactionByHashQuery", t, func() {
 		test.LoadScenario("base")
 		db := OpenTestDatabase()
+		defer db.Close()
 
 		Convey("Existing record behavior", func() {
 			hash := "b313ee4b54d033eafd6bdc9c998b6ee8dbfe814da491b9182de8b63508e31369"
