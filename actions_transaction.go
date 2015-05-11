@@ -38,7 +38,20 @@ func NewTransactionResource(in interface{}) TransactionResource {
 }
 
 func transactionIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	notImplementedAction(c, w, r)
+	ah := &ActionHelper{c: c, r: r}
+	app := ah.App()
+
+	q := db.TransactionPageQuery{
+		app.HistoryQuery(),
+		ah.GetPageQuery(),
+	}
+
+	if ah.Err() != nil {
+		problem.Render(context.TODO(), w, problem.ServerError)
+		return
+	}
+
+	render.Collection(w, r, q, transactionRecordToResource)
 }
 
 func transactionShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -67,12 +80,12 @@ func transactionRecordToResource(record db.Record) (render.Resource, error) {
 	resource := TransactionResource{
 		Links: halgo.Links{}.
 			Self(self).
-			Link("account", fmt.Sprintf("/accounts/%s", tx.Account)).
-			Link("ledger", fmt.Sprintf("/ledgers/%d", tx.LedgerSequence)).
-			Link("operations", fmt.Sprintf("%s/operations/%s", self, po)).
-			Link("effects", fmt.Sprintf("%s/effects/%s", self, po)).
-			Link("precedes", fmt.Sprintf("/transactions?cursor=%d&order=asc", tx.PagingToken())).
-			Link("succeeds", fmt.Sprintf("/transactions?cursor=%d&order=desc", tx.PagingToken())),
+			Link("account", "/accounts/%s", tx.Account).
+			Link("ledger", "/ledgers/%d", tx.LedgerSequence).
+			Link("operations", "%s/operations/%s", self, po).
+			Link("effects", "%s/effects/%s", self, po).
+			Link("precedes", "/transactions?cursor=%d&order=asc", tx.PagingToken()).
+			Link("succeeds", "/transactions?cursor=%d&order=desc", tx.PagingToken()),
 		Id:               tx.TransactionHash,
 		PagingToken:      tx.PagingToken(),
 		Hash:             tx.TransactionHash,

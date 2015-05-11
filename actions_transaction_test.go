@@ -30,5 +30,21 @@ func TestTransactionActions(t *testing.T) {
 			So(w.Code, ShouldEqual, 404)
 		})
 
+		Convey("GET /transactions", func() {
+
+			w := rh.Get("/transactions", test.RequestHelperNoop)
+
+			var result map[string]interface{}
+			err := json.Unmarshal(w.Body.Bytes(), &result)
+			So(err, ShouldBeNil)
+			So(w.Code, ShouldEqual, 200)
+
+			embedded := result["_embedded"].(map[string]interface{})
+			records := embedded["records"].([]interface{})
+
+			So(len(records), ShouldEqual, 4)
+
+		})
+
 	})
 }
