@@ -45,7 +45,7 @@ func transactionIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 		app.HistoryQuery(),
 		ah.GetPageQuery(),
 		ah.GetString("account_id"),
-		0,
+		ah.GetInt32("ledger_id"),
 	}
 
 	if ah.Err() != nil {

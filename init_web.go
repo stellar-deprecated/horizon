@@ -61,14 +61,14 @@ func initWebActions(app *App) {
 	// ledger actions
 	app.web.router.Get("/ledgers", ledgerIndexAction)
 	app.web.router.Get("/ledgers/:id", ledgerShowAction)
-	app.web.router.Get("/ledgers/:ledger_id/transactions", notImplementedAction)
+	app.web.router.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
 	app.web.router.Get("/ledgers/:ledger_id/operations", notImplementedAction)
 	app.web.router.Get("/ledgers/:ledger_id/effects", notImplementedAction)
 
 	// account actions
 	app.web.router.Get("/accounts", notImplementedAction)
 	app.web.router.Get("/accounts/:id", accountShowAction)
-	app.web.router.Get("/accounts/:account_id/transactions", notImplementedAction)
+	app.web.router.Get("/accounts/:account_id/transactions", transactionIndexAction)
 	app.web.router.Get("/accounts/:account_id/operations", notImplementedAction)
 	app.web.router.Get("/accounts/:account_id/effects", notImplementedAction)
 
