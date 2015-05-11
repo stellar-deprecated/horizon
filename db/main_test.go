@@ -4,6 +4,7 @@ import (
 	"errors"
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"log"
 	"testing"
 )
 
@@ -41,4 +42,22 @@ func TestMain(t *testing.T) {
 			So(err.Error(), ShouldEqual, "Some error")
 		})
 	})
+}
+
+func ExampleFirst() {
+	db := OpenStellarCoreTestDatabase()
+	q := CoreAccountByAddressQuery{
+		GormQuery{&db},
+		"gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
+	}
+
+	record, err := First(q)
+
+	if err != nil {
+		panic(err)
+	}
+
+	account := record.(CoreAccountRecord)
+	log.Println(account.Accountid)
+
 }
