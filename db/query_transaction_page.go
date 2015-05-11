@@ -24,6 +24,16 @@ func (q TransactionPageQuery) Get() (results []interface{}, err error) {
 		sql = sql.Where("ht.id < ?", q.Cursor).OrderBy("ht.id desc")
 	}
 
+	if q.AccountAddress != "" {
+		sql = sql.
+			Join("history_transaction_participants htp USING(transaction_hash)").
+			Where("htp.account = ?", q.AccountAddress)
+	}
+
+	if q.LedgerSequence != 0 {
+		sql = sql.Where("ht.ledger_sequence = ?", q.LedgerSequence)
+	}
+
 	rows, err := sql.Query()
 	if err != nil {
 		return

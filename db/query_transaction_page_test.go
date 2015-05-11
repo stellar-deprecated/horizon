@@ -77,17 +77,29 @@ func TestTransactionPageQuery(t *testing.T) {
 			So(record.(TransactionRecord).Id, ShouldEqual, 12884914176)
 		})
 
-		// Convey("restricts to address properly", func() {
-		// 	address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
-		// 	q := makeQuery("", "asc", 0)
-		// 	q.AccountAddress = address
-		// 	records, _ := Results(q)
+		Convey("restricts to address properly", func() {
+			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
+			q := makeQuery("", "asc", 0)
+			q.AccountAddress = address
+			records := MustResults(q)
 
-		// 	So(len(records), ShouldEqual, 3)
+			So(len(records), ShouldEqual, 3)
 
-		// 	for _, r := range records {
-		// 		So(r.(TransactionRecord).Account, ShouldEqual, address)
-		// 	}
-		// })
+			for _, r := range records {
+				So(r.(TransactionRecord).Account, ShouldEqual, address)
+			}
+		})
+
+		Convey("restricts to ledger properly", func() {
+			q := makeQuery("", "asc", 0)
+			q.LedgerSequence = 4
+			records := MustResults(q)
+
+			So(len(records), ShouldEqual, 1)
+
+			for _, r := range records {
+				So(r.(TransactionRecord).LedgerSequence, ShouldEqual, q.LedgerSequence)
+			}
+		})
 	})
 }
