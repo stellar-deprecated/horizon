@@ -94,7 +94,7 @@ func TestActionHelper(t *testing.T) {
 			cursor, order, limit := ah.GetPagingParams()
 			So(cursor, ShouldEqual, "hello")
 			So(limit, ShouldEqual, 2)
-			So(order, ShouldEqual, "asc")
+			So(order, ShouldEqual, "")
 		})
 
 	})

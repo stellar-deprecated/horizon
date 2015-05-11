@@ -13,8 +13,10 @@ func TestLedgerPageQuery(t *testing.T) {
 	Convey("LedgerPageQuery", t, func() {
 		test.LoadScenario("base")
 		db := OpenTestDatabase()
+		pq, err := NewPageQuery("0", "asc", 3)
+		So(err, ShouldBeNil)
 
-		q := LedgerPageQuery{GormQuery{&db}, 0, "asc", 3}
+		q := LedgerPageQuery{GormQuery{&db}, pq}
 		ledgers, err := Results(q)
 
 		So(err, ShouldBeNil)

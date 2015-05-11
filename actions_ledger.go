@@ -8,7 +8,6 @@ import (
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
 	"golang.org/x/net/context"
-	"math"
 	"net/http"
 	"time"
 )
@@ -48,23 +47,15 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
-	_, order, limit := ah.GetPagingParams()
-	cursor := ah.GetInt64("cursor")
+
+	query := db.LedgerPageQuery{
+		app.HistoryQuery(),
+		ah.GetPageQuery(),
+	}
 
 	if ah.Err() != nil {
 		http.Error(w, ah.Err().Error(), http.StatusBadRequest)
 		return
-	}
-
-	if cursor == 0 && order == "desc" {
-		cursor = math.MaxInt64
-	}
-
-	query := db.LedgerPageQuery{
-		app.HistoryQuery(),
-		cursor,
-		order,
-		limit,
 	}
 
 	render.Collection(w, r, query, ledgerRecordToResource)
