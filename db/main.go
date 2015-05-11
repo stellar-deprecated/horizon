@@ -1,6 +1,8 @@
 package db
 
 import (
+	"database/sql"
+	"errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"github.com/rcrowley/go-metrics"
@@ -8,6 +10,10 @@ import (
 
 type GormQuery struct {
 	DB *gorm.DB
+}
+
+type SqlQuery struct {
+	DB *sql.DB
 }
 
 type Query interface {
@@ -62,6 +68,49 @@ func First(query Query) (interface{}, error) {
 	}
 }
 
+func MustFirst(q Query) interface{} {
+	result, err := First(q)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return result
+}
+
+func MustResults(q Query) []interface{} {
+	result, err := Results(q)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return result
+}
+
 func QueryGauge() metrics.Gauge {
 	return globalStreamManager.queryGauge
+}
+
+// helper method suited to confirm query validity.  checkOptions ensures
+// that zero or one of the provided bools ares true, but will return an error
+// if more than one clause is true.
+//
+
+func checkOptions(clauses ...bool) error {
+	hasOneSet := false
+
+	for _, isSet := range clauses {
+		if !isSet {
+			continue
+		}
+
+		if hasOneSet {
+			return errors.New("Invalid options: multiple are set")
+		}
+
+		hasOneSet = true
+	}
+
+	return nil
 }

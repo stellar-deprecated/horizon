@@ -1,9 +1,11 @@
 package db
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/stellar/go-horizon/test"
 	"log"
+	"math"
 )
 
 func OpenTestDatabase() gorm.DB {
@@ -28,8 +30,47 @@ func OpenStellarCoreTestDatabase() gorm.DB {
 	return result
 }
 
+func ShouldBeOrderedAscending(actual interface{}, options ...interface{}) string {
+	records := actual.([]interface{})
+	t := options[0].(func(interface{}) int64)
+
+	prev := int64(0)
+
+	for i, r := range records {
+		cur := t(r)
+
+		if cur <= prev {
+			return fmt.Sprintf("not ordered ascending: idx:%s has order %d, which is less than the previous:%d", i, cur, prev)
+		}
+
+		prev = cur
+	}
+
+	return ""
+}
+
+func ShouldBeOrderedDescending(actual interface{}, options ...interface{}) string {
+	records := actual.([]interface{})
+	t := options[0].(func(interface{}) int64)
+
+	prev := int64(math.MaxInt64)
+
+	for i, r := range records {
+		cur := t(r)
+
+		if cur >= prev {
+			return fmt.Sprintf("not ordered decending: idx:%s has order %d, which is more than the previous:%d", i, cur, prev)
+		}
+
+		prev = cur
+	}
+
+	return ""
+}
+
+// Mock Dump Query
+
 type mockDumpQuery struct{}
-type mockStreamedQuery struct{}
 
 func (q mockDumpQuery) Get() ([]interface{}, error) {
 	return []interface{}{
@@ -43,6 +84,8 @@ func (q mockDumpQuery) Get() ([]interface{}, error) {
 func (q mockDumpQuery) IsComplete(alreadyDelivered int) bool {
 	return alreadyDelivered >= 4
 }
+
+// Mock Query
 
 type mockQuery struct {
 	resultCount int
@@ -66,6 +109,8 @@ func (q mockQuery) IsComplete(alreadyDelivered int) bool {
 	return alreadyDelivered >= q.resultCount
 }
 
+// Broken Query
+
 type BrokenQuery struct {
 	Err error
 }
@@ -76,24 +121,4 @@ func (q BrokenQuery) Get() ([]interface{}, error) {
 
 func (q BrokenQuery) IsComplete(alreadyDelivered int) bool {
 	return alreadyDelivered > 0
-}
-
-func MustFirst(q Query) interface{} {
-	result, err := First(q)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return result
-}
-
-func MustResults(q Query) []interface{} {
-	result, err := Results(q)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return result
 }
