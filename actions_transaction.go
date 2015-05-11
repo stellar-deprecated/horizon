@@ -67,7 +67,7 @@ func transactionShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	q := db.TransactionByHashQuery{
-		app.HistoryQuery(),
+		db.SqlQuery{app.HistoryQuery().DB.DB()},
 		hash,
 	}
 

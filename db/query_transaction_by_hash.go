@@ -1,28 +1,41 @@
 package db
 
+import (
+	sq "github.com/lann/squirrel"
+)
+
 type TransactionByHashQuery struct {
-	GormQuery
+	SqlQuery
 	Hash string
 }
 
-func (q TransactionByHashQuery) Get() ([]interface{}, error) {
-	var txs []TransactionRecord
-
-	err := q.GormQuery.DB.
+func (q TransactionByHashQuery) Get() (results []interface{}, err error) {
+	rows, err := TransactionRecordSelect.
+		Limit(1).
 		Where("transaction_hash = ?", q.Hash).
-		Find(&txs).
-		Error
+		PlaceholderFormat(sq.Dollar).
+		RunWith(q.DB).
+		Query()
 
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	results := make([]interface{}, len(txs))
-	for i := range txs {
-		results[i] = txs[i]
+	defer rows.Close()
+
+	results = []interface{}{}
+	for rows.Next() {
+		record := &TransactionRecord{}
+		err = record.ScanFrom(rows)
+
+		if err != nil {
+			return
+		}
+
+		results = append(results, *record)
 	}
 
-	return results, nil
+	return
 }
 
 func (q TransactionByHashQuery) IsComplete(alreadyDelivered int) bool {
