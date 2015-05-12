@@ -31,19 +31,37 @@ func TestTransactionActions(t *testing.T) {
 		})
 
 		Convey("GET /transactions", func() {
-
 			w := rh.Get("/transactions", test.RequestHelperNoop)
-
-			var result map[string]interface{}
-			err := json.Unmarshal(w.Body.Bytes(), &result)
-			So(err, ShouldBeNil)
 			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 4)
+		})
 
-			embedded := result["_embedded"].(map[string]interface{})
-			records := embedded["records"].([]interface{})
+		Convey("GET /ledgers/:ledger_id/transactions", func() {
+			w := rh.Get("/ledgers/2/transactions", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 0)
 
-			So(len(records), ShouldEqual, 4)
+			w = rh.Get("/ledgers/3/transactions", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 3)
 
+			w = rh.Get("/ledgers/4/transactions", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 1)
+		})
+
+		Convey("GET /accounts/:account_od/transactions", func() {
+			w := rh.Get("/accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC/transactions", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 3)
+
+			w = rh.Get("/accounts/gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA/transactions", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 1)
+
+			w = rh.Get("/accounts/gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ/transactions", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 2)
 		})
 
 	})
