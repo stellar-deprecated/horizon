@@ -46,8 +46,10 @@ func TestMain(t *testing.T) {
 
 func ExampleFirst() {
 	db := OpenStellarCoreTestDatabase()
+	defer db.Close()
+
 	q := CoreAccountByAddressQuery{
-		GormQuery{&db},
+		SqlQuery{db.DB()},
 		"gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
 	}
 

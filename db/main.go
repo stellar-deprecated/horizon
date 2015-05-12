@@ -1,19 +1,15 @@
 package db
 
 import (
-	"database/sql"
 	"errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"github.com/rcrowley/go-metrics"
+	"reflect"
 )
 
 type GormQuery struct {
 	DB *gorm.DB
-}
-
-type SqlQuery struct {
-	DB *sql.DB
 }
 
 type Query interface {
@@ -95,8 +91,6 @@ func QueryGauge() metrics.Gauge {
 // helper method suited to confirm query validity.  checkOptions ensures
 // that zero or one of the provided bools ares true, but will return an error
 // if more than one clause is true.
-//
-
 func checkOptions(clauses ...bool) error {
 	hasOneSet := false
 
@@ -113,4 +107,17 @@ func checkOptions(clauses ...bool) error {
 	}
 
 	return nil
+}
+
+// Converts a typed slice to a slice of interface{}, suitable
+// for return through the Get() method of Query
+func makeResult(src interface{}) []interface{} {
+	srcValue := reflect.ValueOf(src)
+	srcLen := srcValue.Len()
+	result := make([]interface{}, srcLen)
+
+	for i := 0; i < srcLen; i++ {
+		result[i] = srcValue.Index(i).Interface()
+	}
+	return result
 }
