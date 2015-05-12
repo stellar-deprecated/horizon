@@ -70,25 +70,9 @@ func (q OperationPageQuery) Get() (results []interface{}, err error) {
 		//TODO
 	}
 
-	rows, err := sql.Query()
-	if err != nil {
-		return
-	}
-
-	defer rows.Close()
-
-	results = []interface{}{}
-	for rows.Next() {
-		record := &OperationRecord{}
-		err = record.ScanFrom(rows)
-
-		if err != nil {
-			return
-		}
-
-		results = append(results, *record)
-	}
-
+	var records []OperationRecord
+	err = q.SqlQuery.Select(sql, &records)
+	results = makeResult(records)
 	return
 }
 
