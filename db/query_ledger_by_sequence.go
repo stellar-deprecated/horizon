@@ -1,24 +1,16 @@
 package db
 
 type LedgerBySequenceQuery struct {
-	GormQuery
+	SqlQuery
 	Sequence int32
 }
 
-func (l LedgerBySequenceQuery) Get() ([]interface{}, error) {
-	var ledgers []LedgerRecord
-	err := l.GormQuery.DB.Where("sequence = ?", l.Sequence).Find(&ledgers).Error
+func (q LedgerBySequenceQuery) Get() ([]interface{}, error) {
+	sql := LedgerRecordSelect.Where("sequence = ?", q.Sequence).Limit(1)
 
-	if err != nil {
-		return nil, err
-	}
-
-	results := make([]interface{}, len(ledgers))
-	for i := range ledgers {
-		results[i] = ledgers[i]
-	}
-
-	return results, nil
+	var records []LedgerRecord
+	err := q.SqlQuery.Select(sql, &records)
+	return makeResult(records), err
 }
 
 func (l LedgerBySequenceQuery) IsComplete(alreadyDelivered int) bool {

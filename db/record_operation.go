@@ -1,13 +1,12 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/lann/squirrel"
+	sq "github.com/lann/squirrel"
 	"github.com/lib/pq/hstore"
 )
 
-var OperationRecordSelect squirrel.SelectBuilder = squirrel.
+var OperationRecordSelect sq.SelectBuilder = sq.
 	Select("hop.*").
 	From("history_operations hop")
 
@@ -21,14 +20,4 @@ type OperationRecord struct {
 
 func (r OperationRecord) PagingToken() string {
 	return fmt.Sprintf("%d", r.Id)
-}
-
-func (r *OperationRecord) ScanFrom(rows *sql.Rows) error {
-	return rows.Scan(
-		&r.Id,
-		&r.TransactionId,
-		&r.ApplicationOrder,
-		&r.Type,
-		&r.Details,
-	)
 }

@@ -17,7 +17,7 @@ func TestLedgerPageQuery(t *testing.T) {
 		pq, err := NewPageQuery("0", "asc", 3)
 		So(err, ShouldBeNil)
 
-		q := LedgerPageQuery{GormQuery{&db}, pq}
+		q := LedgerPageQuery{SqlQuery{db.DB()}, pq}
 		ledgers, err := Results(q)
 
 		So(err, ShouldBeNil)
