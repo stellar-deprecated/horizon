@@ -1,37 +1,24 @@
 package db
 
-import (
-	"github.com/jinzhu/gorm"
-)
-
 type LedgerPageQuery struct {
-	GormQuery
+	SqlQuery
 	PageQuery
 }
 
-func (q LedgerPageQuery) Get() (results []interface{}, err error) {
-	var records []LedgerRecord
-	var baseScope *gorm.DB
+func (q LedgerPageQuery) Get() ([]interface{}, error) {
+	sql := LedgerRecordSelect.
+		Limit(uint64(q.Limit))
 
 	switch q.Order {
 	case "asc":
-		baseScope = q.GormQuery.DB.Where("id > ?", q.Cursor).Order("id asc")
+		sql = sql.Where("hl.id > ?", q.Cursor).OrderBy("hl.id asc")
 	case "desc":
-		baseScope = q.GormQuery.DB.Where("id < ?", q.Cursor).Order("id desc")
+		sql = sql.Where("hl.id < ?", q.Cursor).OrderBy("hl.id desc")
 	}
 
-	err = baseScope.Limit(q.Limit).Find(&records).Error
-
-	if err != nil {
-		return
-	}
-
-	results = make([]interface{}, len(records))
-	for i := range records {
-		results[i] = records[i]
-	}
-
-	return
+	var records []LedgerRecord
+	err := q.SqlQuery.Select(sql, &records)
+	return makeResult(records), err
 }
 
 func (q LedgerPageQuery) IsComplete(alreadyDelivered int) bool {

@@ -4,7 +4,6 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"math"
 	"testing"
 )
 
@@ -20,7 +19,7 @@ func TestTransactionPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return TransactionPageQuery{
-				GormQuery: GormQuery{&db},
+				SqlQuery:  SqlQuery{db},
 				PageQuery: pq,
 			}
 		}
@@ -28,25 +27,19 @@ func TestTransactionPageQuery(t *testing.T) {
 		Convey("orders properly", func() {
 			// asc orders ascending by id
 			records := MustResults(makeQuery("", "asc", 0))
-			cur := int64(0)
 
-			for _, r := range records {
+			So(records, ShouldBeOrderedAscending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, TransactionRecord{})
-				id := r.(TransactionRecord).Id
-				So(id, ShouldBeGreaterThan, cur)
-				cur = id
-			}
+				return r.(TransactionRecord).Id
+			})
 
 			// desc orders descending by id
 			records = MustResults(makeQuery("", "desc", 0))
-			cur = math.MaxInt64
 
-			for _, r := range records {
+			So(records, ShouldBeOrderedDescending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, TransactionRecord{})
-				id := r.(TransactionRecord).Id
-				So(id, ShouldBeLessThan, cur)
-				cur = id
-			}
+				return r.(TransactionRecord).Id
+			})
 		})
 
 		Convey("limits properly", func() {

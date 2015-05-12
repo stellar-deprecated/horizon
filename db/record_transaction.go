@@ -1,38 +1,29 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/lann/squirrel"
+	sq "github.com/lann/squirrel"
 	"time"
 )
 
 // Provides a squirrel.SelectBuilder upon which you may build actual queries.
-var TransactionRecordSelect squirrel.SelectBuilder = squirrel.Select(
-	"ht.id",
-	"ht.transaction_hash",
-	"ht.ledger_sequence",
-	"ht.application_order",
-	"ht.account",
-	"ht.account_sequence",
-	"ht.max_fee",
-	"ht.fee_paid",
-	"ht.operation_count",
-).From("history_transactions ht")
+var TransactionRecordSelect sq.SelectBuilder = sq.
+	Select("ht.*").
+	From("history_transactions ht")
 
 type TransactionRecord struct {
-	Id               int64
-	TransactionHash  string
-	LedgerSequence   int32
-	ApplicationOrder int32
-	Account          string
-	AccountSequence  int64
-	MaxFee           int32
-	FeePaid          int32
-	OperationCount   int32
-	ClosedAt         time.Time
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	Id                  int64     `db:"id"`
+	TransactionHash     string    `db:"transaction_hash"`
+	LedgerSequence      int32     `db:"ledger_sequence"`
+	ApplicationOrder    int32     `db:"application_order"`
+	Account             string    `db:"account"`
+	AccountSequence     int64     `db:"account_sequence"`
+	MaxFee              int32     `db:"max_fee"`
+	FeePaid             int32     `db:"fee_paid"`
+	OperationCount      int32     `db:"operation_count"`
+	TransactionStatusId int32     `db:"transaction_status_id"`
+	CreatedAt           time.Time `db:"created_at"`
+	UpdatedAt           time.Time `db:"updated_at"`
 }
 
 func (r TransactionRecord) TableName() string {
@@ -41,18 +32,4 @@ func (r TransactionRecord) TableName() string {
 
 func (r TransactionRecord) PagingToken() string {
 	return fmt.Sprintf("%d", r.Id)
-}
-
-func (r *TransactionRecord) ScanFrom(rows *sql.Rows) error {
-	return rows.Scan(
-		&r.Id,
-		&r.TransactionHash,
-		&r.LedgerSequence,
-		&r.ApplicationOrder,
-		&r.Account,
-		&r.AccountSequence,
-		&r.MaxFee,
-		&r.FeePaid,
-		&r.OperationCount,
-	)
 }

@@ -1,14 +1,16 @@
 package db
 
 type CoreAccountByAddressQuery struct {
-	GormQuery
+	SqlQuery
 	Address string
 }
 
 func (q CoreAccountByAddressQuery) Get() ([]interface{}, error) {
-	var account CoreAccountRecord
-	err := q.GormQuery.DB.Where("accountid = ?", q.Address).First(&account).Error
-	return []interface{}{account}, err
+	sql := CoreAccountRecordSelect.Where("accountid = ?", q.Address).Limit(1)
+
+	var records []CoreAccountRecord
+	err := q.SqlQuery.Select(sql, &records)
+	return makeResult(records), err
 }
 
 func (q CoreAccountByAddressQuery) IsComplete(alreadyDelivered int) bool {
