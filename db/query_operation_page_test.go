@@ -8,11 +8,11 @@ import (
 )
 
 func TestOperationPageQuery(t *testing.T) {
-	Convey("OperationPageQuery", t, func() {
-		test.LoadScenario("base")
-		db := OpenTestDatabase()
-		defer db.Close()
+	test.LoadScenario("base")
+	db := OpenTestDatabase()
+	defer db.Close()
 
+	Convey("OperationPageQuery", t, func() {
 		makeQuery := func(c string, o string, l int32) OperationPageQuery {
 			pq, err := NewPageQuery(c, o, l)
 

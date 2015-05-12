@@ -13,7 +13,7 @@ type OperationPageQuery struct {
 	TransactionHash string
 }
 
-func (q OperationPageQuery) Get() (results []interface{}, err error) {
+func (q OperationPageQuery) Get() ([]interface{}, error) {
 	sql := OperationRecordSelect.
 		Limit(uint64(q.Limit)).
 		PlaceholderFormat(sq.Dollar).
@@ -26,14 +26,14 @@ func (q OperationPageQuery) Get() (results []interface{}, err error) {
 		sql = sql.Where("hop.id < ?", q.Cursor).OrderBy("hop.id desc")
 	}
 
-	err = checkOptions(
+	err := checkOptions(
 		q.AccountAddress != "",
 		q.LedgerSequence != 0,
 		q.TransactionHash != "",
 	)
 
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	// filter by ledger sequence
@@ -45,16 +45,14 @@ func (q OperationPageQuery) Get() (results []interface{}, err error) {
 
 	// filter by transaction hash
 	if q.TransactionHash != "" {
-		var record interface{}
-		record, err = First(TransactionByHashQuery{q.SqlQuery, q.TransactionHash})
+		record, err := First(TransactionByHashQuery{q.SqlQuery, q.TransactionHash})
 
 		if err != nil {
-			return
+			return nil, err
 		}
 
 		if record == nil {
-			err = errors.New("Bad transaction hash") //TODO: improvements
-			return
+			return nil, errors.New("Bad transaction hash") //TODO: improvements
 		}
 
 		tx := record.(TransactionRecord)
@@ -67,13 +65,25 @@ func (q OperationPageQuery) Get() (results []interface{}, err error) {
 
 	// filter by account address
 	if q.AccountAddress != "" {
-		//TODO
+		record, err := First(AccountByAddressQuery{q.SqlQuery, q.AccountAddress})
+
+		if err != nil {
+			return nil, err
+		}
+
+		if record == nil {
+			return nil, errors.New("Bad account address") //TODO: improvements
+		}
+
+		account := record.(AccountRecord)
+		sql = sql.
+			Join("history_operation_participants hopp ON hopp.history_operation_id = hop.id").
+			Where("hopp.history_account_id = ?", account.Id)
 	}
 
 	var records []OperationRecord
 	err = q.SqlQuery.Select(sql, &records)
-	results = makeResult(records)
-	return
+	return makeResult(records), err
 }
 
 func (q OperationPageQuery) IsComplete(alreadyDelivered int) bool {
