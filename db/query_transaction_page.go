@@ -1,21 +1,15 @@
 package db
 
-import (
-	sq "github.com/lann/squirrel"
-)
-
 type TransactionPageQuery struct {
-	GormQuery
+	SqlQuery
 	PageQuery
 	AccountAddress string
 	LedgerSequence int32
 }
 
-func (q TransactionPageQuery) Get() (results []interface{}, err error) {
+func (q TransactionPageQuery) Get() ([]interface{}, error) {
 	sql := TransactionRecordSelect.
-		Limit(uint64(q.Limit)).
-		PlaceholderFormat(sq.Dollar).
-		RunWith(q.DB.DB())
+		Limit(uint64(q.Limit))
 
 	switch q.Order {
 	case "asc":
@@ -34,26 +28,9 @@ func (q TransactionPageQuery) Get() (results []interface{}, err error) {
 		sql = sql.Where("ht.ledger_sequence = ?", q.LedgerSequence)
 	}
 
-	rows, err := sql.Query()
-	if err != nil {
-		return
-	}
-
-	defer rows.Close()
-
-	results = []interface{}{}
-	for rows.Next() {
-		record := &TransactionRecord{}
-		err = record.ScanFrom(rows)
-
-		if err != nil {
-			return
-		}
-
-		results = append(results, *record)
-	}
-
-	return
+	var records []TransactionRecord
+	err := q.SqlQuery.Select(sql, &records)
+	return makeResult(records), err
 }
 
 func (q TransactionPageQuery) IsComplete(alreadyDelivered int) bool {

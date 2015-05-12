@@ -1,41 +1,18 @@
 package db
 
-import (
-	sq "github.com/lann/squirrel"
-)
-
 type TransactionByHashQuery struct {
 	SqlQuery
 	Hash string
 }
 
-func (q TransactionByHashQuery) Get() (results []interface{}, err error) {
-	rows, err := TransactionRecordSelect.
+func (q TransactionByHashQuery) Get() ([]interface{}, error) {
+	sql := TransactionRecordSelect.
 		Limit(1).
-		Where("transaction_hash = ?", q.Hash).
-		PlaceholderFormat(sq.Dollar).
-		RunWith(q.DB).
-		Query()
+		Where("transaction_hash = ?", q.Hash)
 
-	if err != nil {
-		return
-	}
-
-	defer rows.Close()
-
-	results = []interface{}{}
-	for rows.Next() {
-		record := &TransactionRecord{}
-		err = record.ScanFrom(rows)
-
-		if err != nil {
-			return
-		}
-
-		results = append(results, *record)
-	}
-
-	return
+	var records []TransactionRecord
+	err := q.SqlQuery.Select(sql, &records)
+	return makeResult(records), err
 }
 
 func (q TransactionByHashQuery) IsComplete(alreadyDelivered int) bool {
