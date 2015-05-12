@@ -1,16 +1,12 @@
 package db
 
 import (
+	"database/sql"
 	"errors"
-	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"github.com/rcrowley/go-metrics"
 	"reflect"
 )
-
-type GormQuery struct {
-	DB *gorm.DB
-}
 
 type Query interface {
 	Get() ([]interface{}, error)
@@ -25,15 +21,15 @@ type Record interface{}
 
 // Open the postgres database at the provided url and performing an initial
 // ping to ensure we can connect to it.
-func Open(url string) (gorm.DB, error) {
+func Open(url string) (*sql.DB, error) {
 
-	db, err := gorm.Open("postgres", url)
+	db, err := sql.Open("postgres", url)
 
 	if err != nil {
 		return db, err
 	}
 
-	err = db.DB().Ping()
+	err = db.Ping()
 
 	if err != nil {
 		return db, err
@@ -53,8 +49,6 @@ func First(query Query) (interface{}, error) {
 	res, err := query.Get()
 
 	switch {
-	case err == gorm.RecordNotFound:
-		return nil, nil
 	case err != nil:
 		return nil, err
 	case len(res) == 0:

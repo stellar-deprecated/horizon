@@ -49,7 +49,7 @@ func ExampleFirst() {
 	defer db.Close()
 
 	q := CoreAccountByAddressQuery{
-		SqlQuery{db.DB()},
+		SqlQuery{db},
 		"gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
 	}
 

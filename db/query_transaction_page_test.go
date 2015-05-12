@@ -19,7 +19,7 @@ func TestTransactionPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return TransactionPageQuery{
-				SqlQuery:  SqlQuery{db.DB()},
+				SqlQuery:  SqlQuery{db},
 				PageQuery: pq,
 			}
 		}

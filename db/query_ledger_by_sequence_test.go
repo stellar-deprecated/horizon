@@ -17,7 +17,7 @@ func TestLedgerBySequenceQuery(t *testing.T) {
 		Convey("Existing record behavior", func() {
 			sequence := int32(2)
 			q := LedgerBySequenceQuery{
-				SqlQuery{db.DB()},
+				SqlQuery{db},
 				sequence,
 			}
 			ledgers, err := Results(q)
@@ -32,7 +32,7 @@ func TestLedgerBySequenceQuery(t *testing.T) {
 		Convey("Missing record behavior", func() {
 			sequence := int32(-1)
 			var q Query = LedgerBySequenceQuery{
-				SqlQuery{db.DB()},
+				SqlQuery{db},
 				sequence,
 			}
 			ledgers, err := Results(q)

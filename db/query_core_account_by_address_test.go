@@ -17,7 +17,7 @@ func TestCoreAccountByAddressQuery(t *testing.T) {
 		Convey("Existing record behavior", func() {
 			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
 			q := CoreAccountByAddressQuery{
-				SqlQuery{db.DB()},
+				SqlQuery{db},
 				address,
 			}
 			result, err := First(q)
@@ -31,7 +31,7 @@ func TestCoreAccountByAddressQuery(t *testing.T) {
 		Convey("Missing record behavior", func() {
 			address := "not real"
 			q := CoreAccountByAddressQuery{
-				SqlQuery{db.DB()},
+				SqlQuery{db},
 				address,
 			}
 			result, err := First(q)

@@ -16,7 +16,7 @@ func TestTransactionByHashQuery(t *testing.T) {
 
 		Convey("Existing record behavior", func() {
 			hash := "b313ee4b54d033eafd6bdc9c998b6ee8dbfe814da491b9182de8b63508e31369"
-			q := TransactionByHashQuery{SqlQuery{db.DB()}, hash}
+			q := TransactionByHashQuery{SqlQuery{db}, hash}
 			found, err := First(q)
 			So(err, ShouldBeNil)
 			tx := found.(TransactionRecord)
@@ -25,7 +25,7 @@ func TestTransactionByHashQuery(t *testing.T) {
 
 		Convey("Missing record behavior", func() {
 			hash := "not_real"
-			q := TransactionByHashQuery{SqlQuery{db.DB()}, hash}
+			q := TransactionByHashQuery{SqlQuery{db}, hash}
 			found, err := First(q)
 			So(err, ShouldBeNil)
 			So(found, ShouldBeNil)

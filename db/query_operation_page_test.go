@@ -19,7 +19,7 @@ func TestOperationPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return OperationPageQuery{
-				SqlQuery:  SqlQuery{db.DB()},
+				SqlQuery:  SqlQuery{db},
 				PageQuery: pq,
 			}
 		}

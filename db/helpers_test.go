@@ -1,32 +1,30 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"github.com/stellar/go-horizon/test"
 	"log"
 	"math"
 )
 
-func OpenTestDatabase() gorm.DB {
+func OpenTestDatabase() *sql.DB {
 
-	result, err := gorm.Open("postgres", test.DatabaseUrl())
+	result, err := sql.Open("postgres", test.DatabaseUrl())
 
 	if err != nil {
 		log.Panic(err)
 	}
-	result.LogMode(true)
 	return result
 }
 
-func OpenStellarCoreTestDatabase() gorm.DB {
+func OpenStellarCoreTestDatabase() *sql.DB {
 
-	result, err := gorm.Open("postgres", test.StellarCoreDatabaseUrl())
+	result, err := sql.Open("postgres", test.StellarCoreDatabaseUrl())
 
 	if err != nil {
 		log.Panic(err)
 	}
-	result.LogMode(true)
 	return result
 }
 
