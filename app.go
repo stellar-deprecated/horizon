@@ -1,9 +1,9 @@
 package horizon
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/jinzhu/gorm"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
 	"github.com/zenazn/goji/bind"
@@ -17,8 +17,8 @@ type App struct {
 	config    Config
 	metrics   metrics.Registry
 	web       *Web
-	historyDb gorm.DB
-	coreDb    gorm.DB
+	historyDb *sql.DB
+	coreDb    *sql.DB
 	ctx       context.Context
 	cancel    func()
 	redis     *redis.Pool
@@ -132,7 +132,7 @@ func (a *App) Serve() {
 	}
 
 	// initiate the ledger close pumper
-	db.LedgerClosePump(a.ctx, a.historyDb.DB())
+	db.LedgerClosePump(a.ctx, a.historyDb)
 
 	err := graceful.Serve(listener, http.DefaultServeMux)
 
@@ -149,14 +149,14 @@ func (a *App) Cancel() {
 	a.cancel()
 }
 
-// Returns a GormQuery that can be embedded in a parent query
+// Returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the history database
-func (a *App) HistoryQuery() db.GormQuery {
-	return db.GormQuery{&a.historyDb}
+func (a *App) HistoryQuery() db.SqlQuery {
+	return db.SqlQuery{a.historyDb}
 }
 
-// Returns a GormQuery that can be embedded in a parent query
+// Returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the connected stellar core database
-func (a *App) CoreQuery() db.GormQuery {
-	return db.GormQuery{&a.coreDb}
+func (a *App) CoreQuery() db.SqlQuery {
+	return db.SqlQuery{a.coreDb}
 }

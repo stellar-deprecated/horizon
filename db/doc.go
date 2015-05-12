@@ -7,20 +7,18 @@
 // by address:
 //
 //    type AccountByAddress struct {
-//      GormQuery
+//      SqlQuery
 //      Address string
 //    }
 //
 // You would then implement the query's execution like so:
 //
-//    func (q AccountByAddress) Get() ([]interface{}, error) {
-//      var account Account
-//      err := q.GormQuery.DB.Where("address = ?", q.Address).First(&account).Error
-//      if err != nil {
-//        return nil, err
-//      }
+//    func (q CoreAccountByAddressQuery) Get() ([]interface{}, error) {
+//      sql := CoreAccountRecordSelect.Where("accountid = ?", q.Address).Limit(1)
 //
-//      return []interface{}{account}, nil
+//      var records []CoreAccountRecord
+//      err := q.SqlQuery.Select(sql, &records)
+//      return makeResult(records), err
 //    }
 //
 // Executing queries happens through `db.Results()`, `db.First()`, and

@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
@@ -14,13 +15,13 @@ import (
 
 type LedgerResource struct {
 	halgo.Links
-	Id               string    `json:"id"`
-	Hash             string    `json:"hash"`
-	PrevHash         string    `json:"prev_hash"`
-	Sequence         int32     `json:"sequence"`
-	TransactionCount int32     `json:"transaction_count"`
-	OperationCount   int32     `json:"operation_count"`
-	ClosedAt         time.Time `json:"closed_at"`
+	Id               string         `json:"id"`
+	Hash             string         `json:"hash"`
+	PrevHash         sql.NullString `json:"prev_hash"`
+	Sequence         int32          `json:"sequence"`
+	TransactionCount int32          `json:"transaction_count"`
+	OperationCount   int32          `json:"operation_count"`
+	ClosedAt         time.Time      `json:"closed_at"`
 }
 
 func (l LedgerResource) SseData() interface{} { return l }
