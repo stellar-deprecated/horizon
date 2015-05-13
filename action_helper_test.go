@@ -97,5 +97,17 @@ func TestActionHelper(t *testing.T) {
 			So(order, ShouldEqual, "")
 		})
 
+		Convey("Last-Event-ID overrides cursor", func() {
+			c := web.C{
+				Env: make(map[interface{}]interface{}),
+			}
+			r, _ := http.NewRequest("GET", "/?cursor=hello", nil)
+			r.Header.Set("Last-Event-ID", "from_header")
+			ah := &ActionHelper{c: c, r: r}
+
+			cursor, _, _ := ah.GetPagingParams()
+			So(cursor, ShouldEqual, "from_header")
+		})
+
 	})
 }

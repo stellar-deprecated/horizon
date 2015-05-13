@@ -108,6 +108,10 @@ func (a *ActionHelper) GetPagingParams() (cursor string, order string, limit int
 	order = a.GetString("order")
 	limit = a.GetInt32("limit")
 
+	if lei := a.r.Header.Get("Last-Event-ID"); lei != "" {
+		cursor = lei
+	}
+
 	return
 }
 
