@@ -103,6 +103,7 @@ func (a *ActionHelper) GetPagingParams() (cursor string, order string, limit int
 		return
 	}
 
+	// TODO: check for Last-Event-Id first
 	cursor = a.GetString("cursor")
 	order = a.GetString("order")
 	limit = a.GetInt32("limit")

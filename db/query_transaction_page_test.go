@@ -8,11 +8,11 @@ import (
 )
 
 func TestTransactionPageQuery(t *testing.T) {
-	Convey("TransactionPageQuery", t, func() {
-		test.LoadScenario("base")
-		db := OpenTestDatabase()
-		defer db.Close()
+	test.LoadScenario("base")
+	db := OpenTestDatabase()
+	defer db.Close()
 
+	Convey("TransactionPageQuery", t, func() {
 		makeQuery := func(c string, o string, l int32) TransactionPageQuery {
 			pq, err := NewPageQuery(c, o, l)
 
