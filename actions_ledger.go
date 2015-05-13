@@ -16,6 +16,7 @@ import (
 type LedgerResource struct {
 	halgo.Links
 	Id               string         `json:"id"`
+	PagingToken      string         `json:"paging_token"`
 	Hash             string         `json:"hash"`
 	PrevHash         sql.NullString `json:"prev_hash"`
 	Sequence         int32          `json:"sequence"`
@@ -38,10 +39,11 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 			Link("transactions", self+"/transactions{?cursor}{?limit}{?order}").
 			Link("operations", self+"/operations{?cursor}{?limit}{?order}").
 			Link("effects", self+"/effects{?cursor}{?limit}{?order}"),
-		Id:       in.LedgerHash,
-		Hash:     in.LedgerHash,
-		PrevHash: in.PreviousLedgerHash,
-		Sequence: in.Sequence,
+		Id:          in.LedgerHash,
+		PagingToken: in.PagingToken(),
+		Hash:        in.LedgerHash,
+		PrevHash:    in.PreviousLedgerHash,
+		Sequence:    in.Sequence,
 	}
 }
 
