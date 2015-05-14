@@ -59,8 +59,8 @@ func NewApp(config Config) (*App, error) {
 		nil,
 	})
 	init.Add(Initializer{
-		"query-metric",
-		initQueryMetric,
+		"db-metrics",
+		initDbMetrics,
 		[]string{
 			"metrics",
 			"history-db",
