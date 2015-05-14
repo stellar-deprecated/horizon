@@ -21,3 +21,14 @@ func (q SqlQuery) Select(sql sq.SelectBuilder, dest interface{}) error {
 
 	return db.Select(dest, query, args...)
 }
+
+func (q SqlQuery) Get(sql sq.SelectBuilder, dest interface{}) error {
+	db := sqlx.NewDb(q.DB, "postgres")
+	sql = sql.PlaceholderFormat(sq.Dollar)
+	query, args, err := sql.ToSql()
+
+	if err != nil {
+		return err
+	}
+	return db.Get(dest, query, args...)
+}
