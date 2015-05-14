@@ -29,7 +29,7 @@ func (l LedgerResource) SseData() interface{} { return l }
 func (l LedgerResource) Err() error           { return nil }
 
 //TODO: return the paging token for the ledger, not the id
-func (l LedgerResource) SseId() string { return l.Id }
+func (l LedgerResource) SseId() string { return l.PagingToken() }
 
 func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 	self := fmt.Sprintf("/ledgers/%d", in.Sequence)
