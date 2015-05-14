@@ -20,7 +20,7 @@ type streamManager struct {
 
 func newStreamManager() *streamManager {
 	return &streamManager{
-		cmds:       make(chan streamManagerCommand),
+		cmds:       make(chan streamManagerCommand, 10),
 		queries:    make(map[Query]listenerMap),
 		queryGauge: metrics.NewGauge(),
 	}
@@ -29,26 +29,46 @@ func newStreamManager() *streamManager {
 func (sm *streamManager) Pump() {
 	sm.Do(func() {
 		sm.sampleQueryCount()
-		for query, listeners := range sm.queries {
-			results, err := query.Get()
-
-			if err != nil {
-				// TODO: log an error
-				sm.removeQuery(query)
-				return
-			}
-
-			for sq, listener := range listeners {
-				ok := listener.Deliver(results)
-
-				if !ok || query.IsComplete(listener.sentCount) {
-					sm.removeListener(query, sq)
-				}
-
-			}
+		for q, l := range sm.queries {
+			sm.pumpQuery(q, l)
 		}
 		sm.sampleQueryCount()
 	})
+}
+
+func (sm *streamManager) PumpOne(q Query) {
+	sm.Do(func() {
+		l, ok := sm.queries[q]
+
+		if !ok {
+			// if this query isn't already registered with the query manager
+			return
+		}
+
+		sm.pumpQuery(q, l)
+		sm.sampleQueryCount()
+	})
+}
+
+// WARNING: only call this within an `sm.Do(func(){})` block, otherwise we will
+// race with other pumps.
+func (sm *streamManager) pumpQuery(q Query, l listenerMap) {
+	results, err := q.Get()
+
+	if err != nil {
+		// TODO: log an error
+		sm.removeQuery(q)
+		return
+	}
+
+	for sq, listener := range l {
+		ok := listener.Deliver(results)
+
+		if !ok || q.IsComplete(listener.sentCount) {
+			sm.removeListener(q, sq)
+		}
+
+	}
 }
 
 func (sm *streamManager) removeQuery(q Query) {
@@ -112,6 +132,7 @@ func (sm *streamManager) Add(ctx context.Context, q Query) StreamedQuery {
 
 		go newListener.Run()
 		sm.queries[q][result] = newListener
+
 		sm.sampleQueryCount()
 	})
 

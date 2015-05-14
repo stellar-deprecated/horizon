@@ -90,7 +90,9 @@ func LedgerClosePump(ctx context.Context, db *sql.DB) {
 // the provided query will be executed again and any new records will be pushed
 // onto the channel provided in the returned `StreamedQuery` interface.
 func Stream(ctx context.Context, query Query) StreamedQuery {
-	return globalStreamManager.Add(ctx, query)
+	s := globalStreamManager.Add(ctx, query)
+	go globalStreamManager.PumpOne(query)
+	return s
 }
 
 // Triggers an execution cycle of any in-progress streaming queries
