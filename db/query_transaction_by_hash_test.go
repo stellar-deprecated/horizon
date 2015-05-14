@@ -15,7 +15,7 @@ func TestTransactionByHashQuery(t *testing.T) {
 		defer db.Close()
 
 		Convey("Existing record behavior", func() {
-			hash := "b313ee4b54d033eafd6bdc9c998b6ee8dbfe814da491b9182de8b63508e31369"
+			hash := "da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c"
 			q := TransactionByHashQuery{SqlQuery{db}, hash}
 			found, err := First(q)
 			So(err, ShouldBeNil)
