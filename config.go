@@ -7,6 +7,7 @@ import (
 type Config struct {
 	DatabaseUrl            string
 	StellarCoreDatabaseUrl string
+	RubyHorizonUrl         string
 	Port                   int
 	Autopump               bool
 	RateLimit              throttled.Quota

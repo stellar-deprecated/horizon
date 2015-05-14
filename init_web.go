@@ -9,6 +9,8 @@ import (
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"strings"
 )
 
@@ -87,6 +89,25 @@ func initWebActions(app *App) {
 	app.web.router.Get("/operations/:op_id/effects", notImplementedAction)
 
 	app.web.router.Get("/payments", notImplementedAction)
+
+	// go-horizon doesn't implement everything horizon did,
+	// so we reverse proxy if we can
+	if app.config.RubyHorizonUrl != "" {
+
+		u, err := url.Parse(app.config.RubyHorizonUrl)
+		if err != nil {
+			panic("cannot parse ruby-horizon-url")
+		}
+
+		rp := httputil.NewSingleHostReverseProxy(u)
+		app.web.router.Post("/transactions", rp)
+		app.web.router.Post("/friendbot", rp)
+		app.web.router.Get("/friendbot", rp)
+	} else {
+		app.web.router.Post("/transactions", notImplementedAction)
+		app.web.router.Post("/friendbot", notImplementedAction)
+		app.web.router.Get("/friendbot", notImplementedAction)
+	}
 
 	app.web.router.NotFound(notFoundAction)
 }

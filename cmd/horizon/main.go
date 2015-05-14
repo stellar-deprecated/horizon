@@ -30,6 +30,7 @@ func init() {
 	viper.BindEnv("friendbot-secret", "FRIENDBOT_SECRET")
 	viper.BindEnv("per-hour-rate-limit", "PER_HOUR_RATE_LIMIT")
 	viper.BindEnv("redis-url", "REDIS_URL")
+	viper.BindEnv("ruby-horizon-url", "RUBY_HORIZON_URL")
 
 	rootCmd = &cobra.Command{
 		Use:   "horizon",
@@ -80,6 +81,12 @@ func init() {
 		"redis to connect with, for rate limiting",
 	)
 
+	rootCmd.Flags().String(
+		"ruby-horizon-url",
+		"",
+		"proxy yet-to-be-implemented actions through to ruby horizon server",
+	)
+
 	viper.BindPFlags(rootCmd.Flags())
 }
 
@@ -102,6 +109,7 @@ func run(cmd *cobra.Command, args []string) {
 		Port:                   viper.GetInt("port"),
 		RateLimit:              throttled.PerHour(viper.GetInt("per-hour-rate-limit")),
 		RedisUrl:               viper.GetString("redis-url"),
+		RubyHorizonUrl:         viper.GetString("ruby-horizon-url"),
 	}
 
 	var err error
