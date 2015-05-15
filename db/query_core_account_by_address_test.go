@@ -8,11 +8,11 @@ import (
 )
 
 func TestCoreAccountByAddressQuery(t *testing.T) {
+	test.LoadScenario("base")
+	db := OpenStellarCoreTestDatabase()
+	defer db.Close()
 
 	Convey("CoreAccountByAddress", t, func() {
-		test.LoadScenario("base")
-		db := OpenStellarCoreTestDatabase()
-		defer db.Close()
 
 		Convey("Existing record behavior", func() {
 			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"

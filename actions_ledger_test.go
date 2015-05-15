@@ -8,12 +8,12 @@ import (
 )
 
 func TestLedgerActions(t *testing.T) {
+	test.LoadScenario("base")
+	app := NewTestApp()
+	defer app.Close()
+	rh := NewRequestHelper(app)
 
 	Convey("Ledger Actions:", t, func() {
-		test.LoadScenario("base")
-		app := NewTestApp()
-		defer app.Close()
-		rh := NewRequestHelper(app)
 
 		Convey("GET /ledgers/1", func() {
 			w := rh.Get("/ledgers/1", test.RequestHelperNoop)
