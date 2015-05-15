@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestAccountByAddressQuery(t *testing.T) {
+func TestHistoryAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("base")
 	db := OpenTestDatabase()
 	defer db.Close()
@@ -16,13 +16,13 @@ func TestAccountByAddressQuery(t *testing.T) {
 
 		Convey("Existing record behavior", func() {
 			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
-			q := AccountByAddressQuery{
+			q := HistoryAccountByAddressQuery{
 				SqlQuery{db},
 				address,
 			}
 			result, err := First(q)
 			So(err, ShouldBeNil)
-			account := result.(AccountRecord)
+			account := result.(HistoryAccountRecord)
 
 			So(account.Id, ShouldEqual, 0)
 			So(account.Address, ShouldEqual, address)
@@ -30,7 +30,7 @@ func TestAccountByAddressQuery(t *testing.T) {
 
 		Convey("Missing record behavior", func() {
 			address := "not real"
-			q := AccountByAddressQuery{
+			q := HistoryAccountByAddressQuery{
 				SqlQuery{db},
 				address,
 			}
