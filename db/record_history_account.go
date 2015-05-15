@@ -4,10 +4,14 @@ import (
 	sq "github.com/lann/squirrel"
 )
 
-var HistoryAccountRecordSelect sq.SelectBuilder = sq.
+// HistoryAccountRecordSelect is a reusable select builder to make it easier
+// to query upon the history_accounts table
+var HistoryAccountRecordSelect = sq.
 	Select("ha.*").
 	From("history_accounts ha")
 
+// HistoryAccountRecord represents a single row from the history database's
+// `history_accounts` table
 type HistoryAccountRecord struct {
 	Id      int64  `db:"id"`
 	Address string `db:"address"`
