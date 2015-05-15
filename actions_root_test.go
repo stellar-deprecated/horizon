@@ -11,7 +11,7 @@ func TestRootAction(t *testing.T) {
 	Convey("GET /", t, func() {
 		test.LoadScenario("base")
 		app := NewTestApp()
-		defer app.Cancel()
+		defer app.Close()
 		rh := NewRequestHelper(app)
 
 		w := rh.Get("/", test.RequestHelperNoop)

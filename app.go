@@ -121,9 +121,11 @@ func (a *App) Serve() {
 
 	graceful.HandleSignals()
 	bind.Ready()
-	graceful.PreHook(func() { log.Printf("received signal, gracefully stopping") })
-	graceful.PostHook(func() {
+	graceful.PreHook(func() {
+		log.Printf("received signal, gracefully stopping")
 		a.Cancel()
+	})
+	graceful.PostHook(func() {
 		log.Printf("stopped")
 	})
 
@@ -144,9 +146,13 @@ func (a *App) Serve() {
 }
 
 func (a *App) Cancel() {
+	a.cancel()
+}
+
+func (a *App) Close() {
+	a.Cancel()
 	a.historyDb.Close()
 	a.coreDb.Close()
-	a.cancel()
 }
 
 // Returns a SqlQuery that can be embedded in a parent query

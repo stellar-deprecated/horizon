@@ -3,7 +3,6 @@ package sse
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stellar/go-horizon/httpx"
 	"golang.org/x/net/context"
 	"log"
 	"net/http"
@@ -52,9 +51,6 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Setup cancelation signal that gets triggered if the client disconnects
-	ctx := httpx.CancelWhenClosed(s.Ctx, w)
-
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
@@ -73,7 +69,7 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			writeEvent(w, event)
-		case <-ctx.Done():
+		case <-s.Ctx.Done():
 			return
 		}
 	}

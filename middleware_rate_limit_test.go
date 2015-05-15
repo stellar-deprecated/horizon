@@ -11,7 +11,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 	Convey("Rate Limiting", t, func() {
 		app := NewTestApp()
-		defer app.Cancel()
+		defer app.Close()
 		rh := NewRequestHelper(app)
 
 		Convey("sets X-RateLimit-Limit headers correctly", func() {
@@ -84,7 +84,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		c := NewTestConfig()
 		c.RedisUrl = "redis://127.0.0.1:6379/"
 		app, _ := NewApp(c)
-		defer app.Cancel()
+		defer app.Close()
 		rh := NewRequestHelper(app)
 
 		redis := app.redis.Get()

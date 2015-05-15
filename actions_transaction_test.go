@@ -12,7 +12,7 @@ func TestTransactionActions(t *testing.T) {
 	Convey("Transactions Actions:", t, func() {
 		test.LoadScenario("base")
 		app := NewTestApp()
-		defer app.Cancel()
+		defer app.Close()
 		rh := NewRequestHelper(app)
 
 		Convey("GET /transactions/da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c", func() {

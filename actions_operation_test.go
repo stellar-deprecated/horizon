@@ -9,7 +9,7 @@ import (
 func TestOperationActions(t *testing.T) {
 	test.LoadScenario("base")
 	app := NewTestApp()
-	defer app.Cancel()
+	defer app.Close()
 	rh := NewRequestHelper(app)
 
 	Convey("Operation Actions:", t, func() {
