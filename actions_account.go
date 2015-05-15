@@ -1,12 +1,38 @@
 package horizon
 
 import (
+	"net/http"
+
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
-	"net/http"
 )
+
+func accountIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
+	ah := &ActionHelper{c: c, r: r}
+	app := ah.App()
+
+	query := db.HistoryAccountPageQuery{
+		SqlQuery:  app.HistoryQuery(),
+		PageQuery: ah.GetPageQuery(),
+	}
+
+	if ah.Err() != nil {
+		http.Error(w, ah.Err().Error(), http.StatusBadRequest)
+		return
+	}
+
+	render.Collection(ah.Context(), w, r, query, func(record db.Record) (render.Resource, error) {
+		ha := record.(db.HistoryAccountRecord)
+
+		return HistoryAccountResource{
+			Id:          ha.Address,
+			PagingToken: ha.PagingToken(),
+			Address:     ha.Address,
+		}, nil
+	})
+}
 
 func accountShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	ah := &ActionHelper{c: c, r: r}

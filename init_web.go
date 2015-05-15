@@ -1,6 +1,11 @@
 package horizon
 
 import (
+	"net/http"
+	"net/http/httputil"
+	"net/url"
+	"strings"
+
 	"github.com/PuerkitoBio/throttled"
 	"github.com/PuerkitoBio/throttled/store"
 	"github.com/rcrowley/go-metrics"
@@ -8,10 +13,6 @@ import (
 	"github.com/sebest/xff"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
-	"net/http"
-	"net/http/httputil"
-	"net/url"
-	"strings"
 )
 
 type Web struct {
@@ -72,7 +73,7 @@ func initWebActions(app *App) {
 	r.Get("/ledgers/:ledger_id/effects", notImplementedAction)
 
 	// account actions
-	r.Get("/accounts", notImplementedAction)
+	r.Get("/accounts", accountIndexAction)
 	r.Get("/accounts/:id", accountShowAction)
 	r.Get("/accounts/:account_id/transactions", transactionIndexAction)
 	r.Get("/accounts/:account_id/operations", operationIndexAction)

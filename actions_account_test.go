@@ -2,9 +2,10 @@ package horizon
 
 import (
 	"encoding/json"
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"testing"
 )
 
 func TestAccountActions(t *testing.T) {
@@ -29,6 +30,16 @@ func TestAccountActions(t *testing.T) {
 		Convey("GET /accounts/100", func() {
 			w := rh.Get("/accounts/100", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 404)
+		})
+
+		Convey("GET /accounts", func() {
+			w := rh.Get("/accounts", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 3)
+
+			w = rh.Get("/accounts?limit=1", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 1)
 		})
 	})
 }

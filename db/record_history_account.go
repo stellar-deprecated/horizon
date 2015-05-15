@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+
 	sq "github.com/lann/squirrel"
 )
 
@@ -15,4 +17,10 @@ var HistoryAccountRecordSelect = sq.
 type HistoryAccountRecord struct {
 	Id      int64  `db:"id"`
 	Address string `db:"address"`
+}
+
+// PagingToken provides the paging token for this account, for use
+// in the horizon paging system
+func (r HistoryAccountRecord) PagingToken() string {
+	return fmt.Sprintf("%d", r.Id)
 }

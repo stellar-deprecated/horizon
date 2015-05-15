@@ -2,10 +2,12 @@ package horizon
 
 import (
 	"fmt"
+
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 )
 
+// AccountResource is the summary of an account
 type AccountResource struct {
 	halgo.Links
 	Id          string            `json:"id"`
@@ -15,6 +17,7 @@ type AccountResource struct {
 	Balances    []BalanceResource `json:"balances"`
 }
 
+// BalanceResource represents an accounts holdings for a single currency type
 type BalanceResource struct {
 	Type    string `json:"currency_type"`
 	Balance int64  `json:"balance"`
@@ -24,13 +27,7 @@ type BalanceResource struct {
 	Limit  int64  `json:"limit,omitempty"`
 }
 
-// sse.Event methods
-
-func (r AccountResource) SseData() interface{} { return r }
-func (r AccountResource) Err() error           { return nil }
-func (r AccountResource) SseId() string        { return r.Id }
-
-// Creates a new AccountResource from a provided db.CoreAccountRecord and
+// NewAccountResource creates a new AccountResource from a provided db.CoreAccountRecord and
 // a provided db.AccountRecord.
 //
 // panics if the two records are not for the same logical account.
