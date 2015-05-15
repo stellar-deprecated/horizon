@@ -8,7 +8,6 @@ import (
 	"github.com/stellar/go-horizon/render"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
-	"golang.org/x/net/context"
 	"net/http"
 	"time"
 )
@@ -61,7 +60,7 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.Collection(w, r, query, ledgerRecordToResource)
+	render.Collection(ah.Context(), w, r, query, ledgerRecordToResource)
 }
 
 func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -70,13 +69,13 @@ func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	sequence := ah.GetInt32("id")
 
 	if ah.Err() != nil {
-		problem.Render(context.TODO(), w, problem.NotFound)
+		problem.Render(ah.Context(), w, problem.NotFound)
 		return
 	}
 
 	query := db.LedgerBySequenceQuery{app.HistoryQuery(), sequence}
 
-	render.Single(w, r, query, ledgerRecordToResource)
+	render.Single(ah.Context(), w, r, query, ledgerRecordToResource)
 }
 
 func ledgerRecordToResource(record db.Record) (render.Resource, error) {

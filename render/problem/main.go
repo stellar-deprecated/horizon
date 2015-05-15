@@ -2,6 +2,7 @@ package problem
 
 import (
 	"encoding/json"
+	"github.com/stellar/go-horizon/context/requestid"
 	"golang.org/x/net/context"
 	"net/http"
 )
@@ -29,10 +30,17 @@ func FromError(ctx context.Context, err error) P {
 	return result
 }
 
-func Render(ctx context.Context, w http.ResponseWriter, p P) {
-
+func Inflate(ctx context.Context, p *P) {
 	//TODO: inflate type into full url
 	//TODO: add requesting url to extra info
+
+	p.Instance = requestid.FromContext(ctx)
+
+}
+
+func Render(ctx context.Context, w http.ResponseWriter, p P) {
+
+	Inflate(ctx, &p)
 
 	w.Header().Set("Content-Type", "application/problem+json")
 	js, err := json.MarshalIndent(p, "", "  ")

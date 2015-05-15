@@ -12,7 +12,7 @@ func TestAccountActions(t *testing.T) {
 	Convey("Account Actions:", t, func() {
 		test.LoadScenario("base")
 		app := NewTestApp()
-		defer app.Cancel()
+		defer app.Close()
 		rh := NewRequestHelper(app)
 
 		Convey("GET /accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", func() {

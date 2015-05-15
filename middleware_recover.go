@@ -3,10 +3,10 @@ package horizon
 import (
 	"bytes"
 	"fmt"
+	gctx "github.com/goji/context"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
 	. "github.com/zenazn/goji/web/middleware"
-	"golang.org/x/net/context"
 	"log"
 	"net/http"
 	"runtime/debug"
@@ -21,7 +21,7 @@ func RecoverMiddleware(c *web.C, h http.Handler) http.Handler {
 				printPanic(reqID, err)
 				debug.PrintStack()
 				//TODO: include stack trace if in debug mode
-				problem.Render(context.TODO(), w, problem.ServerError)
+				problem.Render(gctx.FromC(*c), w, problem.ServerError)
 			}
 		}()
 
