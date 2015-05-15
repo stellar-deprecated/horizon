@@ -41,14 +41,14 @@ func initWebMetrics(app *App) {
 func initWebMiddleware(app *App) {
 	r := app.web.router
 	r.Use(middleware.EnvInit)
+	r.Use(app.Middleware)
+	r.Use(middleware.RequestID)
 	r.Use(contextMiddleware(app.ctx))
 	r.Use(xff.XFF)
-	r.Use(middleware.RequestID)
-	r.Use(app.Middleware)
 	r.Use(middleware.Logger)
+	r.Use(requestMetricsMiddleware)
 	r.Use(RecoverMiddleware)
 	r.Use(middleware.AutomaticOptions)
-	r.Use(requestMetricsMiddleware)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},

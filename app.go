@@ -13,6 +13,8 @@ import (
 	"net/http"
 )
 
+var appContextKey struct{}
+
 type App struct {
 	config    Config
 	metrics   metrics.Registry
@@ -24,18 +26,24 @@ type App struct {
 	redis     *redis.Pool
 }
 
-func initAppCancel(app *App) {
+func initAppContext(app *App) {
 	ctx, cancel := context.WithCancel(context.Background())
+	ctx = context.WithValue(ctx, &appContextKey, app)
 	app.ctx = ctx
 	app.cancel = cancel
+}
+
+func AppFromContext(ctx context.Context) (*App, bool) {
+	a, ok := ctx.Value(&appContextKey).(*App)
+	return a, ok
 }
 
 func NewApp(config Config) (*App, error) {
 
 	init := &AppInit{}
 	init.Add(Initializer{
-		"cancel",
-		initAppCancel,
+		"app-context",
+		initAppContext,
 		nil,
 	})
 	init.Add(Initializer{
