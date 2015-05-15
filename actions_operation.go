@@ -7,7 +7,6 @@ import (
 	"github.com/stellar/go-horizon/render"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
-	"golang.org/x/net/context"
 	"net/http"
 )
 
@@ -34,11 +33,11 @@ func operationIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ah.Err() != nil {
-		problem.Render(context.TODO(), w, problem.ServerError)
+		problem.Render(ah.Context(), w, problem.ServerError)
 		return
 	}
 
-	render.Collection(w, r, q, operationRecordToResource)
+	render.Collection(ah.Context(), w, r, q, operationRecordToResource)
 }
 
 func operationRecordToResource(record db.Record) (render.Resource, error) {

@@ -39,56 +39,59 @@ func initWebMetrics(app *App) {
 }
 
 func initWebMiddleware(app *App) {
-	app.web.router.Use(middleware.EnvInit)
-	app.web.router.Use(middleware.RequestID)
-	app.web.router.Use(xff.XFF)
-	app.web.router.Use(app.Middleware)
-	app.web.router.Use(middleware.Logger)
-	app.web.router.Use(RecoverMiddleware)
-	app.web.router.Use(middleware.AutomaticOptions)
-	app.web.router.Use(requestMetricsMiddleware)
+	r := app.web.router
+	r.Use(middleware.EnvInit)
+	r.Use(contextMiddleware(app.ctx))
+	r.Use(xff.XFF)
+	r.Use(middleware.RequestID)
+	r.Use(app.Middleware)
+	r.Use(middleware.Logger)
+	r.Use(RecoverMiddleware)
+	r.Use(middleware.AutomaticOptions)
+	r.Use(requestMetricsMiddleware)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 	})
-	app.web.router.Use(c.Handler)
+	r.Use(c.Handler)
 
-	app.web.router.Use(app.web.RateLimitMiddleware)
+	r.Use(app.web.RateLimitMiddleware)
 }
 
 func initWebActions(app *App) {
-	app.web.router.Get("/", rootAction)
-	app.web.router.Get("/metrics", metricsAction)
+	r := app.web.router
+	r.Get("/", rootAction)
+	r.Get("/metrics", metricsAction)
 
 	// ledger actions
-	app.web.router.Get("/ledgers", ledgerIndexAction)
-	app.web.router.Get("/ledgers/:id", ledgerShowAction)
-	app.web.router.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
-	app.web.router.Get("/ledgers/:ledger_id/operations", operationIndexAction)
-	app.web.router.Get("/ledgers/:ledger_id/payments", notImplementedAction)
-	app.web.router.Get("/ledgers/:ledger_id/effects", notImplementedAction)
+	r.Get("/ledgers", ledgerIndexAction)
+	r.Get("/ledgers/:id", ledgerShowAction)
+	r.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
+	r.Get("/ledgers/:ledger_id/operations", operationIndexAction)
+	r.Get("/ledgers/:ledger_id/payments", notImplementedAction)
+	r.Get("/ledgers/:ledger_id/effects", notImplementedAction)
 
 	// account actions
-	app.web.router.Get("/accounts", notImplementedAction)
-	app.web.router.Get("/accounts/:id", accountShowAction)
-	app.web.router.Get("/accounts/:account_id/transactions", transactionIndexAction)
-	app.web.router.Get("/accounts/:account_id/operations", operationIndexAction)
-	app.web.router.Get("/accounts/:account_id/payments", notImplementedAction)
-	app.web.router.Get("/accounts/:account_id/effects", notImplementedAction)
+	r.Get("/accounts", notImplementedAction)
+	r.Get("/accounts/:id", accountShowAction)
+	r.Get("/accounts/:account_id/transactions", transactionIndexAction)
+	r.Get("/accounts/:account_id/operations", operationIndexAction)
+	r.Get("/accounts/:account_id/payments", notImplementedAction)
+	r.Get("/accounts/:account_id/effects", notImplementedAction)
 
 	// transaction actions
-	app.web.router.Get("/transactions", transactionIndexAction)
-	app.web.router.Get("/transactions/:id", transactionShowAction)
-	app.web.router.Get("/transactions/:tx_id/operations", operationIndexAction)
-	app.web.router.Get("/transactions/:tx_id/payments", notImplementedAction)
-	app.web.router.Get("/transactions/:tx_id/effects", notImplementedAction)
+	r.Get("/transactions", transactionIndexAction)
+	r.Get("/transactions/:id", transactionShowAction)
+	r.Get("/transactions/:tx_id/operations", operationIndexAction)
+	r.Get("/transactions/:tx_id/payments", notImplementedAction)
+	r.Get("/transactions/:tx_id/effects", notImplementedAction)
 
 	// operation actions
-	app.web.router.Get("/operations", operationIndexAction)
-	app.web.router.Get("/operations/:id", notImplementedAction)
-	app.web.router.Get("/operations/:op_id/effects", notImplementedAction)
+	r.Get("/operations", operationIndexAction)
+	r.Get("/operations/:id", notImplementedAction)
+	r.Get("/operations/:op_id/effects", notImplementedAction)
 
-	app.web.router.Get("/payments", notImplementedAction)
+	r.Get("/payments", notImplementedAction)
 
 	// go-horizon doesn't implement everything horizon did,
 	// so we reverse proxy if we can
@@ -100,16 +103,16 @@ func initWebActions(app *App) {
 		}
 
 		rp := httputil.NewSingleHostReverseProxy(u)
-		app.web.router.Post("/transactions", rp)
-		app.web.router.Post("/friendbot", rp)
-		app.web.router.Get("/friendbot", rp)
+		r.Post("/transactions", rp)
+		r.Post("/friendbot", rp)
+		r.Get("/friendbot", rp)
 	} else {
-		app.web.router.Post("/transactions", notImplementedAction)
-		app.web.router.Post("/friendbot", notImplementedAction)
-		app.web.router.Get("/friendbot", notImplementedAction)
+		r.Post("/transactions", notImplementedAction)
+		r.Post("/friendbot", notImplementedAction)
+		r.Get("/friendbot", notImplementedAction)
 	}
 
-	app.web.router.NotFound(notFoundAction)
+	r.NotFound(notFoundAction)
 }
 
 func initWebRateLimiter(app *App) {
@@ -124,6 +127,7 @@ func initWebRateLimiter(app *App) {
 		&throttled.VaryBy{Custom: remoteAddrIp},
 		rateLimitStore,
 	)
+
 	rateLimiter.DeniedHandler = http.HandlerFunc(rateLimitExceededAction)
 	app.web.rateLimiter = rateLimiter
 }

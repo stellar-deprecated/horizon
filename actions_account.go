@@ -40,7 +40,7 @@ func accountShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	app := ah.App()
 	address := ah.GetString("id")
 	if ah.Err() != nil {
-		problem.Render(app.ctx, w, problem.NotFound)
+		problem.Render(ah.Context(), w, problem.NotFound)
 		return
 	}
 
@@ -49,7 +49,7 @@ func accountShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 		address,
 	}
 
-	render.Single(w, r, q, func(r db.Record) (render.Resource, error) {
+	render.Single(ah.Context(), w, r, q, func(r db.Record) (render.Resource, error) {
 		return NewAccountResource(r.(db.CoreAccountRecord)), nil
 	})
 }

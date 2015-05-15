@@ -1,8 +1,10 @@
 package horizon
 
 import (
+	gctx "github.com/goji/context"
 	"github.com/stellar/go-horizon/db"
 	"github.com/zenazn/goji/web"
+	"golang.org/x/net/context"
 	"net/http"
 	"strconv"
 )
@@ -36,6 +38,10 @@ func (a *ActionHelper) Err() error {
 
 func (a *ActionHelper) App() *App {
 	return a.c.Env["app"].(*App)
+}
+
+func (a *ActionHelper) Context() context.Context {
+	return gctx.FromC(a.c)
 }
 
 // Gets a string from either the URLParams or query string.

@@ -4,7 +4,6 @@ import (
 	"bitbucket.org/ww/goautoneg"
 	"errors"
 	"github.com/stellar/go-horizon/db"
-	"github.com/stellar/go-horizon/httpx"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/stellar/go-horizon/render/sse"
@@ -31,7 +30,7 @@ type Resource interface{}
 type Transform func(db.Record) (Resource, error)
 type ToEvent func(interface{}) sse.Event
 
-func Collection(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
+func Collection(ctx context.Context, w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
 	contentType := Negotiate(r)
 
 	switch contentType {
@@ -62,8 +61,6 @@ func Collection(w http.ResponseWriter, r *http.Request, q db.Query, t Transform)
 		hal.RenderPage(w, page)
 	case MimeEventStream:
 
-		ctx := httpx.CancelWhenClosed(context.Background(), w)
-
 		records := db.Stream(ctx, q)
 		events := recordToEvent(records.Get(), func(r interface{}) sse.Event {
 			resource, err := t(r)
@@ -88,20 +85,20 @@ func Collection(w http.ResponseWriter, r *http.Request, q db.Query, t Transform)
 	}
 }
 
-func Single(w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
+func Single(ctx context.Context, w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
 	record, err := db.First(q)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	} else if record == nil {
-		problem.Render(context.TODO(), w, problem.NotFound)
+		problem.Render(ctx, w, problem.NotFound)
 		return
 	} else {
 		resource, err := t(record)
 
 		if err != nil {
-			p := problem.FromError(context.TODO(), err)
-			problem.Render(context.TODO(), w, p)
+			p := problem.FromError(ctx, err)
+			problem.Render(ctx, w, p)
 			return
 		}
 

@@ -7,7 +7,6 @@ import (
 	"github.com/stellar/go-horizon/render"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
-	"golang.org/x/net/context"
 	"net/http"
 )
 
@@ -49,11 +48,11 @@ func transactionIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ah.Err() != nil {
-		problem.Render(context.TODO(), w, problem.ServerError)
+		problem.Render(ah.Context(), w, problem.ServerError)
 		return
 	}
 
-	render.Collection(w, r, q, transactionRecordToResource)
+	render.Collection(ah.Context(), w, r, q, transactionRecordToResource)
 }
 
 func transactionShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -62,7 +61,7 @@ func transactionShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	hash := ah.GetString("id")
 
 	if ah.Err() != nil {
-		problem.Render(context.TODO(), w, problem.NotFound)
+		problem.Render(ah.Context(), w, problem.NotFound)
 		return
 	}
 
@@ -71,7 +70,7 @@ func transactionShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 		hash,
 	}
 
-	render.Single(w, r, q, transactionRecordToResource)
+	render.Single(ah.Context(), w, r, q, transactionRecordToResource)
 }
 
 func transactionRecordToResource(record db.Record) (render.Resource, error) {
