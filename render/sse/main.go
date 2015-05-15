@@ -64,10 +64,12 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// wait for data and stream it as it becomes available
 	// finish when either the client closes the connection
 	// or the data provider closes the channel
+	writeHelloEvent(w)
 	for {
 		select {
 		case event, more := <-s.Data:
 			if !more {
+				writeGoodbyeEvent(w)
 				return
 			}
 			writeEvent(w, event)
@@ -92,6 +94,31 @@ func writeEvent(w http.ResponseWriter, e Event) {
 	}
 
 	fmt.Fprintf(w, "data: %s\n\n", getJson(e.SseData()))
+	w.(http.Flusher).Flush()
+}
+
+// Transmits the hello message to the provided client.
+//
+// Upon initial stream creation, we send this event to inform the client
+// that they may retry an errored connection after 1 second.
+func writeHelloEvent(w http.ResponseWriter) {
+	fmt.Fprintf(w, "retry: %d\n", 1000)
+	fmt.Fprintf(w, "event: %s\n", "open")
+	fmt.Fprintf(w, "data: %s\n\n", "hello")
+	w.(http.Flusher).Flush()
+}
+
+// Transmits the goodbye message to the connected client.
+//
+// Upon successful completion of a query (i.e. the client didn't disconnect
+// and we didn't error) we send a "Goodbye" event.  This is a dummy event
+// so that we can set a low retry value so that the client will immediately
+// recoonnect and request more data.  This helpes to give the feel of a infinite
+// stream of data, even though we're actually responding in PAGE_SIZE chunks.
+func writeGoodbyeEvent(w http.ResponseWriter) {
+	fmt.Fprintf(w, "retry: %d\n", 10)
+	fmt.Fprintf(w, "event: %s\n", "close")
+	fmt.Fprintf(w, "data: %s\n\n", "byebye")
 	w.(http.Flusher).Flush()
 }
 
