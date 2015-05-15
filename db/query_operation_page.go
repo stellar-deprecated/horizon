@@ -65,7 +65,7 @@ func (q OperationPageQuery) Get() ([]interface{}, error) {
 
 	// filter by account address
 	if q.AccountAddress != "" {
-		record, err := First(AccountByAddressQuery{q.SqlQuery, q.AccountAddress})
+		record, err := First(HistoryAccountByAddressQuery{q.SqlQuery, q.AccountAddress})
 
 		if err != nil {
 			return nil, err
@@ -75,7 +75,7 @@ func (q OperationPageQuery) Get() ([]interface{}, error) {
 			return nil, errors.New("Bad account address") //TODO: improvements
 		}
 
-		account := record.(AccountRecord)
+		account := record.(HistoryAccountRecord)
 		sql = sql.
 			Join("history_operation_participants hopp ON hopp.history_operation_id = hop.id").
 			Where("hopp.history_account_id = ?", account.Id)

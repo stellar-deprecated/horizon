@@ -7,30 +7,30 @@ import (
 	"testing"
 )
 
-func TestCoreAccountByAddressQuery(t *testing.T) {
+func TestHistoryAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("base")
-	db := OpenStellarCoreTestDatabase()
+	db := OpenTestDatabase()
 	defer db.Close()
 
-	Convey("CoreAccountByAddress", t, func() {
+	Convey("AccountByAddress", t, func() {
 
 		Convey("Existing record behavior", func() {
 			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
-			q := CoreAccountByAddressQuery{
+			q := HistoryAccountByAddressQuery{
 				SqlQuery{db},
 				address,
 			}
 			result, err := First(q)
 			So(err, ShouldBeNil)
-			account := result.(CoreAccountRecord)
+			account := result.(HistoryAccountRecord)
 
-			So(account.Accountid, ShouldEqual, address)
-			So(account.Balance, ShouldEqual, 99999996999999970)
+			So(account.Id, ShouldEqual, 0)
+			So(account.Address, ShouldEqual, address)
 		})
 
 		Convey("Missing record behavior", func() {
 			address := "not real"
-			q := CoreAccountByAddressQuery{
+			q := HistoryAccountByAddressQuery{
 				SqlQuery{db},
 				address,
 			}

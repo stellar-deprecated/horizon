@@ -8,36 +8,41 @@ import (
 )
 
 func TestAccountByAddressQuery(t *testing.T) {
-	test.LoadScenario("base")
-	db := OpenTestDatabase()
-	defer db.Close()
+	test.LoadScenario("non_native_payment")
+	core := OpenStellarCoreTestDatabase()
+	defer core.Close()
+	history := OpenTestDatabase()
+	defer history.Close()
 
 	Convey("AccountByAddress", t, func() {
+		notreal := "not_real"
+		withtl := "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ"
+		notl := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
 
-		Convey("Existing record behavior", func() {
-			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
-			q := AccountByAddressQuery{
-				SqlQuery{db},
-				address,
-			}
-			result, err := First(q)
-			So(err, ShouldBeNil)
-			account := result.(AccountRecord)
+		q := AccountByAddressQuery{
+			Core:    SqlQuery{core},
+			History: SqlQuery{history},
+			Address: withtl,
+		}
 
-			So(account.Id, ShouldEqual, 0)
-			So(account.Address, ShouldEqual, address)
-		})
+		result, err := First(q)
+		So(err, ShouldBeNil)
+		So(result, ShouldNotBeNil)
 
-		Convey("Missing record behavior", func() {
-			address := "not real"
-			q := AccountByAddressQuery{
-				SqlQuery{db},
-				address,
-			}
-			result, err := First(q)
-			So(result, ShouldBeNil)
-			So(err, ShouldBeNil)
-		})
+		account := result.(AccountRecord)
 
+		So(account.Address, ShouldEqual, withtl)
+		So(account.Seqnum, ShouldEqual, 12884901889)
+		So(len(account.Trustlines), ShouldEqual, 1)
+
+		q.Address = notl
+		result, err = First(q)
+		So(err, ShouldBeNil)
+		So(result, ShouldNotBeNil)
+
+		q.Address = notreal
+		result, err = First(q)
+		So(err, ShouldBeNil)
+		So(result, ShouldBeNil)
 	})
 }
