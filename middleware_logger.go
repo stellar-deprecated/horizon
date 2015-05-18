@@ -6,9 +6,11 @@ import (
 
 	"golang.org/x/net/context"
 
+	"github.com/Sirupsen/logrus"
 	gctx "github.com/goji/context"
 	"github.com/stellar/go-horizon/log"
 	"github.com/zenazn/goji/web"
+	"github.com/zenazn/goji/web/mutil"
 )
 
 // LoggerMiddleware is the middleware that logs http requests and resposnes
@@ -16,13 +18,16 @@ import (
 func LoggerMiddleware(c *web.C, h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ctx := gctx.FromC(*c)
+		mw := mutil.WrapWriter(w)
 
 		logStartOfRequest(ctx, r)
 
 		then := time.Now()
-		h.ServeHTTP(w, r)
+		h.ServeHTTP(mw, r)
 		duration := time.Now().Sub(then)
-		log.WithField(ctx, "duration", duration).Info("Finished request")
+
+		logEndOfRequest(ctx, duration, mw)
+
 		_ = duration
 	}
 
@@ -30,6 +35,20 @@ func LoggerMiddleware(c *web.C, h http.Handler) http.Handler {
 }
 
 func logStartOfRequest(ctx context.Context, r *http.Request) {
-	log.Warn(ctx, "Starting request")
-	// TODO: log parameters here
+	fields := logrus.Fields{
+		"path":   r.URL.String(),
+		"method": r.Method,
+	}
+
+	log.WithFields(ctx, fields).Info("Starting request")
+}
+
+func logEndOfRequest(ctx context.Context, duration time.Duration, mw mutil.WriterProxy) {
+	fields := logrus.Fields{
+		"status":   mw.Status(),
+		"bytes":    mw.BytesWritten(),
+		"duration": duration,
+	}
+
+	log.WithFields(ctx, fields).Info("Finished request")
 }
