@@ -39,11 +39,13 @@ func initAppContext(app *App) {
 	app.cancel = cancel
 }
 
+// AppFromContext retrieves a *App from the context tree.
 func AppFromContext(ctx context.Context) (*App, bool) {
 	a, ok := ctx.Value(&appContextKey).(*App)
 	return a, ok
 }
 
+// NewApp constructs an new App instance from the provided config.
 func NewApp(config Config) (*App, error) {
 
 	init := &AppInit{}
@@ -79,12 +81,18 @@ func NewApp(config Config) (*App, error) {
 	init.Add(Initializer{
 		"history-db",
 		initHistoryDb,
-		nil,
+		[]string{
+			"app-context",
+			"log",
+		},
 	})
 	init.Add(Initializer{
 		"core-db",
 		initCoreDb,
-		nil,
+		[]string{
+			"app-context",
+			"log",
+		},
 	})
 	init.Add(Initializer{
 		"db-metrics",
@@ -140,6 +148,8 @@ func NewApp(config Config) (*App, error) {
 	return result, nil
 }
 
+// Serve starts the go-horizon system, binding it to a socket, setting up
+// the shutdown signals and starting the appropriate db-streaming pumps.
 func (a *App) Serve() {
 
 	a.web.router.Compile()
@@ -175,10 +185,15 @@ func (a *App) Serve() {
 	graceful.Wait()
 }
 
+// Cancel triggers the app's cancellation signal, which will trigger the shutdown
+// of all child subsystems.  Note connections to external systems (such as db
+// connections) are not closed.  Use `Close()` to force immediate closure of
+// those resources
 func (a *App) Cancel() {
 	a.cancel()
 }
 
+// Close cancels the app and forces the closure of db connections
 func (a *App) Close() {
 	a.Cancel()
 	a.historyDb.Close()
