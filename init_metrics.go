@@ -5,7 +5,6 @@ import (
 
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
-	"github.com/stellar/go-horizon/log"
 )
 
 func initMetrics(app *App) {
@@ -20,7 +19,7 @@ func initDbMetrics(app *App) {
 }
 
 func initLogMetrics(app *App) {
-	for level, meter := range log.Meters {
+	for level, meter := range *app.logMetrics {
 		key := fmt.Sprintf("logging.%s", level)
 		app.metrics.Register(key, meter)
 	}

@@ -14,7 +14,8 @@ func TestLogPackage(t *testing.T) {
 
 	Convey("Context", t, func() {
 		So(context.Background().Value(&contextKey), ShouldBeNil)
-		l := logrus.New()
+		l, _ := New()
+
 		ctx := Context(context.Background(), l)
 		So(ctx.Value(&contextKey), ShouldEqual, l)
 	})
@@ -24,26 +25,27 @@ func TestLogPackage(t *testing.T) {
 		So(FromContext(context.Background()), ShouldEqual, defaultLogger)
 
 		// a set value overrides the default
-		l := logrus.New()
+		l, _ := New()
 		ctx := Context(context.Background(), l)
 		So(FromContext(ctx), ShouldEqual, l)
 
 		// the deepest set value is returns
-		nested := logrus.New()
+		nested, _ := New()
 		nctx := Context(ctx, nested)
 		So(FromContext(nctx), ShouldEqual, nested)
 	})
 
 	Convey("Logging Statements", t, func() {
 		output := new(bytes.Buffer)
-		defaultLogger.Out = output
-		ctx := context.Background()
+		l, _ := New()
+		l.Logger.Out = output
+		ctx := Context(context.Background(), l)
 
 		Convey("defaults to warn", func() {
 
-			Debug(context.Background(), "debug")
-			Info(context.Background(), "info")
-			Warn(context.Background(), "warn")
+			Debug(ctx, "debug")
+			Info(ctx, "info")
+			Warn(ctx, "warn")
 
 			So(output.String(), ShouldNotContainSubstring, "level=info")
 			So(output.String(), ShouldNotContainSubstring, "level=debug")
@@ -51,57 +53,57 @@ func TestLogPackage(t *testing.T) {
 		})
 
 		Convey("Debug severity", func() {
-			defaultLogger.Level = logrus.InfoLevel
+			l.Logger.Level = logrus.InfoLevel
 			Debug(ctx, "Debug")
 			So(output.String(), ShouldEqual, "")
 
-			defaultLogger.Level = logrus.DebugLevel
+			l.Logger.Level = logrus.DebugLevel
 			Debug(ctx, "Debug")
 			So(output.String(), ShouldContainSubstring, "level=debug")
 			So(output.String(), ShouldContainSubstring, "msg=Debug")
 		})
 
 		Convey("Info severity", func() {
-			defaultLogger.Level = logrus.WarnLevel
+			l.Logger.Level = logrus.WarnLevel
 			Debug(ctx, "foo")
 			Info(ctx, "foo")
 			So(output.String(), ShouldEqual, "")
 
-			defaultLogger.Level = logrus.InfoLevel
+			l.Logger.Level = logrus.InfoLevel
 			Info(ctx, "foo")
 			So(output.String(), ShouldContainSubstring, "level=info")
 			So(output.String(), ShouldContainSubstring, "msg=foo")
 		})
 
 		Convey("Warn severity", func() {
-			defaultLogger.Level = logrus.ErrorLevel
+			l.Logger.Level = logrus.ErrorLevel
 			Debug(ctx, "foo")
 			Info(ctx, "foo")
 			Warn(ctx, "foo")
 			So(output.String(), ShouldEqual, "")
 
-			defaultLogger.Level = logrus.WarnLevel
+			l.Logger.Level = logrus.WarnLevel
 			Warn(ctx, "foo")
 			So(output.String(), ShouldContainSubstring, "level=warn")
 			So(output.String(), ShouldContainSubstring, "msg=foo")
 		})
 
 		Convey("Error severity", func() {
-			defaultLogger.Level = logrus.FatalLevel
+			l.Logger.Level = logrus.FatalLevel
 			Debug(ctx, "foo")
 			Info(ctx, "foo")
 			Warn(ctx, "foo")
 			Error(ctx, "foo")
 			So(output.String(), ShouldEqual, "")
 
-			defaultLogger.Level = logrus.ErrorLevel
+			l.Logger.Level = logrus.ErrorLevel
 			Error(ctx, "foo")
 			So(output.String(), ShouldContainSubstring, "level=error")
 			So(output.String(), ShouldContainSubstring, "msg=foo")
 		})
 
 		Convey("Panic severity", func() {
-			defaultLogger.Level = logrus.PanicLevel
+			l.Logger.Level = logrus.PanicLevel
 			Debug(ctx, "foo")
 			Info(ctx, "foo")
 			Warn(ctx, "foo")
@@ -118,13 +120,14 @@ func TestLogPackage(t *testing.T) {
 	})
 
 	Convey("Metrics", t, func() {
-		resetMeters()
 		output := new(bytes.Buffer)
-		defaultLogger.Out = output
-		ctx := context.Background()
+		l, m := New()
+		l.Logger.Level = logrus.DebugLevel
+		l.Logger.Out = output
 
-		for _, meter := range Meters {
+		ctx := Context(context.Background(), l)
 
+		for _, meter := range *m {
 			So(meter.Count(), ShouldEqual, 0)
 		}
 
@@ -136,7 +139,7 @@ func TestLogPackage(t *testing.T) {
 			Panic(ctx, "foo")
 		}, ShouldPanic)
 
-		for _, meter := range Meters {
+		for _, meter := range *m {
 			So(meter.Count(), ShouldEqual, 1)
 		}
 	})

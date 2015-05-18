@@ -1,7 +1,8 @@
 package horizon
 
 import (
-	"log"
+	"github.com/stellar/go-horizon/log"
+	"golang.org/x/net/context"
 )
 
 type InitFn func(*App)
@@ -16,12 +17,12 @@ type AppInit struct {
 	Initializers []Initializer
 }
 
+// Add adds a new initializer into the chain
 func (init *AppInit) Add(i Initializer) {
 	init.Initializers = append(init.Initializers, i)
 }
 
-// Initializes the provided application, but running every Initializer
-//
+// Run initializes the provided application, but running every Initializer
 func (init *AppInit) Run(app *App) {
 	alreadyRun := make(map[string]bool)
 
@@ -47,9 +48,11 @@ func (init *AppInit) Run(app *App) {
 				continue
 			}
 
+			log.Debugf(context.Background(), "running init:%s", i.Name)
 			i.Fn(app)
 			alreadyRun[i.Name] = true
 			ranInitializer = true
+			log.Debugf(context.Background(), "ran init:%s", i.Name)
 		}
 		// If, after a full loop through the initializers we ran nothing
 		// we are done
@@ -60,6 +63,6 @@ func (init *AppInit) Run(app *App) {
 
 	// if we didn't get to run all initializers, we have a cycle
 	if len(alreadyRun) != len(init.Initializers) {
-		log.Panicln("Initializer cycle detected")
+		log.Panicln(context.Background(), "initializer cycle detected")
 	}
 }

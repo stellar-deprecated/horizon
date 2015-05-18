@@ -3,12 +3,13 @@ package horizon
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/log"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
 	"golang.org/x/net/context"
@@ -17,19 +18,23 @@ import (
 var appContextKey = 0
 
 type App struct {
-	config    Config
-	metrics   metrics.Registry
-	web       *Web
-	historyDb *sql.DB
-	coreDb    *sql.DB
-	ctx       context.Context
-	cancel    func()
-	redis     *redis.Pool
+	config     Config
+	metrics    metrics.Registry
+	web        *Web
+	historyDb  *sql.DB
+	coreDb     *sql.DB
+	ctx        context.Context
+	cancel     func()
+	redis      *redis.Pool
+	log        *logrus.Entry
+	logMetrics *log.Metrics
 }
 
 func initAppContext(app *App) {
 	ctx, cancel := context.WithCancel(context.Background())
 	ctx = context.WithValue(ctx, &appContextKey, app)
+
+	ctx = log.Context(ctx, app.log)
 	app.ctx = ctx
 	app.cancel = cancel
 }
@@ -45,7 +50,9 @@ func NewApp(config Config) (*App, error) {
 	init.Add(Initializer{
 		"app-context",
 		initAppContext,
-		nil,
+		[]string{
+			"log",
+		},
 	})
 	init.Add(Initializer{
 		"metrics",
@@ -53,7 +60,12 @@ func NewApp(config Config) (*App, error) {
 		nil,
 	})
 	init.Add(Initializer{
-		"logging-metrics",
+		"log",
+		initLog,
+		nil,
+	})
+	init.Add(Initializer{
+		"log.metrics",
 		initLogMetrics,
 		[]string{
 			"metrics",
@@ -86,7 +98,9 @@ func NewApp(config Config) (*App, error) {
 	init.Add(Initializer{
 		"web.init",
 		initWeb,
-		nil,
+		[]string{
+			"app-context",
+		},
 	})
 	init.Add(Initializer{
 		"web.metrics",
@@ -133,16 +147,16 @@ func (a *App) Serve() {
 
 	listenStr := fmt.Sprintf(":%d", a.config.Port)
 	listener := bind.Socket(listenStr)
-	log.Println("Starting horizon on", listener.Addr())
+	log.Infof(a.ctx, "Starting horizon on %s", listener.Addr())
 
 	graceful.HandleSignals()
 	bind.Ready()
 	graceful.PreHook(func() {
-		log.Printf("received signal, gracefully stopping")
+		log.Info(a.ctx, "received signal, gracefully stopping")
 		a.Cancel()
 	})
 	graceful.PostHook(func() {
-		log.Printf("stopped")
+		log.Info(a.ctx, "stopped")
 	})
 
 	if a.config.Autopump {
@@ -155,7 +169,7 @@ func (a *App) Serve() {
 	err := graceful.Serve(listener, http.DefaultServeMux)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(a.ctx, err)
 	}
 
 	graceful.Wait()
