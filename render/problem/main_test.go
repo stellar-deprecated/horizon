@@ -1,14 +1,15 @@
 package problem
 
 import (
+	"net/http/httptest"
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/context/requestid"
 	"golang.org/x/net/context"
-	"net/http/httptest"
-	"testing"
 )
 
-func TestMain(t *testing.T) {
+func TestProblemPackage(t *testing.T) {
 	b := context.Background()
 
 	Convey("Common Problems", t, func() {

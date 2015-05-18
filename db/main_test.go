@@ -2,13 +2,14 @@ package db
 
 import (
 	"errors"
-	_ "github.com/lib/pq"
-	. "github.com/smartystreets/goconvey/convey"
 	"log"
 	"testing"
+
+	_ "github.com/lib/pq"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestMain(t *testing.T) {
+func TestDBPackage(t *testing.T) {
 
 	Convey("db.Results", t, func() {
 		query := &mockQuery{2}

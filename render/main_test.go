@@ -1,12 +1,13 @@
 package render
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"net/http"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestMain(t *testing.T) {
+func TestRenderPackage(t *testing.T) {
 
 	Convey("render.Negotiate", t, func() {
 
