@@ -1,10 +1,11 @@
 package horizon
 
 import (
-	"github.com/garyburd/redigo/redis"
-	"log"
 	"net/url"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
+	"github.com/stellar/go-horizon/log"
 )
 
 func initRedis(app *App) {
@@ -12,16 +13,16 @@ func initRedis(app *App) {
 		return
 	}
 
-	redisUrl, err := url.Parse(app.config.RedisUrl)
+	redisURL, err := url.Parse(app.config.RedisUrl)
 
 	if err != nil {
-		log.Panic(err)
+		log.Panic(app.ctx, err)
 	}
 
 	app.redis = &redis.Pool{
 		MaxIdle:      3,
 		IdleTimeout:  240 * time.Second,
-		Dial:         dialRedis(redisUrl),
+		Dial:         dialRedis(redisURL),
 		TestOnBorrow: pingRedis,
 	}
 
@@ -32,22 +33,22 @@ func initRedis(app *App) {
 	_, err = c.Do("PING")
 
 	if err != nil {
-		log.Panic(err)
+		log.Panic(app.ctx, err)
 	}
 }
 
-func dialRedis(redisUrl *url.URL) func() (redis.Conn, error) {
+func dialRedis(redisURL *url.URL) func() (redis.Conn, error) {
 	return func() (redis.Conn, error) {
-		c, err := redis.Dial("tcp", redisUrl.Host)
+		c, err := redis.Dial("tcp", redisURL.Host)
 		if err != nil {
 			return nil, err
 		}
 
-		if redisUrl.User == nil {
+		if redisURL.User == nil {
 			return c, err
 		}
 
-		if pass, ok := redisUrl.User.Password(); ok {
+		if pass, ok := redisURL.User.Password(); ok {
 			if _, err := c.Do("AUTH", pass); err != nil {
 				c.Close()
 				return nil, err

@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-var key struct{}
+var key = 0
 
 // Establishes a context from the provided parent and the provided request id
 // string.

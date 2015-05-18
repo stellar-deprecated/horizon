@@ -3,17 +3,18 @@ package horizon
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/garyburd/redigo/redis"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
 	"golang.org/x/net/context"
-	"log"
-	"net/http"
 )
 
-var appContextKey struct{}
+var appContextKey = 0
 
 type App struct {
 	config    Config
@@ -50,6 +51,13 @@ func NewApp(config Config) (*App, error) {
 		"metrics",
 		initMetrics,
 		nil,
+	})
+	init.Add(Initializer{
+		"logging-metrics",
+		initLogMetrics,
+		[]string{
+			"metrics",
+		},
 	})
 	init.Add(Initializer{
 		"redis",
@@ -163,14 +171,14 @@ func (a *App) Close() {
 	a.coreDb.Close()
 }
 
-// Returns a SqlQuery that can be embedded in a parent query
+// HistoryQuery returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the history database
 func (a *App) HistoryQuery() db.SqlQuery {
-	return db.SqlQuery{a.historyDb}
+	return db.SqlQuery{DB: a.historyDb}
 }
 
-// Returns a SqlQuery that can be embedded in a parent query
+// CoreQuery returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the connected stellar core database
 func (a *App) CoreQuery() db.SqlQuery {
-	return db.SqlQuery{a.coreDb}
+	return db.SqlQuery{DB: a.coreDb}
 }
