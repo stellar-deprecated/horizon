@@ -7,14 +7,24 @@ import (
 	"golang.org/x/net/context"
 )
 
+const (
+	// PaymentTypeFilter restricts an OperationPageQuery to return only
+	// Payment and PathPayment operations
+	PaymentTypeFilter = "payment"
+)
+
+// OperationPageQuery is the main query for paging through a collection
+// of operations in the history database.
 type OperationPageQuery struct {
 	SqlQuery
 	PageQuery
 	AccountAddress  string
 	LedgerSequence  int32
 	TransactionHash string
+	TypeFilter      string
 }
 
+// Get executes the query and returns the results
 func (q OperationPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 	sql := OperationRecordSelect.
 		Limit(uint64(q.Limit)).
@@ -81,6 +91,11 @@ func (q OperationPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 		sql = sql.
 			Join("history_operation_participants hopp ON hopp.history_operation_id = hop.id").
 			Where("hopp.history_account_id = ?", account.Id)
+	}
+
+	if q.TypeFilter == PaymentTypeFilter {
+		// TODO: pull constants from go-stellar-base when it exists
+		sql = sql.Where("hop.type IN (1,2)")
 	}
 
 	var records []OperationRecord

@@ -129,5 +129,15 @@ func TestOperationPageQuery(t *testing.T) {
 			}
 
 		})
+
+		Convey("obeys the type filter", func() {
+
+			q := makeQuery("", "asc", 0)
+			q.TypeFilter = PaymentTypeFilter
+			records := MustResults(ctx, q)
+
+			So(len(records), ShouldEqual, 1)
+
+		})
 	})
 }
