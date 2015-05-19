@@ -1,27 +1,32 @@
 package db
 
+import "golang.org/x/net/context"
+
+// AccountByAddressQuery represents a query that retrieves a composite
+// of the CoreAccount and the HistoryAccount associated with an address.
 type AccountByAddressQuery struct {
 	History SqlQuery
 	Core    SqlQuery
 	Address string
 }
 
-func (q AccountByAddressQuery) Get() ([]interface{}, error) {
+// Get executes the query, returning any results found
+func (q AccountByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
 	var result AccountRecord
 
 	haq := HistoryAccountByAddressQuery{q.History, q.Address}
 	caq := CoreAccountByAddressQuery{q.Core, q.Address}
 	ctlq := CoreTrustlinesByAddressQuery{q.Core, q.Address}
 
-	har, err := First(haq)
+	har, err := First(ctx, haq)
 	if err != nil {
 		return nil, err
 	}
-	car, err := First(caq)
+	car, err := First(ctx, caq)
 	if err != nil {
 		return nil, err
 	}
-	ctlr, err := Results(ctlq)
+	ctlr, err := Results(ctx, ctlq)
 	if err != nil {
 		return nil, err
 	}
@@ -41,6 +46,7 @@ func (q AccountByAddressQuery) Get() ([]interface{}, error) {
 	return []interface{}{result}, nil
 }
 
-func (q AccountByAddressQuery) IsComplete(alreadyDelivered int) bool {
+// IsComplete returns true when the query considers itself finished.
+func (q AccountByAddressQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered > 0
 }

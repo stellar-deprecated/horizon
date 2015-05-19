@@ -1,14 +1,15 @@
 package render
 
 import (
-	"bitbucket.org/ww/goautoneg"
 	"errors"
+	"net/http"
+
+	"bitbucket.org/ww/goautoneg"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/stellar/go-horizon/render/sse"
 	"golang.org/x/net/context"
-	"net/http"
 )
 
 const (
@@ -35,7 +36,7 @@ func Collection(ctx context.Context, w http.ResponseWriter, r *http.Request, q d
 
 	switch contentType {
 	case MimeHal, MimeJson:
-		records, err := db.Results(q)
+		records, err := db.Results(ctx, q)
 		if err != nil {
 			panic(err)
 		}
@@ -86,7 +87,7 @@ func Collection(ctx context.Context, w http.ResponseWriter, r *http.Request, q d
 }
 
 func Single(ctx context.Context, w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
-	record, err := db.First(q)
+	record, err := db.First(ctx, q)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

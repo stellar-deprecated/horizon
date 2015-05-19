@@ -2,7 +2,9 @@ package db
 
 import (
 	"errors"
+
 	sq "github.com/lann/squirrel"
+	"golang.org/x/net/context"
 )
 
 type OperationPageQuery struct {
@@ -13,7 +15,7 @@ type OperationPageQuery struct {
 	TransactionHash string
 }
 
-func (q OperationPageQuery) Get() ([]interface{}, error) {
+func (q OperationPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 	sql := OperationRecordSelect.
 		Limit(uint64(q.Limit)).
 		PlaceholderFormat(sq.Dollar).
@@ -45,7 +47,7 @@ func (q OperationPageQuery) Get() ([]interface{}, error) {
 
 	// filter by transaction hash
 	if q.TransactionHash != "" {
-		record, err := First(TransactionByHashQuery{q.SqlQuery, q.TransactionHash})
+		record, err := First(ctx, TransactionByHashQuery{q.SqlQuery, q.TransactionHash})
 
 		if err != nil {
 			return nil, err
@@ -65,7 +67,7 @@ func (q OperationPageQuery) Get() ([]interface{}, error) {
 
 	// filter by account address
 	if q.AccountAddress != "" {
-		record, err := First(HistoryAccountByAddressQuery{q.SqlQuery, q.AccountAddress})
+		record, err := First(ctx, HistoryAccountByAddressQuery{q.SqlQuery, q.AccountAddress})
 
 		if err != nil {
 			return nil, err
@@ -82,10 +84,10 @@ func (q OperationPageQuery) Get() ([]interface{}, error) {
 	}
 
 	var records []OperationRecord
-	err = q.SqlQuery.Select(sql, &records)
+	err = q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 }
 
-func (q OperationPageQuery) IsComplete(alreadyDelivered int) bool {
+func (q OperationPageQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered >= int(q.Limit)
 }

@@ -2,16 +2,17 @@ package db
 
 import (
 	sq "github.com/lann/squirrel"
+	"golang.org/x/net/context"
 )
 
-// Retrieves the latest ledgers for stellar-core and horizon.
-//
+// LedgerStateQuery retrieves the latest ledgers for stellar-core and horizon.
 type LedgerStateQuery struct {
 	Horizon SqlQuery
 	Core    SqlQuery
 }
 
-func (q LedgerStateQuery) Get() ([]interface{}, error) {
+// Get executes the query, returning any found results
+func (q LedgerStateQuery) Get(ctx context.Context) ([]interface{}, error) {
 	hSql := sq.
 		Select("MAX(sequence) as horizonsequence").
 		From("history_ledgers")
@@ -22,13 +23,13 @@ func (q LedgerStateQuery) Get() ([]interface{}, error) {
 
 	var result LedgerState
 
-	err := q.Horizon.Get(hSql, &result)
+	err := q.Horizon.Get(ctx, hSql, &result)
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = q.Core.Get(scSql, &result)
+	err = q.Core.Get(ctx, scSql, &result)
 
 	if err != nil {
 		return nil, err
@@ -37,6 +38,6 @@ func (q LedgerStateQuery) Get() ([]interface{}, error) {
 	return []interface{}{result}, nil
 }
 
-func (l LedgerStateQuery) IsComplete(alreadyDelivered int) bool {
+func (l LedgerStateQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered > 1
 }

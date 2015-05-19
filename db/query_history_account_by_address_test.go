@@ -1,14 +1,16 @@
 package db
 
 import (
+	"testing"
+
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"testing"
 )
 
 func TestHistoryAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("base")
+	ctx := test.Context()
 	db := OpenTestDatabase()
 	defer db.Close()
 
@@ -20,7 +22,7 @@ func TestHistoryAccountByAddressQuery(t *testing.T) {
 				SqlQuery{db},
 				address,
 			}
-			result, err := First(q)
+			result, err := First(ctx, q)
 			So(err, ShouldBeNil)
 			account := result.(HistoryAccountRecord)
 
@@ -34,7 +36,7 @@ func TestHistoryAccountByAddressQuery(t *testing.T) {
 				SqlQuery{db},
 				address,
 			}
-			result, err := First(q)
+			result, err := First(ctx, q)
 			So(result, ShouldBeNil)
 			So(err, ShouldBeNil)
 		})

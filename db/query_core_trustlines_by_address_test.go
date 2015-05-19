@@ -1,14 +1,16 @@
 package db
 
 import (
+	"testing"
+
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"testing"
 )
 
 func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 	test.LoadScenario("non_native_payment")
+	ctx := test.Context()
 	db := OpenStellarCoreTestDatabase()
 	defer db.Close()
 
@@ -21,7 +23,7 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 			withtl,
 		}
 
-		results, err := Results(q)
+		results, err := Results(ctx, q)
 		So(err, ShouldBeNil)
 		So(len(results), ShouldEqual, 1)
 
@@ -38,7 +40,7 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 			notl,
 		}
 
-		results, err = Results(q)
+		results, err = Results(ctx, q)
 		So(err, ShouldBeNil)
 		So(len(results), ShouldEqual, 0)
 	})

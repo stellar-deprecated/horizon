@@ -53,7 +53,7 @@ func (sm *streamManager) PumpOne(q Query) {
 // WARNING: only call this within an `sm.Do(func(){})` block, otherwise we will
 // race with other pumps.
 func (sm *streamManager) pumpQuery(q Query, l listenerMap) {
-	results, err := q.Get()
+	results, err := q.Get(context.TODO())
 
 	if err != nil {
 		// TODO: log an error
@@ -64,7 +64,7 @@ func (sm *streamManager) pumpQuery(q Query, l listenerMap) {
 	for sq, listener := range l {
 		ok := listener.Deliver(results)
 
-		if !ok || q.IsComplete(listener.sentCount) {
+		if !ok || q.IsComplete(context.TODO(), listener.sentCount) {
 			sm.removeListener(q, sq)
 		}
 

@@ -1,9 +1,10 @@
 package db
 
 import (
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"testing"
 )
 
 func TestLedgerState(t *testing.T) {
@@ -17,7 +18,7 @@ func TestLedgerState(t *testing.T) {
 		So(horizonLedgerGauge.Value(), ShouldEqual, 0)
 		So(stellarCoreLedgerGauge.Value(), ShouldEqual, 0)
 
-		UpdateLedgerState(SqlQuery{horizon}, SqlQuery{core})
+		UpdateLedgerState(test.Context(), SqlQuery{horizon}, SqlQuery{core})
 
 		So(horizonLedgerGauge.Value(), ShouldEqual, 4)
 		So(stellarCoreLedgerGauge.Value(), ShouldEqual, 4)

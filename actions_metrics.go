@@ -1,18 +1,20 @@
 package horizon
 
 import (
+	"net/http"
+
 	"github.com/jagregory/halgo"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/zenazn/goji/web"
-	"net/http"
 )
 
 func metricsAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	app := c.Env["app"].(*App)
+	ah := &ActionHelper{c: c, r: r}
+	app := ah.App()
 
-	db.UpdateLedgerState(app.HistoryQuery(), app.CoreQuery())
+	db.UpdateLedgerState(ah.Context(), app.HistoryQuery(), app.CoreQuery())
 
 	snapshot := newMetricsSnapshot(app.metrics)
 	snapshot["_links"] = map[string]interface{}{

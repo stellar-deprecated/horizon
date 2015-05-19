@@ -3,9 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/stellar/go-horizon/test"
 	"log"
 	"math"
+
+	"github.com/stellar/go-horizon/test"
+	"golang.org/x/net/context"
 )
 
 func OpenTestDatabase() *sql.DB {
@@ -70,7 +72,7 @@ func ShouldBeOrderedDescending(actual interface{}, options ...interface{}) strin
 
 type mockDumpQuery struct{}
 
-func (q mockDumpQuery) Get() ([]interface{}, error) {
+func (q mockDumpQuery) Get(ctx context.Context) ([]interface{}, error) {
 	return []interface{}{
 		"hello",
 		"world",
@@ -79,7 +81,7 @@ func (q mockDumpQuery) Get() ([]interface{}, error) {
 	}, nil
 }
 
-func (q mockDumpQuery) IsComplete(alreadyDelivered int) bool {
+func (q mockDumpQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered >= 4
 }
 
@@ -93,7 +95,7 @@ type mockResult struct {
 	index int
 }
 
-func (q mockQuery) Get() ([]interface{}, error) {
+func (q mockQuery) Get(ctx context.Context) ([]interface{}, error) {
 	results := make([]interface{}, q.resultCount)
 
 	for i := 0; i < q.resultCount; i++ {
@@ -103,7 +105,7 @@ func (q mockQuery) Get() ([]interface{}, error) {
 	return results, nil
 }
 
-func (q mockQuery) IsComplete(alreadyDelivered int) bool {
+func (q mockQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered >= q.resultCount
 }
 
@@ -113,10 +115,10 @@ type BrokenQuery struct {
 	Err error
 }
 
-func (q BrokenQuery) Get() ([]interface{}, error) {
+func (q BrokenQuery) Get(ctx context.Context) ([]interface{}, error) {
 	return nil, q.Err
 }
 
-func (q BrokenQuery) IsComplete(alreadyDelivered int) bool {
+func (q BrokenQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered > 0
 }

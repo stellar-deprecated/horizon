@@ -1,18 +1,20 @@
 package db
 
+import "golang.org/x/net/context"
+
 type LedgerBySequenceQuery struct {
 	SqlQuery
 	Sequence int32
 }
 
-func (q LedgerBySequenceQuery) Get() ([]interface{}, error) {
+func (q LedgerBySequenceQuery) Get(ctx context.Context) ([]interface{}, error) {
 	sql := LedgerRecordSelect.Where("sequence = ?", q.Sequence).Limit(1)
 
 	var records []LedgerRecord
-	err := q.SqlQuery.Select(sql, &records)
+	err := q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 }
 
-func (l LedgerBySequenceQuery) IsComplete(alreadyDelivered int) bool {
+func (l LedgerBySequenceQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered > 0
 }

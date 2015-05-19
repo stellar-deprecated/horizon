@@ -1,13 +1,15 @@
 package db
 
 import (
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"testing"
 )
 
 func TestLedgerStateQuery(t *testing.T) {
 	test.LoadScenario("base")
+	ctx := test.Context()
 	horizon := OpenTestDatabase()
 	defer horizon.Close()
 	core := OpenStellarCoreTestDatabase()
@@ -19,7 +21,7 @@ func TestLedgerStateQuery(t *testing.T) {
 			SqlQuery{horizon},
 			SqlQuery{core},
 		}
-		record, err := First(q)
+		record, err := First(ctx, q)
 		So(err, ShouldBeNil)
 
 		ls := record.(LedgerState)

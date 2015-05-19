@@ -1,11 +1,13 @@
 package db
 
+import "golang.org/x/net/context"
+
 type LedgerPageQuery struct {
 	SqlQuery
 	PageQuery
 }
 
-func (q LedgerPageQuery) Get() ([]interface{}, error) {
+func (q LedgerPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 	sql := LedgerRecordSelect.
 		Limit(uint64(q.Limit))
 
@@ -17,10 +19,10 @@ func (q LedgerPageQuery) Get() ([]interface{}, error) {
 	}
 
 	var records []LedgerRecord
-	err := q.SqlQuery.Select(sql, &records)
+	err := q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 }
 
-func (q LedgerPageQuery) IsComplete(alreadyDelivered int) bool {
+func (q LedgerPageQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered >= int(q.Limit)
 }
