@@ -25,6 +25,15 @@ func Context(parent context.Context, entry *logrus.Entry) context.Context {
 	return context.WithValue(parent, &contextKey, entry)
 }
 
+// PushContext is a helper method to derive a new context with a modified logger
+// bound to it, where the logger is derived from the current value on the
+// context.
+func PushContext(parent context.Context, modFn func(entry *logrus.Entry) *logrus.Entry) context.Context {
+	current := FromContext(parent)
+	next := modFn(current)
+	return Context(parent, next)
+}
+
 func WithField(ctx context.Context, key string, value interface{}) *logrus.Entry {
 	return FromContext(ctx).WithField(key, value)
 }

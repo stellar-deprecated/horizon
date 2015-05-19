@@ -35,6 +35,24 @@ func TestLogPackage(t *testing.T) {
 		So(FromContext(nctx), ShouldEqual, nested)
 	})
 
+	Convey("PushContext", t, func() {
+		output := new(bytes.Buffer)
+		l, _ := New()
+		l.Logger.Out = output
+		ctx := Context(context.Background(), l.WithField("foo", "bar"))
+
+		Warn(ctx, "hello")
+		So(output.String(), ShouldContainSubstring, "foo=bar")
+		So(output.String(), ShouldNotContainSubstring, "foo=baz")
+
+		ctx = PushContext(ctx, func(entry *logrus.Entry) *logrus.Entry {
+			return entry.WithField("foo", "baz")
+		})
+
+		Warn(ctx, "hello")
+		So(output.String(), ShouldContainSubstring, "foo=baz")
+	})
+
 	Convey("Logging Statements", t, func() {
 		output := new(bytes.Buffer)
 		l, _ := New()
