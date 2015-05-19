@@ -1,5 +1,7 @@
 package db
 
+import "golang.org/x/net/context"
+
 type TransactionPageQuery struct {
 	SqlQuery
 	PageQuery
@@ -7,7 +9,7 @@ type TransactionPageQuery struct {
 	LedgerSequence int32
 }
 
-func (q TransactionPageQuery) Get() ([]interface{}, error) {
+func (q TransactionPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 	sql := TransactionRecordSelect.
 		Limit(uint64(q.Limit))
 
@@ -29,10 +31,10 @@ func (q TransactionPageQuery) Get() ([]interface{}, error) {
 	}
 
 	var records []TransactionRecord
-	err := q.SqlQuery.Select(sql, &records)
+	err := q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 }
 
-func (q TransactionPageQuery) IsComplete(alreadyDelivered int) bool {
+func (q TransactionPageQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered >= int(q.Limit)
 }

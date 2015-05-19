@@ -1,16 +1,18 @@
 package db
 
 import (
+	"testing"
+
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"testing"
 )
 
 func TestLedgerBySequenceQuery(t *testing.T) {
 
 	Convey("LedgerBySequenceQuery", t, func() {
 		test.LoadScenario("base")
+		ctx := test.Context()
 		db := OpenTestDatabase()
 		defer db.Close()
 
@@ -20,7 +22,7 @@ func TestLedgerBySequenceQuery(t *testing.T) {
 				SqlQuery{db},
 				sequence,
 			}
-			ledgers, err := Results(q)
+			ledgers, err := Results(ctx, q)
 
 			So(err, ShouldBeNil)
 			So(len(ledgers), ShouldEqual, 1)
@@ -35,7 +37,7 @@ func TestLedgerBySequenceQuery(t *testing.T) {
 				SqlQuery{db},
 				sequence,
 			}
-			ledgers, err := Results(q)
+			ledgers, err := Results(ctx, q)
 
 			So(err, ShouldBeNil)
 			So(len(ledgers), ShouldEqual, 0)

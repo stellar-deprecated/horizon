@@ -3,14 +3,17 @@ package db
 import (
 	"database/sql"
 	"errors"
-	_ "github.com/lib/pq"
-	"github.com/rcrowley/go-metrics"
 	"reflect"
+
+	"golang.org/x/net/context"
+
+	_ "github.com/lib/pq" // allow postgres sql connections
+	"github.com/rcrowley/go-metrics"
 )
 
 type Query interface {
-	Get() ([]interface{}, error)
-	IsComplete(int) bool
+	Get(context.Context) ([]interface{}, error)
+	IsComplete(context.Context, int) bool
 }
 
 type Pageable interface {
@@ -38,15 +41,15 @@ func Open(url string) (*sql.DB, error) {
 	return db, nil
 }
 
-// Runs the provided query, returning all found results
-func Results(query Query) ([]interface{}, error) {
-	return query.Get()
+// Results runs the provided query, returning all found results
+func Results(ctx context.Context, query Query) ([]interface{}, error) {
+	return query.Get(ctx)
 }
 
-// Runs the provided query, returning the first result if found,
+// First runs the provided query, returning the first result if found,
 // otherwise nil
-func First(query Query) (interface{}, error) {
-	res, err := query.Get()
+func First(ctx context.Context, query Query) (interface{}, error) {
+	res, err := query.Get(ctx)
 
 	switch {
 	case err != nil:
@@ -58,8 +61,8 @@ func First(query Query) (interface{}, error) {
 	}
 }
 
-func MustFirst(q Query) interface{} {
-	result, err := First(q)
+func MustFirst(ctx context.Context, q Query) interface{} {
+	result, err := First(ctx, q)
 
 	if err != nil {
 		panic(err)
@@ -68,8 +71,8 @@ func MustFirst(q Query) interface{} {
 	return result
 }
 
-func MustResults(q Query) []interface{} {
-	result, err := Results(q)
+func MustResults(ctx context.Context, q Query) []interface{} {
+	result, err := Results(ctx, q)
 
 	if err != nil {
 		panic(err)

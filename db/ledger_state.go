@@ -2,26 +2,34 @@ package db
 
 import (
 	"github.com/rcrowley/go-metrics"
+	"golang.org/x/net/context"
 )
 
-// Represents the latest known ledgers for both
+// LedgerState represents the latest known ledgers for both
 // horizon and stellar-core.
 type LedgerState struct {
 	HorizonSequence     int32
 	StellarCoreSequence int32
 }
 
+// HorizonLedgerGauge returns the guage that measures what the latest
+// ledger is according to the history database.
 func HorizonLedgerGauge() metrics.Gauge {
 	return horizonLedgerGauge
 }
 
+// StellarCoreLedgerGauge returns the guage that measures what the latest
+// ledger is according to the stellar-core-database.
 func StellarCoreLedgerGauge() metrics.Gauge {
 	return stellarCoreLedgerGauge
 }
 
-func UpdateLedgerState(horizon SqlQuery, core SqlQuery) error {
+// UpdateLedgerState triggers an update of the ledger state guages.  It
+// retrieves the latest known query from both the stellar-core database as well
+// as the history database.
+func UpdateLedgerState(ctx context.Context, horizon SqlQuery, core SqlQuery) error {
 	q := LedgerStateQuery{horizon, core}
-	record, err := First(q)
+	record, err := First(ctx, q)
 
 	if err != nil {
 		return err

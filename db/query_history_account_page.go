@@ -1,5 +1,7 @@
 package db
 
+import "golang.org/x/net/context"
+
 // HistoryAccountPageQuery queries for a single page of HitoryAccount objects,
 // in the normal collection paging style
 type HistoryAccountPageQuery struct {
@@ -8,7 +10,7 @@ type HistoryAccountPageQuery struct {
 }
 
 // Get executes the query, returning any results
-func (q HistoryAccountPageQuery) Get() ([]interface{}, error) {
+func (q HistoryAccountPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 	sql := HistoryAccountRecordSelect.
 		Limit(uint64(q.Limit))
 
@@ -20,13 +22,13 @@ func (q HistoryAccountPageQuery) Get() ([]interface{}, error) {
 	}
 
 	var records []HistoryAccountRecord
-	err := q.SqlQuery.Select(sql, &records)
+	err := q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 }
 
 // IsComplete returns true if the query considers itself complete.  In this case,
 // the query will consider itself complete when it has delivered it's
 // limit
-func (q HistoryAccountPageQuery) IsComplete(alreadyDelivered int) bool {
+func (q HistoryAccountPageQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
 	return alreadyDelivered >= int(q.Limit)
 }

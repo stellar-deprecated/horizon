@@ -1,15 +1,17 @@
 package db
 
 import (
+	"strconv"
+	"testing"
+
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"strconv"
-	"testing"
 )
 
 func TestLedgerPageQuery(t *testing.T) {
 	test.LoadScenario("base")
+	ctx := test.Context()
 	db := OpenTestDatabase()
 	defer db.Close()
 
@@ -18,7 +20,7 @@ func TestLedgerPageQuery(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		q := LedgerPageQuery{SqlQuery{db}, pq}
-		ledgers, err := Results(q)
+		ledgers, err := Results(ctx, q)
 
 		So(err, ShouldBeNil)
 		So(len(ledgers), ShouldEqual, 3)
@@ -36,7 +38,7 @@ func TestLedgerPageQuery(t *testing.T) {
 		cursor, _ := strconv.ParseInt(lastLedger.PagingToken(), 10, 64)
 		q.Cursor = cursor
 
-		ledgers, err = Results(q)
+		ledgers, err = Results(ctx, q)
 
 		So(err, ShouldBeNil)
 		So(len(ledgers), ShouldEqual, 1)
