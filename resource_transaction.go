@@ -2,17 +2,17 @@ package horizon
 
 import (
 	"fmt"
+
 	"github.com/jagregory/halgo"
+
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
-	"github.com/stellar/go-horizon/render/problem"
-	"github.com/zenazn/goji/web"
-	"net/http"
 )
 
+// TransactionResource is the display form of a transaction.
 type TransactionResource struct {
 	halgo.Links
-	Id               string `json:"id"`
+	ID               string `json:"id"`
 	PagingToken      string `json:"paging_token"`
 	Hash             string `json:"hash"`
 	Ledger           int32  `json:"ledger"`
@@ -30,48 +30,7 @@ type TransactionResource struct {
 
 func (r TransactionResource) SseData() interface{} { return r }
 func (r TransactionResource) Err() error           { return nil }
-func (r TransactionResource) SseId() string        { return r.Id }
-
-func NewTransactionResource(in interface{}) TransactionResource {
-	return TransactionResource{}
-}
-
-func transactionIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c, r: r}
-	app := ah.App()
-
-	q := db.TransactionPageQuery{
-		app.HistoryQuery(),
-		ah.GetPageQuery(),
-		ah.GetString("account_id"),
-		ah.GetInt32("ledger_id"),
-	}
-
-	if ah.Err() != nil {
-		problem.Render(ah.Context(), w, problem.ServerError)
-		return
-	}
-
-	render.Collection(ah.Context(), w, r, q, transactionRecordToResource)
-}
-
-func transactionShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c, r: r}
-	app := ah.App()
-	hash := ah.GetString("id")
-
-	if ah.Err() != nil {
-		problem.Render(ah.Context(), w, problem.NotFound)
-		return
-	}
-
-	q := db.TransactionByHashQuery{
-		app.HistoryQuery(),
-		hash,
-	}
-
-	render.Single(ah.Context(), w, r, q, transactionRecordToResource)
-}
+func (r TransactionResource) SseId() string        { return r.PagingToken }
 
 func transactionRecordToResource(record db.Record) (render.Resource, error) {
 	tx := record.(db.TransactionRecord)
@@ -85,9 +44,9 @@ func transactionRecordToResource(record db.Record) (render.Resource, error) {
 			Link("ledger", "/ledgers/%d", tx.LedgerSequence).
 			Link("operations", "%s/operations/%s", self, po).
 			Link("effects", "%s/effects/%s", self, po).
-			Link("precedes", "/transactions?cursor=%d&order=asc", tx.PagingToken()).
-			Link("succeeds", "/transactions?cursor=%d&order=desc", tx.PagingToken()),
-		Id:               tx.TransactionHash,
+			Link("precedes", "/transactions?cursor=%s&order=asc", tx.PagingToken()).
+			Link("succeeds", "/transactions?cursor=%s&order=desc", tx.PagingToken()),
+		ID:               tx.TransactionHash,
 		PagingToken:      tx.PagingToken(),
 		Hash:             tx.TransactionHash,
 		Ledger:           tx.LedgerSequence,

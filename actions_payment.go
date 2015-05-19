@@ -9,7 +9,7 @@ import (
 	"github.com/zenazn/goji/web"
 )
 
-func operationIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
+func paymentsIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
 
@@ -19,6 +19,7 @@ func operationIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 		AccountAddress:  ah.GetString("account_id"),
 		LedgerSequence:  ah.GetInt32("ledger_id"),
 		TransactionHash: ah.GetString("tx_id"),
+		TypeFilter:      db.PaymentTypeFilter,
 	}
 
 	if ah.Err() != nil {

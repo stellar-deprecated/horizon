@@ -78,7 +78,7 @@ func initWebActions(app *App) {
 	r.Get("/ledgers/:id", ledgerShowAction)
 	r.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
 	r.Get("/ledgers/:ledger_id/operations", operationIndexAction)
-	r.Get("/ledgers/:ledger_id/payments", notImplementedAction)
+	r.Get("/ledgers/:ledger_id/payments", paymentsIndexAction)
 	r.Get("/ledgers/:ledger_id/effects", notImplementedAction)
 
 	// account actions
@@ -86,14 +86,14 @@ func initWebActions(app *App) {
 	r.Get("/accounts/:id", accountShowAction)
 	r.Get("/accounts/:account_id/transactions", transactionIndexAction)
 	r.Get("/accounts/:account_id/operations", operationIndexAction)
-	r.Get("/accounts/:account_id/payments", notImplementedAction)
+	r.Get("/accounts/:account_id/payments", paymentsIndexAction)
 	r.Get("/accounts/:account_id/effects", notImplementedAction)
 
 	// transaction actions
 	r.Get("/transactions", transactionIndexAction)
 	r.Get("/transactions/:id", transactionShowAction)
 	r.Get("/transactions/:tx_id/operations", operationIndexAction)
-	r.Get("/transactions/:tx_id/payments", notImplementedAction)
+	r.Get("/transactions/:tx_id/payments", paymentsIndexAction)
 	r.Get("/transactions/:tx_id/effects", notImplementedAction)
 
 	// operation actions
@@ -101,7 +101,7 @@ func initWebActions(app *App) {
 	r.Get("/operations/:id", notImplementedAction)
 	r.Get("/operations/:op_id/effects", notImplementedAction)
 
-	r.Get("/payments", notImplementedAction)
+	r.Get("/payments", paymentsIndexAction)
 
 	// go-horizon doesn't implement everything horizon did,
 	// so we reverse proxy if we can
