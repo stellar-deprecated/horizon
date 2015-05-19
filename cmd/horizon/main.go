@@ -1,13 +1,16 @@
 package main
 
 import (
-	"github.com/PuerkitoBio/throttled"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/stellar/go-horizon"
 	"log"
 	"os"
 	"runtime"
+
+	"github.com/PuerkitoBio/throttled"
+	"github.com/Sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/stellar/go-horizon"
+	hlog "github.com/stellar/go-horizon/log"
 )
 
 var app *horizon.App
@@ -31,6 +34,7 @@ func init() {
 	viper.BindEnv("per-hour-rate-limit", "PER_HOUR_RATE_LIMIT")
 	viper.BindEnv("redis-url", "REDIS_URL")
 	viper.BindEnv("ruby-horizon-url", "RUBY_HORIZON_URL")
+	viper.BindEnv("log-level", "LOG_LEVEL")
 
 	rootCmd = &cobra.Command{
 		Use:   "horizon",
@@ -87,10 +91,18 @@ func init() {
 		"proxy yet-to-be-implemented actions through to ruby horizon server",
 	)
 
+	rootCmd.Flags().String(
+		"log-level",
+		"info",
+		"Minimum log severity (debug, info, warn, error) to log",
+	)
+
 	viper.BindPFlags(rootCmd.Flags())
 }
 
 func run(cmd *cobra.Command, args []string) {
+
+	var err error
 
 	if viper.GetString("db-url") == "" {
 		rootCmd.Help()
@@ -102,6 +114,14 @@ func run(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	ll, err := logrus.ParseLevel(viper.GetString("log-level"))
+
+	if err != nil {
+		log.Fatalf("Could not parse log-level: %v", viper.GetString("log-level"))
+	}
+
+	hlog.SetDefaultLoggerLevel(ll)
+
 	config := horizon.Config{
 		DatabaseUrl:            viper.GetString("db-url"),
 		StellarCoreDatabaseUrl: viper.GetString("stellar-core-db-url"),
@@ -110,9 +130,9 @@ func run(cmd *cobra.Command, args []string) {
 		RateLimit:              throttled.PerHour(viper.GetInt("per-hour-rate-limit")),
 		RedisUrl:               viper.GetString("redis-url"),
 		RubyHorizonUrl:         viper.GetString("ruby-horizon-url"),
+		LogLevel:               ll,
 	}
 
-	var err error
 	app, err = horizon.NewApp(config)
 
 	if err != nil {

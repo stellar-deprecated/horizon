@@ -3,9 +3,9 @@ package sse
 import (
 	"encoding/json"
 	"fmt"
-	"golang.org/x/net/context"
-	"log"
 	"net/http"
+
+	"golang.org/x/net/context"
 )
 
 // If the value that we want to stream to the connected client implements this
@@ -122,7 +122,7 @@ func getJson(val interface{}) string {
 	js, err := json.Marshal(val)
 
 	if err != nil {
-		log.Panic(err)
+		panic(err)
 	}
 
 	return string(js)

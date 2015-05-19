@@ -3,53 +3,75 @@ package horizon
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
+
+	"github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/log"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
 	"golang.org/x/net/context"
-	"log"
-	"net/http"
 )
 
-var appContextKey struct{}
+var appContextKey = 0
 
 type App struct {
-	config    Config
-	metrics   metrics.Registry
-	web       *Web
-	historyDb *sql.DB
-	coreDb    *sql.DB
-	ctx       context.Context
-	cancel    func()
-	redis     *redis.Pool
+	config     Config
+	metrics    metrics.Registry
+	web        *Web
+	historyDb  *sql.DB
+	coreDb     *sql.DB
+	ctx        context.Context
+	cancel     func()
+	redis      *redis.Pool
+	log        *logrus.Entry
+	logMetrics *log.Metrics
 }
 
 func initAppContext(app *App) {
 	ctx, cancel := context.WithCancel(context.Background())
 	ctx = context.WithValue(ctx, &appContextKey, app)
+
+	ctx = log.Context(ctx, app.log)
 	app.ctx = ctx
 	app.cancel = cancel
 }
 
+// AppFromContext retrieves a *App from the context tree.
 func AppFromContext(ctx context.Context) (*App, bool) {
 	a, ok := ctx.Value(&appContextKey).(*App)
 	return a, ok
 }
 
+// NewApp constructs an new App instance from the provided config.
 func NewApp(config Config) (*App, error) {
 
 	init := &AppInit{}
 	init.Add(Initializer{
 		"app-context",
 		initAppContext,
-		nil,
+		[]string{
+			"log",
+		},
 	})
 	init.Add(Initializer{
 		"metrics",
 		initMetrics,
 		nil,
+	})
+	init.Add(Initializer{
+		"log",
+		initLog,
+		nil,
+	})
+	init.Add(Initializer{
+		"log.metrics",
+		initLogMetrics,
+		[]string{
+			"metrics",
+		},
 	})
 	init.Add(Initializer{
 		"redis",
@@ -59,12 +81,18 @@ func NewApp(config Config) (*App, error) {
 	init.Add(Initializer{
 		"history-db",
 		initHistoryDb,
-		nil,
+		[]string{
+			"app-context",
+			"log",
+		},
 	})
 	init.Add(Initializer{
 		"core-db",
 		initCoreDb,
-		nil,
+		[]string{
+			"app-context",
+			"log",
+		},
 	})
 	init.Add(Initializer{
 		"db-metrics",
@@ -78,7 +106,9 @@ func NewApp(config Config) (*App, error) {
 	init.Add(Initializer{
 		"web.init",
 		initWeb,
-		nil,
+		[]string{
+			"app-context",
+		},
 	})
 	init.Add(Initializer{
 		"web.metrics",
@@ -118,6 +148,8 @@ func NewApp(config Config) (*App, error) {
 	return result, nil
 }
 
+// Serve starts the go-horizon system, binding it to a socket, setting up
+// the shutdown signals and starting the appropriate db-streaming pumps.
 func (a *App) Serve() {
 
 	a.web.router.Compile()
@@ -125,16 +157,16 @@ func (a *App) Serve() {
 
 	listenStr := fmt.Sprintf(":%d", a.config.Port)
 	listener := bind.Socket(listenStr)
-	log.Println("Starting horizon on", listener.Addr())
+	log.Infof(a.ctx, "Starting horizon on %s", listener.Addr())
 
 	graceful.HandleSignals()
 	bind.Ready()
 	graceful.PreHook(func() {
-		log.Printf("received signal, gracefully stopping")
+		log.Info(a.ctx, "received signal, gracefully stopping")
 		a.Cancel()
 	})
 	graceful.PostHook(func() {
-		log.Printf("stopped")
+		log.Info(a.ctx, "stopped")
 	})
 
 	if a.config.Autopump {
@@ -147,30 +179,35 @@ func (a *App) Serve() {
 	err := graceful.Serve(listener, http.DefaultServeMux)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(a.ctx, err)
 	}
 
 	graceful.Wait()
 }
 
+// Cancel triggers the app's cancellation signal, which will trigger the shutdown
+// of all child subsystems.  Note connections to external systems (such as db
+// connections) are not closed.  Use `Close()` to force immediate closure of
+// those resources
 func (a *App) Cancel() {
 	a.cancel()
 }
 
+// Close cancels the app and forces the closure of db connections
 func (a *App) Close() {
 	a.Cancel()
 	a.historyDb.Close()
 	a.coreDb.Close()
 }
 
-// Returns a SqlQuery that can be embedded in a parent query
+// HistoryQuery returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the history database
 func (a *App) HistoryQuery() db.SqlQuery {
-	return db.SqlQuery{a.historyDb}
+	return db.SqlQuery{DB: a.historyDb}
 }
 
-// Returns a SqlQuery that can be embedded in a parent query
+// CoreQuery returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the connected stellar core database
 func (a *App) CoreQuery() db.SqlQuery {
-	return db.SqlQuery{a.coreDb}
+	return db.SqlQuery{DB: a.coreDb}
 }

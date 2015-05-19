@@ -15,6 +15,8 @@ import (
 	"github.com/zenazn/goji/web/middleware"
 )
 
+// Web contains the http server related fields for go-horizon: the router,
+// rate limiter, etc.
 type Web struct {
 	router      *web.Mux
 	rateLimiter *throttled.Throttler
@@ -24,6 +26,7 @@ type Web struct {
 	successMeter metrics.Meter
 }
 
+// initWeb installed a new Web instance onto the provided app object.
 func initWeb(app *App) {
 	app.web = &Web{
 		router:       web.New(),
@@ -33,12 +36,16 @@ func initWeb(app *App) {
 	}
 }
 
+// initWebMetrics registers the metrics for the web server into the provided
+// app's metrics registry.
 func initWebMetrics(app *App) {
 	app.metrics.Register("requests.total", app.web.requestTimer)
 	app.metrics.Register("requests.succeeded", app.web.successMeter)
 	app.metrics.Register("requests.failed", app.web.failureMeter)
 }
 
+// initWebMiddleware installs the middleware stack used for go-horizon onto the
+// provided app.
 func initWebMiddleware(app *App) {
 	r := app.web.router
 	r.Use(middleware.EnvInit)
@@ -46,7 +53,7 @@ func initWebMiddleware(app *App) {
 	r.Use(middleware.RequestID)
 	r.Use(contextMiddleware(app.ctx))
 	r.Use(xff.XFF)
-	r.Use(middleware.Logger)
+	r.Use(LoggerMiddleware)
 	r.Use(requestMetricsMiddleware)
 	r.Use(RecoverMiddleware)
 	r.Use(middleware.AutomaticOptions)
@@ -59,6 +66,8 @@ func initWebMiddleware(app *App) {
 	r.Use(app.web.RateLimitMiddleware)
 }
 
+// initWebActions installs the routing configuration of go-horizon onto the
+// provided app.  All route registration should be implemented here.
 func initWebActions(app *App) {
 	r := app.web.router
 	r.Get("/", rootAction)
@@ -125,7 +134,7 @@ func initWebRateLimiter(app *App) {
 
 	rateLimiter := throttled.RateLimit(
 		app.config.RateLimit,
-		&throttled.VaryBy{Custom: remoteAddrIp},
+		&throttled.VaryBy{Custom: remoteAddrIP},
 		rateLimitStore,
 	)
 
@@ -133,7 +142,7 @@ func initWebRateLimiter(app *App) {
 	app.web.rateLimiter = rateLimiter
 }
 
-func remoteAddrIp(r *http.Request) string {
+func remoteAddrIP(r *http.Request) string {
 	ip := strings.SplitN(r.RemoteAddr, ":", 2)[0]
 	return ip
 }

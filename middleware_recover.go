@@ -1,25 +1,24 @@
 package horizon
 
 import (
-	"bytes"
-	"fmt"
-	gctx "github.com/goji/context"
-	"github.com/stellar/go-horizon/render/problem"
-	"github.com/zenazn/goji/web"
-	. "github.com/zenazn/goji/web/middleware"
-	"log"
 	"net/http"
 	"runtime/debug"
+
+	gctx "github.com/goji/context"
+	"github.com/stellar/go-horizon/log"
+	"github.com/stellar/go-horizon/render/problem"
+	"github.com/zenazn/goji/web"
 )
 
 func RecoverMiddleware(c *web.C, h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		reqID := GetReqID(*c)
+		ctx := gctx.FromC(*c)
 
 		defer func() {
 			if err := recover(); err != nil {
-				printPanic(reqID, err)
-				debug.PrintStack()
+				log.Errorf(ctx, "panic: %+v", err)
+				log.Errorf(ctx, "backtrace: %s", debug.Stack())
+
 				//TODO: include stack trace if in debug mode
 				problem.Render(gctx.FromC(*c), w, problem.ServerError)
 			}
@@ -29,15 +28,4 @@ func RecoverMiddleware(c *web.C, h http.Handler) http.Handler {
 	}
 
 	return http.HandlerFunc(fn)
-}
-
-func printPanic(reqID string, err interface{}) {
-	var buf bytes.Buffer
-
-	if reqID != "" {
-		fmt.Fprintf(&buf, "[%s] ", reqID)
-	}
-	fmt.Fprintf(&buf, "panic: %+v", err)
-
-	log.Print(buf.String())
 }
