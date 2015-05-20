@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/PuerkitoBio/throttled"
 	"github.com/stellar/go-horizon/test"
-	"log"
 )
 
 func NewTestApp() *App {

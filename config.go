@@ -16,4 +16,5 @@ type Config struct {
 	RateLimit              throttled.Quota
 	RedisUrl               string
 	LogLevel               logrus.Level
+	SentryDSN              string
 }

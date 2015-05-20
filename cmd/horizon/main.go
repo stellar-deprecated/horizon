@@ -35,6 +35,7 @@ func init() {
 	viper.BindEnv("redis-url", "REDIS_URL")
 	viper.BindEnv("ruby-horizon-url", "RUBY_HORIZON_URL")
 	viper.BindEnv("log-level", "LOG_LEVEL")
+	viper.BindEnv("sentry-dsn", "SENTRY_DSN")
 
 	rootCmd = &cobra.Command{
 		Use:   "horizon",
@@ -97,6 +98,12 @@ func init() {
 		"Minimum log severity (debug, info, warn, error) to log",
 	)
 
+	rootCmd.Flags().String(
+		"sentry-dsn",
+		"",
+		"Sentry URL to which panics and errors should be reported",
+	)
+
 	viper.BindPFlags(rootCmd.Flags())
 }
 
@@ -131,6 +138,7 @@ func run(cmd *cobra.Command, args []string) {
 		RedisUrl:               viper.GetString("redis-url"),
 		RubyHorizonUrl:         viper.GetString("ruby-horizon-url"),
 		LogLevel:               ll,
+		SentryDSN:              viper.GetString("sentry-dsn"),
 	}
 
 	app, err = horizon.NewApp(config)

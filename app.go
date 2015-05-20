@@ -144,6 +144,14 @@ func NewApp(config Config) (*App, error) {
 			"web.init",
 		},
 	})
+	init.Add(Initializer{
+		"sentry",
+		initSentryLog,
+		[]string{
+			"log",
+			"app-context",
+		},
+	})
 
 	result := &App{config: config}
 	init.Run(result)
