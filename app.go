@@ -76,7 +76,10 @@ func NewApp(config Config) (*App, error) {
 	init.Add(Initializer{
 		"redis",
 		initRedis,
-		nil,
+		[]string{
+			"app-context",
+			"log",
+		},
 	})
 	init.Add(Initializer{
 		"history-db",
