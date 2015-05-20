@@ -2,11 +2,12 @@ package horizon
 
 import (
 	"fmt"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/zenazn/goji/web"
 	"math"
 	"net/http"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"github.com/zenazn/goji/web"
 )
 
 func TestActionHelper(t *testing.T) {
