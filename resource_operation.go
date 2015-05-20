@@ -9,6 +9,14 @@ import (
 	"github.com/stellar/go-horizon/render"
 )
 
+// PaymentResource contains the payment specific details for a payment operation
+type PaymentResource struct {
+	OperationResource
+	From   string `json:"from"`
+	To     string `json:"to"`
+	Amount string `json:"amount"`
+}
+
 // OperationResource is the display form of an operation.
 type OperationResource struct {
 	halgo.Links
@@ -22,12 +30,13 @@ func (r OperationResource) SseData() interface{} { return r }
 func (r OperationResource) Err() error           { return nil }
 func (r OperationResource) SseId() string        { return r.PagingToken }
 
-func operationRecordToResource(record db.Record) (render.Resource, error) {
+func operationRecordToResource(record db.Record) (result render.Resource, err error) {
+
 	op := record.(db.OperationRecord)
 	self := fmt.Sprintf("/operations/%d", op.Id)
 	po := "{?cursor}{?limit}{?order}"
 
-	resource := OperationResource{
+	common := OperationResource{
 		Links: halgo.Links{}.
 			Self(self).
 			Link("transactions", "/transactions/%d", op.TransactionId).
@@ -40,5 +49,17 @@ func operationRecordToResource(record db.Record) (render.Resource, error) {
 		TypeString:  "TODO",
 	}
 
-	return resource, nil
+	// TODO: use the constant from go-stellar-base, when it exists
+	if op.Type == 1 {
+		result = PaymentResource{
+			OperationResource: common,
+			From:              op.Details.Map["from"].String,
+			To:                op.Details.Map["to"].String,
+			Amount:            op.Details.Map["amount"].String,
+		}
+	} else {
+		result = common
+	}
+
+	return
 }
