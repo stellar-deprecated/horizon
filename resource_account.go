@@ -57,7 +57,8 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 			Self(self).
 			Link("transactions", "%s/transactions/%s", self, po).
 			Link("operations", "%s/operations/%s", self, po).
-			Link("effects", "%s/effects/%s", self, po),
+			Link("effects", "%s/effects/%s", self, po).
+			Link("offers", "%s/offers/%s", self, po),
 		Id:          address,
 		PagingToken: ac.PagingToken(),
 		Address:     address,
