@@ -35,10 +35,12 @@ type CoreOfferRecord struct {
 	Price                int64
 }
 
+// PagingToken returns a suitable paging token for the CoreOfferRecord
 func (r CoreOfferRecord) PagingToken() string {
 	return fmt.Sprintf("%d", r.Offerid)
 }
 
+// PriceAsFloat return the price fraction as a floating point approximate.
 func (r CoreOfferRecord) PriceAsFloat() float64 {
 	return float64(r.Pricen) / float64(r.Priced)
 }
