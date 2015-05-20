@@ -88,6 +88,7 @@ func initWebActions(app *App) {
 	r.Get("/accounts/:account_id/operations", operationIndexAction)
 	r.Get("/accounts/:account_id/payments", paymentsIndexAction)
 	r.Get("/accounts/:account_id/effects", notImplementedAction)
+	r.Get("/accounts/:account_id/offers", offerIndexAction)
 
 	// transaction actions
 	r.Get("/transactions", transactionIndexAction)
@@ -102,6 +103,8 @@ func initWebActions(app *App) {
 	r.Get("/operations/:op_id/effects", notImplementedAction)
 
 	r.Get("/payments", paymentsIndexAction)
+
+	r.Get("/offers/:id", notImplementedAction)
 
 	// go-horizon doesn't implement everything horizon did,
 	// so we reverse proxy if we can

@@ -1,6 +1,10 @@
 package db
 
-import sq "github.com/lann/squirrel"
+import (
+	"fmt"
+
+	sq "github.com/lann/squirrel"
+)
 
 // CoreOfferRecordSelect is a sql fragment to help select form queries that
 // select into a CoreOfferRecord
@@ -29,4 +33,12 @@ type CoreOfferRecord struct {
 	Pricen               int32
 	Priced               int32
 	Price                int64
+}
+
+func (r CoreOfferRecord) PagingToken() string {
+	return fmt.Sprintf("%d", r.Offerid)
+}
+
+func (r CoreOfferRecord) PriceAsFloat() float64 {
+	return float64(r.Pricen) / float64(r.Priced)
 }
