@@ -7,6 +7,7 @@ import (
 
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/sse"
 )
 
 // PaymentResource contains the payment specific details for a payment operation
@@ -15,6 +16,15 @@ type PaymentResource struct {
 	From   string `json:"from"`
 	To     string `json:"to"`
 	Amount string `json:"amount"`
+}
+
+// SseEvent converts this resource into a SSE compatible event.  Implements
+// the sse.Eventable interface
+func (r PaymentResource) SseEvent() sse.Event {
+	return sse.Event{
+		Data: r,
+		ID:   r.PagingToken,
+	}
 }
 
 // OperationResource is the display form of an operation.
@@ -26,9 +36,14 @@ type OperationResource struct {
 	TypeString  string `json:"type_s"`
 }
 
-func (r OperationResource) SseData() interface{} { return r }
-func (r OperationResource) Err() error           { return nil }
-func (r OperationResource) SseId() string        { return r.PagingToken }
+// SseEvent converts this resource into a SSE compatible event.  Implements
+// the sse.Eventable interface
+func (r OperationResource) SseEvent() sse.Event {
+	return sse.Event{
+		Data: r,
+		ID:   r.PagingToken,
+	}
+}
 
 func operationRecordToResource(record db.Record) (result render.Resource, err error) {
 

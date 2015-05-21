@@ -27,7 +27,7 @@ func accountIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 		ha := record.(db.HistoryAccountRecord)
 
 		return HistoryAccountResource{
-			Id:          ha.Address,
+			ID:          ha.Address,
 			PagingToken: ha.PagingToken(),
 			Address:     ha.Address,
 		}, nil

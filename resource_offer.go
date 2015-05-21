@@ -8,6 +8,7 @@ import (
 
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/sse"
 )
 
 // OfferResource is the display form of an offer to trade currency.
@@ -37,9 +38,14 @@ type PriceResource struct {
 	D int32 `json:"denominator"`
 }
 
-func (r OfferResource) SseData() interface{} { return r }
-func (r OfferResource) Err() error           { return nil }
-func (r OfferResource) SseId() string        { return r.PagingToken }
+// SseEvent converts this resource into a SSE compatible event.  Implements
+// the sse.Eventable interface
+func (r OfferResource) SseEvent() sse.Event {
+	return sse.Event{
+		Data: r,
+		ID:   r.PagingToken,
+	}
+}
 
 func offerRecordToResource(record db.Record) (result render.Resource, err error) {
 

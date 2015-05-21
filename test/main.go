@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/Sirupsen/logrus"
 	glog "github.com/stellar/go-horizon/log"
 	"golang.org/x/net/context"
 )
@@ -94,4 +95,18 @@ func loadSqlFile(url string, path string) {
 // context).  This context has a logger bound to it suitable for testing.
 func Context() context.Context {
 	return glog.Context(context.Background(), testLogger)
+}
+
+// ContextWithLogBuffer returns a context and a buffer into which the new, bound
+// logger will write into.  This method allows you to inspect what data was
+// logged more easily in your tests.
+func ContextWithLogBuffer() (context.Context, *bytes.Buffer) {
+	output := new(bytes.Buffer)
+	l, _ := glog.New()
+	l.Logger.Out = output
+	l.Logger.Level = logrus.DebugLevel
+
+	ctx := glog.Context(context.Background(), l)
+	return ctx, output
+
 }

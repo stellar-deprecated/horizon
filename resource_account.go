@@ -10,7 +10,7 @@ import (
 // AccountResource is the summary of an account
 type AccountResource struct {
 	halgo.Links
-	Id          string            `json:"id"`
+	ID          string            `json:"id"`
 	PagingToken string            `json:"paging_token"`
 	Address     string            `json:"address"`
 	Sequence    int64             `json:"sequence"`
@@ -59,7 +59,7 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 			Link("operations", "%s/operations/%s", self, po).
 			Link("effects", "%s/effects/%s", self, po).
 			Link("offers", "%s/offers/%s", self, po),
-		Id:          address,
+		ID:          address,
 		PagingToken: ac.PagingToken(),
 		Address:     address,
 		Sequence:    ac.Seqnum,
