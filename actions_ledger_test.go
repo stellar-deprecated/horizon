@@ -2,9 +2,10 @@ package horizon
 
 import (
 	"encoding/json"
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"testing"
 )
 
 func TestLedgerActions(t *testing.T) {

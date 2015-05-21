@@ -7,6 +7,7 @@ import (
 
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/sse"
 )
 
 // TransactionResource is the display form of a transaction.
@@ -28,9 +29,14 @@ type TransactionResource struct {
 	ResultMetaXdr    string `json:"result_meta_xdr"`
 }
 
-func (r TransactionResource) SseData() interface{} { return r }
-func (r TransactionResource) Err() error           { return nil }
-func (r TransactionResource) SseId() string        { return r.PagingToken }
+// SseEvent converts this resource into a SSE compatible event.  Implements
+// the sse.Eventable interface
+func (r TransactionResource) SseEvent() sse.Event {
+	return sse.Event{
+		Data: r,
+		ID:   r.PagingToken,
+	}
+}
 
 func transactionRecordToResource(record db.Record) (render.Resource, error) {
 	tx := record.(db.TransactionRecord)

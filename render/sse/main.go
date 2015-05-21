@@ -8,37 +8,53 @@ import (
 	"golang.org/x/net/context"
 )
 
-// If the value that we want to stream to the connected client implements this
-// interface we will include the Id and Event fields in the payload, if they are
-// set.
-type Event interface {
-	Err() error
-	SseData() interface{}
+// Event is the packet of data that gets sent over the wire to a connected
+// client.
+type Event struct {
+	Data  interface{}
+	Error error
+	ID    string
+	Event string
+	Retry int
 }
 
-type HasId interface {
-	SseId() string
+// SseEvent returns the SSE compatible form of the Event... itself.
+func (e Event) SseEvent() Event {
+	return e
 }
 
-type HasEvent interface {
-	SseEvent() string
+// Upon initial stream creation, we send this event to inform the client
+// that they may retry an errored connection after 1 second.
+var helloEvent = Event{
+	Data:  "hello",
+	Event: "open",
+	Retry: 1000,
 }
 
+// Upon successful completion of a query (i.e. the client didn't disconnect
+// and we didn't error) we send a "Goodbye" event.  This is a dummy event
+// so that we can set a low retry value so that the client will immediately
+// recoonnect and request more data.  This helpes to give the feel of a infinite
+// stream of data, even though we're actually responding in PAGE_SIZE chunks.
+var goodbyeEvent = Event{
+	Data:  "byebye",
+	Event: "close",
+	Retry: 10,
+}
+
+// Eventable represents an object that can be converted to an SSE compatible
+// event.
+type Eventable interface {
+	// SseEvent returns the SSE compatible form of the implementer
+	SseEvent() Event
+}
+
+// Streamer handles the work of turning a channel of Eventable objects
+// into a http response to a client.  Construct one and call `ServeHTTP` to do
+// so
 type Streamer struct {
 	Ctx  context.Context
-	Data <-chan Event
-}
-
-type ErrorEvent struct {
-	Error error
-}
-
-func (e ErrorEvent) SseData() interface{} {
-	return e.Error.Error()
-}
-
-func (e ErrorEvent) Err() error {
-	return e.Error
+	Data <-chan Eventable
 }
 
 func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -60,65 +76,49 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// wait for data and stream it as it becomes available
 	// finish when either the client closes the connection
 	// or the data provider closes the channel
-	writeHelloEvent(w)
+	writeEvent(w, helloEvent)
 	for {
 		select {
-		case event, more := <-s.Data:
+		case eventable, more := <-s.Data:
 			if !more {
-				writeGoodbyeEvent(w)
+				writeEvent(w, goodbyeEvent)
 				return
 			}
-			writeEvent(w, event)
+			writeEvent(w, eventable.SseEvent())
 		case <-s.Ctx.Done():
 			return
 		}
 	}
 }
 
+// writeEvent does the actual work of formatting an SSE compliant message
+// sending it over the provided ResponseWriter and flushing.
 func writeEvent(w http.ResponseWriter, e Event) {
-	if e.Err() != nil {
+	if e.Error != nil {
 		fmt.Fprint(w, "event: error\n")
-		fmt.Fprintf(w, "data: %s\n\n", e.Err().Error())
+		fmt.Fprintf(w, "data: %s\n\n", e.Error.Error())
+		w.(http.Flusher).Flush()
+		return
 	}
 
-	if e, ok := e.(HasId); ok {
-		fmt.Fprintf(w, "id: %s\n", e.SseId())
+	// TODO: add tests to ensure retry get's properly rendered
+	if e.Retry != 0 {
+		fmt.Fprintf(w, "retry: %d\n", e.Retry)
 	}
 
-	if e, ok := e.(HasEvent); ok {
-		fmt.Fprintf(w, "event: %s\n", e.SseEvent())
+	if e.ID != "" {
+		fmt.Fprintf(w, "id: %s\n", e.ID)
 	}
 
-	fmt.Fprintf(w, "data: %s\n\n", getJson(e.SseData()))
+	if e.Event != "" {
+		fmt.Fprintf(w, "event: %s\n", e.Event)
+	}
+
+	fmt.Fprintf(w, "data: %s\n\n", getJSON(e.Data))
 	w.(http.Flusher).Flush()
 }
 
-// Transmits the hello message to the provided client.
-//
-// Upon initial stream creation, we send this event to inform the client
-// that they may retry an errored connection after 1 second.
-func writeHelloEvent(w http.ResponseWriter) {
-	fmt.Fprintf(w, "retry: %d\n", 1000)
-	fmt.Fprintf(w, "event: %s\n", "open")
-	fmt.Fprintf(w, "data: %s\n\n", "hello")
-	w.(http.Flusher).Flush()
-}
-
-// Transmits the goodbye message to the connected client.
-//
-// Upon successful completion of a query (i.e. the client didn't disconnect
-// and we didn't error) we send a "Goodbye" event.  This is a dummy event
-// so that we can set a low retry value so that the client will immediately
-// recoonnect and request more data.  This helpes to give the feel of a infinite
-// stream of data, even though we're actually responding in PAGE_SIZE chunks.
-func writeGoodbyeEvent(w http.ResponseWriter) {
-	fmt.Fprintf(w, "retry: %d\n", 10)
-	fmt.Fprintf(w, "event: %s\n", "close")
-	fmt.Fprintf(w, "data: %s\n\n", "byebye")
-	w.(http.Flusher).Flush()
-}
-
-func getJson(val interface{}) string {
+func getJSON(val interface{}) string {
 	js, err := json.Marshal(val)
 
 	if err != nil {

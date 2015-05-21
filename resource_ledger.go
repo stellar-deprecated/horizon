@@ -7,12 +7,13 @@ import (
 
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/render/sse"
 )
 
 // LedgerResource represents the summary of a single ledger
 type LedgerResource struct {
 	halgo.Links
-	Id               string         `json:"id"`
+	ID               string         `json:"id"`
 	PagingToken      string         `json:"paging_token"`
 	Hash             string         `json:"hash"`
 	PrevHash         sql.NullString `json:"prev_hash"`
@@ -22,9 +23,14 @@ type LedgerResource struct {
 	ClosedAt         time.Time      `json:"closed_at"`
 }
 
-func (l LedgerResource) SseData() interface{} { return l }
-func (l LedgerResource) Err() error           { return nil }
-func (l LedgerResource) SseId() string        { return l.PagingToken }
+// SseEvent converts this resource into a SSE compatible event.  Implements
+// the sse.Eventable interface
+func (l LedgerResource) SseEvent() sse.Event {
+	return sse.Event{
+		Data: l,
+		ID:   l.PagingToken,
+	}
+}
 
 // NewLedgerResource creates a new resource from a db.LedgerRecord
 func NewLedgerResource(in db.LedgerRecord) LedgerResource {
@@ -35,7 +41,7 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 			Link("transactions", self+"/transactions{?cursor}{?limit}{?order}").
 			Link("operations", self+"/operations{?cursor}{?limit}{?order}").
 			Link("effects", self+"/effects{?cursor}{?limit}{?order}"),
-		Id:          in.LedgerHash,
+		ID:          in.LedgerHash,
 		PagingToken: in.PagingToken(),
 		Hash:        in.LedgerHash,
 		PrevHash:    in.PreviousLedgerHash,
