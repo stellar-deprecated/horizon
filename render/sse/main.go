@@ -76,26 +76,26 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// wait for data and stream it as it becomes available
 	// finish when either the client closes the connection
 	// or the data provider closes the channel
-	writeEvent(w, helloEvent)
+	WriteEvent(w, helloEvent)
 	for {
 		select {
 		case eventable, more := <-s.Data:
 			if !more {
-				writeEvent(w, goodbyeEvent)
+				WriteEvent(w, goodbyeEvent)
 				return
 			}
-			writeEvent(w, eventable.SseEvent())
+			WriteEvent(w, eventable.SseEvent())
 		case <-s.Ctx.Done():
 			return
 		}
 	}
 }
 
-// writeEvent does the actual work of formatting an SSE compliant message
+// WriteEvent does the actual work of formatting an SSE compliant message
 // sending it over the provided ResponseWriter and flushing.
-func writeEvent(w http.ResponseWriter, e Event) {
+func WriteEvent(w http.ResponseWriter, e Event) {
 	if e.Error != nil {
-		fmt.Fprint(w, "event: error\n")
+		fmt.Fprint(w, "event: err\n")
 		fmt.Fprintf(w, "data: %s\n\n", e.Error.Error())
 		w.(http.Flusher).Flush()
 		return
