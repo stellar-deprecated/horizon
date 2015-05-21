@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
 
 	sq "github.com/lann/squirrel"
@@ -25,10 +26,10 @@ var CoreOfferRecordSelect = sq.Select(
 type CoreOfferRecord struct {
 	Accountid            string
 	Offerid              int64
-	Paysalphanumcurrency string
-	Paysissuer           string
-	Getsalphanumcurrency string
-	Getsissuer           string
+	Paysalphanumcurrency sql.NullString
+	Paysissuer           sql.NullString
+	Getsalphanumcurrency sql.NullString
+	Getsissuer           sql.NullString
 	Amount               int64
 	Pricen               int32
 	Priced               int32

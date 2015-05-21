@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/jagregory/halgo"
@@ -26,8 +27,8 @@ type OfferResource struct {
 // an offer.
 type OfferCurrencyResource struct {
 	Type   string `json:"currency_type"`
-	Code   string `json:"currency_code"`
-	Issuer string `json:"currency_issuer"`
+	Code   string `json:"currency_code,omitempty"`
+	Issuer string `json:"currency_issuer,omitempty"`
 }
 
 // PriceResource is a price, used by offers, expressed as a fraction, N/D.
@@ -45,6 +46,9 @@ func offerRecordToResource(record db.Record) (result render.Resource, err error)
 	op := record.(db.CoreOfferRecord)
 	self := fmt.Sprintf("/offers/%d", op.Offerid)
 
+	takerPays := NewOfferCurrencyResource(op.Paysalphanumcurrency, op.Paysissuer)
+	takerGets := NewOfferCurrencyResource(op.Getsalphanumcurrency, op.Getsissuer)
+
 	result = OfferResource{
 		Links: halgo.Links{}.
 			Self(self).
@@ -52,17 +56,9 @@ func offerRecordToResource(record db.Record) (result render.Resource, err error)
 		ID:          op.Offerid,
 		PagingToken: op.PagingToken(),
 		Account:     op.Accountid,
-		TakerPays: OfferCurrencyResource{
-			Type:   "alphanum",
-			Code:   op.Paysalphanumcurrency,
-			Issuer: op.Paysissuer,
-		},
-		TakerGets: OfferCurrencyResource{
-			Type:   "alphanum",
-			Code:   op.Getsalphanumcurrency,
-			Issuer: op.Getsissuer,
-		},
-		Amount: op.Amount,
+		TakerPays:   takerPays,
+		TakerGets:   takerGets,
+		Amount:      op.Amount,
 		Price: PriceResource{
 			N: op.Pricen,
 			D: op.Priced,
@@ -71,4 +67,24 @@ func offerRecordToResource(record db.Record) (result render.Resource, err error)
 	}
 
 	return
+}
+
+// NewOfferCurrencyResource creates a new OfferCurrencyResource, ensuring that
+// the code and issuer are consistent.  If both are null, we return a native
+// currency.
+func NewOfferCurrencyResource(code, issuer sql.NullString) OfferCurrencyResource {
+
+	switch {
+	case code.Valid && issuer.Valid:
+		return OfferCurrencyResource{
+			Type:   "alphanum",
+			Code:   code.String,
+			Issuer: issuer.String,
+		}
+	case !code.Valid && !issuer.Valid:
+		return OfferCurrencyResource{Type: "native"}
+	default:
+		panic("Exceptional offer state: code and issuer are not both null or not-null")
+	}
+
 }
