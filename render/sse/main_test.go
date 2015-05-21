@@ -6,9 +6,12 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/go-horizon/test"
 )
 
 func TestSsePackage(t *testing.T) {
+	ctx, log := test.ContextWithLogBuffer()
+
 	Convey("sse.WriteEvent outputs data properly", t, func() {
 		expectations := []struct {
 			Event     Event
@@ -23,8 +26,15 @@ func TestSsePackage(t *testing.T) {
 
 		for _, e := range expectations {
 			w := httptest.NewRecorder()
-			WriteEvent(w, e.Event)
+			WriteEvent(ctx, w, e.Event)
 			So(w.Body.String(), ShouldContainSubstring, e.Substring)
 		}
+	})
+
+	Convey("sse.WriteEvent logs errors", t, func() {
+		w := httptest.NewRecorder()
+		WriteEvent(ctx, w, Event{Error: errors.New("busted")})
+		So(log.String(), ShouldContainSubstring, "level=error")
+		So(log.String(), ShouldContainSubstring, "busted")
 	})
 }

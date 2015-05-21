@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/stellar/go-horizon/log"
 	"golang.org/x/net/context"
 )
 
@@ -76,15 +77,15 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// wait for data and stream it as it becomes available
 	// finish when either the client closes the connection
 	// or the data provider closes the channel
-	WriteEvent(w, helloEvent)
+	WriteEvent(s.Ctx, w, helloEvent)
 	for {
 		select {
 		case eventable, more := <-s.Data:
 			if !more {
-				WriteEvent(w, goodbyeEvent)
+				WriteEvent(s.Ctx, w, goodbyeEvent)
 				return
 			}
-			WriteEvent(w, eventable.SseEvent())
+			WriteEvent(s.Ctx, w, eventable.SseEvent())
 		case <-s.Ctx.Done():
 			return
 		}
@@ -93,11 +94,12 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // WriteEvent does the actual work of formatting an SSE compliant message
 // sending it over the provided ResponseWriter and flushing.
-func WriteEvent(w http.ResponseWriter, e Event) {
+func WriteEvent(ctx context.Context, w http.ResponseWriter, e Event) {
 	if e.Error != nil {
 		fmt.Fprint(w, "event: err\n")
 		fmt.Fprintf(w, "data: %s\n\n", e.Error.Error())
 		w.(http.Flusher).Flush()
+		log.Error(ctx, e.Error)
 		return
 	}
 
