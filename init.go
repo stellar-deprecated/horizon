@@ -5,30 +5,36 @@ import (
 	"golang.org/x/net/context"
 )
 
+// InitFn is a function that contributes to the initialization of an App struct
 type InitFn func(*App)
 
-type Initializer struct {
+type initializer struct {
 	Name string
 	Fn   InitFn
 	Deps []string
 }
 
-type AppInit struct {
-	Initializers []Initializer
-}
+type initializerSet []initializer
+
+var appInit initializerSet
 
 // Add adds a new initializer into the chain
-func (init *AppInit) Add(i Initializer) {
-	init.Initializers = append(init.Initializers, i)
+func (is *initializerSet) Add(name string, fn InitFn, deps ...string) {
+	*is = append(*is, initializer{
+		Name: name,
+		Fn:   fn,
+		Deps: deps,
+	})
 }
 
 // Run initializes the provided application, but running every Initializer
-func (init *AppInit) Run(app *App) {
+func (is *initializerSet) Run(app *App) {
+	init := *is
 	alreadyRun := make(map[string]bool)
 
 	for {
 		ranInitializer := false
-		for _, i := range init.Initializers {
+		for _, i := range init {
 			runnable := true
 
 			// if we've already been run, skip
@@ -62,7 +68,7 @@ func (init *AppInit) Run(app *App) {
 	}
 
 	// if we didn't get to run all initializers, we have a cycle
-	if len(alreadyRun) != len(init.Initializers) {
+	if len(alreadyRun) != len(init) {
 		log.Panicln(context.Background(), "initializer cycle detected")
 	}
 }

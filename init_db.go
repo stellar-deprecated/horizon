@@ -21,3 +21,8 @@ func initCoreDb(app *App) {
 	}
 	app.coreDb = coreDb
 }
+
+func init() {
+	appInit.Add("history-db", initHistoryDb, "app-context", "log")
+	appInit.Add("core-db", initCoreDb, "app-context", "log")
+}

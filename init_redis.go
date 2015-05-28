@@ -63,3 +63,7 @@ func pingRedis(c redis.Conn, t time.Time) error {
 	_, err := c.Do("PING")
 	return err
 }
+
+func init() {
+	appInit.Add("redis", initRedis, "app-context", "log")
+}
