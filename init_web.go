@@ -36,14 +36,6 @@ func initWeb(app *App) {
 	}
 }
 
-// initWebMetrics registers the metrics for the web server into the provided
-// app's metrics registry.
-func initWebMetrics(app *App) {
-	app.metrics.Register("requests.total", app.web.requestTimer)
-	app.metrics.Register("requests.succeeded", app.web.successMeter)
-	app.metrics.Register("requests.failed", app.web.failureMeter)
-}
-
 // initWebMiddleware installs the middleware stack used for go-horizon onto the
 // provided app.
 func initWebMiddleware(app *App) {
@@ -148,4 +140,34 @@ func initWebRateLimiter(app *App) {
 func remoteAddrIP(r *http.Request) string {
 	ip := strings.SplitN(r.RemoteAddr, ":", 2)[0]
 	return ip
+}
+
+func init() {
+	appInit.Add(
+		"web.init",
+		initWeb,
+
+		"app-context",
+	)
+
+	appInit.Add(
+		"web.rate-limiter",
+		initWebRateLimiter,
+
+		"web.init",
+	)
+	appInit.Add(
+		"web.middleware",
+		initWebMiddleware,
+
+		"web.init",
+		"web.rate-limiter",
+		"web.metrics",
+	)
+	appInit.Add(
+		"web.actions",
+		initWebActions,
+
+		"web.init",
+	)
 }

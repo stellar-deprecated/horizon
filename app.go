@@ -30,15 +30,6 @@ type App struct {
 	logMetrics *log.Metrics
 }
 
-func initAppContext(app *App) {
-	ctx, cancel := context.WithCancel(context.Background())
-	ctx = context.WithValue(ctx, &appContextKey, app)
-
-	ctx = log.Context(ctx, app.log)
-	app.ctx = ctx
-	app.cancel = cancel
-}
-
 // AppFromContext retrieves a *App from the context tree.
 func AppFromContext(ctx context.Context) (*App, bool) {
 	a, ok := ctx.Value(&appContextKey).(*App)
@@ -48,113 +39,8 @@ func AppFromContext(ctx context.Context) (*App, bool) {
 // NewApp constructs an new App instance from the provided config.
 func NewApp(config Config) (*App, error) {
 
-	init := &AppInit{}
-	init.Add(Initializer{
-		"app-context",
-		initAppContext,
-		[]string{
-			"log",
-		},
-	})
-	init.Add(Initializer{
-		"metrics",
-		initMetrics,
-		nil,
-	})
-	init.Add(Initializer{
-		"log",
-		initLog,
-		nil,
-	})
-	init.Add(Initializer{
-		"log.metrics",
-		initLogMetrics,
-		[]string{
-			"metrics",
-		},
-	})
-	init.Add(Initializer{
-		"redis",
-		initRedis,
-		[]string{
-			"app-context",
-			"log",
-		},
-	})
-	init.Add(Initializer{
-		"history-db",
-		initHistoryDb,
-		[]string{
-			"app-context",
-			"log",
-		},
-	})
-	init.Add(Initializer{
-		"core-db",
-		initCoreDb,
-		[]string{
-			"app-context",
-			"log",
-		},
-	})
-	init.Add(Initializer{
-		"db-metrics",
-		initDbMetrics,
-		[]string{
-			"metrics",
-			"history-db",
-			"core-db",
-		},
-	})
-	init.Add(Initializer{
-		"web.init",
-		initWeb,
-		[]string{
-			"app-context",
-		},
-	})
-	init.Add(Initializer{
-		"web.metrics",
-		initWebMetrics,
-		[]string{
-			"web.init",
-			"metrics",
-		},
-	})
-	init.Add(Initializer{
-		"web.rate-limiter",
-		initWebRateLimiter,
-		[]string{
-			"web.init",
-		},
-	})
-	init.Add(Initializer{
-		"web.middleware",
-		initWebMiddleware,
-		[]string{
-			"web.init",
-			"web.rate-limiter",
-			"web.metrics",
-		},
-	})
-	init.Add(Initializer{
-		"web.actions",
-		initWebActions,
-		[]string{
-			"web.init",
-		},
-	})
-	init.Add(Initializer{
-		"sentry",
-		initSentryLog,
-		[]string{
-			"log",
-			"app-context",
-		},
-	})
-
 	result := &App{config: config}
-	init.Run(result)
+	appInit.Run(result)
 
 	return result, nil
 }

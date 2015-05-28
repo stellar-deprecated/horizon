@@ -42,3 +42,8 @@ func initSentryLog(app *App) {
 	app.log.Logger.Hooks.Add(hook)
 
 }
+
+func init() {
+	appInit.Add("log", initLog)
+	appInit.Add("sentry", initSentryLog, "log", "app-context")
+}
