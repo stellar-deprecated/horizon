@@ -18,4 +18,6 @@ type Config struct {
 	RedisUrl               string
 	LogLevel               logrus.Level
 	SentryDSN              string
+	LogglyHost             string
+	LogglyToken            string
 }

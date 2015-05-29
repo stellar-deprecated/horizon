@@ -36,6 +36,8 @@ func init() {
 	viper.BindEnv("ruby-horizon-url", "RUBY_HORIZON_URL")
 	viper.BindEnv("log-level", "LOG_LEVEL")
 	viper.BindEnv("sentry-dsn", "SENTRY_DSN")
+	viper.BindEnv("loggly-token", "LOGGLY_TOKEN")
+	viper.BindEnv("loggly-host", "LOGGLY_HOST")
 
 	rootCmd = &cobra.Command{
 		Use:   "horizon",
@@ -104,6 +106,18 @@ func init() {
 		"Sentry URL to which panics and errors should be reported",
 	)
 
+	rootCmd.Flags().String(
+		"loggly-token",
+		"",
+		"Loggly token, used to configure log forwarding to loggly",
+	)
+
+	rootCmd.Flags().String(
+		"loggly-host",
+		"",
+		"Hostname to be added to every loggly log event",
+	)
+
 	viper.BindPFlags(rootCmd.Flags())
 }
 
@@ -140,6 +154,8 @@ func run(cmd *cobra.Command, args []string) {
 		RubyHorizonUrl:         viper.GetString("ruby-horizon-url"),
 		LogLevel:               ll,
 		SentryDSN:              viper.GetString("sentry-dsn"),
+		LogglyToken:            viper.GetString("loggly-token"),
+		LogglyHost:             viper.GetString("loggly-host"),
 	}
 
 	app, err = horizon.NewApp(config)
