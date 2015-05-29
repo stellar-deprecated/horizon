@@ -6,7 +6,6 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/Sirupsen/logrus/hooks/sentry"
 	_ "github.com/getsentry/raven-go" //raven-go is needed by sentry hook
-	"github.com/sebest/logrusly"
 	"github.com/stellar/go-horizon/log"
 )
 
@@ -44,12 +43,6 @@ func initSentryLog(app *App) {
 
 }
 
-func init() {
-	appInit.Add("log", initLog)
-	appInit.Add("sentry", initSentryLog, "log", "app-context")
-	appInit.Add("loggly", initLogglyLog, "log", "app-context")
-}
-
 // initLogglyLog attaches a loggly hook to our logging system.
 func initLogglyLog(app *App) {
 
@@ -57,19 +50,19 @@ func initLogglyLog(app *App) {
 		return
 	}
 
-	logglyHost := app.config.LogglyHost
-
-	if logglyHost == "" {
-		logglyHost = "horizon.stellar.org"
-	}
-
 	log.Infof(app.ctx, "Initializing loggly hook to: %s host: %s", app.config.LogglyToken, app.config.LogglyHost)
 
-	hook := logrusly.NewLogglyHook(app.config.LogglyToken, logglyHost, app.config.LogLevel, "horizon")
+	hook := log.NewLogglyHook(app.config.LogglyToken)
 	app.log.Logger.Hooks.Add(hook)
 
 	go func() {
 		<-app.ctx.Done()
 		hook.Flush()
 	}()
+}
+
+func init() {
+	appInit.Add("log", initLog)
+	appInit.Add("sentry", initSentryLog, "log", "app-context")
+	appInit.Add("loggly", initLogglyLog, "log", "app-context")
 }
