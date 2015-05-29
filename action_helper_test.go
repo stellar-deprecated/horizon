@@ -125,5 +125,20 @@ func TestActionHelper(t *testing.T) {
 			So(ah.GetString("cursor"), ShouldEqual, "goodbye")
 		})
 
+		Convey("regression: GetPagQuery does not overwrite err", func() {
+			// TODO: Just a smoke test for now.  Fill this out later
+			c := web.C{
+				Env: make(map[interface{}]interface{}),
+			}
+			r, _ := http.NewRequest("GET", "/?limit=foo", nil)
+
+			ah := &ActionHelper{c: c, r: r}
+			_, _, _ = ah.GetPagingParams()
+
+			So(ah.Err(), ShouldNotBeNil)
+			_ = ah.GetPageQuery()
+			So(ah.Err(), ShouldNotBeNil)
+		})
+
 	})
 }

@@ -139,6 +139,10 @@ func (a *ActionHelper) GetPagingParams() (cursor string, order string, limit int
 // using the results from a call to GetPagingParams()
 func (a *ActionHelper) GetPageQuery() db.PageQuery {
 	r, err := db.NewPageQuery(a.GetPagingParams())
-	a.err = err
+
+	if err != nil {
+		a.err = err
+	}
+
 	return r
 }
