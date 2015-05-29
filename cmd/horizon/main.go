@@ -132,6 +132,7 @@ func run(cmd *cobra.Command, args []string) {
 	config := horizon.Config{
 		DatabaseUrl:            viper.GetString("db-url"),
 		StellarCoreDatabaseUrl: viper.GetString("stellar-core-db-url"),
+		StellarCoreUrl:         viper.GetString("stellar-core-url"),
 		Autopump:               viper.GetBool("autopump"),
 		Port:                   viper.GetInt("port"),
 		RateLimit:              throttled.PerHour(viper.GetInt("per-hour-rate-limit")),

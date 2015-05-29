@@ -10,6 +10,7 @@ import (
 type Config struct {
 	DatabaseUrl            string
 	StellarCoreDatabaseUrl string
+	StellarCoreUrl         string
 	RubyHorizonUrl         string
 	Port                   int
 	Autopump               bool
