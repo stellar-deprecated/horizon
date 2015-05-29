@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"net/url"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -108,6 +109,20 @@ func TestActionHelper(t *testing.T) {
 
 			cursor, _, _ := ah.GetPagingParams()
 			So(cursor, ShouldEqual, "from_header")
+		})
+
+		Convey("Form values override query values", func() {
+			c := web.C{
+				Env: make(map[interface{}]interface{}),
+			}
+			r, _ := http.NewRequest("GET", "/?cursor=hello", nil)
+			ah := &ActionHelper{c: c, r: r}
+			So(ah.GetString("cursor"), ShouldEqual, "hello")
+
+			r.Form = url.Values{
+				"cursor": {"goodbye"},
+			}
+			So(ah.GetString("cursor"), ShouldEqual, "goodbye")
 		})
 
 	})
