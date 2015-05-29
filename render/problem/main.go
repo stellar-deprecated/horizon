@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/stellar/go-horizon/context/requestid"
+	"github.com/stellar/go-horizon/log"
 	"golang.org/x/net/context"
 )
 
@@ -49,7 +50,7 @@ func Render(ctx context.Context, w http.ResponseWriter, p interface{}) {
 	case HasProblem:
 		render(ctx, w, p.Problem())
 	case error:
-		// TODO: log the error
+		log.Error(ctx, p)
 		render(ctx, w, ServerError)
 	default:
 		panic(fmt.Sprintf("Invalid problem: %v+", p))
@@ -64,6 +65,7 @@ func render(ctx context.Context, w http.ResponseWriter, p P) {
 	js, err := json.MarshalIndent(p, "", "  ")
 
 	if err != nil {
+		log.Error(ctx, err)
 		http.Error(w, "error rendering problem", http.StatusInternalServerError)
 		return
 	}

@@ -1,6 +1,9 @@
 package log
 
 import (
+	"runtime"
+	"strings"
+
 	"github.com/Sirupsen/logrus"
 	"golang.org/x/net/context"
 )
@@ -123,19 +126,19 @@ func Warnln(ctx context.Context, args ...interface{}) {
 // Errorf logs a message at the Error severity.  Delegates to the
 // logrus.Logger bound to the provided context.
 func Errorf(ctx context.Context, format string, args ...interface{}) {
-	FromContext(ctx).Errorf(format, args...)
+	addSourceLocations(FromContext(ctx)).Errorf(format, args...)
 }
 
 // Error logs a message at the Error severity.  Delegates to the
 // logrus.Logger bound to the provided context.
 func Error(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Error(args...)
+	addSourceLocations(FromContext(ctx)).Error(args...)
 }
 
 // Errorln logs a message at the Error severity.  Delegates to the
 // logrus.Logger bound to the provided context.
 func Errorln(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Errorln(args...)
+	addSourceLocations(FromContext(ctx)).Errorln(args...)
 }
 
 // Panicf logs a message at the Panic severity.  Delegates to the
@@ -154,4 +157,19 @@ func Panic(ctx context.Context, args ...interface{}) {
 // logrus.Logger bound to the provided context.
 func Panicln(ctx context.Context, args ...interface{}) {
 	FromContext(ctx).Panicln(args...)
+}
+
+func addSourceLocations(e *logrus.Entry) *logrus.Entry {
+	_, file, line, _ := runtime.Caller(2)
+
+	// attempt to strip the project prefix
+	parts := strings.SplitN(file, "horizon/", 2)
+	if len(parts) == 2 {
+		file = parts[1]
+	}
+
+	return e.WithFields(logrus.Fields{
+		"file": file,
+		"line": line,
+	})
 }
