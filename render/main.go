@@ -48,8 +48,10 @@ func Collection(ctx context.Context, w http.ResponseWriter, r *http.Request, q d
 	switch contentType {
 	case MimeHal, MimeJSON:
 		records, err := db.Results(ctx, q)
+
 		if err != nil {
-			panic(err)
+			problem.Render(ctx, w, err)
+			return
 		}
 
 		// map the found records to hal compatible resources
@@ -59,7 +61,8 @@ func Collection(ctx context.Context, w http.ResponseWriter, r *http.Request, q d
 			resource, err := t(record)
 
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				problem.Render(ctx, w, err)
+				return
 			}
 
 			resources[i] = resource
@@ -91,7 +94,8 @@ func Single(ctx context.Context, w http.ResponseWriter, r *http.Request, q db.Qu
 	record, err := db.First(ctx, q)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		problem.Render(ctx, w, err)
+		return
 	} else if record == nil {
 		problem.Render(ctx, w, problem.NotFound)
 		return
@@ -99,8 +103,7 @@ func Single(ctx context.Context, w http.ResponseWriter, r *http.Request, q db.Qu
 		resource, err := t(record)
 
 		if err != nil {
-			p := problem.FromError(ctx, err)
-			problem.Render(ctx, w, p)
+			problem.Render(ctx, w, err)
 			return
 		}
 

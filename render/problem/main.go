@@ -2,43 +2,61 @@ package problem
 
 import (
 	"encoding/json"
+	"fmt"
+	"net/http"
+
 	"github.com/stellar/go-horizon/context/requestid"
 	"golang.org/x/net/context"
-	"net/http"
 )
 
+// HasProblem types can be transformed into a problem.
+// Implement it for custom errors.
 type HasProblem interface {
 	Problem() P
 }
 
+// P is a struct that represents an error response to be rendered to a connected
+// client.
 type P struct {
-	Type     string `json:"type"`
-	Title    string `json:"title"`
-	Status   int    `json:"status"`
-	Detail   string `json:"detail,omitempty"`
-	Instance string `json:"instance,omitempty"`
+	Type     string                 `json:"type"`
+	Title    string                 `json:"title"`
+	Status   int                    `json:"status"`
+	Detail   string                 `json:"detail,omitempty"`
+	Instance string                 `json:"instance,omitempty"`
+	Extras   map[string]interface{} `json:"extras,omitempty"`
 }
 
-func FromError(ctx context.Context, err error) P {
-	if err, ok := err.(HasProblem); ok {
-		return err.Problem()
-	}
-
-	result := ServerError
-	result.Detail += "\n\nActual Error:" + err.Error()
-
-	return result
-}
-
+// Inflate expands a problem with contextal information.
+// At present it adds the request's id as the problem's Instance, if available.
 func Inflate(ctx context.Context, p *P) {
 	//TODO: inflate type into full url
 	//TODO: add requesting url to extra info
 
 	p.Instance = requestid.FromContext(ctx)
-
 }
 
-func Render(ctx context.Context, w http.ResponseWriter, p P) {
+// Render writes a http response to `w`, compliant with the "Problem
+// Details for HTTP APIs" RFC:
+//   https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00
+//
+// `p` is the problem, which may be either a concrete P struct, an implementor
+// of the `HasProblem` interface, or an error.  Any other value for `p` will
+// panic.
+func Render(ctx context.Context, w http.ResponseWriter, p interface{}) {
+	switch p := p.(type) {
+	case P:
+		render(ctx, w, p)
+	case HasProblem:
+		render(ctx, w, p.Problem())
+	case error:
+		// TODO: log the error
+		render(ctx, w, ServerError)
+	default:
+		panic(fmt.Sprintf("Invalid problem: %v+", p))
+	}
+}
+
+func render(ctx context.Context, w http.ResponseWriter, p P) {
 
 	Inflate(ctx, &p)
 
