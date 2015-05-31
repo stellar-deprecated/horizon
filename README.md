@@ -32,3 +32,5 @@ then, launch `goconvey` like so:
 ```bash
 goconvey -packages=1
 ```
+
+You can see test results in the browser based reporter at `http://localhost:8080/`
