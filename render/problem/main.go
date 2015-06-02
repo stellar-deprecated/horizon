@@ -74,14 +74,10 @@ func render(ctx context.Context, w http.ResponseWriter, p P) {
 	w.Write(js)
 }
 
+// Well-known and reused problems below:
 var (
-	NotFound          P
-	ServerError       P
-	RateLimitExceeded P
-	NotImplemented    P
-)
-
-func init() {
+	// NotFound is a well-known problem type.  Use it as a shortcut
+	// in your actions.
 	NotFound = P{
 		Type:   "not_found",
 		Title:  "Resource Missing",
@@ -91,6 +87,8 @@ func init() {
 			"data in our database could be found with the parameters provided.",
 	}
 
+	// ServerError is a well-known problem type.  Use it as a shortcut
+	// in your actions.
 	ServerError = P{
 		Type:   "server_error",
 		Title:  "Internal Server Error",
@@ -102,6 +100,8 @@ func init() {
 			" Please include this response in your issue.",
 	}
 
+	// RateLimitExceeded is a well-known problem type.  Use it as a shortcut
+	// in your actions.
 	RateLimitExceeded = P{
 		Type:   "rate_limit_exceeded",
 		Title:  "Rate limit exceeded",
@@ -112,6 +112,8 @@ func init() {
 			"headers.",
 	}
 
+	// NotImplemented is a well-known problem type.  Use it as a shortcut
+	// in your actions.
 	NotImplemented = P{
 		Type:   "not_implemented",
 		Title:  "Resource Not Yet Implemented",
@@ -120,4 +122,13 @@ func init() {
 			"valid resource, the work to implement the resource has not yet " +
 			"been completed.",
 	}
-}
+
+	// NotAcceptable is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	NotAcceptable = P{
+		Type: "not_acceptable",
+		Title: "An acceptable response content-type could not be provided for " +
+			"this request",
+		Status: http.StatusNotAcceptable,
+	}
+)
