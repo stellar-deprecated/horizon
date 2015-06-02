@@ -6,7 +6,6 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/Sirupsen/logrus"
 	gctx "github.com/goji/context"
 	"github.com/stellar/go-horizon/log"
 	"github.com/zenazn/goji/web"
@@ -35,7 +34,7 @@ func LoggerMiddleware(c *web.C, h http.Handler) http.Handler {
 }
 
 func logStartOfRequest(ctx context.Context, r *http.Request) {
-	fields := logrus.Fields{
+	fields := log.Fields{
 		"path":   r.URL.String(),
 		"method": r.Method,
 	}
@@ -44,7 +43,7 @@ func logStartOfRequest(ctx context.Context, r *http.Request) {
 }
 
 func logEndOfRequest(ctx context.Context, duration time.Duration, mw mutil.WriterProxy) {
-	fields := logrus.Fields{
+	fields := log.Fields{
 		"status":   mw.Status(),
 		"bytes":    mw.BytesWritten(),
 		"duration": duration,

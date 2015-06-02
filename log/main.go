@@ -8,6 +8,8 @@ import (
 	"golang.org/x/net/context"
 )
 
+type Fields logrus.Fields
+
 var contextKey = 0
 var defaultLogger *logrus.Entry
 var defaultMetrics *Metrics
@@ -37,12 +39,16 @@ func PushContext(parent context.Context, modFn func(entry *logrus.Entry) *logrus
 	return Context(parent, next)
 }
 
+// WithField returns a logger configured to include the provided `key` and
+// `value` along with any log lines emitted from it.
 func WithField(ctx context.Context, key string, value interface{}) *logrus.Entry {
 	return FromContext(ctx).WithField(key, value)
 }
 
-func WithFields(ctx context.Context, fields logrus.Fields) *logrus.Entry {
-	return FromContext(ctx).WithFields(fields)
+// WithFields is like WithField, but allows you to defined multiple kv pairs
+// in one call
+func WithFields(ctx context.Context, fields Fields) *logrus.Entry {
+	return FromContext(ctx).WithFields(logrus.Fields(fields))
 }
 
 // FromContext retrieves the current registered logger from the provided
