@@ -27,8 +27,6 @@ func LoggerMiddleware(c *web.C, h http.Handler) http.Handler {
 		duration := time.Now().Sub(then)
 
 		logEndOfRequest(ctx, duration, mw)
-
-		_ = duration
 	}
 
 	return http.HandlerFunc(fn)

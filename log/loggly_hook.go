@@ -32,9 +32,9 @@ func NewLogglyHook(token string) *LogglyHook {
 func (hook *LogglyHook) Fire(entry *logrus.Entry) error {
 	logglyMessage := loggly.Message{
 		"timestamp": entry.Time.UTC().Format(time.RFC3339Nano),
-		"severity":  entry.Level.String(),
-		"type":      entry.Message,
-		"host":      hook.host,
+		"level":     entry.Level.String(),
+		"message":   entry.Message,
+		"hostname":  hook.host,
 	}
 
 	return hook.client.Send(logglyMessage)
