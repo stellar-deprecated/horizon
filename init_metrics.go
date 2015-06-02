@@ -33,9 +33,14 @@ func initWebMetrics(app *App) {
 	app.metrics.Register("requests.failed", app.web.failureMeter)
 }
 
+func initSubmitterMetrics(app *App) {
+	app.metrics.Register("submissions", app.submitter.submissionTimer)
+}
+
 func init() {
 	appInit.Add("metrics", initMetrics)
 	appInit.Add("log.metrics", initLogMetrics, "metrics")
 	appInit.Add("db-metrics", initDbMetrics, "metrics", "history-db", "core-db")
 	appInit.Add("web.metrics", initWebMetrics, "web.init", "metrics")
+	appInit.Add("transaction-submitter.metrics", initSubmitterMetrics, "transaction-submitter", "metrics")
 }
