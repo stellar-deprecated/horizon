@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -44,7 +45,7 @@ func (hook *LogglyHook) Fire(entry *logrus.Entry) error {
 			continue
 		}
 
-		logglyMessage[k] = v
+		logglyMessage[k] = fmt.Sprint(v)
 	}
 
 	return hook.client.Send(logglyMessage)
