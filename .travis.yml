@@ -17,6 +17,8 @@ notifications:
     secure: aZZCo+1qY0AIT4TJ0Q218XZbPzxNMPLznXI8CgWVAuI+6ipRWIWykaeB0H6EInejXuT8Cjx3OKxk6RCNPLiBr10TgDnEOPR2ycPXGHSjwE+omte8/Uq3VxfEU45Uh3AlwleMIn9/HVGgGxRGEY4GqUeA9+QPPZt2sswiVazbkx4=
 services:
   - redis-server
+addons:
+  postgresql: '9.4'
 matrix:
   allow_failures:
     - go: tip
