@@ -1,18 +1,20 @@
 package horizon
 
 import (
+	"encoding/json"
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
-	"testing"
 )
 
 func TestOperationActions(t *testing.T) {
 	test.LoadScenario("base")
-	app := NewTestApp()
-	defer app.Close()
-	rh := NewRequestHelper(app)
 
 	Convey("Operation Actions:", t, func() {
+		app := NewTestApp()
+		defer app.Close()
+		rh := NewRequestHelper(app)
 
 		Convey("GET /operations", func() {
 			w := rh.Get("/operations", test.RequestHelperNoop)
@@ -56,6 +58,19 @@ func TestOperationActions(t *testing.T) {
 			w = rh.Get("/transactions/5bd122cef07943e50c100251f70df2fbfc6f475e1a3b6ef35dbff2a10a1df4bf/operations", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
+		})
+
+		Convey("GET /operations/:id", func() {
+			w := rh.Get("/operations/17179873280", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+
+			var result OperationResource
+			err := json.Unmarshal(w.Body.Bytes(), &result)
+			So(err, ShouldBeNil)
+			So(result["paging_token"], ShouldEqual, "17179873280")
+
+			w = rh.Get("/operations/10", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 404)
 		})
 
 	})

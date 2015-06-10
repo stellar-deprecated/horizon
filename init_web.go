@@ -91,7 +91,7 @@ func initWebActions(app *App) {
 
 	// operation actions
 	r.Get("/operations", operationIndexAction)
-	r.Get("/operations/:id", notImplementedAction)
+	r.Get("/operations/:id", operationShowAction)
 	r.Get("/operations/:op_id/effects", notImplementedAction)
 
 	r.Get("/payments", paymentsIndexAction)

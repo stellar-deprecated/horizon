@@ -22,9 +22,26 @@ func operationIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ah.Err() != nil {
-		problem.Render(ah.Context(), w, problem.ServerError)
+		problem.Render(ah.Context(), w, ah.Err())
 		return
 	}
 
 	render.Collection(ah.Context(), w, r, q, operationRecordToResource)
+}
+
+func operationShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
+	ah := &ActionHelper{c: c, r: r}
+	app := ah.App()
+
+	q := db.OperationByIdQuery{
+		SqlQuery: app.HistoryQuery(),
+		Id:       ah.GetInt64("id"),
+	}
+
+	if ah.Err() != nil {
+		problem.Render(ah.Context(), w, ah.Err())
+		return
+	}
+
+	render.Single(ah.Context(), w, r, q, operationRecordToResource)
 }
