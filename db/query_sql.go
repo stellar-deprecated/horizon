@@ -14,7 +14,7 @@ type SqlQuery struct {
 }
 
 func (q SqlQuery) Select(ctx context.Context, sql sq.SelectBuilder, dest interface{}) error {
-	db := sqlx.NewDb(q.DB, "postgr	es")
+	db := sqlx.NewDb(q.DB, "postgres")
 	sql = sql.PlaceholderFormat(sq.Dollar)
 	query, args, err := sql.ToSql()
 

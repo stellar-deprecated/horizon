@@ -87,7 +87,6 @@ func loadSqlFile(url string, path string) {
 		log.Panic(err)
 	}
 
-	_ = cmd.Wait()
 }
 
 // Context provides a context suitable for testing in tests that do not create

@@ -9,31 +9,21 @@ import (
 
 // CoreOfferRecordSelect is a sql fragment to help select form queries that
 // select into a CoreOfferRecord
-var CoreOfferRecordSelect = sq.Select(
-	"co.accountid",
-	"co.offerid",
-	"co.paysalphanumcurrency",
-	"co.paysissuer",
-	"co.getsalphanumcurrency",
-	"co.getsissuer",
-	"co.amount",
-	"co.pricen",
-	"co.priced",
-	"co.price",
-).From("offers co")
+var CoreOfferRecordSelect = sq.Select("co.*").From("offers co")
 
 // CoreOfferRecord is row of data from the `offers` table from stellar-core
 type CoreOfferRecord struct {
-	Accountid            string
-	Offerid              int64
-	Paysalphanumcurrency sql.NullString
-	Paysissuer           sql.NullString
-	Getsalphanumcurrency sql.NullString
-	Getsissuer           sql.NullString
-	Amount               int64
-	Pricen               int32
-	Priced               int32
-	Price                int64
+	Accountid            string         `db:"accountid"`
+	Offerid              int64          `db:"offerid"`
+	Paysalphanumcurrency sql.NullString `db:"paysalphanumcurrency"`
+	Paysissuer           sql.NullString `db:"paysissuer"`
+	Getsalphanumcurrency sql.NullString `db:"getsalphanumcurrency"`
+	Getsissuer           sql.NullString `db:"getsissuer"`
+	Amount               int64          `db:"amount"`
+	Pricen               int32          `db:"pricen"`
+	Priced               int32          `db:"priced"`
+	Price                int64          `db:"price"`
+	Flags                int32          `db:"flags"`
 }
 
 // PagingToken returns a suitable paging token for the CoreOfferRecord
