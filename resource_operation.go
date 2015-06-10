@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/jagregory/halgo"
@@ -8,73 +9,69 @@ import (
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
 	"github.com/stellar/go-horizon/render/sse"
+	"github.com/stellar/go-stellar-base/xdr"
 )
 
-// PaymentResource contains the payment specific details for a payment operation
-type PaymentResource struct {
-	OperationResource
-	From   string `json:"from"`
-	To     string `json:"to"`
-	Amount string `json:"amount"`
+var operationResourceTypeNames = map[xdr.OperationType]string{
+	xdr.OperationTypeCreateAccount:      "create_account",
+	xdr.OperationTypePayment:            "payment",
+	xdr.OperationTypePathPayment:        "path_payment",
+	xdr.OperationTypeManageOffer:        "manage_offer",
+	xdr.OperationTypeCreatePassiveOffer: "create_passive_offer",
+	xdr.OperationTypeSetOption:          "set_options",
+	xdr.OperationTypeChangeTrust:        "change_trust",
+	xdr.OperationTypeAllowTrust:         "allow_trust",
+	xdr.OperationTypeAccountMerge:       "account_merge",
+	xdr.OperationTypeInflation:          "inflation",
 }
 
-// SseEvent converts this resource into a SSE compatible event.  Implements
-// the sse.Eventable interface
-func (r PaymentResource) SseEvent() sse.Event {
-	return sse.Event{
-		Data: r,
-		ID:   r.PagingToken,
-	}
-}
-
-// OperationResource is the display form of an operation.
-type OperationResource struct {
-	halgo.Links
-	ID          int64  `json:"id"`
-	PagingToken string `json:"paging_token"`
-	Type        int32  `json:"type"`
-	TypeString  string `json:"type_s"`
-}
+type OperationResource map[string]interface{}
 
 // SseEvent converts this resource into a SSE compatible event.  Implements
 // the sse.Eventable interface
 func (r OperationResource) SseEvent() sse.Event {
+
+	ids, ok := r["paging_token"]
+
+	if !ok {
+		return sse.Event{Error: errors.New("paging_token not found in operation resource")}
+	}
+
 	return sse.Event{
 		Data: r,
-		ID:   r.PagingToken,
+		ID:   ids.(string),
 	}
 }
 
-func operationRecordToResource(record db.Record) (result render.Resource, err error) {
-
+func operationRecordToResource(record db.Record) (render.Resource, error) {
 	op := record.(db.OperationRecord)
+	result, err := op.Details()
+
+	if err != nil {
+		return nil, err
+	}
+
 	self := fmt.Sprintf("/operations/%d", op.Id)
 	po := "{?cursor}{?limit}{?order}"
 
-	common := OperationResource{
-		Links: halgo.Links{}.
-			Self(self).
-			Link("transactions", "/transactions/%d", op.TransactionId).
-			Link("effects", "%s/effects/%s", self, po).
-			Link("precedes", "/operations?cursor=%s&order=asc", op.PagingToken()).
-			Link("succeeds", "/operations?cursor=%s&order=desc", op.PagingToken()),
-		ID:          op.Id,
-		PagingToken: op.PagingToken(),
-		Type:        op.Type,
-		TypeString:  "TODO",
-	}
+	result["_links"] = halgo.Links{}.
+		Self(self).
+		Link("transactions", "/transactions/%d", op.TransactionId).
+		Link("effects", "%s/effects/%s", self, po).
+		Link("precedes", "/operations?cursor=%s&order=asc", op.PagingToken()).
+		Link("succeeds", "/operations?cursor=%s&order=desc", op.PagingToken()).
+		Items
+	result["id"] = op.Id
+	result["paging_token"] = op.PagingToken()
+	result["type"] = op.Type
 
-	// TODO: use the constant from go-stellar-base, when it exists
-	if op.Type == 1 {
-		result = PaymentResource{
-			OperationResource: common,
-			From:              op.Details.Map["from"].String,
-			To:                op.Details.Map["to"].String,
-			Amount:            op.Details.Map["amount"].String,
-		}
+	ts, ok := operationResourceTypeNames[op.Type]
+
+	if ok {
+		result["type_s"] = ts
 	} else {
-		result = common
+		result["type_s"] = "unknown"
 	}
 
-	return
+	return result, nil
 }
