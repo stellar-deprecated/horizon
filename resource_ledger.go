@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -13,14 +12,14 @@ import (
 // LedgerResource represents the summary of a single ledger
 type LedgerResource struct {
 	halgo.Links
-	ID               string         `json:"id"`
-	PagingToken      string         `json:"paging_token"`
-	Hash             string         `json:"hash"`
-	PrevHash         sql.NullString `json:"prev_hash"`
-	Sequence         int32          `json:"sequence"`
-	TransactionCount int32          `json:"transaction_count"`
-	OperationCount   int32          `json:"operation_count"`
-	ClosedAt         time.Time      `json:"closed_at"`
+	ID               string    `json:"id"`
+	PagingToken      string    `json:"paging_token"`
+	Hash             string    `json:"hash"`
+	PrevHash         string    `json:"prev_hash,omitempty"`
+	Sequence         int32     `json:"sequence"`
+	TransactionCount int32     `json:"transaction_count"`
+	OperationCount   int32     `json:"operation_count"`
+	ClosedAt         time.Time `json:"closed_at"`
 }
 
 // SseEvent converts this resource into a SSE compatible event.  Implements
@@ -44,7 +43,7 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 		ID:          in.LedgerHash,
 		PagingToken: in.PagingToken(),
 		Hash:        in.LedgerHash,
-		PrevHash:    in.PreviousLedgerHash,
+		PrevHash:    in.PreviousLedgerHash.String,
 		Sequence:    in.Sequence,
 	}
 }
