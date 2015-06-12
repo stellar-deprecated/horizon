@@ -40,10 +40,13 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 			Link("transactions", self+"/transactions{?cursor}{?limit}{?order}").
 			Link("operations", self+"/operations{?cursor}{?limit}{?order}").
 			Link("effects", self+"/effects{?cursor}{?limit}{?order}"),
-		ID:          in.LedgerHash,
-		PagingToken: in.PagingToken(),
-		Hash:        in.LedgerHash,
-		PrevHash:    in.PreviousLedgerHash.String,
-		Sequence:    in.Sequence,
+		ID:               in.LedgerHash,
+		PagingToken:      in.PagingToken(),
+		Hash:             in.LedgerHash,
+		PrevHash:         in.PreviousLedgerHash.String,
+		Sequence:         in.Sequence,
+		TransactionCount: in.TransactionCount,
+		OperationCount:   in.OperationCount,
+		ClosedAt:         in.ClosedAt,
 	}
 }
