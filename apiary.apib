@@ -270,6 +270,16 @@ Represents a single transaction that has been submitted and validated by the ste
   + result_xdr (string, required)       - The base64-encoded XDR representation of the TransactionResultPair returned during application
   + result_meta_xdr (string, required)  - The base64-encoded XDR representation of the TransactionMeta created during transaction application
 
+### Submitting a transaction [POST /transactions]
+
+  + Request (application/x-www-form-urlencoded)
+
+        tx=fffff
+
+  + Response 200 (application/hal+json)
+
+        {}
+
 ### Transaction details [GET /transactions/{hash}]
   + Parameters
     + hash: 0ab231385734ad4092cc0651f3acd2a6e3eead24282f2725a79d019d4b791d54 (required, string) - The hex-encoded hash of a transaction
@@ -432,17 +442,30 @@ Represents a single transaction that has been submitted and validated by the ste
               }
             }
 
+### Transations for account [GET /accounts/{address}/transactions{?order}{?limit}{?cursor}]
+### Transations for ledger [GET /ledgers/{sequence}/transactions{?order}{?limit}{?cursor}]
 
-### Submitting a transaction [POST /transactions]
+## Operation [/operations/{id}]
 
-  + Request (application/x-www-form-urlencoded)
+Every transaction is a container for one or more operations.
 
-        tx=fffff
+### Operation details [GET /operations/{id}]
+### All operations [GET /operations{?order}{?limit}{?cursor}]
+### Operations for account [GET /accounts/{address}/operations{?order}{?limit}{?cursor}]
+### Payments for account [GET /accounts/{address}/payments{?order}{?limit}{?cursor}]
+### Operations for ledger [GET /ledgers/{sequence}/operations{?order}{?limit}{?cursor}]
+### Operations for transaction [GET /transactions/{hash}/operations{?order}{?limit}{?cursor}]
 
-  + Response 200 (application/hal+json)
+## Effect [/effect/{id}]
 
-        {}
+An operation that is applied to the ledger creates one or more effects.  For example, a payment will result in a credit effect on one account and a debit effect on another
 
+### Effect details [GET /effects/{id}]
+### All effects [GET /effects{?order}{?limit}{?cursor}]
+### Effects for account [GET /accounts/{address}/effects{?order}{?limit}{?cursor}]
+### Effects for ledger [GET /ledgers/{sequence}/effects{?order}{?limit}{?cursor}]
+### Effects for transaction [GET /transactions/{hash}/effects{?order}{?limit}{?cursor}]
+### Effects for operations [GET /operations/{id}/effects{?order}{?limit}{?cursor}]
 
 
 # Data Structures
