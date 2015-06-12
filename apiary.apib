@@ -3,38 +3,31 @@ HOST: https://horizon-testnet.stellar.org
 
 # Horizon
 
-*NOTE: Horizon is in very active development*
+Horizon is the client facing API server for the Stellar ecosystem.  See [an overview of the Stellar ecosystem](#) for more details.
 
-Horizon is the client facing API server for the Stellar network ecosystem.  See [an overview of the Stellar ecosystem](TODO) for more details.
-
-Horizon provides (well, intends to provide when complete) two significant portions of functionality:  The Transactions API and the History API.
+Horizon provides three significant portions of functionality:  The Transactions API, the History API, and the Trading API.
 
 ## Transactions API
 
-The Transactions API exists to help you make transactions against the stellar network.  It provides ways to help you create valid transactions, such as providing an account's sequence number or latest known balances.
+The Transactions API exists to help you make transactions against the Stellar network.  It provides ways to help you create valid transactions, such as providing an account's sequence number or latest known balances. 
 
 In addition to the read endpoints, the Transactions API also provides the endpoint to submit transactions.
 
-### Future additions
-
-The current capabilities of the Transactions API does not represent what will be available at the official launch of the new Stellar network.  Notable additions to come:
-
-- Endpoints to read the current state of a given order book or books to aid in creating offer transactions
-- Endpoints to calculate suitable paths for a payments
-
 ## History API
 
-The History API provides endpoints for retrieving data about what has happened in the past on the stellar network.  It provides (or will provide) a endpoints that let you:
+The History API provides endpoints for retrieving data about what has happened in the past on the Stellar network.  It provides (or will provide) endpoints that let you:
 
 - Retrieve transaction details
 - Load transactions that effect a given account
 - Load payment history for an account
 - Load trade history for a given order book
 
+## Trading API
 
-### Future additions
-
-The history API is pretty sparse at present.  Presently you can page through all transactions in application order, or page through transactions that a apply to a single account.  This is really only useful for explaining how paging and filtering works within horizon, as most useful information for transactions are related to their operations.
+The Trading API provides endpoints for retrieving data about the distributed
+currency exchange within stellar.  It provides data regarding open offers to
+exchange currency (often called an order book) and also provides data about
+trades that were executed within the exchange.
 
 
 ## API Overview
@@ -82,12 +75,38 @@ The Stellar network stores data in shared public ledger, and is changes by a ser
 ### View ledger summary [GET]
 
 + Parameters
-
-  + sequence: 123 (number, required) - A sequence number
-
+  + sequence: 4 (number, required) - A sequence number
 + Response 200
-
   + Attributes (Ledger)
+  + Body
+
+            {
+              "_links": {
+                "effects": {
+                  "href": "/ledgers/4/effects{?cursor}{?limit}{?order}",
+                  "templated": true
+                },
+                "operations": {
+                  "href": "/ledgers/4/operations{?cursor}{?limit}{?order}",
+                  "templated": true
+                },
+                "self": {
+                  "href": "/ledgers/4"
+                },
+                "transactions": {
+                  "href": "/ledgers/4/transactions{?cursor}{?limit}{?order}",
+                  "templated": true
+                }
+              },
+              "id": "4f9c63d164aa1e4fcd04d19e6022e9a551f53583eff2e3501db9068837a19a4f",
+              "paging_token": "17179869184",
+              "hash": "4f9c63d164aa1e4fcd04d19e6022e9a551f53583eff2e3501db9068837a19a4f",
+              "prev_hash": "1812a844552b6ef10665ff429f69e5af77460db28cbf108870d1cb0e607c909b",
+              "sequence": 4,
+              "transaction_count": 4,
+              "operation_count": 4,
+              "closed_at": "2015-06-12T17:41:32Z"
+            }
 
 ## Account [/accounts/{address}]
 
@@ -95,26 +114,61 @@ Represents the current state of an account as of the latest closed
 ledger imported by horizon.
 
 + Attributes
-  + id (string, required)                 - An opaque identifier for this resource
-  + paging_token (string, required)       - An opaque cursor, which may be used for paging through the collection (i.e. used as the cursor parameter)
+  + id           (string, required) - An opaque identifier for this resource
+  + paging_token (string, required) - An opaque cursor, which may be used for paging through the collection (i.e. used as the cursor parameter)
+  + address      (string, required) - The address for the account
+  + sequence     (number, required) - The current sequence for the account, as of the last validated ledger
+  + balances     (array, required)  - TODO
 
 ### View account details [GET]
 
 + Parameters
-
-  + address (required, string, `gjgPNE2GpySt5iYZaFFo1svCJ4gbHwXxUy8DDqeYTDK6UzsPTs`) ... Address of an account
-
+  + address: gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe (string, required) - Address of an account
 + Response 200
-
   + Attributes (Account)
+  + Body
+
+            {
+              "_links": {
+                "effects": {
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/effects/{?cursor}{?limit}{?order}",
+                  "templated": true
+                },
+                "offers": {
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/offers/{?cursor}{?limit}{?order}",
+                  "templated": true
+                },
+                "operations": {
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/operations/{?cursor}{?limit}{?order}",
+                  "templated": true
+                },
+                "self": {
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe"
+                },
+                "transactions": {
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/transactions/{?cursor}{?limit}{?order}",
+                  "templated": true
+                }
+              },
+              "id": "gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe",
+              "paging_token": "1163936141312",
+            "address": "gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe",
+              "sequence": 1163936137285,
+            "balances": [
+                {
+                "currency_type": "native",
+                  "balance": 99939999999310
+                }
+              ]
+            }
 
 ## Transaction [/transactions/{hash}]
 
 Represents a single transaction that has been submitted and validated by the stellar network
 
 + Attributes
-  + id (string, required)                 - An opaque identifier for this resource
-  + paging_token (string, required)       - An opaque cursor, which may be used for paging through the collection (i.e. used as the cursor parameter)
+  + id (string, required)               - An opaque identifier for this resource
+  + paging_token (string, required)     - An opaque cursor, which may be used for paging through the collection (i.e. used as the cursor parameter)
   + hash (string, required)             - Hex-encoded hash of the transaction
   + ledger (number, required)           - The ledger sequence in which this transaction was validated
   + account (string, required)          - The base58-encoded address of this transaction's source account
