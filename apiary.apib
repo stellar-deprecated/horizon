@@ -9,7 +9,7 @@ Horizon provides three significant portions of functionality:  The Transactions 
 
 ## Transactions API
 
-The Transactions API exists to help you make transactions against the Stellar network.  It provides ways to help you create valid transactions, such as providing an account's sequence number or latest known balances. 
+The Transactions API exists to help you make transactions against the Stellar network.  It provides ways to help you create valid transactions, such as providing an account's sequence number or latest known balances.
 
 In addition to the read endpoints, the Transactions API also provides the endpoint to submit transactions.
 
@@ -28,7 +28,6 @@ The Trading API provides endpoints for retrieving data about the distributed
 currency exchange within stellar.  It provides data regarding open offers to
 exchange currency (often called an order book) and also provides data about
 trades that were executed within the exchange.
-
 
 ## API Overview
 
@@ -72,13 +71,13 @@ The Stellar network stores data in shared public ledger, and is changes by a ser
   + operations_count (number, required)   - The number of operations that were applied during the creation of this ledger
   + closed_at (Date, required)            - The time that this ledger was validated by the network and closed
 
-### View ledger summary [GET]
+### Ledger summary [GET /ledgers/{sequence}]
 
 + Parameters
-  + sequence: 4 (number, required) - A sequence number
+    + sequence: 4 (number, required) - A sequence number
 + Response 200
-  + Attributes (Ledger)
-  + Body
+    + Attributes (Ledger)
+    + Body
 
             {
               "_links": {
@@ -108,6 +107,92 @@ The Stellar network stores data in shared public ledger, and is changes by a ser
               "closed_at": "2015-06-12T17:41:32Z"
             }
 
+### All Ledgers [GET /ledgers{?order}{?limit}{?cursor}]
+
++ Parameters
+    + order (enum[string], optional) -The order in which to traverse this collection
+        + Default: `asc`
+        + Members
+            + `asc`  - Order by ledger sequence, ascending
+            + `desc` - Order by ledger sequence, descending
+
+    + limit (number, optional) - The maximum number of records to return for this page
+        + Default: `10`
+
+    + cursor (string, optional) - Where in the collection the response should start from.  Use a valid `paging_token` from a previously retrieved resource
+
++ Response 200
+    + Body
+
+            {
+              "_embedded": {
+                "records": [
+                  {
+                    "_links": {
+                      "effects": {
+                        "href": "/ledgers/1/effects{?cursor}{?limit}{?order}",
+                        "templated": true
+                      },
+                      "operations": {
+                        "href": "/ledgers/1/operations{?cursor}{?limit}{?order}",
+                        "templated": true
+                      },
+                      "self": {
+                        "href": "/ledgers/1"
+                      },
+                      "transactions": {
+                        "href": "/ledgers/1/transactions{?cursor}{?limit}{?order}",
+                        "templated": true
+                      }
+                    },
+                    "id": "a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46",
+                    "paging_token": "4294967296",
+                    "hash": "a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46",
+                    "sequence": 1,
+                    "transaction_count": 0,
+                    "operation_count": 0,
+                    "closed_at": "1970-01-01T00:00:00Z"
+                  },
+                  {
+                    "_links": {
+                      "effects": {
+                        "href": "/ledgers/2/effects{?cursor}{?limit}{?order}",
+                        "templated": true
+                      },
+                      "operations": {
+                        "href": "/ledgers/2/operations{?cursor}{?limit}{?order}",
+                        "templated": true
+                      },
+                      "self": {
+                        "href": "/ledgers/2"
+                      },
+                      "transactions": {
+                        "href": "/ledgers/2/transactions{?cursor}{?limit}{?order}",
+                        "templated": true
+                      }
+                    },
+                    "id": "8c0885f6b4a5611d2c2758472ea73c78d2b42c4a0f691ef024e3ada945081ba9",
+                    "paging_token": "8589934592",
+                    "hash": "8c0885f6b4a5611d2c2758472ea73c78d2b42c4a0f691ef024e3ada945081ba9",
+                    "prev_hash": "a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46",
+                    "sequence": 2,
+                    "transaction_count": 0,
+                    "operation_count": 0,
+                    "closed_at": "2015-06-12T17:41:30Z"
+                  }
+                ]
+              },
+              "_links": {
+                "next": {
+                  "href": ""
+                },
+                "self": {
+                  "href": ""
+                }
+              }
+            }
+
+
 ## Account [/accounts/{address}]
 
 Represents the current state of an account as of the latest closed
@@ -120,7 +205,7 @@ ledger imported by horizon.
   + sequence     (number, required) - The current sequence for the account, as of the last validated ledger
   + balances     (array, required)  - TODO
 
-### View account details [GET]
+### Account Details [GET /accounts/{address}]
 
 + Parameters
   + address: gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe (string, required) - Address of an account
@@ -152,15 +237,18 @@ ledger imported by horizon.
               },
               "id": "gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe",
               "paging_token": "1163936141312",
-            "address": "gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe",
+              "address": "gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe",
               "sequence": 1163936137285,
-            "balances": [
-                {
-                "currency_type": "native",
-                  "balance": 99939999999310
-                }
-              ]
+              "balances": [
+                  {
+                  "currency_type": "native",
+                    "balance": 99939999999310
+                  }
+                ]
             }
+
+### All Accounts [GET /accounts{?order}{?limit}{?cursor}]
+
 
 ## Transaction [/transactions/{hash}]
 
@@ -182,58 +270,59 @@ Represents a single transaction that has been submitted and validated by the ste
   + result_xdr (string, required)       - The base64-encoded XDR representation of the TransactionResultPair returned during application
   + result_meta_xdr (string, required)  - The base64-encoded XDR representation of the TransactionMeta created during transaction application
 
-
-### View transaction's details [GET]
-
+### Transaction details [GET /transactions/{hash}]
   + Parameters
-
-    + hash (required, string, `0ab231385734ad4092cc0651f3acd2a6e3eead24282f2725a79d019d4b791d54`) ... The hex-encoded hash of a transaction
-
+    + hash: 0ab231385734ad4092cc0651f3acd2a6e3eead24282f2725a79d019d4b791d54 (required, string) - The hex-encoded hash of a transaction
   + Response 200
+    + Attributes (Transaction)
+    + Body
 
-      + Attributes (Transaction)
-
-## Transaction Collection [/transactions{?order}{?limit}{?after}]
-
-+ Model (application/hal+json)
-
-        {
-          "_links": {
-            "next": {
-              "href": "/transactions?after=373a31&limit=1&order=asc"
-            }
-          },
-          "_embedded": {
-            "records": [
-              {
-                "_links": {
-                  "self": {
-                    "href": "/transactions/0ab231385734ad4092cc0651f3acd2a6e3eead24282f2725a79d019d4b791d54"
-                  },
-                  "account": {
-                    "href": "/accounts/gM4gu1GLe3vm8LKFfRJcmTt1eaEuQEbo61a8BVkGcou78m21K7"
-                  }
+            {
+              "_links": {
+                "account": {
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe"
                 },
-                "hash": "0ab231385734ad4092cc0651f3acd2a6e3eead24282f2725a79d019d4b791d54",
-                "ledger": 7,
-                "application_order": [
-                  7,
-                  1
-                ],
-                "account": "gM4gu1GLe3vm8LKFfRJcmTt1eaEuQEbo61a8BVkGcou78m21K7",
-                "account_sequence": 1,
-                "max_fee": 10,
-                "fee_paid": 10,
-                "operation_count": 1
-              }
-            ]
-          }
-        }
+                "effects": {
+                  "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/effects/{?cursor}{?limit}{?order}",
+                  "templated": true
+                },
+                "ledger": {
+                  "href": "/ledgers/276"
+                },
+                "operations": {
+                  "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/operations/{?cursor}{?limit}{?order}",
+                  "templated": true
+                },
+                "precedes": {
+                  "href": "/transactions?cursor=1185410977792\u0026order=asc"
+                },
+                "self": {
+                  "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4"
+                },
+                "succeeds": {
+                  "href": "/transactions?cursor=1185410977792\u0026order=desc"
+                }
+              },
+              "id": "5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4",
+              "paging_token": "1185410977792",
+              "hash": "5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4",
+              "ledger": 276,
+              "account": "gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe",
+              "account_sequence": 1163936137217,
+              "max_fee": 10,
+              "fee_paid": 10,
+              "operation_count": 1,
+              "result_code": 0,
+              "result_code_s": "tx_success",
+              "envelope_xdr": "TODO",
+              "result_xdr": "TODO",
+              "result_meta_xdr": "TODO"
+            }
 
-### View a page of transaction history [GET]
+### All Transactions [GET /transactions{?order}{?limit}{?cursor}]
 
   + Parameters
-    + after (optional, string, `373a31`) ... A paging token
+    + cursor (optional, string, `373a31`) ... A paging token
     + limit (optional, number, `10`) ... The maximum number of transactions to return in the response
     + order (string)
 
@@ -244,11 +333,107 @@ Represents a single transaction that has been submitted and validated by the ste
             + `desc`
 
   + Response 200
+    + Body
 
-    [Transaction Collection][]
+            {
+              "_embedded": {
+                "records": [
+                  {
+                    "_links": {
+                      "account": {
+                        "href": "/accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
+                      },
+                      "effects": {
+                        "href": "/transactions/5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510/effects/{?cursor}{?limit}{?order}",
+                        "templated": true
+                      },
+                      "ledger": {
+                        "href": "/ledgers/271"
+                      },
+                      "operations": {
+                        "href": "/transactions/5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510/operations/{?cursor}{?limit}{?order}",
+                        "templated": true
+                      },
+                      "precedes": {
+                        "href": "/transactions?cursor=1163936141312\u0026order=asc"
+                      },
+                      "self": {
+                        "href": "/transactions/5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510"
+                      },
+                      "succeeds": {
+                        "href": "/transactions?cursor=1163936141312\u0026order=desc"
+                      }
+                    },
+                    "id": "5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510",
+                    "paging_token": "1163936141312",
+                    "hash": "5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510",
+                    "ledger": 271,
+                    "account": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
+                    "account_sequence": 1,
+                    "max_fee": 10,
+                    "fee_paid": 10,
+                    "operation_count": 1,
+                    "result_code": 0,
+                    "result_code_s": "tx_success",
+                    "envelope_xdr": "TODO",
+                    "result_xdr": "TODO",
+                    "result_meta_xdr": "TODO"
+                  },
+                  {
+                    "_links": {
+                      "account": {
+                        "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe"
+                      },
+                      "effects": {
+                        "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/effects/{?cursor}{?limit}{?order}",
+                        "templated": true
+                      },
+                      "ledger": {
+                        "href": "/ledgers/276"
+                      },
+                      "operations": {
+                        "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/operations/{?cursor}{?limit}{?order}",
+                        "templated": true
+                      },
+                      "precedes": {
+                        "href": "/transactions?cursor=1185410977792\u0026order=asc"
+                      },
+                      "self": {
+                        "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4"
+                      },
+                      "succeeds": {
+                        "href": "/transactions?cursor=1185410977792\u0026order=desc"
+                      }
+                    },
+                    "id": "5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4",
+                    "paging_token": "1185410977792",
+                    "hash": "5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4",
+                    "ledger": 276,
+                    "account": "gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe",
+                    "account_sequence": 1163936137217,
+                    "max_fee": 10,
+                    "fee_paid": 10,
+                    "operation_count": 1,
+                    "result_code": 0,
+                    "result_code_s": "tx_success",
+                    "envelope_xdr": "TODO",
+                    "result_xdr": "TODO",
+                    "result_meta_xdr": "TODO"
+                  }
+                ]
+              },
+              "_links": {
+                "next": {
+                  "href": ""
+                },
+                "self": {
+                  "href": ""
+                }
+              }
+            }
 
 
-### Submitting a transaction [POST]
+### Submitting a transaction [POST /transactions]
 
   + Request (application/x-www-form-urlencoded)
 
@@ -257,6 +442,7 @@ Represents a single transaction that has been submitted and validated by the ste
   + Response 200 (application/hal+json)
 
         {}
+
 
 
 # Data Structures
