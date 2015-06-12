@@ -44,7 +44,7 @@ func initWebMiddleware(app *App) {
 	r.Use(app.Middleware)
 	r.Use(middleware.RequestID)
 	r.Use(contextMiddleware(app.ctx))
-	r.Use(xff.XFF)
+	r.Use(xff.Handler)
 	r.Use(LoggerMiddleware)
 	r.Use(requestMetricsMiddleware)
 	r.Use(RecoverMiddleware)
