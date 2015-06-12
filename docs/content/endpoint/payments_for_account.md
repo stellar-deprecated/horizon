@@ -1,8 +1,8 @@
-+++
-date  = "2015-05-04T21:06:23-07:00"
-draft = false
-title = "Payments for account"
-+++
+---
+id: payments_for_account
+title: Payments for account
+category: Endpoints
+---
 
 This endpoint responds with a collection of [Payment operations][payment]
 resources for the account specified in the arguments.  Specifically, any payment

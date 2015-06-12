@@ -1,10 +1,10 @@
-+++
-date  = "2015-05-04T14:52:29-07:00"
-draft = false
-title = "Transaction Details"
-+++
+---
+id: transactions_single
+title: Transaction Details
+category: Endpoints
+---
 
-The transaction details endpoint provides information on a single transaction 
+The transaction details endpoint provides information on a single transaction
 within the ledger. The transaction hash provided in the `hash` argument specifies
 which transaction to load
 

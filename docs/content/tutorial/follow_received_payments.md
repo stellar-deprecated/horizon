@@ -1,9 +1,8 @@
-+++
-date = "2015-05-06T11:11:53-07:00"
-draft = false
-linktitle = "Follow payments (node)"
-title = "Follow payments sent to an account (Node.js)"
-+++
+---
+id: follow_received_payments
+title: Follow Received Payments
+category: Tutorials
+---
 
 This tutorial shows how easy it is to watch for incoming payments on an account
 using javascript and `EventSource`.  We will eschew using `js-stellar-lib`, the
@@ -14,8 +13,8 @@ This tutorial assumes that you:
 
 - Have node.js installed locally on your machine.
 - Have curl installed locally on your machine.
-- Are running on Linux, OS X, or any other system that has access to a bash-like 
-  shell. 
+- Are running on Linux, OS X, or any other system that has access to a bash-like
+  shell.
 - Are familiar with launching and running commands in a terminal.
 
 In this tutorial we will learn:
@@ -66,17 +65,17 @@ $ node make_account.js
 New account created!
   Address: gxk31VU4jeBBtdkUo4YKqCnd66iavjKvn36m1o7W95WtJfPW1g
   Seed: s3SK8u5ghRvPmPNatUcCg8jCC4wbuYoBtZKnWjsxDRRn857Yrvc
-$  
-``` 
+$
+```
 
 Before our account can do anything it must be funded.  Indeed, before an account
-is funded it does not truly exist!  
+is funded it does not truly exist!
 
 ## Funding your account
 
-The Stellar test network provides a 
+The Stellar test network provides a
 [currency faucet](http://en.wikipedia.org/wiki/Bitcoin_faucet) that provides
-free lumens for developers call Friendbot.  To fund you account, you simply 
+free lumens for developers call Friendbot.  To fund you account, you simply
 execute the following curl command:
 
 ```bash

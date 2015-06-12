@@ -1,12 +1,12 @@
-+++
-title  = "Transaction"
-draft  = false
-weight = -1
-+++
+---
+id: transaction
+title: Transaction
+category: Resources
+---
 
 **Transaction** resources are the basic unit of change in the Stellar Network.
 
-A transaction is a grouping of [operations][operations]. 
+A transaction is a grouping of [operations][operations].
 
 ## Attributes
 

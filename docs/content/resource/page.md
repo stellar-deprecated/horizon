@@ -1,12 +1,13 @@
-+++
-title = "Page"
-draft = false
-+++
+---
+id: page
+title: Page
+category: Resources
+---
 
 Pages are objects that represent a subset of objects from a larger collection.
-As an example, it would be unfeasible to provide the  
-[All Transactions][transactions_all] endpoint without paging;  Over time there 
-will be millions of transactions in the Stellar network's ledger and returning 
+As an example, it would be unfeasible to provide the
+[All Transactions][transactions_all] endpoint without paging;  Over time there
+will be millions of transactions in the Stellar network's ledger and returning
 them all over a single request would be unfeasible.
 
 ## Attributes

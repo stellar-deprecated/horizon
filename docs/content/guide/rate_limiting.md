@@ -1,7 +1,8 @@
-+++
-draft = false
-title = "Rate Limiting"
-+++
+---
+id: rate_limiting
+title: Rate Limiting
+category: Guides
+---
 
 In order to provide service stability, horizon limits the number of requests a
 client can perform within a one hour window.  By default this is set to 3600

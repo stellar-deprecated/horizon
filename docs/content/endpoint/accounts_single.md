@@ -1,7 +1,7 @@
-+++
-date   = "2015-05-04T21:06:40-07:00"
-draft  = true
-title  = "Account Details"
-+++
+---
+id: accounts_single
+title: Account Details
+category: Endpoints
+---
 
 TODO

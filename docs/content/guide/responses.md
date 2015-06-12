@@ -1,8 +1,8 @@
-+++
-date = "2015-05-04T15:48:17-07:00"
-draft = false
-title = "Response Format"
-+++
+---
+id: responses
+title: Response Format
+category: Guides
+---
 
 Rather than using a fully custom way of representing the resources we expose in
 Horizon, we use [HAL](http://stateless.co/hal_specification.html). HAL is a
@@ -56,7 +56,7 @@ The `transactions` link is also _templated_, which means that the `href`
 attribute of the link is actually a URI template, as specified by  [RFC
 6570](https://tools.ietf.org/html/rfc6570).  We use URI templates to show you
 what parameters a give resource can take. You must evaluate the template to a
-valid URI before navigating to it.  
+valid URI before navigating to it.
 
 ## Pages
 
