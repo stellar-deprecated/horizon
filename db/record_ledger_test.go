@@ -7,7 +7,7 @@ import (
 
 )
 
-func TestRecord(t *testing.T) {
+func TestLedgerRecord(t *testing.T) {
 
     Convey("Should be able to set the Id of LegderRecord", t, func() {
         record := new(LedgerRecord)
