@@ -15,7 +15,7 @@ func TestRecord(t *testing.T) {
     So(record.Id, ShouldEqual, 5)
     
 		Convey("PagingToken() returns an id ", func() {
-      So(record.PagingToken(), ShouldEqual, "6")
+      So(record.PagingToken(), ShouldEqual, "5")
 		})
 
 	})
