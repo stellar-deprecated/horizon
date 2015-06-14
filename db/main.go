@@ -41,16 +41,12 @@ type Pageable interface {
 	PagingToken() string
 }
 
-type PageableRecord struct {
+type Record struct {
   Id      int64 
 }
-
-func (r PageableRecord) PagingToken() string {
+func (r Record) PagingToken() string {
 	return fmt.Sprintf("%d", r.Id)
 }
-
-type Record interface{}
-
 // Open the postgres database at the provided url and performing an initial
 // ping to ensure we can connect to it.
 func Open(url string) (*sql.DB, error) {
