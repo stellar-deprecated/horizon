@@ -7,10 +7,10 @@ import (
 
 )
 
-func TestHistoryAccountRecord(t *testing.T) {
+func TestOperationRecord(t *testing.T) {
 
-    Convey("Should be able to set the Id of HistoryAccountRecord", t, func() {
-        record := new(HistoryAccountRecord)
+    Convey("Should be able to set the Id of OperationRecord", t, func() {
+        record := new(OperationRecord)
         record.Id = 5
         So(record.Id, ShouldEqual, 5)
         Convey("PagingToken() returns an id ", func() {
