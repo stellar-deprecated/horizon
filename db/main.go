@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"reflect"
+    "fmt"
 
 	"golang.org/x/net/context"
 
@@ -39,6 +40,16 @@ type Query interface {
 type Pageable interface {
 	PagingToken() string
 }
+
+type PageableRecord struct {
+  Id      int64 
+}
+
+func (r PageableRecord) PagingToken() string {
+	return fmt.Sprintf("%d", r.Id)
+}
+
+type Record interface{}
 
 // Open the postgres database at the provided url and performing an initial
 // ping to ensure we can connect to it.

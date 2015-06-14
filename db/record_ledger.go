@@ -2,18 +2,9 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	sq "github.com/lann/squirrel"
 	"time"
 )
-
-type PageableRecord struct {
-  Id      int64 
-}
-
-func (r PageableRecord) PagingToken() string {
-	return fmt.Sprintf("%d", r.Id)
-}
 
 
 var LedgerRecordSelect sq.SelectBuilder = sq.
