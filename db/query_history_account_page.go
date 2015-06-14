@@ -10,7 +10,7 @@ type HistoryAccountPageQuery struct {
 }
 
 // Get executes the query, returning any results
-func (q HistoryAccountPageQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q HistoryAccountPageQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := HistoryAccountRecordSelect.
 		Limit(uint64(q.Limit))
 

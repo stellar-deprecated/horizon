@@ -25,7 +25,7 @@ type OperationPageQuery struct {
 }
 
 // Get executes the query and returns the results
-func (q OperationPageQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q OperationPageQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := OperationRecordSelect.
 		Limit(uint64(q.Limit)).
 		PlaceholderFormat(sq.Dollar).

@@ -72,7 +72,7 @@ func ShouldBeOrderedDescending(actual interface{}, options ...interface{}) strin
 
 type mockDumpQuery struct{}
 
-func (q mockDumpQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q mockDumpQuery) Get(ctx context.Context) ([]Record, error) {
 	return []interface{}{
 		"hello",
 		"world",
@@ -95,7 +95,7 @@ type mockResult struct {
 	index int
 }
 
-func (q mockQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q mockQuery) Get(ctx context.Context) ([]Record, error) {
 	results := make([]interface{}, q.resultCount)
 
 	for i := 0; i < q.resultCount; i++ {
@@ -115,7 +115,7 @@ type BrokenQuery struct {
 	Err error
 }
 
-func (q BrokenQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q BrokenQuery) Get(ctx context.Context) ([]Record, error) {
 	return nil, q.Err
 }
 

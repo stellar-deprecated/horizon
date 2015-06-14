@@ -7,7 +7,7 @@ type HistoryAccountByAddressQuery struct {
 	Address string
 }
 
-func (q HistoryAccountByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q HistoryAccountByAddressQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := HistoryAccountRecordSelect.Where("address = ?", q.Address).Limit(1)
 
 	var records []HistoryAccountRecord

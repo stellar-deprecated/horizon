@@ -10,7 +10,7 @@ type CoreOfferPageByAddressQuery struct {
 	Address string
 }
 
-func (q CoreOfferPageByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q CoreOfferPageByAddressQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := CoreOfferRecordSelect.
 		Where("co.accountid = ?", q.Address).
 		Limit(uint64(q.Limit))

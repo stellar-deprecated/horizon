@@ -12,7 +12,7 @@ import (
 )
 
 type Query interface {
-	Get(context.Context) ([]interface{}, error)
+	Get(context.Context) ([]Record, error)
 	IsComplete(context.Context, int) bool
 }
 
@@ -42,7 +42,7 @@ func Open(url string) (*sql.DB, error) {
 }
 
 // Results runs the provided query, returning all found results
-func Results(ctx context.Context, query Query) ([]interface{}, error) {
+func Results(ctx context.Context, query Query) ([]Record, error) {
 	return query.Get(ctx)
 }
 
@@ -71,7 +71,7 @@ func MustFirst(ctx context.Context, q Query) interface{} {
 	return result
 }
 
-func MustResults(ctx context.Context, q Query) []interface{} {
+func MustResults(ctx context.Context, q Query) []Record {
 	result, err := Results(ctx, q)
 
 	if err != nil {
@@ -108,10 +108,10 @@ func checkOptions(clauses ...bool) error {
 
 // Converts a typed slice to a slice of interface{}, suitable
 // for return through the Get() method of Query
-func makeResult(src interface{}) []interface{} {
+func makeResult(src interface{}) []Record {
 	srcValue := reflect.ValueOf(src)
 	srcLen := srcValue.Len()
-	result := make([]interface{}, srcLen)
+	result := make([]Record, srcLen)
 
 	for i := 0; i < srcLen; i++ {
 		result[i] = srcValue.Index(i).Interface()

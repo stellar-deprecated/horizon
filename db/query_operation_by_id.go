@@ -7,7 +7,7 @@ type OperationByIdQuery struct {
 	Id int64
 }
 
-func (q OperationByIdQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q OperationByIdQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := OperationRecordSelect.Where("id = ?", q.Id).Limit(1)
 
 	var records []OperationRecord

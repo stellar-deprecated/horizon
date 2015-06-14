@@ -7,7 +7,7 @@ type LedgerPageQuery struct {
 	PageQuery
 }
 
-func (q LedgerPageQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q LedgerPageQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := LedgerRecordSelect.
 		Limit(uint64(q.Limit))
 

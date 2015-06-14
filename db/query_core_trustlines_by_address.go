@@ -7,7 +7,7 @@ type CoreTrustlinesByAddressQuery struct {
 	Address string
 }
 
-func (q CoreTrustlinesByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q CoreTrustlinesByAddressQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := CoreTrustlineRecordSelect.Where("accountid = ?", q.Address)
 
 	var records []CoreTrustlineRecord
