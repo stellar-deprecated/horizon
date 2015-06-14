@@ -12,7 +12,7 @@ var TransactionRecordSelect sq.SelectBuilder = sq.
 	From("history_transactions ht")
 
 type TransactionRecord struct {
-	Id                  int64     `db:"id"`
+	
 	TransactionHash     string    `db:"transaction_hash"`
 	LedgerSequence      int32     `db:"ledger_sequence"`
 	ApplicationOrder    int32     `db:"application_order"`
@@ -30,6 +30,4 @@ func (r TransactionRecord) TableName() string {
 	return "history_transactions"
 }
 
-func (r TransactionRecord) PagingToken() string {
-	return fmt.Sprintf("%d", r.Id)
-}
+
