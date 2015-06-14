@@ -14,6 +14,7 @@ var OperationRecordSelect sq.SelectBuilder = sq.
 	From("history_operations hop")
 
 type OperationRecord struct {
+    RecordBase
 	TransactionId    int64             `db:"transaction_id"`
 	ApplicationOrder int32             `db:"application_order"`
 	Type             xdr.OperationType `db:"type"`
