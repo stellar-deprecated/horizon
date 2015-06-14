@@ -12,7 +12,7 @@ var TransactionRecordSelect sq.SelectBuilder = sq.
 	From("history_transactions ht")
 
 type TransactionRecord struct {
-	
+	RecordBase
 	TransactionHash     string    `db:"transaction_hash"`
 	LedgerSequence      int32     `db:"ledger_sequence"`
 	ApplicationOrder    int32     `db:"application_order"`
