@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	sq "github.com/lann/squirrel"
 	"time"
 )
