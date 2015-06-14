@@ -19,8 +19,3 @@ type HistoryAccountRecord struct {
 	Address string `db:"address"`
 }
 
-// PagingToken provides the paging token for this account, for use
-// in the horizon paging system
-func (r HistoryAccountRecord) PagingToken() string {
-	return fmt.Sprintf("%d", r.Id)
-}
