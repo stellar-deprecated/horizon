@@ -5,11 +5,9 @@ import (
 )
 
 type AccountRecord struct {
+    RecordBase
 	HistoryAccountRecord
 	CoreAccountRecord
 	Trustlines []CoreTrustlineRecord
 }
 
-func (r AccountRecord) PagingToken() string {
-	return fmt.Sprintf("%d", r.Id)
-}
