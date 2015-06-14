@@ -1,8 +1,6 @@
 package db
 
 import (
-	"fmt"
-
 	sq "github.com/lann/squirrel"
 )
 
@@ -15,7 +13,7 @@ var HistoryAccountRecordSelect = sq.
 // HistoryAccountRecord represents a single row from the history database's
 // `history_accounts` table
 type HistoryAccountRecord struct {
-	Id      int64  `db:"id"`
+	RecordBase
 	Address string `db:"address"`
 }
 
