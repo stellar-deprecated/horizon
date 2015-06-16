@@ -1,11 +1,11 @@
-+++
-date  = "2015-05-04T14:52:29-07:00"
-draft = false
-title = "Post Transaction"
-+++
+---
+id: transactions_create
+title: Post Transaction
+category: Endpoints
+---
 
 Posts a new transaction to the Stellar Network.  Note that creating a valid
-transactions and signing it properly should be the responsibility of your 
+transactions and signing it properly should be the responsibility of your
 [client library](#).
 
 Also note, this endpoint is presently a very thin wrapper around the raw

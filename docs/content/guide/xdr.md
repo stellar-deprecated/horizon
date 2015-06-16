@@ -1,10 +1,10 @@
-+++
-draft  = false
-title  = "XDR"
-weight = 2
-+++
+---
+id: xdr
+title: XDR
+category: Guides
+---
 
-**XDR**, also known as _External Data Representation_, is used extensively in 
+**XDR**, also known as _External Data Representation_, is used extensively in
 the Stellar Network, especially the core.  The ledger, transactions, results,
 history, and even the messages passed between computers running stellar-core
 are encoded using XDR.
@@ -25,6 +25,6 @@ into a byte stream, then decode the XDR into in memory data structures.
 
 ## .X files
 
-Data structures in XDR are specified in an _interface definition file_ (IDL).  
-The IDL files used for the Stellar Network are available 
+Data structures in XDR are specified in an _interface definition file_ (IDL).
+The IDL files used for the Stellar Network are available
 [on github](https://github.com/stellar/stellar-core/tree/master/src/xdr).

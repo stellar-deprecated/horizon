@@ -1,14 +1,15 @@
-+++
-title = "Operation"
-draft = false
-+++
+---
+id: operation
+title: Operation
+category: Resources
+---
 
 Operations are objects that represent a desired change to the ledger: payments,
 offers to exchange currency, changes made to account options, etc.  Operations
 are submitted to the Stellar Network grouped in a [Transaction][transactions].
 
-An operation is one of six types: Payment, Create Offer, Set Options, Change 
-Trust, Allow Trust, Account Merge, and Inflation.  See the section "Operation 
+An operation is one of six types: Payment, Create Offer, Set Options, Change
+Trust, Allow Trust, Account Merge, and Inflation.  See the section "Operation
 Types" below.
 
 Every operation type share a set of common attributes and links, but contain
@@ -35,7 +36,7 @@ additional attributes and links specific to its types.
 
 ## Operation Types
 
-There are sevent different operation types: 
+There are sevent different operation types:
 
 |     type_s    | type |
 | ------------- | ---- |
@@ -47,7 +48,7 @@ There are sevent different operation types:
 | account_merge |    5 |
 | inflation     |    6 |
 
-Each operation type will have a different set of attributes, in addition to the 
+Each operation type will have a different set of attributes, in addition to the
 common attributes listed above.
 
 <a id="payment"></a>
@@ -113,8 +114,8 @@ can be either a simple native currency payment or a fiat currency payment.
 
 ### Create Offer
 
-A "Create Offer" operation represents the desire of an account to trade 
-currencies. It specifies an order book, a price and amount of currency to 
+A "Create Offer" operation represents the desire of an account to trade
+currencies. It specifies an order book, a price and amount of currency to
 buy or sell.
 
 When this operation is applied to the ledger, trades will be executed by
@@ -130,7 +131,7 @@ offers or payments, this offer will be filled when possible.
 |     | Type |     |
 | --- | ---- | --- |
 |     |      |     |
-  
+
 
 #### Links
 

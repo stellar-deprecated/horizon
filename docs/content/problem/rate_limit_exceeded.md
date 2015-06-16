@@ -1,8 +1,8 @@
-+++
-draft     = false
-linktitle = "Rate Limit Exceeded"
-title     = "Problem: Rate Limit Exceeded"
-+++
+---
+id: rate_limit_exceeded
+title: Rate Limit Exceeded
+category: Problems
+---
 
 A `rate_limit_exceeded` problem is returned from horizon when it receives too
 many requests within a one hour window from a single user.  By default, horizon

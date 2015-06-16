@@ -1,16 +1,15 @@
-+++
-date      = "2015-05-04T20:03:27-07:00"
-draft     = false
-linktitle = "Server Error"
-title     = "Problem: Internal Server Error"
-+++
+---
+id: server_error
+title: Internal Server Error
+category: Problems
+---
 
 A `server_error` problem is returned from horizon when an error occurs within
 the code for horizon.  This error code is a catchall, and it could reflect any
 number of errors in the server:  A configuration mistake, a database connection
-error, a bug, etc.  
+error, a bug, etc.
 
-**NOTE: Even though Horizon is an open source project, we do not directly expose error information such as stack traces or raw error messages, as they may exposes sensitive configuration data such as secret keys.** 
+**NOTE: Even though Horizon is an open source project, we do not directly expose error information such as stack traces or raw error messages, as they may exposes sensitive configuration data such as secret keys.**
 
 ## Example
 

@@ -1,9 +1,8 @@
-+++
-date = "2015-05-04T08:00:59-07:00"
-draft = false
-title = "Introduction"
-weight = -1
-+++
+---
+id: readme
+title: Introduction
+category: Getting Started
+---
 
 Horizon is the client facing API server for the Stellar ecosystem.  See [an overview of the Stellar ecosystem](#) for more details.
 
@@ -11,7 +10,7 @@ Horizon provides three significant portions of functionality:  The Transactions 
 
 ## Transactions API
 
-The Transactions API exists to help you make transactions against the Stellar network.  It provides ways to help you create valid transactions, such as providing an account's sequence number or latest known balances. 
+The Transactions API exists to help you make transactions against the Stellar network.  It provides ways to help you create valid transactions, such as providing an account's sequence number or latest known balances.
 
 In addition to the read endpoints, the Transactions API also provides the endpoint to submit transactions.
 
@@ -39,9 +38,9 @@ The History API provides endpoints for retrieving data about what has happened i
 ## Trading API
 
 The Trading API provides endpoints for retrieving data about the distributed
-currency exchange within stellar.  It provides data regarding open offers to 
+currency exchange within stellar.  It provides data regarding open offers to
 exchange currency (often called an order book) and also provides data about
-trades that were executed within the exchange.  
+trades that were executed within the exchange.
 
 ### Important Endpoints
 

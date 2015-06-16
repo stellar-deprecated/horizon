@@ -1,9 +1,8 @@
-+++
-date   = "2015-05-04T15:48:17-07:00"
-draft  = false
-title  = "Problems"
-weight = 1
-+++
+---
+id: problems
+title: Problems
+category: Guides
+---
 
 In the event that an error occurs while processing a request to horizon, a
 **problem** response will be returned to the client.  This problem response will
