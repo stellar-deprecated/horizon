@@ -1,9 +1,10 @@
 package db
 
 import (
+	"testing"
+
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestPageQuery(t *testing.T) {
@@ -25,7 +26,7 @@ func TestPageQuery(t *testing.T) {
 
 		Convey("Errors when order is not 'asc' ord 'desc'", func() {
 			_, err := NewPageQuery("", "foo", 0)
-			So(err, ShouldEqual, InvalidOrderError)
+			So(err, ShouldEqual, ErrInvalidOrder)
 		})
 
 		Convey("Defaults to 0 when ordered asc", func() {
@@ -42,12 +43,12 @@ func TestPageQuery(t *testing.T) {
 
 		Convey("Errors when cursor is not parseable as a number", func() {
 			_, err := NewPageQuery("not_a_number", "", 0)
-			So(err, ShouldEqual, InvalidCursorError)
+			So(err, ShouldEqual, ErrInvalidCursor)
 		})
 
 		Convey("Errors when cursor is less than zero", func() {
 			_, err := NewPageQuery("-1", "", 0)
-			So(err, ShouldEqual, InvalidCursorError)
+			So(err, ShouldEqual, ErrInvalidCursor)
 		})
 
 		Convey("Defaults to limit 10", func() {
@@ -64,7 +65,7 @@ func TestPageQuery(t *testing.T) {
 
 		Convey("Errors when limit is less than zero", func() {
 			_, err := NewPageQuery("", "", -1)
-			So(err, ShouldEqual, InvalidLimitError)
+			So(err, ShouldEqual, ErrInvalidLimit)
 		})
 
 		Convey("Errors when limit is greater than 200", func() {
@@ -72,7 +73,7 @@ func TestPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			_, err = NewPageQuery("", "", 201)
-			So(err, ShouldEqual, InvalidLimitError)
+			So(err, ShouldEqual, ErrInvalidLimit)
 		})
 	})
 }
