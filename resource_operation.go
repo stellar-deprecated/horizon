@@ -52,6 +52,10 @@ func operationRecordToResource(record db.Record) (render.Resource, error) {
 		return nil, err
 	}
 
+	if result == nil {
+		result = make(map[string]interface{})
+	}
+
 	self := fmt.Sprintf("/operations/%d", op.Id)
 
 	result["_links"] = halgo.Links{}.

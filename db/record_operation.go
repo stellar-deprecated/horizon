@@ -1,9 +1,10 @@
 package db
 
 import (
+	"database/sql"
+	"encoding/json"
 	"fmt"
 
-	"github.com/jmoiron/sqlx/types"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -17,7 +18,7 @@ type OperationRecord struct {
 	TransactionId    int64             `db:"transaction_id"`
 	ApplicationOrder int32             `db:"application_order"`
 	Type             xdr.OperationType `db:"type"`
-	DetailsString    types.JsonText    `db:"details"`
+	DetailsString    sql.NullString    `db:"details"`
 }
 
 func (r OperationRecord) PagingToken() string {
@@ -25,6 +26,11 @@ func (r OperationRecord) PagingToken() string {
 }
 
 func (r OperationRecord) Details() (result map[string]interface{}, err error) {
-	err = r.DetailsString.Unmarshal(&result)
+	if !r.DetailsString.Valid {
+		return
+	}
+
+	err = json.Unmarshal([]byte(r.DetailsString.String), &result)
+
 	return
 }
