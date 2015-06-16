@@ -30,18 +30,18 @@ The Stellar network stores data in shared public ledger, and is changes by a ser
             {
               "_links": {
                 "effects": {
-                  "href": "/ledgers/4/effects{?cursor}{?limit}{?order}",
+                  "href": "/ledgers/4/effects{?cursor,limit,order}",
                   "templated": true
                 },
                 "operations": {
-                  "href": "/ledgers/4/operations{?cursor}{?limit}{?order}",
+                  "href": "/ledgers/4/operations{?cursor,limit,order}",
                   "templated": true
                 },
                 "self": {
                   "href": "/ledgers/4"
                 },
                 "transactions": {
-                  "href": "/ledgers/4/transactions{?cursor}{?limit}{?order}",
+                  "href": "/ledgers/4/transactions{?cursor,limit,order}",
                   "templated": true
                 }
               },
@@ -55,7 +55,7 @@ The Stellar network stores data in shared public ledger, and is changes by a ser
               "closed_at": "2015-06-12T17:41:32Z"
             }
 
-### All Ledgers [GET /ledgers{?order}{?limit}{?cursor}]
+### All Ledgers [GET /ledgers{?cursor,limit,order}]
 
 + Parameters
     + order (enum[string], optional) -The order in which to traverse this collection
@@ -78,18 +78,18 @@ The Stellar network stores data in shared public ledger, and is changes by a ser
                   {
                     "_links": {
                       "effects": {
-                        "href": "/ledgers/1/effects{?cursor}{?limit}{?order}",
+                        "href": "/ledgers/1/effects{?cursor,limit,order}",
                         "templated": true
                       },
                       "operations": {
-                        "href": "/ledgers/1/operations{?cursor}{?limit}{?order}",
+                        "href": "/ledgers/1/operations{?cursor,limit,order}",
                         "templated": true
                       },
                       "self": {
                         "href": "/ledgers/1"
                       },
                       "transactions": {
-                        "href": "/ledgers/1/transactions{?cursor}{?limit}{?order}",
+                        "href": "/ledgers/1/transactions{?cursor,limit,order}",
                         "templated": true
                       }
                     },
@@ -104,18 +104,18 @@ The Stellar network stores data in shared public ledger, and is changes by a ser
                   {
                     "_links": {
                       "effects": {
-                        "href": "/ledgers/2/effects{?cursor}{?limit}{?order}",
+                        "href": "/ledgers/2/effects{?cursor,limit,order}",
                         "templated": true
                       },
                       "operations": {
-                        "href": "/ledgers/2/operations{?cursor}{?limit}{?order}",
+                        "href": "/ledgers/2/operations{?cursor,limit,order}",
                         "templated": true
                       },
                       "self": {
                         "href": "/ledgers/2"
                       },
                       "transactions": {
-                        "href": "/ledgers/2/transactions{?cursor}{?limit}{?order}",
+                        "href": "/ledgers/2/transactions{?cursor,limit,order}",
                         "templated": true
                       }
                     },
@@ -164,22 +164,22 @@ ledger imported by horizon.
             {
               "_links": {
                 "effects": {
-                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/effects/{?cursor}{?limit}{?order}",
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/effects/{?cursor,limit,order}",
                   "templated": true
                 },
                 "offers": {
-                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/offers/{?cursor}{?limit}{?order}",
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/offers/{?cursor,limit,order}",
                   "templated": true
                 },
                 "operations": {
-                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/operations/{?cursor}{?limit}{?order}",
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/operations/{?cursor,limit,order}",
                   "templated": true
                 },
                 "self": {
                   "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe"
                 },
                 "transactions": {
-                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/transactions/{?cursor}{?limit}{?order}",
+                  "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe/transactions/{?cursor,limit,order}",
                   "templated": true
                 }
               },
@@ -195,7 +195,7 @@ ledger imported by horizon.
                 ]
             }
 
-### All Accounts [GET /accounts{?order}{?limit}{?cursor}]
+### All Accounts [GET /accounts{?cursor,limit,order}]
 
 
 ## Transaction [/transactions/{hash}]
@@ -241,14 +241,14 @@ Represents a single transaction that has been submitted and validated by the ste
                   "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe"
                 },
                 "effects": {
-                  "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/effects/{?cursor}{?limit}{?order}",
+                  "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/effects/{?cursor,limit,order}",
                   "templated": true
                 },
                 "ledger": {
                   "href": "/ledgers/276"
                 },
                 "operations": {
-                  "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/operations/{?cursor}{?limit}{?order}",
+                  "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/operations/{?cursor,limit,order}",
                   "templated": true
                 },
                 "precedes": {
@@ -277,7 +277,7 @@ Represents a single transaction that has been submitted and validated by the ste
               "result_meta_xdr": "TODO"
             }
 
-### All Transactions [GET /transactions{?order}{?limit}{?cursor}]
+### All Transactions [GET /transactions{?cursor,limit,order}]
 
   + Parameters
     + cursor (optional, string, `373a31`) ... A paging token
@@ -302,14 +302,14 @@ Represents a single transaction that has been submitted and validated by the ste
                         "href": "/accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
                       },
                       "effects": {
-                        "href": "/transactions/5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510/effects/{?cursor}{?limit}{?order}",
+                        "href": "/transactions/5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510/effects/{?cursor,limit,order}",
                         "templated": true
                       },
                       "ledger": {
                         "href": "/ledgers/271"
                       },
                       "operations": {
-                        "href": "/transactions/5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510/operations/{?cursor}{?limit}{?order}",
+                        "href": "/transactions/5b41ccd2889d58e1e7a19c3f8387c8a043ad0f745da889826c53bb4fba6f8510/operations/{?cursor,limit,order}",
                         "templated": true
                       },
                       "precedes": {
@@ -343,14 +343,14 @@ Represents a single transaction that has been submitted and validated by the ste
                         "href": "/accounts/gcEuhxySh58bKtCY3UPaWQDR7a1BzGB3ePdxc4UrinkBJyxESe"
                       },
                       "effects": {
-                        "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/effects/{?cursor}{?limit}{?order}",
+                        "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/effects/{?cursor,limit,order}",
                         "templated": true
                       },
                       "ledger": {
                         "href": "/ledgers/276"
                       },
                       "operations": {
-                        "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/operations/{?cursor}{?limit}{?order}",
+                        "href": "/transactions/5488180daa06cb2ac7b4934a7e421d9e78c47cb620a78c35987f14d3047da8c4/operations/{?cursor,limit,order}",
                         "templated": true
                       },
                       "precedes": {
@@ -390,30 +390,30 @@ Represents a single transaction that has been submitted and validated by the ste
               }
             }
 
-### Transations for account [GET /accounts/{address}/transactions{?order}{?limit}{?cursor}]
-### Transations for ledger [GET /ledgers/{sequence}/transactions{?order}{?limit}{?cursor}]
+### Transations for account [GET /accounts/{address}/transactions{?cursor,limit,order}]
+### Transations for ledger [GET /ledgers/{sequence}/transactions{?cursor,limit,order}]
 
 ## Operation [/operations/{id}]
 
 Every transaction is a container for one or more operations.
 
 ### Operation details [GET /operations/{id}]
-### All operations [GET /operations{?order}{?limit}{?cursor}]
-### Operations for account [GET /accounts/{address}/operations{?order}{?limit}{?cursor}]
-### Payments for account [GET /accounts/{address}/payments{?order}{?limit}{?cursor}]
-### Operations for ledger [GET /ledgers/{sequence}/operations{?order}{?limit}{?cursor}]
-### Operations for transaction [GET /transactions/{hash}/operations{?order}{?limit}{?cursor}]
+### All operations [GET /operations{?cursor,limit,order}]
+### Operations for account [GET /accounts/{address}/operations{?cursor,limit,order}]
+### Payments for account [GET /accounts/{address}/payments{?cursor,limit,order}]
+### Operations for ledger [GET /ledgers/{sequence}/operations{?cursor,limit,order}]
+### Operations for transaction [GET /transactions/{hash}/operations{?cursor,limit,order}]
 
 ## Effect [/effect/{id}]
 
 An operation that is applied to the ledger creates one or more effects.  For example, a payment will result in a credit effect on one account and a debit effect on another
 
 ### Effect details [GET /effects/{id}]
-### All effects [GET /effects{?order}{?limit}{?cursor}]
-### Effects for account [GET /accounts/{address}/effects{?order}{?limit}{?cursor}]
-### Effects for ledger [GET /ledgers/{sequence}/effects{?order}{?limit}{?cursor}]
-### Effects for transaction [GET /transactions/{hash}/effects{?order}{?limit}{?cursor}]
-### Effects for operations [GET /operations/{id}/effects{?order}{?limit}{?cursor}]
+### All effects [GET /effects{?cursor,limit,order}]
+### Effects for account [GET /accounts/{address}/effects{?cursor,limit,order}]
+### Effects for ledger [GET /ledgers/{sequence}/effects{?cursor,limit,order}]
+### Effects for transaction [GET /transactions/{hash}/effects{?cursor,limit,order}]
+### Effects for operations [GET /operations/{id}/effects{?cursor,limit,order}]
 
 
 # Data Structures

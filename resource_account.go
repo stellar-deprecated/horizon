@@ -5,6 +5,7 @@ import (
 
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/render/hal"
 )
 
 // AccountResource is the summary of an account
@@ -35,7 +36,6 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 
 	address := ac.Address
 	self := fmt.Sprintf("/accounts/%s", address)
-	po := "{?cursor}{?limit}{?order}"
 
 	balances := make([]BalanceResource, len(ac.Trustlines)+1)
 
@@ -55,10 +55,10 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 	return AccountResource{
 		Links: halgo.Links{}.
 			Self(self).
-			Link("transactions", "%s/transactions/%s", self, po).
-			Link("operations", "%s/operations/%s", self, po).
-			Link("effects", "%s/effects/%s", self, po).
-			Link("offers", "%s/offers/%s", self, po),
+			Link("transactions", "%s/transactions/%s", self, hal.StandardPagingOptions).
+			Link("operations", "%s/operations/%s", self, hal.StandardPagingOptions).
+			Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions).
+			Link("offers", "%s/offers/%s", self, hal.StandardPagingOptions),
 		ID:          address,
 		PagingToken: ac.PagingToken(),
 		Address:     address,

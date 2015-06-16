@@ -8,6 +8,7 @@ import (
 
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/sse"
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -52,12 +53,11 @@ func operationRecordToResource(record db.Record) (render.Resource, error) {
 	}
 
 	self := fmt.Sprintf("/operations/%d", op.Id)
-	po := "{?cursor}{?limit}{?order}"
 
 	result["_links"] = halgo.Links{}.
 		Self(self).
 		Link("transactions", "/transactions/%d", op.TransactionId).
-		Link("effects", "%s/effects/%s", self, po).
+		Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions).
 		Link("precedes", "/operations?cursor=%s&order=asc", op.PagingToken()).
 		Link("succeeds", "/operations?cursor=%s&order=desc", op.PagingToken()).
 		Items

@@ -2,9 +2,14 @@ package hal
 
 import (
 	"encoding/json"
-	"github.com/jagregory/halgo"
 	"net/http"
+
+	"github.com/jagregory/halgo"
 )
+
+// StandardPagingOptions is a helper string to make creating paged collection
+// URIs simpler.
+var StandardPagingOptions = "{?cursor,limit,order}"
 
 type Page struct {
 	Self    halgo.Link
@@ -12,14 +17,16 @@ type Page struct {
 	Records []interface{}
 }
 
+// RenderToString renders the provided data as a json string
 func RenderToString(data interface{}, pretty bool) ([]byte, error) {
 	if pretty {
 		return json.MarshalIndent(data, "", "  ")
-	} else {
-		return json.Marshal(data)
 	}
+
+	return json.Marshal(data)
 }
 
+// Render write data to w, after marshalling to json
 func Render(w http.ResponseWriter, data interface{}) {
 	js, err := RenderToString(data, true)
 
@@ -32,6 +39,7 @@ func Render(w http.ResponseWriter, data interface{}) {
 	w.Write(js)
 }
 
+// RenderPage writes page to w, after marshalling to json
 func RenderPage(w http.ResponseWriter, page Page) {
 	data := map[string]interface{}{
 		"_links": map[string]interface{}{

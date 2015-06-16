@@ -16,9 +16,9 @@ func init() {
 	links := halgo.Links{}.
 		Self("/").
 		Link("account", "/accounts/{address}").
-		Link("account_transactions", "/accounts/{address}/transactions{?cursor}{?limit}{?order}").
+		Link("account_transactions", "/accounts/{address}/transactions{?cursor,limit,order}").
 		Link("transaction", "/transactions/{hash}").
-		Link("transactions", "/transactions{?cursor}{?limit}{?order}").
+		Link("transactions", "/transactions{?cursor,limit,order}").
 		Link("metrics", "/metrics").
 		Link("friendbot", "/friendbot{?addr}")
 

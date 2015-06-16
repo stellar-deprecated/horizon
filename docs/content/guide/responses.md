@@ -30,7 +30,7 @@ links between documents.  Let's look at a simple example:
       "href": "/ledgers/1"
     },
     "transactions": {
-      "href": "/ledgers/1/transactions{?cursor}{?limit}{?order}",
+      "href": "/ledgers/1/transactions{?cursor,limit,order}",
       "templated": true
     }
   },

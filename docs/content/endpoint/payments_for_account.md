@@ -15,7 +15,7 @@ specific account by using [response streaming][rs].
 ## Request
 
 ```
-GET /accounts/{id}/payments{?cursor}{?limit}{?order}
+GET /accounts/{id}/payments{?cursor,limit,order}
 ```
 
 ### Arguments

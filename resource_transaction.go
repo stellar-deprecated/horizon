@@ -7,6 +7,7 @@ import (
 
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/sse"
 )
 
@@ -41,15 +42,14 @@ func (r TransactionResource) SseEvent() sse.Event {
 func transactionRecordToResource(record db.Record) (render.Resource, error) {
 	tx := record.(db.TransactionRecord)
 	self := fmt.Sprintf("/transactions/%s", tx.TransactionHash)
-	po := "{?cursor}{?limit}{?order}"
 
 	resource := TransactionResource{
 		Links: halgo.Links{}.
 			Self(self).
 			Link("account", "/accounts/%s", tx.Account).
 			Link("ledger", "/ledgers/%d", tx.LedgerSequence).
-			Link("operations", "%s/operations/%s", self, po).
-			Link("effects", "%s/effects/%s", self, po).
+			Link("operations", "%s/operations/%s", self, hal.StandardPagingOptions).
+			Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions).
 			Link("precedes", "/transactions?cursor=%s&order=asc", tx.PagingToken()).
 			Link("succeeds", "/transactions?cursor=%s&order=desc", tx.PagingToken()),
 		ID:               tx.TransactionHash,
