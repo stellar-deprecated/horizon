@@ -63,30 +63,33 @@ func Results(ctx context.Context, query Query) ([]interface{}, error) {
 // values.  We cannot yet remove those due to how intertwined they are with the
 // SSE system.
 func Select(ctx context.Context, query Query, dest interface{}) error {
-	records, err := Results(ctx, query)
-
-	if err != nil {
-		return err
-	}
 
 	if dest == nil {
 		return ErrDestinationNil
 	}
 
-	dvp := reflect.ValueOf(dest)
+	// run the query
+	records, err := Results(ctx, query)
+	if err != nil {
+		return err
+	}
 
+	// validate destination
+	dvp := reflect.ValueOf(dest)
 	if dvp.Kind() != reflect.Ptr {
 		return ErrDestinationNotPointer
 	}
 
 	dv := reflect.Indirect(dvp)
-
 	if dv.Kind() != reflect.Slice {
 		return ErrDestinationNotSlice
 	}
 
+	// create new slice of correct type to
+	// populate with results
 	rvp := reflect.New(dv.Type())
 	rv := reflect.Indirect(rvp)
+
 	slicet := dv.Type().Elem()
 
 	for _, record := range records {
