@@ -7,7 +7,7 @@ type TransactionByHashQuery struct {
 	Hash string
 }
 
-func (q TransactionByHashQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q TransactionByHashQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := TransactionRecordSelect.
 		Limit(1).
 		Where("transaction_hash = ?", q.Hash)

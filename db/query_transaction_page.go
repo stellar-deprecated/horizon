@@ -9,7 +9,7 @@ type TransactionPageQuery struct {
 	LedgerSequence int32
 }
 
-func (q TransactionPageQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q TransactionPageQuery) Get(ctx context.Context) ([]Record, error) {
 	sql := TransactionRecordSelect.
 		Limit(uint64(q.Limit))
 

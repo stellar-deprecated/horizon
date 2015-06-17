@@ -11,7 +11,7 @@ type AccountByAddressQuery struct {
 }
 
 // Get executes the query, returning any results found
-func (q AccountByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q AccountByAddressQuery) Get(ctx context.Context) ([]Record, error) {
 	var result AccountRecord
 
 	haq := HistoryAccountByAddressQuery{q.History, q.Address}
@@ -43,7 +43,7 @@ func (q AccountByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
 		result.Trustlines[i] = tl.(CoreTrustlineRecord)
 	}
 
-	return []interface{}{result}, nil
+	return []Record{result}, nil
 }
 
 // IsComplete returns true when the query considers itself finished.

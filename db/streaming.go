@@ -136,7 +136,7 @@ func (sl *streamedQueryListener) Run() {
 	}
 }
 
-func (sl *streamedQueryListener) Deliver(results []interface{}) bool {
+func (sl *streamedQueryListener) Deliver(results []Record) bool {
 	if sl.cancelled {
 		return false
 	}
