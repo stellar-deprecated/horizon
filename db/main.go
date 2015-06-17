@@ -11,6 +11,11 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
+var ErrDestinationNotPointer = errors.New("dest is not a pointer")
+var ErrDestinationNotSlice = errors.New("dest is not a slice")
+var ErrDestinationNil = errors.New("dest is nil")
+var ErrDestinationIncompatible = errors.New("Retrieved results' type is not compatible with dest")
+
 type Query interface {
 	Get(context.Context) ([]interface{}, error)
 	IsComplete(context.Context, int) bool
@@ -44,6 +49,58 @@ func Open(url string) (*sql.DB, error) {
 // Results runs the provided query, returning all found results
 func Results(ctx context.Context, query Query) ([]interface{}, error) {
 	return query.Get(ctx)
+}
+
+// Select runs the provided query, appending all results into dest.  Dest must
+// be a pointer to a slice of a type compatible with the records returned from
+// the query.
+//
+// NOTE:  At present this method is much more expensive than it should be
+// because it does a lot of casting and reflection throughout its call graph (
+// any given record ends up going from Record to interface{} and back again at
+// least once, unnecessarily). this current implementation is a stopgap on the
+// way to removing the Results() and First() functions, which return interface{}
+// values.  We cannot yet remove those due to how intertwined they are with the
+// SSE system.
+func Select(ctx context.Context, query Query, dest interface{}) error {
+	records, err := Results(ctx, query)
+
+	if err != nil {
+		return err
+	}
+
+	if dest == nil {
+		return ErrDestinationNil
+	}
+
+	dvp := reflect.ValueOf(dest)
+
+	if dvp.Kind() != reflect.Ptr {
+		return ErrDestinationNotPointer
+	}
+
+	dv := reflect.Indirect(dvp)
+
+	if dv.Kind() != reflect.Slice {
+		return ErrDestinationNotSlice
+	}
+
+	rvp := reflect.New(dv.Type())
+	rv := reflect.Indirect(rvp)
+	slicet := dv.Type().Elem()
+
+	for _, record := range records {
+		recordv := reflect.ValueOf(record)
+
+		if !recordv.Type().AssignableTo(slicet) {
+			return ErrDestinationIncompatible
+		}
+
+		rv = reflect.Append(rv, recordv)
+	}
+
+	dv.Set(rv)
+	return nil
 }
 
 // First runs the provided query, returning the first result if found,
