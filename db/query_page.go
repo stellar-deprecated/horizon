@@ -11,6 +11,12 @@ const (
 	DefaultPageSize = 10
 	// MaxPageSize is the max page size for db queries
 	MaxPageSize = 200
+
+	// OrderAscending is used to indicate an ascending order in request params
+	OrderAscending = "asc"
+
+	// OrderDescending is used to indicate an descending order in request params
+	OrderDescending = "desc"
 )
 
 var (
@@ -31,6 +37,18 @@ type PageQuery struct {
 	Cursor int64
 	Order  string
 	Limit  int32
+}
+
+// Invert returns a new PageQuery whose order is reversed
+func (p PageQuery) Invert() PageQuery {
+	switch p.Order {
+	case OrderAscending:
+		p.Order = OrderDescending
+	case OrderDescending:
+		p.Order = OrderAscending
+	}
+
+	return p
 }
 
 // NewPageQuery creates a new PageQuery struct, ensuring the order, limit, and
