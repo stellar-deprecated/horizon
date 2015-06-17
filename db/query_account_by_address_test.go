@@ -12,6 +12,8 @@ func TestAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("non_native_payment")
 
 	Convey("AccountByAddress", t, func() {
+		var account AccountRecord
+
 		notreal := "not_real"
 		withtl := "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ"
 		notl := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
@@ -22,24 +24,20 @@ func TestAccountByAddressQuery(t *testing.T) {
 			Address: withtl,
 		}
 
-		result, err := First(ctx, q)
+		err := Get(ctx, q, &account)
 		So(err, ShouldBeNil)
-		So(result, ShouldNotBeNil)
-
-		account := result.(AccountRecord)
 
 		So(account.Address, ShouldEqual, withtl)
 		So(account.Seqnum, ShouldEqual, 12884901889)
 		So(len(account.Trustlines), ShouldEqual, 1)
 
 		q.Address = notl
-		result, err = First(ctx, q)
+		err = Get(ctx, q, &account)
 		So(err, ShouldBeNil)
-		So(result, ShouldNotBeNil)
+		So(len(account.Trustlines), ShouldEqual, 0)
 
 		q.Address = notreal
-		result, err = First(ctx, q)
-		So(err, ShouldBeNil)
-		So(result, ShouldBeNil)
+		err = Get(ctx, q, &account)
+		So(err, ShouldEqual, ErrNoResults)
 	})
 }

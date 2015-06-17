@@ -1,4 +1,4 @@
-// This package provides machinery for the database subsystem of
+// Package db provides machinery for the database subsystem of
 // horizon.
 //
 // The crux of this package is `db.Query`.  Various structs implement this
@@ -13,15 +13,11 @@
 //
 // You would then implement the query's execution like so:
 //
-//    func (q CoreAccountByAddressQuery) Get() ([]interface{}, error) {
-//      sql := CoreAccountRecordSelect.Where("accountid = ?", q.Address).Limit(1)
-//
-//      var records []CoreAccountRecord
-//      err := q.SqlQuery.Select(sql, &records)
-//      return makeResult(records), err
+//    func (q CoreAccountByAddressQuery) Select(ctx context.Context, dest interface{}) error {
+//    	sql := CoreAccountRecordSelect.Where("accountid = ?", q.Address).Limit(1)
+//    	return q.SqlQuery.Select(ctx, sql, dest)
 //    }
 //
-// Executing queries happens through `db.Results()`, `db.First()`, `db.Select()`
-// and `db.Get()`.
+// Executing queries happens through `db.Select()` and `db.Get()`.
 //
 package db

@@ -14,6 +14,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 	test.LoadScenario("order_books")
 
 	Convey("CoreOfferPageByCurrencyQuery", t, func() {
+		var records []CoreOfferRecord
 
 		makeQuery := func(c string, o string, l int32) CoreOfferPageByCurrencyQuery {
 			pq, err := NewPageQuery(c, o, l)
@@ -32,18 +33,11 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 		simpleQuery.TakerGetsIssuer = "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"
 		simpleQuery.TakerPaysType = xdr.CurrencyTypeCurrencyTypeNative
 
-		// TakerPaysType   xdr.CurrencyType
-		// TakerPaysCode   string
-		// TakerPaysIssuer string
-		// TakerGetsType   xdr.CurrencyType
-		// TakerGetsCode   string
-		// TakerGetsIssuer string
-
 		Convey("filters properly", func() {
 			// native offers
 			q := simpleQuery
 
-			records := MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 			So(len(records), ShouldEqual, 3)
 
 			// all non-native
@@ -54,7 +48,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			q.TakerPaysCode = "BTC"
 			q.TakerPaysIssuer = "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"
 
-			records = MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 			So(len(records), ShouldEqual, 3)
 
 			// non-existent order book
@@ -65,14 +59,14 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			q.TakerPaysCode = "EUR"
 			q.TakerPaysIssuer = "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"
 
-			records = MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 			So(len(records), ShouldEqual, 0)
 		})
 
 		Convey("orders properly", func() {
 			// asc orders ascending by price
 			q := simpleQuery
-			records := MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 
 			So(records, ShouldBeOrderedAscending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
@@ -82,7 +76,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			// asc orders ascending by price
 			q = simpleQuery
 			q.PageQuery.Order = "desc"
-			records = MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 
 			So(records, ShouldBeOrderedDescending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
@@ -94,41 +88,42 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			// returns number specified
 			q := simpleQuery
 			q.PageQuery.Limit = 2
-			records := MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 			So(len(records), ShouldEqual, 2)
 
 			// returns all rows if limit is higher
 			q = simpleQuery
 			q.PageQuery.Limit = 10
-			records = MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 			So(len(records), ShouldEqual, 3)
 		})
 
 		Convey("cursor works properly", func() {
+			var record CoreOfferRecord
 			// lowest price if ordered ascending and no cursor
 			q := simpleQuery
-			record := MustFirst(ctx, q)
-			So(record.(CoreOfferRecord).Price, ShouldEqual, 150000000)
+			MustGet(ctx, q, &record)
+			So(record.Price, ShouldEqual, 150000000)
 
 			// highest id if ordered descending and no cursor
 			q = simpleQuery
 			q.PageQuery.Order = "desc"
 			q.PageQuery.Cursor = fmt.Sprintf("%d", math.MaxInt64)
-			record = MustFirst(ctx, q)
-			So(record.(CoreOfferRecord).Price, ShouldEqual, 500000000)
+			MustGet(ctx, q, &record)
+			So(record.Price, ShouldEqual, 500000000)
 
 			// starts after the cursor if ordered ascending
 			q = simpleQuery
 			q.PageQuery.Cursor = "150000000"
-			record = MustFirst(ctx, q)
-			So(record.(CoreOfferRecord).Price, ShouldEqual, 200000000)
+			MustGet(ctx, q, &record)
+			So(record.Price, ShouldEqual, 200000000)
 
 			// starts before the cursor if ordered descending
 			q = simpleQuery
 			q.PageQuery.Order = "desc"
 			q.PageQuery.Cursor = "500000000"
-			record = MustFirst(ctx, q)
-			So(record.(CoreOfferRecord).Price, ShouldEqual, 200000000)
+			MustGet(ctx, q, &record)
+			So(record.Price, ShouldEqual, 200000000)
 		})
 
 	})

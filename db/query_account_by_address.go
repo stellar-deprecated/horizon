@@ -10,35 +10,27 @@ type AccountByAddressQuery struct {
 	Address string
 }
 
-// Get executes the query, returning any results found
-func (q AccountByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q AccountByAddressQuery) Select(ctx context.Context, dest interface{}) error {
 	var result AccountRecord
+	var cq Query
 
-	haq := HistoryAccountByAddressQuery{q.History, q.Address}
-	caq := CoreAccountByAddressQuery{q.Core, q.Address}
-	ctlq := CoreTrustlinesByAddressQuery{q.Core, q.Address}
-
-	if err := Get(ctx, haq, &result.HistoryAccountRecord); err != nil {
-		if err == ErrNoResults {
-			err = nil
-		}
-		return nil, err
+	cq = HistoryAccountByAddressQuery{q.History, q.Address}
+	err := Get(ctx, cq, &result.HistoryAccountRecord)
+	if err != nil {
+		return err
 	}
 
-	if err := Get(ctx, caq, &result.CoreAccountRecord); err != nil {
-		if err == ErrNoResults {
-			err = nil
-		}
-		return nil, err
-	}
-	if err := Select(ctx, ctlq, &result.Trustlines); err != nil {
-		return nil, err
+	cq = CoreAccountByAddressQuery{q.Core, q.Address}
+	err = Get(ctx, cq, &result.CoreAccountRecord)
+	if err != nil {
+		return err
 	}
 
-	return []interface{}{result}, nil
-}
-
-// IsComplete returns true when the query considers itself finished.
-func (q AccountByAddressQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered > 0
+	cq = CoreTrustlinesByAddressQuery{q.Core, q.Address}
+	err = Select(ctx, cq, &result.Trustlines)
+	if err != nil {
+		return err
+	}
+	setOn([]AccountRecord{result}, dest)
+	return nil
 }

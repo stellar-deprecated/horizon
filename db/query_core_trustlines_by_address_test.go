@@ -12,6 +12,8 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 	test.LoadScenario("non_native_payment")
 
 	Convey("CoreTrustlinesByAddress", t, func() {
+		var tls []CoreTrustlineRecord
+
 		withtl := "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ"
 		notl := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
 
@@ -20,11 +22,11 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 			withtl,
 		}
 
-		results, err := Results(ctx, q)
+		err := Select(ctx, q, &tls)
 		So(err, ShouldBeNil)
-		So(len(results), ShouldEqual, 1)
+		So(len(tls), ShouldEqual, 1)
 
-		tl := results[0].(CoreTrustlineRecord)
+		tl := tls[0]
 
 		So(tl.Accountid, ShouldEqual, withtl)
 		So(tl.Issuer, ShouldEqual, "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
@@ -37,8 +39,9 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 			notl,
 		}
 
-		results, err = Results(ctx, q)
+		err = Select(ctx, q, &tls)
 		So(err, ShouldBeNil)
-		So(len(results), ShouldEqual, 0)
+		t.Log(tls)
+		So(len(tls), ShouldEqual, 0)
 	})
 }

@@ -10,35 +10,41 @@ import (
 	_ "github.com/lib/pq" // allow postgres sql connections
 )
 
+// ErrDestinationNotPointer is returned when the result destination for a query
+// is not a pointer
 var ErrDestinationNotPointer = errors.New("dest is not a pointer")
+
+// ErrDestinationNotSlice is returned when the derefed destination is not
+// a slice
 var ErrDestinationNotSlice = errors.New("dest is not a slice")
+
+// ErrDestinationNotSlice is returned when the destination is nil
 var ErrDestinationNil = errors.New("dest is nil")
+
+// ErrDestinationIncompatible is returned when one of the retrieved results is
+// not capable of being assigned to the destination
 var ErrDestinationIncompatible = errors.New("Retrieved results' type is not compatible with dest")
+
+// ErrNoResults is returned when no results are found during a `Get` call
 var ErrNoResults = errors.New("No record found")
 
 type Query interface {
-	Get(context.Context) ([]interface{}, error)
-	IsComplete(context.Context, int) bool
+	Select(context.Context, interface{}) error
 }
 
 type Pageable interface {
 	PagingToken() string
 }
 
-type Record interface{}
-
 // Open the postgres database at the provided url and performing an initial
 // ping to ensure we can connect to it.
 func Open(url string) (*sql.DB, error) {
-
 	db, err := sql.Open("postgres", url)
-
 	if err != nil {
 		return db, err
 	}
 
 	err = db.Ping()
-
 	if err != nil {
 		return db, err
 	}
@@ -46,136 +52,76 @@ func Open(url string) (*sql.DB, error) {
 	return db, nil
 }
 
-// Get runs the provided query, select the first result into dest.  Dest must
-// be a pointer to a type compatible with the records returned from
-// the query.
-//
-// NOTE:  At present this method is much more expensive than it should be.  See
-// Select() for further details.
-func Get(ctx context.Context, query Query, dest interface{}) error {
-
-	if dest == nil {
-		return ErrDestinationNil
-	}
-
-	// run the query
-	record, err := First(ctx, query)
-	if err != nil {
-		return err
-	}
-	if record == nil {
-		return ErrNoResults
-	}
-
-	// validate destination
-	dvp := reflect.ValueOf(dest)
-	if dvp.Kind() != reflect.Ptr {
-		return ErrDestinationNotPointer
-	}
-
-	dv := reflect.Indirect(dvp)
-	rv := reflect.ValueOf(record)
-	if !rv.Type().AssignableTo(dv.Type()) {
-		return ErrDestinationIncompatible
-	}
-
-	dv.Set(rv)
-	return nil
-}
-
-// Results runs the provided query, returning all found results
-func Results(ctx context.Context, query Query) ([]interface{}, error) {
-	return query.Get(ctx)
-}
-
-// Select runs the provided query, appending all results into dest.  Dest must
-// be a pointer to a slice of a type compatible with the records returned from
-// the query.
-//
-// NOTE:  At present this method is much more expensive than it should be
-// because it does a lot of casting and reflection throughout its call graph (
-// any given record ends up going from Record to interface{} and back again at
-// least once, unnecessarily). this current implementation is a stopgap on the
-// way to removing the Results() and First() functions, which return interface{}
-// values.  We cannot yet remove those due to how intertwined they are with the
-// SSE system.
+// Select runs the provided query, setting all found results on dest.
 func Select(ctx context.Context, query Query, dest interface{}) error {
-
-	if dest == nil {
-		return ErrDestinationNil
-	}
-
-	// run the query
-	records, err := Results(ctx, query)
-	if err != nil {
+	if err := validateDestination(dest); err != nil {
 		return err
 	}
 
-	// validate destination
 	dvp := reflect.ValueOf(dest)
-	if dvp.Kind() != reflect.Ptr {
-		return ErrDestinationNotPointer
-	}
-
 	dv := reflect.Indirect(dvp)
+	// create an intermediary slice of the same type
+	rvp := reflect.New(dv.Type())
+	rv := reflect.Indirect(rvp)
+
 	if dv.Kind() != reflect.Slice {
 		return ErrDestinationNotSlice
 	}
 
-	// create new slice of correct type to
-	// populate with results
-	rvp := reflect.New(dv.Type())
-	rv := reflect.Indirect(rvp)
+	err := query.Select(ctx, rvp.Interface())
 
-	slicet := dv.Type().Elem()
-
-	for _, record := range records {
-		recordv := reflect.ValueOf(record)
-
-		if !recordv.Type().AssignableTo(slicet) {
-			return ErrDestinationIncompatible
-		}
-
-		rv = reflect.Append(rv, recordv)
+	if err != nil {
+		return err
 	}
 
 	dv.Set(rv)
 	return nil
 }
 
-// First runs the provided query, returning the first result if found,
-// otherwise nil
-func First(ctx context.Context, query Query) (interface{}, error) {
-	res, err := query.Get(ctx)
-
-	switch {
-	case err != nil:
-		return nil, err
-	case len(res) == 0:
-		return nil, nil
-	default:
-		return res[0], nil
-	}
-}
-
-func MustFirst(ctx context.Context, q Query) interface{} {
-	result, err := First(ctx, q)
+// MustSelect is like Select, but panics on error
+func MustSelect(ctx context.Context, query Query, dest interface{}) {
+	err := Select(ctx, query, dest)
 
 	if err != nil {
 		panic(err)
 	}
-
-	return result
 }
 
-func MustResults(ctx context.Context, q Query) []interface{} {
-	result, err := Results(ctx, q)
+// Get runs the provided query, returning the first result found, if any.
+func Get(ctx context.Context, query Query, dest interface{}) error {
+	if err := validateDestination(dest); err != nil {
+		return err
+	}
+
+	dvp := reflect.ValueOf(dest)
+	dv := reflect.Indirect(dvp)
+
+	// create a slice of the same type as dest
+	sliceType := reflect.SliceOf(dv.Type())
+	rvp := reflect.New(sliceType)
+	rv := reflect.Indirect(rvp)
+
+	err := query.Select(ctx, rvp.Interface())
+	if err != nil {
+		return err
+	}
+
+	if rv.Len() == 0 {
+		return ErrNoResults
+	}
+
+	// set the first result to the destination
+	dv.Set(rv.Index(0))
+	return nil
+}
+
+// MustGet is like Get, but panics on error
+func MustGet(ctx context.Context, query Query, dest interface{}) {
+	err := Get(ctx, query, dest)
 
 	if err != nil {
 		panic(err)
 	}
-
-	return result
 }
 
 // helper method suited to confirm query validity.  checkOptions ensures
@@ -199,15 +145,37 @@ func checkOptions(clauses ...bool) error {
 	return nil
 }
 
-// Converts a typed slice to a slice of interface{}, suitable
-// for return through the Get() method of Query
-func makeResult(src interface{}) []interface{} {
-	srcValue := reflect.ValueOf(src)
-	srcLen := srcValue.Len()
-	result := make([]interface{}, srcLen)
-
-	for i := 0; i < srcLen; i++ {
-		result[i] = srcValue.Index(i).Interface()
+func setOn(src interface{}, dest interface{}) error {
+	if dest == nil {
+		return ErrDestinationNil
 	}
-	return result
+
+	rv := reflect.ValueOf(src)
+	dvp := reflect.ValueOf(dest)
+
+	if dvp.Kind() != reflect.Ptr {
+		return ErrDestinationNotPointer
+	}
+
+	dv := reflect.Indirect(dvp)
+	if !rv.Type().AssignableTo(dv.Type()) {
+		return ErrDestinationIncompatible
+	}
+
+	dv.Set(rv)
+	return nil
+}
+
+func validateDestination(dest interface{}) error {
+	if dest == nil {
+		return ErrDestinationNil
+	}
+
+	dvp := reflect.ValueOf(dest)
+
+	if dvp.Kind() != reflect.Ptr {
+		return ErrDestinationNotPointer
+	}
+
+	return nil
 }

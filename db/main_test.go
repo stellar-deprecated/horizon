@@ -7,10 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"golang.org/x/net/context"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
+	"golang.org/x/net/context"
 )
 
 var ctx context.Context
@@ -36,9 +35,6 @@ func TestDBOpen(t *testing.T) {
 
 func TestDBPackage(t *testing.T) {
 	test.LoadScenario("non_native_payment")
-	ctx := test.Context()
-	core := OpenStellarCoreTestDatabase()
-	defer core.Close()
 
 	Convey("db.Select", t, func() {
 		Convey("overwrites the destination", func() {
@@ -50,7 +46,7 @@ func TestDBPackage(t *testing.T) {
 		})
 
 		Convey("works on []interface{} destinations", func() {
-			var records []interface{}
+			var records []mockResult
 			query := &mockQuery{5}
 			err := Select(ctx, query, &records)
 			So(err, ShouldBeNil)
@@ -81,7 +77,7 @@ func TestDBPackage(t *testing.T) {
 			var records []string
 			query := &mockQuery{5}
 			err := Select(ctx, query, &records)
-			So(err, ShouldNotBeNil)
+			So(err, ShouldEqual, ErrDestinationIncompatible)
 		})
 	})
 

@@ -12,7 +12,7 @@ type LedgerStateQuery struct {
 }
 
 // Get executes the query, returning any found results
-func (q LedgerStateQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q LedgerStateQuery) Select(ctx context.Context, dest interface{}) error {
 	hSql := sq.
 		Select("MAX(sequence) as horizonsequence").
 		From("history_ledgers")
@@ -26,18 +26,15 @@ func (q LedgerStateQuery) Get(ctx context.Context) ([]interface{}, error) {
 	err := q.Horizon.Get(ctx, hSql, &result)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	err = q.Core.Get(ctx, scSql, &result)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return []interface{}{result}, nil
-}
-
-func (l LedgerStateQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered > 1
+	setOn([]LedgerState{result}, dest)
+	return nil
 }

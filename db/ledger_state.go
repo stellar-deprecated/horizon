@@ -28,14 +28,13 @@ func StellarCoreLedgerGauge() metrics.Gauge {
 // retrieves the latest known query from both the stellar-core database as well
 // as the history database.
 func UpdateLedgerState(ctx context.Context, horizon SqlQuery, core SqlQuery) error {
+	var ls LedgerState
 	q := LedgerStateQuery{horizon, core}
-	record, err := First(ctx, q)
+	err := Get(ctx, q, &ls)
 
 	if err != nil {
 		return err
 	}
-
-	ls := record.(LedgerState)
 
 	horizonLedgerGauge.Update(int64(ls.HorizonSequence))
 	stellarCoreLedgerGauge.Update(int64(ls.StellarCoreSequence))
