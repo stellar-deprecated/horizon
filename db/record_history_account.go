@@ -13,7 +13,7 @@ var HistoryAccountRecordSelect = sq.
 // HistoryAccountRecord represents a single row from the history database's
 // `history_accounts` table
 type HistoryAccountRecord struct {
-	RecordBase
+	HistoryRecord
 	Address string `db:"address"`
 }
 

@@ -44,10 +44,10 @@ type Pageable interface {
 
 type Record interface{}
 
-type RecordBase struct {
+type HistoryRecord struct {
   Id      int64     `db:"id"`
 }
-func (r RecordBase) PagingToken() string {
+func (r HistoryRecord) PagingToken() string {
 	return fmt.Sprintf("%d", r.Id)
 }
 

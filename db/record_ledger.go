@@ -14,7 +14,7 @@ var LedgerRecordSelect sq.SelectBuilder = sq.
 
 
 type LedgerRecord struct {
-    RecordBase
+    HistoryRecord
 	Sequence           int32          `db:"sequence"`
 	LedgerHash         string         `db:"ledger_hash"`
 	PreviousLedgerHash sql.NullString `db:"previous_ledger_hash"`
