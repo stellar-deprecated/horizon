@@ -12,8 +12,7 @@ import (
 var StandardPagingOptions = "{?cursor,limit,order}"
 
 type Page struct {
-	Self    halgo.Link
-	Next    halgo.Link
+	halgo.Links
 	Records []interface{}
 }
 
@@ -42,10 +41,7 @@ func Render(w http.ResponseWriter, data interface{}) {
 // RenderPage writes page to w, after marshalling to json
 func RenderPage(w http.ResponseWriter, page Page) {
 	data := map[string]interface{}{
-		"_links": map[string]interface{}{
-			"self": page.Self,
-			"next": page.Next,
-		},
+		"_links": page.Items,
 		"_embedded": map[string]interface{}{
 			"records": page.Records,
 		},
