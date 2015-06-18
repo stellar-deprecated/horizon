@@ -10,6 +10,12 @@ import (
 	"golang.org/x/net/context"
 )
 
+var (
+	ParamCursor = "cursor"
+	ParamOrder  = "order"
+	ParamLimit  = "limit"
+)
+
 // ActionHelper wraps the goji context and provides helper functions
 // to make defining actions easier.
 //
@@ -94,6 +100,11 @@ func (a *ActionHelper) GetInt64(name string) int64 {
 	return asI64
 }
 
+// ValidateInt64 populates err if the value is not a valid int64
+func (a *ActionHelper) ValidateInt64(name string) {
+	_ = a.GetInt64(name)
+}
+
 // GetInt32 retrieves an int32 from the action parameter of the given name.
 // Populates err if the value is not a valid int32
 func (a *ActionHelper) GetInt32(name string) int32 {
@@ -124,9 +135,9 @@ func (a *ActionHelper) GetPagingParams() (cursor string, order string, limit int
 		return
 	}
 
-	cursor = a.GetString("cursor")
-	order = a.GetString("order")
-	limit = a.GetInt32("limit")
+	cursor = a.GetString(ParamCursor)
+	order = a.GetString(ParamOrder)
+	limit = a.GetInt32(ParamLimit)
 
 	if lei := a.r.Header.Get("Last-Event-ID"); lei != "" {
 		cursor = lei
@@ -138,6 +149,10 @@ func (a *ActionHelper) GetPagingParams() (cursor string, order string, limit int
 // GetPageQuery is a helper that returns a new db.PageQuery struct initialized
 // using the results from a call to GetPagingParams()
 func (a *ActionHelper) GetPageQuery() db.PageQuery {
+	if a.err != nil {
+		return db.PageQuery{}
+	}
+
 	r, err := db.NewPageQuery(a.GetPagingParams())
 
 	if err != nil {
