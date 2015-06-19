@@ -5,13 +5,16 @@ import (
 
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/problem"
+	"github.com/stellar/go-horizon/render/sse"
 	"github.com/zenazn/goji/web"
 )
 
 func accountIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
+	ctx := ah.Context()
 
 	query := db.HistoryAccountPageQuery{
 		SqlQuery:  app.HistoryQuery(),
@@ -19,26 +22,58 @@ func accountIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ah.Err() != nil {
-		http.Error(w, ah.Err().Error(), http.StatusBadRequest)
+		problem.Render(ctx, w, ah.Err())
 		return
 	}
 
-	render.Collection(ah.Context(), w, r, query, func(record db.Record) (render.Resource, error) {
-		ha := record.(db.HistoryAccountRecord)
+	var records []db.HistoryAccountRecord
 
-		return HistoryAccountResource{
-			ID:          ha.Address,
-			PagingToken: ha.PagingToken(),
-			Address:     ha.Address,
-		}, nil
-	})
+	render := render.Renderer{}
+	render.JSON = func() {
+		// load records
+		err := db.Select(ctx, query, &records)
+		if err != nil {
+			problem.Render(ctx, w, err)
+		}
+
+		page, err := NewHistoryAccountResourcePage(records, query.PageQuery)
+		if err != nil {
+			problem.Render(ctx, w, err)
+		}
+
+		hal.RenderPage(w, page)
+	}
+
+	render.SSE = func(stream sse.Stream) {
+		err := db.Select(ctx, query, &records)
+		if err != nil {
+			stream.Err(err)
+			return
+		}
+
+		records = records[stream.SentCount():]
+
+		for _, record := range records {
+			stream.Send(sse.Event{
+				ID:   record.PagingToken(),
+				Data: NewHistoryAccountResource(record),
+			})
+		}
+
+		if stream.SentCount() >= int(query.Limit) {
+			stream.Done()
+		}
+	}
+
+	render.Render(ctx, w, r)
+
 }
 
 func accountShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
 	ctx := ah.Context()
-	address := ah.GetString("id")
+
 	if ah.Err() != nil {
 		problem.Render(ctx, w, problem.NotFound)
 		return
@@ -47,12 +82,26 @@ func accountShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	query := db.AccountByAddressQuery{
 		Core:    app.CoreQuery(),
 		History: app.HistoryQuery(),
-		Address: address,
+		Address: ah.GetString("id"),
 	}
 
-	render.Single(ctx, w, r, query, accountRecordToResource)
-}
+	// find account
+	found, err := db.First(ah.Context(), query)
+	if err != nil {
+		problem.Render(ah.Context(), w, ah.Err())
+		return
+	}
 
-func accountRecordToResource(record db.Record) (render.Resource, error) {
-	return NewAccountResource(record.(db.AccountRecord)), nil
+	account, ok := found.(db.AccountRecord)
+	if !ok {
+		problem.Render(ah.Context(), w, problem.NotFound)
+		return
+	}
+
+	render := render.Renderer{}
+	render.JSON = func() {
+		hal.Render(w, NewAccountResource(account))
+	}
+
+	render.Render(ctx, w, r)
 }
