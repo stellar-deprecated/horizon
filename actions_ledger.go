@@ -72,21 +72,34 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	ah := &ActionHelper{c: c, r: r}
 	app := ah.App()
-	sequence := ah.GetInt32("id")
 
+	// construct query
+	query := db.LedgerBySequenceQuery{
+		SqlQuery: app.HistoryQuery(),
+		Sequence: ah.GetInt32("id"),
+	}
 	if ah.Err() != nil {
+		problem.Render(ah.Context(), w, ah.Err())
+		return
+	}
+
+	// find ledger
+	found, err := db.First(ah.Context(), query)
+	if err != nil {
+		problem.Render(ah.Context(), w, ah.Err())
+		return
+	}
+
+	ledger, ok := found.(db.LedgerRecord)
+	if !ok {
 		problem.Render(ah.Context(), w, problem.NotFound)
 		return
 	}
 
-	query := db.LedgerBySequenceQuery{
-		SqlQuery: app.HistoryQuery(),
-		Sequence: sequence,
+	render := render.Renderer{}
+	render.JSON = func() {
+		hal.Render(w, NewLedgerResource(ledger))
 	}
 
-	render.Single(ah.Context(), w, r, query, ledgerRecordToResource)
-}
-
-func ledgerRecordToResource(record db.Record) (render.Resource, error) {
-	return NewLedgerResource(record.(db.LedgerRecord)), nil
+	render.Render(ah.Context(), w, r)
 }
