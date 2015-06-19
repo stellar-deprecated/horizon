@@ -11,15 +11,20 @@ func (q LedgerPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 	sql := LedgerRecordSelect.
 		Limit(uint64(q.Limit))
 
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return nil, err
+	}
+
 	switch q.Order {
 	case "asc":
-		sql = sql.Where("hl.id > ?", q.Cursor).OrderBy("hl.id asc")
+		sql = sql.Where("hl.id > ?", cursor).OrderBy("hl.id asc")
 	case "desc":
-		sql = sql.Where("hl.id < ?", q.Cursor).OrderBy("hl.id desc")
+		sql = sql.Where("hl.id < ?", cursor).OrderBy("hl.id desc")
 	}
 
 	var records []LedgerRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
+	err = q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 }
 

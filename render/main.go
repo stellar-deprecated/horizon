@@ -1,7 +1,6 @@
 package render
 
 import (
-	"errors"
 	"net/http"
 
 	"bitbucket.org/ww/goautoneg"
@@ -12,24 +11,6 @@ import (
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/stellar/go-horizon/render/sse"
 	"golang.org/x/net/context"
-)
-
-const (
-	//MimeEventStream is the mime type for "text/event-stream"
-	MimeEventStream = "text/event-stream"
-	//MimeHal is the mime type for "application/hal+json"
-	MimeHal = "application/hal+json"
-	//MimeJSON is the mime type for "application/json"
-	MimeJSON = "application/json"
-	//MimeProblem is the mime type for application/problem+json"
-	MimeProblem = "application/problem+json"
-)
-
-var (
-	// ErrInvalidStreamEvent is emitted when the returned value of a given
-	// transform function returns a resource that cannot be converted into an
-	// sse.Event.
-	ErrInvalidStreamEvent = errors.New("provided `Transform` did not return an implementer of `sse.Eventable`")
 )
 
 // Resource gets rendered to HAL-compatible json.

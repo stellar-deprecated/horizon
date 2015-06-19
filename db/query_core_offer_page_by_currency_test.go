@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -115,20 +116,20 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			// highest id if ordered descending and no cursor
 			q = simpleQuery
 			q.PageQuery.Order = "desc"
-			q.PageQuery.Cursor = math.MaxInt64
+			q.PageQuery.Cursor = fmt.Sprintf("%d", math.MaxInt64)
 			record = MustFirst(ctx, q)
 			So(record.(CoreOfferRecord).Price, ShouldEqual, 500000000)
 
 			// starts after the cursor if ordered ascending
 			q = simpleQuery
-			q.PageQuery.Cursor = 150000000
+			q.PageQuery.Cursor = "150000000"
 			record = MustFirst(ctx, q)
 			So(record.(CoreOfferRecord).Price, ShouldEqual, 200000000)
 
 			// starts before the cursor if ordered descending
 			q = simpleQuery
 			q.PageQuery.Order = "desc"
-			q.PageQuery.Cursor = 500000000
+			q.PageQuery.Cursor = "500000000"
 			record = MustFirst(ctx, q)
 			So(record.(CoreOfferRecord).Price, ShouldEqual, 200000000)
 		})

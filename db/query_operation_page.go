@@ -31,14 +31,19 @@ func (q OperationPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 		PlaceholderFormat(sq.Dollar).
 		RunWith(q.DB)
 
-	switch q.Order {
-	case "asc":
-		sql = sql.Where("hop.id > ?", q.Cursor).OrderBy("hop.id asc")
-	case "desc":
-		sql = sql.Where("hop.id < ?", q.Cursor).OrderBy("hop.id desc")
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return nil, err
 	}
 
-	err := checkOptions(
+	switch q.Order {
+	case "asc":
+		sql = sql.Where("hop.id > ?", cursor).OrderBy("hop.id asc")
+	case "desc":
+		sql = sql.Where("hop.id < ?", cursor).OrderBy("hop.id desc")
+	}
+
+	err = checkOptions(
 		q.AccountAddress != "",
 		q.LedgerSequence != 0,
 		q.TransactionHash != "",

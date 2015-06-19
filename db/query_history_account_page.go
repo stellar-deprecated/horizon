@@ -14,15 +14,20 @@ func (q HistoryAccountPageQuery) Get(ctx context.Context) ([]interface{}, error)
 	sql := HistoryAccountRecordSelect.
 		Limit(uint64(q.Limit))
 
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return nil, err
+	}
+
 	switch q.Order {
 	case "asc":
-		sql = sql.Where("ha.id > ?", q.Cursor).OrderBy("ha.id asc")
+		sql = sql.Where("ha.id > ?", cursor).OrderBy("ha.id asc")
 	case "desc":
-		sql = sql.Where("ha.id < ?", q.Cursor).OrderBy("ha.id desc")
+		sql = sql.Where("ha.id < ?", cursor).OrderBy("ha.id desc")
 	}
 
 	var records []HistoryAccountRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
+	err = q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 }
 

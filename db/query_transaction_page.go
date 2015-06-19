@@ -13,11 +13,16 @@ func (q TransactionPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 	sql := TransactionRecordSelect.
 		Limit(uint64(q.Limit))
 
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return nil, err
+	}
+
 	switch q.Order {
 	case "asc":
-		sql = sql.Where("ht.id > ?", q.Cursor).OrderBy("ht.id asc")
+		sql = sql.Where("ht.id > ?", cursor).OrderBy("ht.id asc")
 	case "desc":
-		sql = sql.Where("ht.id < ?", q.Cursor).OrderBy("ht.id desc")
+		sql = sql.Where("ht.id < ?", cursor).OrderBy("ht.id desc")
 	}
 
 	if q.AccountAddress != "" {
@@ -31,7 +36,7 @@ func (q TransactionPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 	}
 
 	var records []TransactionRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
+	err = q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 }
 

@@ -39,15 +39,20 @@ func (q CoreOfferPageByCurrencyQuery) Get(ctx context.Context) ([]interface{}, e
 			Where("co.getsalphanumcurrency = ?", q.TakerGetsCode)
 	}
 
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return nil, err
+	}
+
 	switch q.Order {
 	case "asc":
-		sql = sql.Where("co.price > ?", q.Cursor).OrderBy("co.price asc")
+		sql = sql.Where("co.price > ?", cursor).OrderBy("co.price asc")
 	case "desc":
-		sql = sql.Where("co.price < ?", q.Cursor).OrderBy("co.price desc")
+		sql = sql.Where("co.price < ?", cursor).OrderBy("co.price desc")
 	}
 
 	var records []CoreOfferRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
+	err = q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 
 }

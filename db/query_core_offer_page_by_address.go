@@ -15,15 +15,20 @@ func (q CoreOfferPageByAddressQuery) Get(ctx context.Context) ([]interface{}, er
 		Where("co.accountid = ?", q.Address).
 		Limit(uint64(q.Limit))
 
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return nil, err
+	}
+
 	switch q.Order {
 	case "asc":
-		sql = sql.Where("co.offerid > ?", q.Cursor).OrderBy("co.offerid asc")
+		sql = sql.Where("co.offerid > ?", cursor).OrderBy("co.offerid asc")
 	case "desc":
-		sql = sql.Where("co.offerid < ?", q.Cursor).OrderBy("co.offerid desc")
+		sql = sql.Where("co.offerid < ?", cursor).OrderBy("co.offerid desc")
 	}
 
 	var records []CoreOfferRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
+	err = q.SqlQuery.Select(ctx, sql, &records)
 	return makeResult(records), err
 
 }
