@@ -42,7 +42,7 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 	}
 }
 
-func NewLedgerPageResource(records []db.LedgerRecord, query db.PageQuery) (hal.Page, error) {
+func NewLedgerResourcePage(records []db.LedgerRecord, query db.PageQuery) (hal.Page, error) {
 	fmts := "/ledgers?order=%s&limit=%d&cursor=%s"
 	next, prev, err := query.GetContinuations(records)
 	if err != nil {

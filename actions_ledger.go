@@ -37,7 +37,7 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 			problem.Render(ctx, w, err)
 		}
 
-		page, err := NewLedgerPageResource(records, query.PageQuery)
+		page, err := NewLedgerResourcePage(records, query.PageQuery)
 		if err != nil {
 			problem.Render(ctx, w, err)
 		}
