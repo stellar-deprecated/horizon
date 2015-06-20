@@ -56,7 +56,7 @@ func (p PageQuery) Invert() PageQuery {
 }
 
 // GetContinuations returns two new PageQuery structs, a next and previous
-// query. TODO
+// query.
 func (p PageQuery) GetContinuations(records interface{}) (next PageQuery, prev PageQuery, err error) {
 	next = p
 	prev = p.Invert()

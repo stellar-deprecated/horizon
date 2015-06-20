@@ -61,8 +61,6 @@ func (action *OperationIndexAction) LoadPage() {
 		return
 	}
 
-	// TODO: fix prefix.  perhaps we store the current action in context?
-	// or probably, use have it on actions.Base as CurrentURL
 	action.Page, action.Err = NewOperationResourcePage(action.Records, action.Query.PageQuery, action.Path())
 }
 
