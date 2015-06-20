@@ -23,6 +23,7 @@ type App struct {
 	web        *Web
 	historyDb  *sql.DB
 	coreDb     *sql.DB
+	submitter  *TransactionSubmitter
 	ctx        context.Context
 	cancel     func()
 	redis      *redis.Pool

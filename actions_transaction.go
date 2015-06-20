@@ -5,6 +5,7 @@ import (
 
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render"
+	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
 )
@@ -44,4 +45,17 @@ func transactionShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Single(ah.Context(), w, r, q, transactionRecordToResource)
+}
+
+func transactionCreateAction(c web.C, w http.ResponseWriter, r *http.Request) {
+	ah := &ActionHelper{c: c, r: r}
+	txHex := ah.GetString("tx")
+	txHash, err := ah.App().submitter.Submit(ah.Context(), txHex)
+
+	if err != nil {
+		problem.Render(ah.Context(), w, err)
+		return
+	}
+
+	hal.Render(w, NewSubmissionResource(txHash))
 }

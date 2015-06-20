@@ -97,6 +97,7 @@ func initWebActions(app *App) {
 	r.Get("/payments", paymentsIndexAction)
 
 	r.Get("/offers/:id", notImplementedAction)
+	r.Post("/transactions", transactionCreateAction)
 
 	// go-horizon doesn't implement everything horizon did,
 	// so we reverse proxy if we can
@@ -108,11 +109,9 @@ func initWebActions(app *App) {
 		}
 
 		rp := httputil.NewSingleHostReverseProxy(u)
-		r.Post("/transactions", rp)
 		r.Post("/friendbot", rp)
 		r.Get("/friendbot", rp)
 	} else {
-		r.Post("/transactions", notImplementedAction)
 		r.Post("/friendbot", notImplementedAction)
 		r.Get("/friendbot", notImplementedAction)
 	}

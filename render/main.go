@@ -6,6 +6,7 @@ import (
 
 	"bitbucket.org/ww/goautoneg"
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/log"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/stellar/go-horizon/render/sse"
@@ -43,7 +44,7 @@ type Transform func(db.Record) (Resource, error)
 // listener with the database streaming system and forward rendering on to the
 // SSE system.
 func Collection(ctx context.Context, w http.ResponseWriter, r *http.Request, q db.Query, t Transform) {
-	contentType := Negotiate(r)
+	contentType := Negotiate(ctx, r)
 
 	switch contentType {
 	case MimeHal, MimeJSON:
@@ -84,8 +85,7 @@ func Collection(ctx context.Context, w http.ResponseWriter, r *http.Request, q d
 		}
 		streamer.ServeHTTP(w, r)
 	default:
-		//TODO: render a NotAcceptableProblem
-		http.Error(w, "bad accept", http.StatusNotAcceptable)
+		problem.Render(ctx, w, problem.NotAcceptable)
 	}
 }
 
@@ -113,7 +113,7 @@ func Single(ctx context.Context, w http.ResponseWriter, r *http.Request, q db.Qu
 
 // Negotiate inspects the Accept header of the provided request and determines
 // what the most appropriate response type should be.  Defaults to HAL.
-func Negotiate(r *http.Request) string {
+func Negotiate(ctx context.Context, r *http.Request) string {
 	alternatives := []string{MimeHal, MimeJSON, MimeEventStream}
 	accept := r.Header.Get("Accept")
 
@@ -121,7 +121,14 @@ func Negotiate(r *http.Request) string {
 		return MimeHal
 	}
 
-	return goautoneg.Negotiate(r.Header.Get("Accept"), alternatives)
+	result := goautoneg.Negotiate(r.Header.Get("Accept"), alternatives)
+
+	log.WithFields(ctx, log.Fields{
+		"content_type": result,
+		"accept":       accept,
+	}).Debug("Negotiated content type")
+
+	return result
 }
 
 func recordToEvent(in <-chan db.StreamRecord, t Transform) <-chan sse.Eventable {

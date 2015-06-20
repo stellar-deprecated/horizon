@@ -1,6 +1,8 @@
 package horizon
 
 import (
+	"time"
+
 	"github.com/stellar/go-horizon/log"
 	"golang.org/x/net/context"
 )
@@ -54,11 +56,15 @@ func (is *initializerSet) Run(app *App) {
 				continue
 			}
 
-			log.Debugf(context.Background(), "running init:%s", i.Name)
+			loge := log.WithField(context.Background(), "name", i.Name)
+			loge.Debug("running initializer")
+			start := time.Now()
 			i.Fn(app)
 			alreadyRun[i.Name] = true
 			ranInitializer = true
-			log.Debugf(context.Background(), "ran init:%s", i.Name)
+
+			d := time.Since(start)
+			loge.WithField("duration", d).Debug("ran initializer")
 		}
 		// If, after a full loop through the initializers we ran nothing
 		// we are done
