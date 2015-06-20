@@ -2,7 +2,6 @@ package hal
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/jagregory/halgo"
@@ -28,9 +27,7 @@ func RenderToString(data interface{}, pretty bool) ([]byte, error) {
 
 // Render write data to w, after marshalling to json
 func Render(w http.ResponseWriter, data interface{}) {
-
 	if page, ok := data.(Page); ok {
-		log.Println("!!!!! HERE !!!!!!!")
 		data = map[string]interface{}{
 			"_links": page.Items,
 			"_embedded": map[string]interface{}{
