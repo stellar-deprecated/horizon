@@ -15,6 +15,7 @@ var ErrDestinationNotPointer = errors.New("dest is not a pointer")
 var ErrDestinationNotSlice = errors.New("dest is not a slice")
 var ErrDestinationNil = errors.New("dest is nil")
 var ErrDestinationIncompatible = errors.New("Retrieved results' type is not compatible with dest")
+var ErrNoResults = errors.New("No record found")
 
 type Query interface {
 	Get(context.Context) ([]interface{}, error)
@@ -44,6 +45,43 @@ func Open(url string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+// Get runs the provided query, select the first result into dest.  Dest must
+// be a pointer to a type compatible with the records returned from
+// the query.
+//
+// NOTE:  At present this method is much more expensive than it should be.  See
+// Select() for further details.
+func Get(ctx context.Context, query Query, dest interface{}) error {
+
+	if dest == nil {
+		return ErrDestinationNil
+	}
+
+	// run the query
+	record, err := First(ctx, query)
+	if err != nil {
+		return err
+	}
+	if record == nil {
+		return ErrNoResults
+	}
+
+	// validate destination
+	dvp := reflect.ValueOf(dest)
+	if dvp.Kind() != reflect.Ptr {
+		return ErrDestinationNotPointer
+	}
+
+	dv := reflect.Indirect(dvp)
+	rv := reflect.ValueOf(record)
+	if !rv.Type().AssignableTo(dv.Type()) {
+		return ErrDestinationIncompatible
+	}
+
+	dv.Set(rv)
+	return nil
 }
 
 // Results runs the provided query, returning all found results
