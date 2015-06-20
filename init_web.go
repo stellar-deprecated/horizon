@@ -133,7 +133,7 @@ func initWebRateLimiter(app *App) {
 		rateLimitStore,
 	)
 
-	rateLimiter.DeniedHandler = http.HandlerFunc(rateLimitExceededAction)
+	rateLimiter.DeniedHandler = &RateLimitExceededAction{}
 	app.web.rateLimiter = rateLimiter
 }
 
