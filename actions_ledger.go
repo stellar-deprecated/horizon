@@ -69,37 +69,36 @@ func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
 	render.Render(ctx, w, r)
 }
 
-func ledgerShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c, r: r}
-	app := ah.App()
+type LedgerShowAction struct {
+	Action
+	Record db.LedgerRecord
+}
 
-	// construct query
-	query := db.LedgerBySequenceQuery{
-		SqlQuery: app.HistoryQuery(),
-		Sequence: ah.GetInt32("id"),
+func (action LedgerShowAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	ap.Execute(&action)
+}
+
+func (action *LedgerShowAction) Query() db.LedgerBySequenceQuery {
+	return db.LedgerBySequenceQuery{
+		SqlQuery: action.App.HistoryQuery(),
+		Sequence: action.GetInt32("id"),
 	}
-	if ah.Err() != nil {
-		problem.Render(ah.Context(), w, ah.Err())
+}
+
+func (action *LedgerShowAction) JSON() {
+	query := action.Query()
+
+	if action.Err != nil {
 		return
 	}
 
-	// find ledger
-	found, err := db.First(ah.Context(), query)
-	if err != nil {
-		problem.Render(ah.Context(), w, ah.Err())
+	action.Err = db.Get(action.Ctx, query, &action.Record)
+
+	if action.Err != nil {
 		return
 	}
 
-	ledger, ok := found.(db.LedgerRecord)
-	if !ok {
-		problem.Render(ah.Context(), w, problem.NotFound)
-		return
-	}
-
-	render := render.Renderer{}
-	render.JSON = func() {
-		hal.Render(w, NewLedgerResource(ledger))
-	}
-
-	render.Render(ah.Context(), w, r)
+	hal.Render(action.W, NewLedgerResource(action.Record))
 }

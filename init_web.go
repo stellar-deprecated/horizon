@@ -67,7 +67,7 @@ func initWebActions(app *App) {
 
 	// ledger actions
 	r.Get("/ledgers", ledgerIndexAction)
-	r.Get("/ledgers/:id", ledgerShowAction)
+	r.Get("/ledgers/:id", &LedgerShowAction{})
 	r.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
 	r.Get("/ledgers/:ledger_id/operations", operationIndexAction)
 	r.Get("/ledgers/:ledger_id/payments", paymentsIndexAction)
