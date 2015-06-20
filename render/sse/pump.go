@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/stellar/go-horizon/log"
 	"golang.org/x/net/context"
 )
 
@@ -51,7 +52,9 @@ func Pumped() <-chan struct{} {
 func run() {
 	for {
 		select {
-		case _, more := <-pump:
+		case at, more := <-pump:
+			log.WithField(ctx, "time", at).Debug("sse pump")
+
 			prev := nextTick
 			nextTick = make(chan struct{})
 			// trigger all listeners by closing the nextTick channel
