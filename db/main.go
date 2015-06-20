@@ -28,10 +28,14 @@ var ErrDestinationIncompatible = errors.New("Retrieved results' type is not comp
 // ErrNoResults is returned when no results are found during a `Get` call
 var ErrNoResults = errors.New("No record found")
 
+// Query is the interface to implement to plug a struct into the query system.
+// see doc.go for an example.
 type Query interface {
 	Select(context.Context, interface{}) error
 }
 
+// Pageable records have a defined order, and the place withing that order
+// is determined by the paging token
 type Pageable interface {
 	PagingToken() string
 }
