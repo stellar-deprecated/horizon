@@ -63,7 +63,7 @@ func (action *PaymentsIndexAction) JSON() {
 	if action.Err != nil {
 		return
 	}
-	hal.RenderPage(action.W, action.Page)
+	hal.Render(action.W, action.Page)
 }
 
 // SSE is a method for actions.SSE
