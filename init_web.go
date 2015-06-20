@@ -69,7 +69,7 @@ func initWebActions(app *App) {
 	// ledger actions
 	r.Get("/ledgers", &LedgerIndexAction{})
 	r.Get("/ledgers/:id", &LedgerShowAction{})
-	r.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
+	r.Get("/ledgers/:ledger_id/transactions", &TransactionIndexAction{})
 	r.Get("/ledgers/:ledger_id/operations", &OperationIndexAction{})
 	r.Get("/ledgers/:ledger_id/payments", &PaymentsIndexAction{})
 	r.Get("/ledgers/:ledger_id/effects", &NotImplementedAction{})
@@ -77,15 +77,15 @@ func initWebActions(app *App) {
 	// account actions
 	r.Get("/accounts", &AccountIndexAction{})
 	r.Get("/accounts/:id", &AccountShowAction{})
-	r.Get("/accounts/:account_id/transactions", transactionIndexAction)
+	r.Get("/accounts/:account_id/transactions", &TransactionIndexAction{})
 	r.Get("/accounts/:account_id/operations", &OperationIndexAction{})
 	r.Get("/accounts/:account_id/payments", &PaymentsIndexAction{})
 	r.Get("/accounts/:account_id/effects", &NotImplementedAction{})
 	r.Get("/accounts/:account_id/offers", &OffersByAccountAction{})
 
 	// transaction actions
-	r.Get("/transactions", transactionIndexAction)
-	r.Get("/transactions/:id", transactionShowAction)
+	r.Get("/transactions", &TransactionIndexAction{})
+	r.Get("/transactions/:id", &TransactionShowAction{})
 	r.Get("/transactions/:tx_id/operations", &OperationIndexAction{})
 	r.Get("/transactions/:tx_id/payments", &PaymentsIndexAction{})
 	r.Get("/transactions/:tx_id/effects", &NotImplementedAction{})
