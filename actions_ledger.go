@@ -9,6 +9,11 @@ import (
 	"github.com/zenazn/goji/web"
 )
 
+// This file contains the actions:
+//
+// LedgerIndexAction: pages of ledgers
+// LedgerShowAction: single ledger by sequence
+
 // LedgerIndexAction renders a page of ledger resources, identified by
 // a normal page query.
 type LedgerIndexAction struct {
