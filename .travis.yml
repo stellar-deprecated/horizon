@@ -22,3 +22,4 @@ addons:
 matrix:
   allow_failures:
     - go: tip
+    - go: '1.3'
