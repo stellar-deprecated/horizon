@@ -91,7 +91,7 @@ func (action *LedgerIndexAction) SSE(stream sse.Stream) {
 	}
 }
 
-// LedgerShowAction renders a ledger found by it's sequence number.
+// LedgerShowAction renders a ledger found by its sequence number.
 type LedgerShowAction struct {
 	Action
 	Record db.LedgerRecord

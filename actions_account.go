@@ -4,104 +4,129 @@ import (
 	"net/http"
 
 	"github.com/stellar/go-horizon/db"
-	"github.com/stellar/go-horizon/render"
 	"github.com/stellar/go-horizon/render/hal"
-	"github.com/stellar/go-horizon/render/problem"
 	"github.com/stellar/go-horizon/render/sse"
 	"github.com/zenazn/goji/web"
 )
 
-func accountIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c, r: r}
-	app := ah.App()
-	ctx := ah.Context()
+// This file contains the actions:
+//
+// AccountIndexAction: pages of account's addresses in order of creation
+// AccountShowAction: details for single account (including stellar-core state)
 
-	query := db.HistoryAccountPageQuery{
-		SqlQuery:  app.HistoryQuery(),
-		PageQuery: ah.GetPageQuery(),
-	}
-
-	if ah.Err() != nil {
-		problem.Render(ctx, w, ah.Err())
-		return
-	}
-
-	var records []db.HistoryAccountRecord
-
-	render := render.Renderer{}
-	render.JSON = func() {
-		// load records
-		err := db.Select(ctx, query, &records)
-		if err != nil {
-			problem.Render(ctx, w, err)
-		}
-
-		page, err := NewHistoryAccountResourcePage(records, query.PageQuery)
-		if err != nil {
-			problem.Render(ctx, w, err)
-		}
-
-		hal.RenderPage(w, page)
-	}
-
-	render.SSE = func(stream sse.Stream) {
-		err := db.Select(ctx, query, &records)
-		if err != nil {
-			stream.Err(err)
-			return
-		}
-
-		records = records[stream.SentCount():]
-
-		for _, record := range records {
-			stream.Send(sse.Event{
-				ID:   record.PagingToken(),
-				Data: NewHistoryAccountResource(record),
-			})
-		}
-
-		if stream.SentCount() >= int(query.Limit) {
-			stream.Done()
-		}
-	}
-
-	render.Render(ctx, w, r)
-
+// AccountIndexAction renders a page of account resources, identified by
+// a normal page query, ordered by the operation id that created them.
+type AccountIndexAction struct {
+	Action
+	Query   db.HistoryAccountPageQuery
+	Records []db.HistoryAccountRecord
+	Page    hal.Page
 }
 
-func accountShowAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c, r: r}
-	app := ah.App()
-	ctx := ah.Context()
+// ServeHTTPC is a method for web.Handler
+func (action AccountIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	ap.Execute(&action)
+}
 
-	if ah.Err() != nil {
-		problem.Render(ctx, w, problem.NotFound)
+// LoadQuery sets action.Query from the request params
+func (action *AccountIndexAction) LoadQuery() {
+	action.ValidateInt64(ParamCursor)
+	action.Query = db.HistoryAccountPageQuery{
+		SqlQuery:  action.App.HistoryQuery(),
+		PageQuery: action.GetPageQuery(),
+	}
+}
+
+// LoadRecords populates action.Records
+func (action *AccountIndexAction) LoadRecords() {
+	action.LoadQuery()
+	if action.Err != nil {
 		return
 	}
 
-	query := db.AccountByAddressQuery{
-		Core:    app.CoreQuery(),
-		History: app.HistoryQuery(),
-		Address: ah.GetString("id"),
-	}
+	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
+}
 
-	// find account
-	found, err := db.First(ah.Context(), query)
-	if err != nil {
-		problem.Render(ah.Context(), w, ah.Err())
+// LoadPage populates action.Page
+func (action *AccountIndexAction) LoadPage() {
+	action.LoadRecords()
+	if action.Err != nil {
 		return
 	}
 
-	account, ok := found.(db.AccountRecord)
-	if !ok {
-		problem.Render(ah.Context(), w, problem.NotFound)
+	action.Page, action.Err = NewHistoryAccountResourcePage(action.Records, action.Query.PageQuery)
+}
+
+// JSON is a method for actions.JSON
+func (action *AccountIndexAction) JSON() {
+	action.LoadPage()
+	if action.Err != nil {
+		return
+	}
+	hal.RenderPage(action.W, action.Page)
+}
+
+// SSE is a method for actions.SSE
+func (action *AccountIndexAction) SSE(stream sse.Stream) {
+	action.LoadRecords()
+	if action.Err != nil {
+		stream.Err(action.Err)
 		return
 	}
 
-	render := render.Renderer{}
-	render.JSON = func() {
-		hal.Render(w, NewAccountResource(account))
+	for _, record := range action.Records[stream.SentCount():] {
+		stream.Send(sse.Event{
+			ID:   record.PagingToken(),
+			Data: NewHistoryAccountResource(record),
+		})
 	}
 
-	render.Render(ctx, w, r)
+	if stream.SentCount() >= int(action.Query.Limit) {
+		stream.Done()
+	}
+}
+
+// AccountShowAction renders a account summary found by its address.
+type AccountShowAction struct {
+	Action
+	Query  db.AccountByAddressQuery
+	Record db.AccountRecord
+}
+
+// ServeHTTPC is a method for web.Handler
+func (action AccountShowAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	ap.Execute(&action)
+}
+
+// LoadQuery sets action.Query from the request params
+func (action *AccountShowAction) LoadQuery() {
+	action.Query = db.AccountByAddressQuery{
+		Core:    action.App.CoreQuery(),
+		History: action.App.HistoryQuery(),
+		Address: action.GetString("id"),
+	}
+}
+
+// LoadRecord populates action.Record
+func (action *AccountShowAction) LoadRecord() {
+	action.LoadQuery()
+	if action.Err != nil {
+		return
+	}
+
+	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+}
+
+// JSON is a method for actions.JSON
+func (action *AccountShowAction) JSON() {
+	action.LoadRecord()
+	if action.Err != nil {
+		return
+	}
+
+	hal.Render(action.W, NewAccountResource(action.Record))
 }

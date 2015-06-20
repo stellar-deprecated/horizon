@@ -18,29 +18,15 @@ func (q AccountByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
 	caq := CoreAccountByAddressQuery{q.Core, q.Address}
 	ctlq := CoreTrustlinesByAddressQuery{q.Core, q.Address}
 
-	har, err := First(ctx, haq)
-	if err != nil {
-		return nil, err
-	}
-	car, err := First(ctx, caq)
-	if err != nil {
-		return nil, err
-	}
-	ctlr, err := Results(ctx, ctlq)
-	if err != nil {
+	if err := Get(ctx, haq, &result.HistoryAccountRecord); err != nil {
 		return nil, err
 	}
 
-	if car == nil || har == nil {
-		return nil, nil
+	if err := Get(ctx, caq, &result.CoreAccountRecord); err != nil {
+		return nil, err
 	}
-
-	result.HistoryAccountRecord = har.(HistoryAccountRecord)
-	result.CoreAccountRecord = car.(CoreAccountRecord)
-	result.Trustlines = make([]CoreTrustlineRecord, len(ctlr))
-
-	for i, tl := range ctlr {
-		result.Trustlines[i] = tl.(CoreTrustlineRecord)
+	if err := Select(ctx, ctlq, &result.Trustlines); err != nil {
+		return nil, err
 	}
 
 	return []interface{}{result}, nil
