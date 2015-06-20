@@ -3,6 +3,7 @@ package horizon
 import (
 	"net/http"
 
+	"github.com/stellar/go-horizon/actions"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/sse"
@@ -32,7 +33,7 @@ func (action LedgerIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *ht
 
 // LoadQuery sets action.Query from the request params
 func (action *LedgerIndexAction) LoadQuery() {
-	action.ValidateInt64(ParamCursor)
+	action.ValidateInt64(actions.ParamCursor)
 	action.Query = db.LedgerPageQuery{
 		SqlQuery:  action.App.HistoryQuery(),
 		PageQuery: action.GetPageQuery(),
