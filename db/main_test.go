@@ -23,13 +23,6 @@ func TestDBPackage(t *testing.T) {
 	core := OpenStellarCoreTestDatabase()
 	defer core.Close()
 
-	Convey("db.Results", t, func() {
-		query := &mockQuery{2}
-		results, err := Results(ctx, query)
-		So(err, ShouldBeNil)
-		So(len(results), ShouldEqual, 2)
-	})
-
 	Convey("db.Select", t, func() {
 		Convey("overwrites the destination", func() {
 			records := []mockResult{{1}, {2}}
@@ -75,32 +68,26 @@ func TestDBPackage(t *testing.T) {
 		})
 	})
 
-	Convey("db.First", t, func() {
+	Convey("db.Get", t, func() {
+		var result mockResult
+
 		Convey("returns the first record", func() {
-			query := &mockQuery{2}
-			output, err := First(ctx, query)
-			So(err, ShouldBeNil)
-			So(output.(mockResult), ShouldResemble, mockResult{0})
+			So(Get(ctx, &mockQuery{2}, &result), ShouldBeNil)
+			So(result, ShouldResemble, mockResult{0})
 		})
 
 		Convey("Missing records returns nil", func() {
-			query := &mockQuery{0}
-			output, err := First(ctx, query)
-			So(err, ShouldBeNil)
-			So(output, ShouldBeNil)
+			So(Get(ctx, &mockQuery{0}, &result), ShouldEqual, ErrNoResults)
 		})
 
 		Convey("Properly forwards non-RecordNotFound errors", func() {
 			query := &BrokenQuery{errors.New("Some error")}
-			_, err := First(ctx, query)
-
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldEqual, "Some error")
+			So(Get(ctx, query, &result).Error(), ShouldEqual, "Some error")
 		})
 	})
 }
 
-func ExampleFirst() {
+func ExampleGet() {
 	db := OpenStellarCoreTestDatabase()
 	defer db.Close()
 
@@ -109,13 +96,13 @@ func ExampleFirst() {
 		"gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
 	}
 
-	record, err := First(context.Background(), q)
+	var account CoreAccountRecord
+	err := Get(context.Background(), q, &account)
 
 	if err != nil {
 		panic(err)
 	}
 
-	account := record.(CoreAccountRecord)
 	fmt.Printf("%s", account.Accountid)
 	// Output: gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC
 }
