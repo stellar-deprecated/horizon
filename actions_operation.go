@@ -60,7 +60,9 @@ func (action *OperationIndexAction) LoadPage() {
 		return
 	}
 
-	action.Page, action.Err = NewOperationResourcePage(action.Records, action.Query.PageQuery, "")
+	// TODO: fix prefix.  perhaps we store the current action in context?
+	// or probably, use have it on actions.Base as CurrentURL
+	action.Page, action.Err = NewOperationResourcePage(action.Records, action.Query.PageQuery, action.Path())
 }
 
 // JSON is a method for actions.JSON

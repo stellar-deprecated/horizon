@@ -118,3 +118,9 @@ func (base *Base) GetPageQuery() db.PageQuery {
 
 	return r
 }
+
+// Path returns the current action's path, as determined by the http.Request of
+// this action
+func (base *Base) Path() string {
+	return base.R.URL.Path
+}

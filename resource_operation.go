@@ -65,8 +65,8 @@ func NewOperationResource(op db.OperationRecord) (OperationResource, error) {
 
 // NewOperationResourcePage initialzed a hal.Page from s a slice of
 // OperationRecords
-func NewOperationResourcePage(records []db.OperationRecord, query db.PageQuery, prefix string) (hal.Page, error) {
-	fmts := prefix + "/operations?order=%s&limit=%d&cursor=%s"
+func NewOperationResourcePage(records []db.OperationRecord, query db.PageQuery, path string) (hal.Page, error) {
+	fmts := path + "?order=%s&limit=%d&cursor=%s"
 	next, prev, err := query.GetContinuations(records)
 	if err != nil {
 		return hal.Page{}, err
