@@ -7,8 +7,7 @@ import (
 	"github.com/jagregory/halgo"
 
 	"github.com/stellar/go-horizon/db"
-	"github.com/stellar/go-horizon/render"
-	"github.com/stellar/go-horizon/render/sse"
+	"github.com/stellar/go-horizon/render/hal"
 )
 
 // OfferResource is the display form of an offer to trade currency.
@@ -38,24 +37,13 @@ type PriceResource struct {
 	D int32 `json:"denominator"`
 }
 
-// SseEvent converts this resource into a SSE compatible event.  Implements
-// the sse.Eventable interface
-func (r OfferResource) SseEvent() sse.Event {
-	return sse.Event{
-		Data: r,
-		ID:   r.PagingToken,
-	}
-}
-
-func offerRecordToResource(record db.Record) (result render.Resource, err error) {
-
-	op := record.(db.CoreOfferRecord)
+func NewOfferResource(op db.CoreOfferRecord) OfferResource {
 	self := fmt.Sprintf("/offers/%d", op.Offerid)
 
 	takerPays := NewOfferCurrencyResource(op.Paysalphanumcurrency, op.Paysissuer)
 	takerGets := NewOfferCurrencyResource(op.Getsalphanumcurrency, op.Getsissuer)
 
-	result = OfferResource{
+	return OfferResource{
 		Links: halgo.Links{}.
 			Self(self).
 			Link("offer_maker", "/accounts/%s", op.Accountid),
@@ -71,8 +59,6 @@ func offerRecordToResource(record db.Record) (result render.Resource, err error)
 		},
 		PriceF: op.PriceAsFloat(),
 	}
-
-	return
 }
 
 // NewOfferCurrencyResource creates a new OfferCurrencyResource, ensuring that
@@ -93,4 +79,25 @@ func NewOfferCurrencyResource(code, issuer sql.NullString) OfferCurrencyResource
 		panic("Exceptional offer state: code and issuer are not both null or not-null")
 	}
 
+}
+
+func NewOfferResourcePage(records []db.CoreOfferRecord, query db.PageQuery, prefix string) (hal.Page, error) {
+	fmts := prefix + "/offers?order=%s&limit=%d&cursor=%s"
+	next, prev, err := query.GetContinuations(records)
+	if err != nil {
+		return hal.Page{}, err
+	}
+
+	resources := make([]interface{}, len(records))
+	for i, record := range records {
+		resources[i] = NewOfferResource(record)
+	}
+
+	return hal.Page{
+		Links: halgo.Links{}.
+			Self(fmts, query.Order, query.Limit, query.Cursor).
+			Link("next", fmts, next.Order, next.Limit, next.Cursor).
+			Link("prev", fmts, prev.Order, prev.Limit, prev.Cursor),
+		Records: resources,
+	}, nil
 }

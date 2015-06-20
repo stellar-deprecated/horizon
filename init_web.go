@@ -80,7 +80,7 @@ func initWebActions(app *App) {
 	r.Get("/accounts/:account_id/operations", operationIndexAction)
 	r.Get("/accounts/:account_id/payments", paymentsIndexAction)
 	r.Get("/accounts/:account_id/effects", &NotImplementedAction{})
-	r.Get("/accounts/:account_id/offers", offerIndexAction)
+	r.Get("/accounts/:account_id/offers", &OffersByAccountAction{})
 
 	// transaction actions
 	r.Get("/transactions", transactionIndexAction)
