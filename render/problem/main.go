@@ -10,10 +10,21 @@ import (
 	"golang.org/x/net/context"
 )
 
-// HasProblem types can be transformed into a problem.
-// Implement it for custom errors.
-type HasProblem interface {
-	Problem() P
+var (
+	errToProblemMap map[error]P = map[error]P{}
+)
+
+// RegisterError records an error -> P mapping, allowing the app to register
+// specific errors that may occur in other packages to be rendered as a specific
+// P instance.
+//
+// For example, you might want to render any db.ErrNoResults errors as a
+// problem.NotFound, and you would do so by calling:
+//
+// problem.RegisterError(db.ErrNoResults, problem.NotFound) in you application
+// initialization sequence
+func RegisterError(err error, p P) {
+	errToProblemMap[err] = p
 }
 
 // P is a struct that represents an error response to be rendered to a connected
@@ -47,11 +58,15 @@ func Render(ctx context.Context, w http.ResponseWriter, p interface{}) {
 	switch p := p.(type) {
 	case P:
 		render(ctx, w, p)
-	case HasProblem:
-		render(ctx, w, p.Problem())
 	case error:
-		log.Error(ctx, p)
-		render(ctx, w, ServerError)
+		pp, ok := errToProblemMap[p]
+
+		if !ok {
+			log.Error(ctx, p)
+			pp = ServerError
+		}
+
+		render(ctx, w, pp)
 	default:
 		panic(fmt.Sprintf("Invalid problem: %v+", p))
 	}

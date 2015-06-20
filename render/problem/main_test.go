@@ -86,20 +86,6 @@ func TestProblemPackage(t *testing.T) {
 			// don't expose private error info
 			So(w.Body.String(), ShouldNotContainSubstring, "broke")
 		})
-
-		Convey("Accepts HasProblem implementors", func() {
-			w := testRender(b, testHasProblem(100))
-			So(w.Body.String(), ShouldContainSubstring, "100")
-			So(w.Code, ShouldEqual, 100)
-		})
 	})
 
-}
-
-type testHasProblem int
-
-func (t testHasProblem) Problem() P {
-	return P{
-		Status: int(t),
-	}
 }

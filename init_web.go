@@ -11,6 +11,8 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/sebest/xff"
+	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
 )
@@ -34,6 +36,9 @@ func initWeb(app *App) {
 		failureMeter: metrics.NewMeter(),
 		successMeter: metrics.NewMeter(),
 	}
+
+	// register problems
+	problem.RegisterError(db.ErrNoResults, problem.NotFound)
 }
 
 // initWebMiddleware installs the middleware stack used for go-horizon onto the
