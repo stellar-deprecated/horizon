@@ -18,7 +18,7 @@ func TestPaymentActions(t *testing.T) {
 		Convey("GET /payments", func() {
 			w := rh.Get("/payments", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 1)
+			So(w.Body, ShouldBePageOf, 4)
 		})
 
 		Convey("GET /ledgers/:ledger_id/payments", func() {
@@ -32,21 +32,24 @@ func TestPaymentActions(t *testing.T) {
 		})
 
 		Convey("GET /accounts/:account_id/payments", func() {
-			w := rh.Get("/accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC/payments", test.RequestHelperNoop)
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 0)
-
-			w = rh.Get("/accounts/gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ/payments", test.RequestHelperNoop)
+			w := rh.Get("/accounts/gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA/payments", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
+
+			test.LoadScenario("pathed_payment")
+			w = rh.Get("/accounts/gsDu9aPmZy7uH5FzmfJKW7jWyXGHjSWbcb8k6UH743pYzaxWcWd/payments", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 200)
+			So(w.Body, ShouldBePageOf, 3)
 		})
 
 		Convey("GET /transactions/:tx_id/payments", func() {
-			w := rh.Get("/transactions/da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c/payments", test.RequestHelperNoop)
+			test.LoadScenario("pathed_payment")
+
+			w := rh.Get("/transactions/dffaa6b14246bb4cc3ab8ac414aec9cb93e86003cb22ff1297b3fe4623974d98/payments", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 0)
 
-			w = rh.Get("/transactions/5bd122cef07943e50c100251f70df2fbfc6f475e1a3b6ef35dbff2a10a1df4bf/payments", test.RequestHelperNoop)
+			w = rh.Get("/transactions/ab38509dc9e16c08b084d7f7279fd45f5f4d348ab3b2ed9877c697beaa7e4108/payments", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 		})

@@ -18,7 +18,7 @@ type CoreOfferPageByCurrencyQuery struct {
 	TakerGetsIssuer string
 }
 
-func (q CoreOfferPageByCurrencyQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q CoreOfferPageByCurrencyQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := CoreOfferRecordSelect.Limit(uint64(q.Limit))
 
 	switch q.TakerPaysType {
@@ -39,19 +39,17 @@ func (q CoreOfferPageByCurrencyQuery) Get(ctx context.Context) ([]interface{}, e
 			Where("co.getsalphanumcurrency = ?", q.TakerGetsCode)
 	}
 
-	switch q.Order {
-	case "asc":
-		sql = sql.Where("co.price > ?", q.Cursor).OrderBy("co.price asc")
-	case "desc":
-		sql = sql.Where("co.price < ?", q.Cursor).OrderBy("co.price desc")
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return err
 	}
 
-	var records []CoreOfferRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
-	return makeResult(records), err
+	switch q.Order {
+	case "asc":
+		sql = sql.Where("co.price > ?", cursor).OrderBy("co.price asc")
+	case "desc":
+		sql = sql.Where("co.price < ?", cursor).OrderBy("co.price desc")
+	}
 
-}
-
-func (q CoreOfferPageByCurrencyQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered >= int(q.Limit)
+	return q.SqlQuery.Select(ctx, sql, dest)
 }

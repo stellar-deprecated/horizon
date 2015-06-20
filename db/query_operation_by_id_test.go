@@ -10,22 +10,18 @@ import (
 
 func TestOperationByIdQuery(t *testing.T) {
 	test.LoadScenario("base")
-	ctx := test.Context()
-	db := OpenTestDatabase()
-	defer db.Close()
 
 	Convey("OperationByIdQuery", t, func() {
+		var op OperationRecord
 
 		Convey("Existing record behavior", func() {
 			id := int64(17179873280)
 			q := OperationByIdQuery{
-				SqlQuery{db},
+				SqlQuery{history},
 				id,
 			}
-			result, err := First(ctx, q)
+			err := Get(ctx, q, &op)
 			So(err, ShouldBeNil)
-			op := result.(OperationRecord)
-
 			So(op.Id, ShouldEqual, id)
 			So(op.TransactionId, ShouldEqual, id)
 		})
@@ -33,12 +29,11 @@ func TestOperationByIdQuery(t *testing.T) {
 		Convey("Missing record behavior", func() {
 			id := int64(0)
 			q := OperationByIdQuery{
-				SqlQuery{db},
+				SqlQuery{history},
 				id,
 			}
-			result, err := First(ctx, q)
-			So(result, ShouldBeNil)
-			So(err, ShouldBeNil)
+			err := Get(ctx, q, &op)
+			So(err, ShouldEqual, ErrNoResults)
 		})
 
 	})

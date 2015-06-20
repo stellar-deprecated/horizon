@@ -13,7 +13,7 @@ func TestPageQuery(t *testing.T) {
 		Convey("Sets attributes correctly", func() {
 			p, err := NewPageQuery("10", "desc", 15)
 			So(err, ShouldBeNil)
-			So(p.Cursor, ShouldEqual, 10)
+			So(p.Cursor, ShouldEqual, "10")
 			So(p.Order, ShouldEqual, "desc")
 			So(p.Limit, ShouldEqual, 15)
 		})
@@ -29,26 +29,36 @@ func TestPageQuery(t *testing.T) {
 			So(err, ShouldEqual, ErrInvalidOrder)
 		})
 
-		Convey("Defaults to 0 when ordered asc", func() {
-			p, err := NewPageQuery("", "asc", 0)
-			So(err, ShouldBeNil)
-			So(p.Cursor, ShouldEqual, 0)
-		})
+		Convey("CursorInt64", func() {
+			Convey("Defaults to 0 when ordered asc", func() {
+				p, err := NewPageQuery("", "asc", 0)
+				So(err, ShouldBeNil)
+				cursor, err := p.CursorInt64()
+				So(err, ShouldBeNil)
+				So(cursor, ShouldEqual, 0)
+			})
 
-		Convey("Defaults to MaxInt64 when ordered desc", func() {
-			p, err := NewPageQuery("", "desc", 0)
-			So(err, ShouldBeNil)
-			So(p.Cursor, ShouldEqual, 9223372036854775807)
-		})
+			Convey("Defaults to MaxInt64 when ordered desc", func() {
+				p, err := NewPageQuery("", "desc", 0)
+				So(err, ShouldBeNil)
+				cursor, err := p.CursorInt64()
+				So(err, ShouldBeNil)
+				So(cursor, ShouldEqual, 9223372036854775807)
+			})
 
-		Convey("Errors when cursor is not parseable as a number", func() {
-			_, err := NewPageQuery("not_a_number", "", 0)
-			So(err, ShouldEqual, ErrInvalidCursor)
-		})
+			Convey("Errors when cursor is not parseable as a number", func() {
+				p, err := NewPageQuery("not_a_number", "", 0)
+				So(err, ShouldBeNil)
+				_, err = p.CursorInt64()
+				So(err, ShouldEqual, ErrInvalidCursor)
+			})
 
-		Convey("Errors when cursor is less than zero", func() {
-			_, err := NewPageQuery("-1", "", 0)
-			So(err, ShouldEqual, ErrInvalidCursor)
+			Convey("Errors when cursor is less than zero", func() {
+				p, err := NewPageQuery("-1", "", 0)
+				So(err, ShouldBeNil)
+				_, err = p.CursorInt64()
+				So(err, ShouldEqual, ErrInvalidCursor)
+			})
 		})
 
 		Convey("Defaults to limit 10", func() {

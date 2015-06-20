@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"reflect"
 
 	"github.com/stellar/go-horizon/test"
 	"golang.org/x/net/context"
@@ -31,12 +32,13 @@ func OpenStellarCoreTestDatabase() *sql.DB {
 }
 
 func ShouldBeOrderedAscending(actual interface{}, options ...interface{}) string {
-	records := actual.([]interface{})
+	rv := reflect.ValueOf(actual)
 	t := options[0].(func(interface{}) int64)
 
 	prev := int64(0)
 
-	for i, r := range records {
+	for i := 0; i < rv.Len(); i++ {
+		r := rv.Index(i).Interface()
 		cur := t(r)
 
 		if cur <= prev {
@@ -50,16 +52,18 @@ func ShouldBeOrderedAscending(actual interface{}, options ...interface{}) string
 }
 
 func ShouldBeOrderedDescending(actual interface{}, options ...interface{}) string {
-	records := actual.([]interface{})
+	rv := reflect.ValueOf(actual)
+
 	t := options[0].(func(interface{}) int64)
 
 	prev := int64(math.MaxInt64)
 
-	for i, r := range records {
+	for i := 0; i < rv.Len(); i++ {
+		r := rv.Index(i).Interface()
 		cur := t(r)
 
 		if cur >= prev {
-			return fmt.Sprintf("not ordered decending: idx:%s has order %d, which is more than the previous:%d", i, cur, prev)
+			return fmt.Sprintf("not ordered descending: idx:%d has order %d, which is more than the previous:%d", i, cur, prev)
 		}
 
 		prev = cur
@@ -81,10 +85,6 @@ func (q mockDumpQuery) Get(ctx context.Context) ([]interface{}, error) {
 	}, nil
 }
 
-func (q mockDumpQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered >= 4
-}
-
 // Mock Query
 
 type mockQuery struct {
@@ -95,30 +95,21 @@ type mockResult struct {
 	index int
 }
 
-func (q mockQuery) Get(ctx context.Context) ([]interface{}, error) {
-	results := make([]interface{}, q.resultCount)
+func (q mockQuery) Select(ctx context.Context, dest interface{}) error {
+	results := make([]mockResult, q.resultCount)
 
 	for i := 0; i < q.resultCount; i++ {
 		results[i] = mockResult{i}
 	}
 
-	return results, nil
+	return setOn(results, dest)
 }
 
-func (q mockQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered >= q.resultCount
-}
-
-// Broken Query
-
+// BrokenQuery is a helper for tests that always returns an error
 type BrokenQuery struct {
 	Err error
 }
 
-func (q BrokenQuery) Get(ctx context.Context) ([]interface{}, error) {
-	return nil, q.Err
-}
-
-func (q BrokenQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered > 0
+func (q BrokenQuery) Select(ctx context.Context, dest interface{}) error {
+	return q.Err
 }

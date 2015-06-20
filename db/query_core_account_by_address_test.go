@@ -10,21 +10,19 @@ import (
 
 func TestCoreAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("base")
-	ctx := test.Context()
-	db := OpenStellarCoreTestDatabase()
-	defer db.Close()
 
 	Convey("CoreAccountByAddress", t, func() {
+		var account CoreAccountRecord
 
 		Convey("Existing record behavior", func() {
 			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
 			q := CoreAccountByAddressQuery{
-				SqlQuery{db},
+				SqlQuery{core},
 				address,
 			}
-			result, err := First(ctx, q)
+
+			err := Get(ctx, q, &account)
 			So(err, ShouldBeNil)
-			account := result.(CoreAccountRecord)
 
 			So(account.Accountid, ShouldEqual, address)
 			So(account.Balance, ShouldEqual, 99999996999999970)
@@ -33,12 +31,11 @@ func TestCoreAccountByAddressQuery(t *testing.T) {
 		Convey("Missing record behavior", func() {
 			address := "not real"
 			q := CoreAccountByAddressQuery{
-				SqlQuery{db},
+				SqlQuery{core},
 				address,
 			}
-			result, err := First(ctx, q)
-			So(result, ShouldBeNil)
-			So(err, ShouldBeNil)
+			err := Get(ctx, q, &account)
+			So(err, ShouldEqual, ErrNoResults)
 		})
 
 	})

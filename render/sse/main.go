@@ -60,24 +60,13 @@ type Streamer struct {
 
 func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	_, flushable := w.(http.Flusher)
-
-	if !flushable {
-		//TODO: render a problem struct instead of simple string
-		http.Error(w, "Streaming Not Supported", http.StatusBadRequest)
+	if !WritePreamble(s.Ctx, w) {
 		return
 	}
-
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.WriteHeader(200)
 
 	// wait for data and stream it as it becomes available
 	// finish when either the client closes the connection
 	// or the data provider closes the channel
-	WriteEvent(s.Ctx, w, helloEvent)
 	for {
 		select {
 		case eventable, more := <-s.Data:
@@ -90,6 +79,26 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+func WritePreamble(ctx context.Context, w http.ResponseWriter) bool {
+	_, flushable := w.(http.Flusher)
+
+	if !flushable {
+		//TODO: render a problem struct instead of simple string
+		http.Error(w, "Streaming Not Supported", http.StatusBadRequest)
+		return false
+	}
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.WriteHeader(200)
+
+	WriteEvent(ctx, w, helloEvent)
+
+	return true
 }
 
 // WriteEvent does the actual work of formatting an SSE compliant message

@@ -9,15 +9,20 @@ type TransactionPageQuery struct {
 	LedgerSequence int32
 }
 
-func (q TransactionPageQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q TransactionPageQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := TransactionRecordSelect.
 		Limit(uint64(q.Limit))
 
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return err
+	}
+
 	switch q.Order {
 	case "asc":
-		sql = sql.Where("ht.id > ?", q.Cursor).OrderBy("ht.id asc")
+		sql = sql.Where("ht.id > ?", cursor).OrderBy("ht.id asc")
 	case "desc":
-		sql = sql.Where("ht.id < ?", q.Cursor).OrderBy("ht.id desc")
+		sql = sql.Where("ht.id < ?", cursor).OrderBy("ht.id desc")
 	}
 
 	if q.AccountAddress != "" {
@@ -30,11 +35,5 @@ func (q TransactionPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 		sql = sql.Where("ht.ledger_sequence = ?", q.LedgerSequence)
 	}
 
-	var records []TransactionRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
-	return makeResult(records), err
-}
-
-func (q TransactionPageQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered >= int(q.Limit)
+	return q.SqlQuery.Select(ctx, sql, dest)
 }

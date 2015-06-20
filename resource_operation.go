@@ -1,15 +1,12 @@
 package horizon
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/jagregory/halgo"
 
 	"github.com/stellar/go-horizon/db"
-	"github.com/stellar/go-horizon/render"
 	"github.com/stellar/go-horizon/render/hal"
-	"github.com/stellar/go-horizon/render/sse"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
@@ -26,26 +23,12 @@ var operationResourceTypeNames = map[xdr.OperationType]string{
 	xdr.OperationTypeInflation:          "inflation",
 }
 
+// OperationResource is the json form of a row from the history_operations
+// table.
 type OperationResource map[string]interface{}
 
-// SseEvent converts this resource into a SSE compatible event.  Implements
-// the sse.Eventable interface
-func (r OperationResource) SseEvent() sse.Event {
-
-	ids, ok := r["paging_token"]
-
-	if !ok {
-		return sse.Event{Error: errors.New("paging_token not found in operation resource")}
-	}
-
-	return sse.Event{
-		Data: r,
-		ID:   ids.(string),
-	}
-}
-
-func operationRecordToResource(record db.Record) (render.Resource, error) {
-	op := record.(db.OperationRecord)
+// NewOperationResource initializes a new resource from an OperationRecord
+func NewOperationResource(op db.OperationRecord) (OperationResource, error) {
 	result, err := op.Details()
 
 	if err != nil {
@@ -78,4 +61,31 @@ func operationRecordToResource(record db.Record) (render.Resource, error) {
 	}
 
 	return result, nil
+}
+
+// NewOperationResourcePage initialzed a hal.Page from s a slice of
+// OperationRecords
+func NewOperationResourcePage(records []db.OperationRecord, query db.PageQuery, path string) (hal.Page, error) {
+	fmts := path + "?order=%s&limit=%d&cursor=%s"
+	next, prev, err := query.GetContinuations(records)
+	if err != nil {
+		return hal.Page{}, err
+	}
+
+	resources := make([]interface{}, len(records))
+	for i, record := range records {
+		r, err := NewOperationResource(record)
+		if err != nil {
+			return hal.Page{}, err
+		}
+		resources[i] = r
+	}
+
+	return hal.Page{
+		Links: halgo.Links{}.
+			Self(fmts, query.Order, query.Limit, query.Cursor).
+			Link("next", fmts, next.Order, next.Limit, next.Cursor).
+			Link("prev", fmts, prev.Order, prev.Limit, prev.Cursor),
+		Records: resources,
+	}, nil
 }

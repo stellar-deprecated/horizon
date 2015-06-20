@@ -7,14 +7,8 @@ type LedgerBySequenceQuery struct {
 	Sequence int32
 }
 
-func (q LedgerBySequenceQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q LedgerBySequenceQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := LedgerRecordSelect.Where("sequence = ?", q.Sequence).Limit(1)
 
-	var records []LedgerRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
-	return makeResult(records), err
-}
-
-func (l LedgerBySequenceQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered > 0
+	return q.SqlQuery.Select(ctx, sql, dest)
 }

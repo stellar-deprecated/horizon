@@ -11,6 +11,8 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/sebest/xff"
+	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
 )
@@ -34,11 +36,15 @@ func initWeb(app *App) {
 		failureMeter: metrics.NewMeter(),
 		successMeter: metrics.NewMeter(),
 	}
+
+	// register problems
+	problem.RegisterError(db.ErrNoResults, problem.NotFound)
 }
 
 // initWebMiddleware installs the middleware stack used for go-horizon onto the
 // provided app.
 func initWebMiddleware(app *App) {
+
 	r := app.web.router
 	r.Use(middleware.EnvInit)
 	r.Use(app.Middleware)
@@ -63,40 +69,40 @@ func initWebMiddleware(app *App) {
 func initWebActions(app *App) {
 	r := app.web.router
 	r.Get("/", rootAction)
-	r.Get("/metrics", metricsAction)
+	r.Get("/metrics", &MetricsAction{})
 
 	// ledger actions
-	r.Get("/ledgers", ledgerIndexAction)
-	r.Get("/ledgers/:id", ledgerShowAction)
-	r.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
-	r.Get("/ledgers/:ledger_id/operations", operationIndexAction)
-	r.Get("/ledgers/:ledger_id/payments", paymentsIndexAction)
-	r.Get("/ledgers/:ledger_id/effects", notImplementedAction)
+	r.Get("/ledgers", &LedgerIndexAction{})
+	r.Get("/ledgers/:id", &LedgerShowAction{})
+	r.Get("/ledgers/:ledger_id/transactions", &TransactionIndexAction{})
+	r.Get("/ledgers/:ledger_id/operations", &OperationIndexAction{})
+	r.Get("/ledgers/:ledger_id/payments", &PaymentsIndexAction{})
+	r.Get("/ledgers/:ledger_id/effects", &NotImplementedAction{})
 
 	// account actions
-	r.Get("/accounts", accountIndexAction)
-	r.Get("/accounts/:id", accountShowAction)
-	r.Get("/accounts/:account_id/transactions", transactionIndexAction)
-	r.Get("/accounts/:account_id/operations", operationIndexAction)
-	r.Get("/accounts/:account_id/payments", paymentsIndexAction)
-	r.Get("/accounts/:account_id/effects", notImplementedAction)
-	r.Get("/accounts/:account_id/offers", offerIndexAction)
+	r.Get("/accounts", &AccountIndexAction{})
+	r.Get("/accounts/:id", &AccountShowAction{})
+	r.Get("/accounts/:account_id/transactions", &TransactionIndexAction{})
+	r.Get("/accounts/:account_id/operations", &OperationIndexAction{})
+	r.Get("/accounts/:account_id/payments", &PaymentsIndexAction{})
+	r.Get("/accounts/:account_id/effects", &NotImplementedAction{})
+	r.Get("/accounts/:account_id/offers", &OffersByAccountAction{})
 
 	// transaction actions
-	r.Get("/transactions", transactionIndexAction)
-	r.Get("/transactions/:id", transactionShowAction)
-	r.Get("/transactions/:tx_id/operations", operationIndexAction)
-	r.Get("/transactions/:tx_id/payments", paymentsIndexAction)
-	r.Get("/transactions/:tx_id/effects", notImplementedAction)
+	r.Get("/transactions", &TransactionIndexAction{})
+	r.Get("/transactions/:id", &TransactionShowAction{})
+	r.Get("/transactions/:tx_id/operations", &OperationIndexAction{})
+	r.Get("/transactions/:tx_id/payments", &PaymentsIndexAction{})
+	r.Get("/transactions/:tx_id/effects", &NotImplementedAction{})
 
 	// operation actions
-	r.Get("/operations", operationIndexAction)
-	r.Get("/operations/:id", operationShowAction)
-	r.Get("/operations/:op_id/effects", notImplementedAction)
+	r.Get("/operations", &OperationIndexAction{})
+	r.Get("/operations/:id", &OperationShowAction{})
+	r.Get("/operations/:op_id/effects", &NotImplementedAction{})
 
-	r.Get("/payments", paymentsIndexAction)
+	r.Get("/payments", &PaymentsIndexAction{})
 
-	r.Get("/offers/:id", notImplementedAction)
+	r.Get("/offers/:id", &NotImplementedAction{})
 
 	// go-horizon doesn't implement everything horizon did,
 	// so we reverse proxy if we can
@@ -112,12 +118,12 @@ func initWebActions(app *App) {
 		r.Post("/friendbot", rp)
 		r.Get("/friendbot", rp)
 	} else {
-		r.Post("/transactions", notImplementedAction)
-		r.Post("/friendbot", notImplementedAction)
-		r.Get("/friendbot", notImplementedAction)
+		r.Post("/transactions", &NotImplementedAction{})
+		r.Post("/friendbot", &NotImplementedAction{})
+		r.Get("/friendbot", &NotImplementedAction{})
 	}
 
-	r.NotFound(notFoundAction)
+	r.NotFound(&NotFoundAction{})
 }
 
 func initWebRateLimiter(app *App) {
@@ -133,7 +139,7 @@ func initWebRateLimiter(app *App) {
 		rateLimitStore,
 	)
 
-	rateLimiter.DeniedHandler = http.HandlerFunc(rateLimitExceededAction)
+	rateLimiter.DeniedHandler = &RateLimitExceededAction{App: app, Action: Action{}}
 	app.web.rateLimiter = rateLimiter
 }
 

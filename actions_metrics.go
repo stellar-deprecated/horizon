@@ -10,25 +10,40 @@ import (
 	"github.com/zenazn/goji/web"
 )
 
-func metricsAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c, r: r}
-	app := ah.App()
-
-	db.UpdateLedgerState(ah.Context(), app.HistoryQuery(), app.CoreQuery())
-
-	snapshot := newMetricsSnapshot(app.metrics)
-	snapshot["_links"] = map[string]interface{}{
-		"self": halgo.Link{Href: "/metrics"},
-	}
-	hal.Render(w, snapshot)
+// MetricsAction collects and renders a snapshot from the metrics system that
+// will inlude any previously registered metrics.
+type MetricsAction struct {
+	Action
+	halgo.Links
+	Snapshot map[string]interface{}
 }
 
-// Copied from metrics MarshalJSON
-func newMetricsSnapshot(r metrics.Registry) map[string]interface{} {
+// ServeHTTPC is a method for web.Handler
+func (action MetricsAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	ap.Execute(&action)
+}
 
-	data := make(map[string]interface{})
+// JSON is a method for actions.JSON
+func (action *MetricsAction) JSON() {
+	db.UpdateLedgerState(action.Ctx, action.App.HistoryQuery(), action.App.CoreQuery())
+	action.LoadSnapshot()
+	action.Snapshot["_links"] = map[string]interface{}{
+		"self": halgo.Link{Href: "/metrics"},
+	}
 
-	r.Each(func(name string, i interface{}) {
+	hal.Render(action.W, action.Snapshot)
+}
+
+// LoadSnapshot populates action.Snapshot
+//
+// Original code copied from github.com/rcrowley/go-metrics MarshalJSON
+func (action *MetricsAction) LoadSnapshot() {
+
+	action.Snapshot = make(map[string]interface{})
+
+	action.App.metrics.Each(func(name string, i interface{}) {
 		values := make(map[string]interface{})
 		switch metric := i.(type) {
 		case metrics.Counter:
@@ -81,8 +96,7 @@ func newMetricsSnapshot(r metrics.Registry) map[string]interface{} {
 			values["15m.rate"] = t.Rate15()
 			values["mean.rate"] = t.RateMean()
 		}
-		data[name] = values
+		action.Snapshot[name] = values
 	})
 
-	return data
 }

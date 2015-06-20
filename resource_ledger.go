@@ -7,7 +7,6 @@ import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
-	"github.com/stellar/go-horizon/render/sse"
 )
 
 // LedgerResource represents the summary of a single ledger
@@ -21,15 +20,6 @@ type LedgerResource struct {
 	TransactionCount int32     `json:"transaction_count"`
 	OperationCount   int32     `json:"operation_count"`
 	ClosedAt         time.Time `json:"closed_at"`
-}
-
-// SseEvent converts this resource into a SSE compatible event.  Implements
-// the sse.Eventable interface
-func (l LedgerResource) SseEvent() sse.Event {
-	return sse.Event{
-		Data: l,
-		ID:   l.PagingToken,
-	}
 }
 
 // NewLedgerResource creates a new resource from a db.LedgerRecord
@@ -50,4 +40,25 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 		OperationCount:   in.OperationCount,
 		ClosedAt:         in.ClosedAt,
 	}
+}
+
+func NewLedgerResourcePage(records []db.LedgerRecord, query db.PageQuery) (hal.Page, error) {
+	fmts := "/ledgers?order=%s&limit=%d&cursor=%s"
+	next, prev, err := query.GetContinuations(records)
+	if err != nil {
+		return hal.Page{}, err
+	}
+
+	resources := make([]interface{}, len(records))
+	for i, record := range records {
+		resources[i] = NewLedgerResource(record)
+	}
+
+	return hal.Page{
+		Links: halgo.Links{}.
+			Self(fmts, query.Order, query.Limit, query.Cursor).
+			Link("next", fmts, next.Order, next.Limit, next.Cursor).
+			Link("prev", fmts, prev.Order, prev.Limit, prev.Cursor),
+		Records: resources,
+	}, nil
 }

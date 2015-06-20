@@ -10,32 +10,31 @@ import (
 
 func TestOperationPageQuery(t *testing.T) {
 	test.LoadScenario("base")
-	ctx := test.Context()
-	db := OpenTestDatabase()
-	defer db.Close()
 
 	Convey("OperationPageQuery", t, func() {
+		var records []OperationRecord
+
 		makeQuery := func(c string, o string, l int32) OperationPageQuery {
 			pq, err := NewPageQuery(c, o, l)
 
 			So(err, ShouldBeNil)
 
 			return OperationPageQuery{
-				SqlQuery:  SqlQuery{db},
+				SqlQuery:  SqlQuery{history},
 				PageQuery: pq,
 			}
 		}
 
 		Convey("orders properly", func() {
 			// asc orders ascending by id
-			records := MustResults(ctx, makeQuery("", "asc", 0))
+			MustSelect(ctx, makeQuery("", "asc", 0), &records)
 			So(records, ShouldBeOrderedAscending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, OperationRecord{})
 				return r.(OperationRecord).Id
 			})
 
 			// desc orders descending by id
-			records = MustResults(ctx, makeQuery("", "desc", 0))
+			MustSelect(ctx, makeQuery("", "desc", 0), &records)
 			So(records, ShouldBeOrderedDescending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, OperationRecord{})
 				return r.(OperationRecord).Id
@@ -44,52 +43,54 @@ func TestOperationPageQuery(t *testing.T) {
 
 		Convey("limits properly", func() {
 			// returns number specified
-			records := MustResults(ctx, makeQuery("", "asc", 3))
+			MustSelect(ctx, makeQuery("", "asc", 3), &records)
 			So(len(records), ShouldEqual, 3)
 
 			// returns all rows if limit is higher
-			records = MustResults(ctx, makeQuery("", "asc", 10))
+			MustSelect(ctx, makeQuery("", "asc", 10), &records)
 			So(len(records), ShouldEqual, 4)
 		})
 
 		Convey("cursor works properly", func() {
+			var record OperationRecord
+
 			// lowest id if ordered ascending and no cursor
-			record := MustFirst(ctx, makeQuery("", "asc", 0))
-			So(record.(OperationRecord).Id, ShouldEqual, 12884905984)
+			MustGet(ctx, makeQuery("", "asc", 0), &record)
+			So(record.Id, ShouldEqual, 12884905984)
 
 			// highest id if ordered descending and no cursor
-			record = MustFirst(ctx, makeQuery("", "desc", 0))
-			So(record.(OperationRecord).Id, ShouldEqual, 17179873280)
+			MustGet(ctx, makeQuery("", "desc", 0), &record)
+			So(record.Id, ShouldEqual, 17179873280)
 
 			// starts after the cursor if ordered ascending
-			record = MustFirst(ctx, makeQuery("12884905984", "asc", 0))
-			So(record.(OperationRecord).Id, ShouldEqual, 12884910080)
+			MustGet(ctx, makeQuery("12884905984", "asc", 0), &record)
+			So(record.Id, ShouldEqual, 12884910080)
 
 			// starts before the cursor if ordered descending
-			record = MustFirst(ctx, makeQuery("17179873280", "desc", 0))
-			So(record.(OperationRecord).Id, ShouldEqual, 12884914176)
+			MustGet(ctx, makeQuery("17179873280", "desc", 0), &record)
+			So(record.Id, ShouldEqual, 12884914176)
 		})
 
 		Convey("restricts to address properly", func() {
 			address := "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ"
 			q := makeQuery("", "asc", 0)
 			q.AccountAddress = address
-			r := MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 
-			So(len(r), ShouldEqual, 2)
-			So(r[0].(OperationRecord).Id, ShouldEqual, 12884914176)
-			So(r[1].(OperationRecord).Id, ShouldEqual, 17179873280)
+			So(len(records), ShouldEqual, 2)
+			So(records[0].Id, ShouldEqual, 12884914176)
+			So(records[1].Id, ShouldEqual, 17179873280)
 		})
 
 		Convey("restricts to ledger properly", func() {
 			q := makeQuery("", "asc", 0)
 			q.LedgerSequence = 3
-			records := MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderId(r.(OperationRecord).TransactionId)
+				toid := ParseTotalOrderId(r.TransactionId)
 				So(toid.LedgerSequence, ShouldEqual, 3)
 			}
 		})
@@ -97,12 +98,12 @@ func TestOperationPageQuery(t *testing.T) {
 		Convey("restricts to transaction properly", func() {
 			q := makeQuery("", "asc", 0)
 			q.TransactionHash = "da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c"
-			records := MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 1)
 
 			for _, r := range records {
-				So(r.(OperationRecord).TransactionId, ShouldEqual, 12884905984)
+				So(r.TransactionId, ShouldEqual, 12884905984)
 			}
 		})
 
@@ -124,19 +125,20 @@ func TestOperationPageQuery(t *testing.T) {
 				q.LedgerSequence = o.Ledger
 				q.AccountAddress = o.Address
 
-				_, err := Results(ctx, q)
+				err := Select(ctx, q, &records)
 				So(err, ShouldNotBeNil)
 			}
 
 		})
 
 		Convey("obeys the type filter", func() {
+			test.LoadScenario("pathed_payment")
 
 			q := makeQuery("", "asc", 0)
 			q.TypeFilter = PaymentTypeFilter
-			records := MustResults(ctx, q)
+			MustSelect(ctx, q, &records)
 
-			So(len(records), ShouldEqual, 1)
+			So(len(records), ShouldEqual, 10)
 
 		})
 	})

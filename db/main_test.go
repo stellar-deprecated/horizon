@@ -1,58 +1,106 @@
 package db
 
 import (
+	"database/sql"
 	"errors"
-	"log"
+	"fmt"
+	"os"
 	"testing"
-
-	"golang.org/x/net/context"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
+	"golang.org/x/net/context"
 )
 
-func TestDBPackage(t *testing.T) {
-	ctx := test.Context()
+var ctx context.Context
+var core *sql.DB
+var history *sql.DB
 
+func TestMain(m *testing.M) {
+	ctx = test.Context()
+	core = OpenStellarCoreTestDatabase()
+	history = OpenTestDatabase()
+	defer core.Close()
+	defer history.Close()
+
+	os.Exit(m.Run())
+
+}
+
+func TestDBOpen(t *testing.T) {
 	Convey("db.Open", t, func() {
 		// TODO
 	})
+}
 
-	Convey("db.Results", t, func() {
-		query := &mockQuery{2}
+func TestDBPackage(t *testing.T) {
+	test.LoadScenario("non_native_payment")
 
-		results, err := Results(ctx, query)
+	Convey("db.Select", t, func() {
+		Convey("overwrites the destination", func() {
+			records := []mockResult{{1}, {2}}
+			query := &mockQuery{5}
+			err := Select(ctx, query, &records)
+			So(err, ShouldBeNil)
+			So(len(records), ShouldEqual, 5)
+		})
 
-		So(err, ShouldBeNil)
-		So(len(results), ShouldEqual, 2)
+		Convey("works on []interface{} destinations", func() {
+			var records []mockResult
+			query := &mockQuery{5}
+			err := Select(ctx, query, &records)
+			So(err, ShouldBeNil)
+			So(len(records), ShouldEqual, 5)
+		})
+
+		Convey("returns an error when the provided destination is nil", func() {
+			query := &mockQuery{5}
+			err := Select(ctx, query, nil)
+			So(err, ShouldEqual, ErrDestinationNil)
+		})
+
+		Convey("returns an error when the provided destination is not a pointer", func() {
+			var records []mockResult
+			query := &mockQuery{5}
+			err := Select(ctx, query, records)
+			So(err, ShouldEqual, ErrDestinationNotPointer)
+		})
+
+		Convey("returns an error when the provided destination is not a slice", func() {
+			var records string
+			query := &mockQuery{5}
+			err := Select(ctx, query, &records)
+			So(err, ShouldEqual, ErrDestinationNotSlice)
+		})
+
+		Convey("returns an error when the provided destination is a slice of an invalid type", func() {
+			var records []string
+			query := &mockQuery{5}
+			err := Select(ctx, query, &records)
+			So(err, ShouldEqual, ErrDestinationIncompatible)
+		})
 	})
 
-	Convey("db.First", t, func() {
+	Convey("db.Get", t, func() {
+		var result mockResult
+
 		Convey("returns the first record", func() {
-			query := &mockQuery{2}
-			output, err := First(ctx, query)
-			So(err, ShouldBeNil)
-			So(output.(mockResult), ShouldResemble, mockResult{0})
+			So(Get(ctx, &mockQuery{2}, &result), ShouldBeNil)
+			So(result, ShouldResemble, mockResult{0})
 		})
 
 		Convey("Missing records returns nil", func() {
-			query := &mockQuery{0}
-			output, err := First(ctx, query)
-			So(err, ShouldBeNil)
-			So(output, ShouldBeNil)
+			So(Get(ctx, &mockQuery{0}, &result), ShouldEqual, ErrNoResults)
 		})
 
 		Convey("Properly forwards non-RecordNotFound errors", func() {
 			query := &BrokenQuery{errors.New("Some error")}
-			_, err := First(ctx, query)
-
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldEqual, "Some error")
+			So(Get(ctx, query, &result).Error(), ShouldEqual, "Some error")
 		})
 	})
 }
 
-func ExampleFirst() {
+func ExampleGet() {
 	db := OpenStellarCoreTestDatabase()
 	defer db.Close()
 
@@ -61,13 +109,33 @@ func ExampleFirst() {
 		"gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
 	}
 
-	record, err := First(context.Background(), q)
+	var account CoreAccountRecord
+	err := Get(context.Background(), q, &account)
 
 	if err != nil {
 		panic(err)
 	}
 
-	account := record.(CoreAccountRecord)
-	log.Println(account.Accountid)
+	fmt.Printf("%s", account.Accountid)
+	// Output: gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC
+}
 
+func ExampleSelect() {
+	db := OpenStellarCoreTestDatabase()
+	defer db.Close()
+
+	q := CoreAccountByAddressQuery{
+		SqlQuery{db},
+		"gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
+	}
+
+	var records []CoreAccountRecord
+	err := Select(context.Background(), q, &records)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%d", len(records))
+	// Output: 1
 }

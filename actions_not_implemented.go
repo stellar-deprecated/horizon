@@ -1,12 +1,20 @@
 package horizon
 
 import (
+	"net/http"
+
 	"github.com/stellar/go-horizon/render/problem"
 	"github.com/zenazn/goji/web"
-	"net/http"
 )
 
-func notImplementedAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c, r: r}
-	problem.Render(ah.Context(), w, problem.NotImplemented)
+// NotImplementedAction renders a NotImplemented prblem
+type NotImplementedAction struct {
+	Action
+}
+
+// ServeHTTPC is a method for web.Handler
+func (action NotImplementedAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	problem.Render(action.Ctx, action.W, problem.NotImplemented)
 }

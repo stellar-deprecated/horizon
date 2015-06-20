@@ -10,24 +10,22 @@ type CoreOfferPageByAddressQuery struct {
 	Address string
 }
 
-func (q CoreOfferPageByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
+func (q CoreOfferPageByAddressQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := CoreOfferRecordSelect.
 		Where("co.accountid = ?", q.Address).
 		Limit(uint64(q.Limit))
 
-	switch q.Order {
-	case "asc":
-		sql = sql.Where("co.offerid > ?", q.Cursor).OrderBy("co.offerid asc")
-	case "desc":
-		sql = sql.Where("co.offerid < ?", q.Cursor).OrderBy("co.offerid desc")
+	cursor, err := q.CursorInt64()
+	if err != nil {
+		return err
 	}
 
-	var records []CoreOfferRecord
-	err := q.SqlQuery.Select(ctx, sql, &records)
-	return makeResult(records), err
+	switch q.Order {
+	case "asc":
+		sql = sql.Where("co.offerid > ?", cursor).OrderBy("co.offerid asc")
+	case "desc":
+		sql = sql.Where("co.offerid < ?", cursor).OrderBy("co.offerid desc")
+	}
 
-}
-
-func (q CoreOfferPageByAddressQuery) IsComplete(ctx context.Context, alreadyDelivered int) bool {
-	return alreadyDelivered >= int(q.Limit)
+	return q.SqlQuery.Select(ctx, sql, dest)
 }

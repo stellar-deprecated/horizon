@@ -12,8 +12,6 @@ func initMetrics(app *App) {
 }
 
 func initDbMetrics(app *App) {
-	app.metrics.Register("db.active_query_count", db.QueryGauge())
-	app.metrics.Register("db.active_query_count", db.QueryGauge())
 	app.metrics.Register("history.latest_ledger", db.HorizonLedgerGauge())
 	app.metrics.Register("stellar_core.latest_ledger", db.StellarCoreLedgerGauge())
 }
