@@ -1,8 +1,10 @@
 package db
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 	"testing"
 
 	"golang.org/x/net/context"
@@ -10,6 +12,21 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
 )
+
+var ctx context.Context
+var core *sql.DB
+var history *sql.DB
+
+func TestMain(m *testing.M) {
+	ctx = test.Context()
+	core = OpenStellarCoreTestDatabase()
+	history = OpenTestDatabase()
+	defer core.Close()
+	defer history.Close()
+
+	os.Exit(m.Run())
+
+}
 
 func TestDBOpen(t *testing.T) {
 	Convey("db.Open", t, func() {

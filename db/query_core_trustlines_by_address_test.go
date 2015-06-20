@@ -10,16 +10,13 @@ import (
 
 func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 	test.LoadScenario("non_native_payment")
-	ctx := test.Context()
-	db := OpenStellarCoreTestDatabase()
-	defer db.Close()
 
 	Convey("CoreTrustlinesByAddress", t, func() {
 		withtl := "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ"
 		notl := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
 
 		q := CoreTrustlinesByAddressQuery{
-			SqlQuery{db},
+			SqlQuery{core},
 			withtl,
 		}
 
@@ -36,7 +33,7 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 		So(tl.Alphanumcurrency, ShouldEqual, "USD")
 
 		q = CoreTrustlinesByAddressQuery{
-			SqlQuery{db},
+			SqlQuery{core},
 			notl,
 		}
 

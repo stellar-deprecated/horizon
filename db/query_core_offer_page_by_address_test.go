@@ -9,9 +9,6 @@ import (
 
 func TestCoreOfferPageByAddressQuery(t *testing.T) {
 	test.LoadScenario("trades")
-	ctx := test.Context()
-	db := OpenStellarCoreTestDatabase()
-	defer db.Close()
 
 	Convey("CoreOfferPageByAddressQuery", t, func() {
 
@@ -21,7 +18,7 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return CoreOfferPageByAddressQuery{
-				SqlQuery:  SqlQuery{db},
+				SqlQuery:  SqlQuery{core},
 				PageQuery: pq,
 				Address:   a,
 			}

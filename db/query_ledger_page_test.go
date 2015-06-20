@@ -10,15 +10,12 @@ import (
 
 func TestLedgerPageQuery(t *testing.T) {
 	test.LoadScenario("base")
-	ctx := test.Context()
-	db := OpenTestDatabase()
-	defer db.Close()
 
 	Convey("LedgerPageQuery", t, func() {
 		pq, err := NewPageQuery("", "asc", 3)
 		So(err, ShouldBeNil)
 
-		q := LedgerPageQuery{SqlQuery{db}, pq}
+		q := LedgerPageQuery{SqlQuery{history}, pq}
 
 		ledgers := MustResults(ctx, q)
 		So(len(ledgers), ShouldEqual, 3)

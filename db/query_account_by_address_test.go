@@ -10,11 +10,6 @@ import (
 
 func TestAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("non_native_payment")
-	ctx := test.Context()
-	core := OpenStellarCoreTestDatabase()
-	defer core.Close()
-	history := OpenTestDatabase()
-	defer history.Close()
 
 	Convey("AccountByAddress", t, func() {
 		notreal := "not_real"

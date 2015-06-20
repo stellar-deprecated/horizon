@@ -12,9 +12,6 @@ import (
 
 func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 	test.LoadScenario("order_books")
-	ctx := test.Context()
-	db := OpenStellarCoreTestDatabase()
-	defer db.Close()
 
 	Convey("CoreOfferPageByCurrencyQuery", t, func() {
 
@@ -24,7 +21,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return CoreOfferPageByCurrencyQuery{
-				SqlQuery:  SqlQuery{db},
+				SqlQuery:  SqlQuery{core},
 				PageQuery: pq,
 			}
 		}

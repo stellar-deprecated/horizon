@@ -9,16 +9,11 @@ import (
 
 func TestLedgerStateQuery(t *testing.T) {
 	test.LoadScenario("base")
-	ctx := test.Context()
-	horizon := OpenTestDatabase()
-	defer horizon.Close()
-	core := OpenStellarCoreTestDatabase()
-	defer core.Close()
 
 	Convey("LedgerStateQuery", t, func() {
 
 		q := LedgerStateQuery{
-			SqlQuery{horizon},
+			SqlQuery{history},
 			SqlQuery{core},
 		}
 		record, err := First(ctx, q)

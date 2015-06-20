@@ -10,10 +10,6 @@ import (
 
 func TestTransactionPageQuery(t *testing.T) {
 	test.LoadScenario("base")
-	ctx := test.Context()
-
-	db := OpenTestDatabase()
-	defer db.Close()
 
 	Convey("TransactionPageQuery", t, func() {
 		makeQuery := func(c string, o string, l int32) TransactionPageQuery {
@@ -22,7 +18,7 @@ func TestTransactionPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return TransactionPageQuery{
-				SqlQuery:  SqlQuery{db},
+				SqlQuery:  SqlQuery{history},
 				PageQuery: pq,
 			}
 		}

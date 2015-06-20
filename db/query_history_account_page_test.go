@@ -9,9 +9,6 @@ import (
 
 func TestHistoryPageQuery(t *testing.T) {
 	test.LoadScenario("base")
-	ctx := test.Context()
-	db := OpenTestDatabase()
-	defer db.Close()
 
 	Convey("HistoryAccountPageQuery", t, func() {
 		makeQuery := func(c string, o string, l int32) HistoryAccountPageQuery {
@@ -20,7 +17,7 @@ func TestHistoryPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return HistoryAccountPageQuery{
-				SqlQuery:  SqlQuery{db},
+				SqlQuery:  SqlQuery{history},
 				PageQuery: pq,
 			}
 		}
