@@ -39,6 +39,7 @@ func initWeb(app *App) {
 // initWebMiddleware installs the middleware stack used for go-horizon onto the
 // provided app.
 func initWebMiddleware(app *App) {
+
 	r := app.web.router
 	r.Use(middleware.EnvInit)
 	r.Use(app.Middleware)
@@ -69,32 +70,32 @@ func initWebActions(app *App) {
 	r.Get("/ledgers", &LedgerIndexAction{})
 	r.Get("/ledgers/:id", &LedgerShowAction{})
 	r.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
-	r.Get("/ledgers/:ledger_id/operations", operationIndexAction)
-	r.Get("/ledgers/:ledger_id/payments", paymentsIndexAction)
+	r.Get("/ledgers/:ledger_id/operations", &OperationIndexAction{})
+	r.Get("/ledgers/:ledger_id/payments", &PaymentsIndexAction{})
 	r.Get("/ledgers/:ledger_id/effects", &NotImplementedAction{})
 
 	// account actions
 	r.Get("/accounts", &AccountIndexAction{})
 	r.Get("/accounts/:id", &AccountShowAction{})
 	r.Get("/accounts/:account_id/transactions", transactionIndexAction)
-	r.Get("/accounts/:account_id/operations", operationIndexAction)
-	r.Get("/accounts/:account_id/payments", paymentsIndexAction)
+	r.Get("/accounts/:account_id/operations", &OperationIndexAction{})
+	r.Get("/accounts/:account_id/payments", &PaymentsIndexAction{})
 	r.Get("/accounts/:account_id/effects", &NotImplementedAction{})
 	r.Get("/accounts/:account_id/offers", &OffersByAccountAction{})
 
 	// transaction actions
 	r.Get("/transactions", transactionIndexAction)
 	r.Get("/transactions/:id", transactionShowAction)
-	r.Get("/transactions/:tx_id/operations", operationIndexAction)
-	r.Get("/transactions/:tx_id/payments", paymentsIndexAction)
+	r.Get("/transactions/:tx_id/operations", &OperationIndexAction{})
+	r.Get("/transactions/:tx_id/payments", &PaymentsIndexAction{})
 	r.Get("/transactions/:tx_id/effects", &NotImplementedAction{})
 
 	// operation actions
-	r.Get("/operations", operationIndexAction)
-	r.Get("/operations/:id", operationShowAction)
+	r.Get("/operations", &OperationIndexAction{})
+	r.Get("/operations/:id", &OperationShowAction{})
 	r.Get("/operations/:op_id/effects", &NotImplementedAction{})
 
-	r.Get("/payments", paymentsIndexAction)
+	r.Get("/payments", &PaymentsIndexAction{})
 
 	r.Get("/offers/:id", &NotImplementedAction{})
 
