@@ -72,8 +72,14 @@ func (base *Base) Execute(action interface{}) {
 			if stream.IsDone() {
 				return
 			}
-			//TODO: this needs to plug into the ledger pump
-			<-time.After(1 * time.Second)
+
+			select {
+			case <-base.Ctx.Done():
+				return
+			case <-time.After(1 * time.Second):
+				//TODO: this needs to plug into the ledger pump
+			}
+
 		}
 	default:
 		goto NotAcceptable
