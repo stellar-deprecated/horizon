@@ -65,7 +65,7 @@ func (action *LedgerIndexAction) JSON() {
 	if action.Err != nil {
 		return
 	}
-	hal.Render(action.W, action.Page)
+	hal.RenderPage(action.W, action.Page)
 }
 
 // SSE is a method for actions.SSE
