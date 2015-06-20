@@ -21,7 +21,7 @@
 //      return makeResult(records), err
 //    }
 //
-// Executing queries happens through `db.Results()`, `db.First()`, and
-// `db.Stream()`.
+// Executing queries happens through `db.Results()`, `db.First()`, `db.Select()`
+// and `db.Get()`.
 //
 package db

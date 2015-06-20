@@ -67,11 +67,10 @@ func (a *App) Serve() {
 	})
 
 	if a.config.Autopump {
-		db.AutoPump(a.ctx)
+		// sse.AddPump(sse.AutoPump)
 	}
 
-	// initiate the ledger close pumper
-	db.LedgerClosePump(a.ctx, a.historyDb)
+	// sse.AddPump(db.NewLedgerClosePump(a.ctx, a.historyDb))
 
 	err := graceful.Serve(listener, http.DefaultServeMux)
 

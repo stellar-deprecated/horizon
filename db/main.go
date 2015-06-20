@@ -8,7 +8,6 @@ import (
 	"golang.org/x/net/context"
 
 	_ "github.com/lib/pq" // allow postgres sql connections
-	"github.com/rcrowley/go-metrics"
 )
 
 var ErrDestinationNotPointer = errors.New("dest is not a pointer")
@@ -177,10 +176,6 @@ func MustResults(ctx context.Context, q Query) []interface{} {
 	}
 
 	return result
-}
-
-func QueryGauge() metrics.Gauge {
-	return globalStreamManager.queryGauge
 }
 
 // helper method suited to confirm query validity.  checkOptions ensures
