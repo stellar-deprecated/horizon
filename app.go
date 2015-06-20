@@ -10,6 +10,7 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/log"
+	"github.com/stellar/go-horizon/render/sse"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
 	"golang.org/x/net/context"
@@ -67,10 +68,10 @@ func (a *App) Serve() {
 	})
 
 	if a.config.Autopump {
-		// sse.AddPump(sse.AutoPump)
+		sse.SetPump(a.ctx, sse.AutoPump)
+	} else {
+		sse.SetPump(a.ctx, db.NewLedgerClosePump(a.ctx, a.historyDb))
 	}
-
-	// sse.AddPump(db.NewLedgerClosePump(a.ctx, a.historyDb))
 
 	err := graceful.Serve(listener, http.DefaultServeMux)
 

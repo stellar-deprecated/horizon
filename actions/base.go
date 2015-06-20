@@ -2,7 +2,6 @@ package actions
 
 import (
 	"net/http"
-	"time"
 
 	gctx "github.com/goji/context"
 
@@ -76,8 +75,8 @@ func (base *Base) Execute(action interface{}) {
 			select {
 			case <-base.Ctx.Done():
 				return
-			case <-time.After(1 * time.Second):
-				//TODO: this needs to plug into the ledger pump
+			case <-sse.Pumped():
+				//no-op, continue onto the next iteration
 			}
 
 		}
