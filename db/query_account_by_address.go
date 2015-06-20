@@ -19,10 +19,16 @@ func (q AccountByAddressQuery) Get(ctx context.Context) ([]interface{}, error) {
 	ctlq := CoreTrustlinesByAddressQuery{q.Core, q.Address}
 
 	if err := Get(ctx, haq, &result.HistoryAccountRecord); err != nil {
+		if err == ErrNoResults {
+			err = nil
+		}
 		return nil, err
 	}
 
 	if err := Get(ctx, caq, &result.CoreAccountRecord); err != nil {
+		if err == ErrNoResults {
+			err = nil
+		}
 		return nil, err
 	}
 	if err := Select(ctx, ctlq, &result.Trustlines); err != nil {
