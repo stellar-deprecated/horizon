@@ -71,7 +71,7 @@ func initWebActions(app *App) {
 	r.Get("/ledgers/:ledger_id/transactions", transactionIndexAction)
 	r.Get("/ledgers/:ledger_id/operations", operationIndexAction)
 	r.Get("/ledgers/:ledger_id/payments", paymentsIndexAction)
-	r.Get("/ledgers/:ledger_id/effects", notImplementedAction)
+	r.Get("/ledgers/:ledger_id/effects", &NotImplementedAction{})
 
 	// account actions
 	r.Get("/accounts", &AccountIndexAction{})
@@ -79,7 +79,7 @@ func initWebActions(app *App) {
 	r.Get("/accounts/:account_id/transactions", transactionIndexAction)
 	r.Get("/accounts/:account_id/operations", operationIndexAction)
 	r.Get("/accounts/:account_id/payments", paymentsIndexAction)
-	r.Get("/accounts/:account_id/effects", notImplementedAction)
+	r.Get("/accounts/:account_id/effects", &NotImplementedAction{})
 	r.Get("/accounts/:account_id/offers", offerIndexAction)
 
 	// transaction actions
@@ -87,16 +87,16 @@ func initWebActions(app *App) {
 	r.Get("/transactions/:id", transactionShowAction)
 	r.Get("/transactions/:tx_id/operations", operationIndexAction)
 	r.Get("/transactions/:tx_id/payments", paymentsIndexAction)
-	r.Get("/transactions/:tx_id/effects", notImplementedAction)
+	r.Get("/transactions/:tx_id/effects", &NotImplementedAction{})
 
 	// operation actions
 	r.Get("/operations", operationIndexAction)
 	r.Get("/operations/:id", operationShowAction)
-	r.Get("/operations/:op_id/effects", notImplementedAction)
+	r.Get("/operations/:op_id/effects", &NotImplementedAction{})
 
 	r.Get("/payments", paymentsIndexAction)
 
-	r.Get("/offers/:id", notImplementedAction)
+	r.Get("/offers/:id", &NotImplementedAction{})
 
 	// go-horizon doesn't implement everything horizon did,
 	// so we reverse proxy if we can
@@ -112,12 +112,12 @@ func initWebActions(app *App) {
 		r.Post("/friendbot", rp)
 		r.Get("/friendbot", rp)
 	} else {
-		r.Post("/transactions", notImplementedAction)
-		r.Post("/friendbot", notImplementedAction)
-		r.Get("/friendbot", notImplementedAction)
+		r.Post("/transactions", &NotImplementedAction{})
+		r.Post("/friendbot", &NotImplementedAction{})
+		r.Get("/friendbot", &NotImplementedAction{})
 	}
 
-	r.NotFound(notFoundAction)
+	r.NotFound(&NotFoundAction{})
 }
 
 func initWebRateLimiter(app *App) {
