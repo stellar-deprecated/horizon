@@ -63,7 +63,7 @@ func initWebMiddleware(app *App) {
 func initWebActions(app *App) {
 	r := app.web.router
 	r.Get("/", rootAction)
-	r.Get("/metrics", metricsAction)
+	r.Get("/metrics", &MetricsAction{})
 
 	// ledger actions
 	r.Get("/ledgers", &LedgerIndexAction{})
