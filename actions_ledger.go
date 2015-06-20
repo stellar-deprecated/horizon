@@ -4,82 +4,102 @@ import (
 	"net/http"
 
 	"github.com/stellar/go-horizon/db"
-	"github.com/stellar/go-horizon/render"
 	"github.com/stellar/go-horizon/render/hal"
-	"github.com/stellar/go-horizon/render/problem"
 	"github.com/stellar/go-horizon/render/sse"
 	"github.com/zenazn/goji/web"
 )
 
-func ledgerIndexAction(c web.C, w http.ResponseWriter, r *http.Request) {
-	ah := &ActionHelper{c: c, r: r}
-	ctx := ah.Context()
+// LedgerIndexAction renders a page of ledger resources, identified by
+// a normal page query.
+type LedgerIndexAction struct {
+	Action
+	Query   db.LedgerPageQuery
+	Records []db.LedgerRecord
+	Page    hal.Page
+}
 
-	// construct query
-	ah.ValidateInt64(ParamCursor)
-	query := db.LedgerPageQuery{
-		SqlQuery:  ah.App().HistoryQuery(),
-		PageQuery: ah.GetPageQuery(),
+// ServeHTTPC is a method for web.Handler
+func (action LedgerIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	ap.Execute(&action)
+}
+
+// LoadQuery sets action.Query from the request params
+func (action *LedgerIndexAction) LoadQuery() {
+	action.ValidateInt64(ParamCursor)
+	action.Query = db.LedgerPageQuery{
+		SqlQuery:  action.App.HistoryQuery(),
+		PageQuery: action.GetPageQuery(),
 	}
+}
 
-	if ah.Err() != nil {
-		problem.Render(ctx, w, ah.Err())
+// LoadRecords populates action.Records
+func (action *LedgerIndexAction) LoadRecords() {
+	action.LoadQuery()
+	if action.Err != nil {
 		return
 	}
 
-	var records []db.LedgerRecord
-
-	render := render.Renderer{}
-	render.JSON = func() {
-		// load records
-		err := db.Select(ctx, query, &records)
-		if err != nil {
-			problem.Render(ctx, w, err)
-		}
-
-		page, err := NewLedgerResourcePage(records, query.PageQuery)
-		if err != nil {
-			problem.Render(ctx, w, err)
-		}
-
-		hal.RenderPage(w, page)
-	}
-
-	render.SSE = func(stream sse.Stream) {
-		err := db.Select(ctx, query, &records)
-		if err != nil {
-			stream.Err(err)
-			return
-		}
-
-		records = records[stream.SentCount():]
-
-		for _, record := range records {
-			stream.Send(sse.Event{
-				ID:   record.PagingToken(),
-				Data: NewLedgerResource(record),
-			})
-		}
-
-		if stream.SentCount() >= int(query.Limit) {
-			stream.Done()
-		}
-	}
-
-	render.Render(ctx, w, r)
+	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
 }
 
+// LoadPage populates action.Page
+func (action *LedgerIndexAction) LoadPage() {
+	action.LoadRecords()
+	if action.Err != nil {
+		return
+	}
+
+	action.Page, action.Err = NewLedgerResourcePage(action.Records, action.Query.PageQuery)
+}
+
+// JSON is a method for actions.JSON
+func (action *LedgerIndexAction) JSON() {
+	action.LoadPage()
+	if action.Err != nil {
+		return
+	}
+	hal.Render(action.W, action.Page)
+}
+
+// SSE is a method for actions.SSE
+func (action *LedgerIndexAction) SSE(stream sse.Stream) {
+	action.LoadRecords()
+
+	if action.Err != nil {
+		stream.Err(action.Err)
+		return
+	}
+
+	records := action.Records[stream.SentCount():]
+
+	for _, record := range records {
+		stream.Send(sse.Event{
+			ID:   record.PagingToken(),
+			Data: NewLedgerResource(record),
+		})
+	}
+
+	if stream.SentCount() >= int(action.Query.Limit) {
+		stream.Done()
+	}
+}
+
+// LedgerShowAction renders a ledger found by it's sequence number.
 type LedgerShowAction struct {
 	Action
 	Record db.LedgerRecord
 }
 
+// ServeHTTPC is a method for web.Handler
 func (action LedgerShowAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
 	ap := &action.Action
 	ap.Prepare(c, w, r)
 	ap.Execute(&action)
 }
 
+// Query returns a database query to find a ledger by sequence
 func (action *LedgerShowAction) Query() db.LedgerBySequenceQuery {
 	return db.LedgerBySequenceQuery{
 		SqlQuery: action.App.HistoryQuery(),
@@ -87,6 +107,7 @@ func (action *LedgerShowAction) Query() db.LedgerBySequenceQuery {
 	}
 }
 
+// JSON is a method for actions.JSON
 func (action *LedgerShowAction) JSON() {
 	query := action.Query()
 
