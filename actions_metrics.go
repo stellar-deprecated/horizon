@@ -13,9 +13,9 @@ import (
 // MetricsAction collects and renders a snapshot from the metrics system that
 // will inlude any previously registered metrics.
 type MetricsAction struct {
-	Action `json:"-"`
+	Action
 	halgo.Links
-	Snapshot map[string]interface{} `json:",inline"`
+	Snapshot map[string]interface{}
 }
 
 // ServeHTTPC is a method for web.Handler
@@ -29,7 +29,11 @@ func (action MetricsAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.R
 func (action *MetricsAction) JSON() {
 	db.UpdateLedgerState(action.Ctx, action.App.HistoryQuery(), action.App.CoreQuery())
 	action.LoadSnapshot()
-	hal.Render(action.W, action)
+	action.Snapshot["_links"] = map[string]interface{}{
+		"self": halgo.Link{Href: "/metrics"},
+	}
+
+	hal.Render(action.W, action.Snapshot)
 }
 
 // LoadSnapshot populates action.Snapshot
