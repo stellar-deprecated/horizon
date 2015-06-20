@@ -131,12 +131,13 @@ func TestOperationPageQuery(t *testing.T) {
 		})
 
 		Convey("obeys the type filter", func() {
+			test.LoadScenario("pathed_payment")
 
 			q := makeQuery("", "asc", 0)
 			q.TypeFilter = PaymentTypeFilter
 			records := MustResults(ctx, q)
 
-			So(len(records), ShouldEqual, 1)
+			So(len(records), ShouldEqual, 10)
 
 		})
 	})

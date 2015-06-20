@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/go-stellar-base/xdr"
 	"golang.org/x/net/context"
 )
 
@@ -12,6 +13,14 @@ const (
 	// Payment and PathPayment operations
 	PaymentTypeFilter = "payment"
 )
+
+var operationFilterMap = map[string][]xdr.OperationType{
+	PaymentTypeFilter: []xdr.OperationType{
+		xdr.OperationTypeCreateAccount,
+		xdr.OperationTypePayment,
+		xdr.OperationTypePathPayment,
+	},
+}
 
 // OperationPageQuery is the main query for paging through a collection
 // of operations in the history database.
@@ -98,9 +107,8 @@ func (q OperationPageQuery) Get(ctx context.Context) ([]interface{}, error) {
 			Where("hopp.history_account_id = ?", account.Id)
 	}
 
-	if q.TypeFilter == PaymentTypeFilter {
-		// TODO: pull constants from go-stellar-base when it exists
-		sql = sql.Where("hop.type IN (1,2)")
+	if types, ok := operationFilterMap[q.TypeFilter]; ok {
+		sql = sql.Where(sq.Eq{"hop.type": types})
 	}
 
 	var records []OperationRecord
