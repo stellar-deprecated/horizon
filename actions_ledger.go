@@ -1,13 +1,10 @@
 package horizon
 
 import (
-	"net/http"
-
 	"github.com/stellar/go-horizon/actions"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/sse"
-	"github.com/zenazn/goji/web"
 )
 
 // This file contains the actions:
@@ -22,13 +19,6 @@ type LedgerIndexAction struct {
 	Query   db.LedgerPageQuery
 	Records []db.LedgerRecord
 	Page    hal.Page
-}
-
-// ServeHTTPC is a method for web.Handler
-func (action LedgerIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
-	ap := &action.Action
-	ap.Prepare(c, w, r)
-	ap.Execute(&action)
 }
 
 // LoadQuery sets action.Query from the request params
@@ -96,13 +86,6 @@ func (action *LedgerIndexAction) SSE(stream sse.Stream) {
 type LedgerShowAction struct {
 	Action
 	Record db.LedgerRecord
-}
-
-// ServeHTTPC is a method for web.Handler
-func (action LedgerShowAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
-	ap := &action.Action
-	ap.Prepare(c, w, r)
-	ap.Execute(&action)
 }
 
 // Query returns a database query to find a ledger by sequence

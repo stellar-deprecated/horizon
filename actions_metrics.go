@@ -1,13 +1,10 @@
 package horizon
 
 import (
-	"net/http"
-
 	"github.com/jagregory/halgo"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
-	"github.com/zenazn/goji/web"
 )
 
 // MetricsAction collects and renders a snapshot from the metrics system that
@@ -16,13 +13,6 @@ type MetricsAction struct {
 	Action
 	halgo.Links
 	Snapshot map[string]interface{}
-}
-
-// ServeHTTPC is a method for web.Handler
-func (action MetricsAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
-	ap := &action.Action
-	ap.Prepare(c, w, r)
-	ap.Execute(&action)
 }
 
 // JSON is a method for actions.JSON

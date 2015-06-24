@@ -2,12 +2,10 @@ package horizon
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/sse"
-	"github.com/zenazn/goji/web"
 )
 
 // This file contains the actions:
@@ -22,13 +20,6 @@ type OffersByAccountAction struct {
 	Query   db.CoreOfferPageByAddressQuery
 	Records []db.CoreOfferRecord
 	Page    hal.Page
-}
-
-// ServeHTTPC is a method for web.Handler
-func (action OffersByAccountAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
-	ap := &action.Action
-	ap.Prepare(c, w, r)
-	ap.Execute(&action)
 }
 
 // LoadQuery sets action.Query from the request params
