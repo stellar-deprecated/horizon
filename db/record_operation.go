@@ -4,7 +4,6 @@ import (
     
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 )
