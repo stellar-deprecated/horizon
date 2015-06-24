@@ -11,12 +11,13 @@ ecosystem](https://www.stellar.org/galaxy/getting-started/) for more details.
 
 ## Installing Dependencies
 
-After cloning go-horizon into `$GOPATH/src/github.com/stellar/go-horizon`, cd
-into that directory and run `go get -t ./...`
+Horizon uses [gb](getgb.io) to manage go dependencies, which are bundled into
+the `vendor` directory.
 
-## Building and installing
+## Building
 
-After installing dependencies, run `go install ./...`
+From within the project directory, simply run `gb build`.  After successful
+completion, you should find `bin/horizon` is present in the project directory.
 
 ## Regenerating generated code
 
@@ -27,13 +28,6 @@ run `go generate`.
 
 ## Running Tests
 
-go-horizon uses [GoConvey](https://github.com/smartystreets/goconvey) for
-testing.  If you are going to use the `goconvey` tool for running your tests,
-you must ensure that package-based parallelism is turned off.  By default,
-GoConvey will run several packages test suites in parallel, but since
-go-horizon's constituent packages all write to a common database problems can
-arise.  
-
 first, create two local Postgres databases, and start a redis server on port
 `6379`
 
@@ -43,10 +37,8 @@ psql -c 'create database "stellar-core_test";'
 redis-server
 ```
 
-then, launch `goconvey` like so:
+then, run the tests like so:
 
 ```bash
-goconvey -packages=1
+bash script/run_tests.bash
 ```
-
-You can see test results at `http://localhost:8080/`
