@@ -1,13 +1,10 @@
 package horizon
 
 import (
-	"net/http"
-
 	"github.com/stellar/go-horizon/actions"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/sse"
-	"github.com/zenazn/goji/web"
 )
 
 type PaymentsIndexAction struct {
@@ -15,13 +12,6 @@ type PaymentsIndexAction struct {
 	Query   db.OperationPageQuery
 	Records []db.OperationRecord
 	Page    hal.Page
-}
-
-// ServeHTTPC is a method for web.Handler
-func (action PaymentsIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
-	ap := &action.Action
-	ap.Prepare(c, w, r)
-	ap.Execute(&action)
 }
 
 // LoadQuery sets action.Query from the request params

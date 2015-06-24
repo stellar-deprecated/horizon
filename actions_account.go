@@ -1,13 +1,10 @@
 package horizon
 
 import (
-	"net/http"
-
 	"github.com/stellar/go-horizon/actions"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 	"github.com/stellar/go-horizon/render/sse"
-	"github.com/zenazn/goji/web"
 )
 
 // This file contains the actions:
@@ -22,13 +19,6 @@ type AccountIndexAction struct {
 	Query   db.HistoryAccountPageQuery
 	Records []db.HistoryAccountRecord
 	Page    hal.Page
-}
-
-// ServeHTTPC is a method for web.Handler
-func (action AccountIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
-	ap := &action.Action
-	ap.Prepare(c, w, r)
-	ap.Execute(&action)
 }
 
 // LoadQuery sets action.Query from the request params
@@ -94,13 +84,6 @@ type AccountShowAction struct {
 	Action
 	Query  db.AccountByAddressQuery
 	Record db.AccountRecord
-}
-
-// ServeHTTPC is a method for web.Handler
-func (action AccountShowAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
-	ap := &action.Action
-	ap.Prepare(c, w, r)
-	ap.Execute(&action)
 }
 
 // LoadQuery sets action.Query from the request params
