@@ -3,11 +3,13 @@ go:
 - '1.3'
 - '1.4'
 - tip
+install:
+  - go get github.com/constabulary/gb/...
 before_script:
 - psql -c 'create database "horizon_test";' -U postgres
 - psql -c 'create database "stellar-core_test";' -U postgres
 script:
-- go test -p 1 -v ./...
+- bash scripts/run_tests.bash
 env:
   global:
   - DATABASE_URL=postgres://localhost:5432/horizon_test?sslmode=disable&user=postgres

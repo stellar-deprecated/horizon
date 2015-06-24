@@ -1,3 +1,5 @@
 .DS_Store
 docs/public
-tmp/
+/tmp/
+/pkg
+/bin
