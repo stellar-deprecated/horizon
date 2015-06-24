@@ -2,17 +2,19 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	sq "github.com/lann/squirrel"
 	"time"
 )
 
+
 var LedgerRecordSelect sq.SelectBuilder = sq.
 	Select("hl.*").
 	From("history_ledgers hl")
+    
+
 
 type LedgerRecord struct {
-	Id                 int64          `db:"id"`
+    HistoryRecord
 	Sequence           int32          `db:"sequence"`
 	LedgerHash         string         `db:"ledger_hash"`
 	PreviousLedgerHash sql.NullString `db:"previous_ledger_hash"`
@@ -23,6 +25,4 @@ type LedgerRecord struct {
 	UpdatedAt          time.Time      `db:"updated_at"`
 }
 
-func (r LedgerRecord) PagingToken() string {
-	return fmt.Sprintf("%d", r.Id)
-}
+
