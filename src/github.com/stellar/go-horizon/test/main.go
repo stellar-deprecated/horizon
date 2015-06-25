@@ -15,7 +15,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-//go:generate go get github.com/jteeuwen/go-bindata/...
+//go:generate gb build github.com/jteeuwen/go-bindata/go-bindata
 //go:generate go-bindata -pkg test scenarios
 
 const (

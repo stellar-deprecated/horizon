@@ -249,6 +249,19 @@
 			"repository": "https://github.com/smartystreets/assertions",
 			"revision": "22fd8e1982688f4ff04e8e9ec6feae2c2459460d",
 			"branch": "master"
+		},
+		{
+			"importpath": "github.com/jteeuwen/go-bindata",
+			"repository": "https://github.com/jteeuwen/go-bindata",
+			"revision": "91db54b0401d0679b3cf743142e4f3c86b4aaa4e",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/jteeuwen/go-bindata/go-bindata",
+			"repository": "https://github.com/jteeuwen/go-bindata",
+			"revision": "91db54b0401d0679b3cf743142e4f3c86b4aaa4e",
+			"branch": "master",
+			"path": "/go-bindata"
 		}
 	]
 }
