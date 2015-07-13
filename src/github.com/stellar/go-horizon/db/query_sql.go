@@ -22,7 +22,8 @@ func (q SqlQuery) Select(ctx context.Context, sql sq.SelectBuilder, dest interfa
 		return err
 	}
 
-	log.WithField(ctx, "sql", query).Info("Executing query")
+	log.WithField(ctx, "sql", query).Info("query sql")
+	log.WithField(ctx, "args", args).Debug("query args")
 
 	return db.Select(dest, query, args...)
 }
@@ -35,5 +36,9 @@ func (q SqlQuery) Get(ctx context.Context, sql sq.SelectBuilder, dest interface{
 	if err != nil {
 		return err
 	}
+
+	log.WithField(ctx, "sql", query).Info("query sql")
+	log.WithField(ctx, "args", args).Debug("query args")
+
 	return db.Get(dest, query, args...)
 }
