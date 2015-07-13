@@ -262,6 +262,12 @@
 			"revision": "91db54b0401d0679b3cf743142e4f3c86b4aaa4e",
 			"branch": "master",
 			"path": "/go-bindata"
+		},
+		{
+			"importpath": "github.com/nullstyle/go-codegen",
+			"repository": "https://github.com/nullstyle/go-codegen",
+			"revision": "97a55a0a5d715d65c940bd07b8b719c082db26d6",
+			"branch": "master"
 		}
 	]
 }

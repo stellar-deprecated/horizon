@@ -3,3 +3,5 @@ docs/public
 /tmp/
 /pkg
 /bin
+
+*.bts
