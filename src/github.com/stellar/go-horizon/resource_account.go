@@ -43,7 +43,7 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 		balances[i] = BalanceResource{
 			Type:    "alphanum",
 			Balance: tl.Balance,
-			Code:    tl.Alphanumcurrency,
+			Code:    tl.AssetType,
 			Issuer:  tl.Issuer,
 			Limit:   tl.Tlimit,
 		}
