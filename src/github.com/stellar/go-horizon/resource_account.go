@@ -20,11 +20,11 @@ type AccountResource struct {
 
 // BalanceResource represents an accounts holdings for a single currency type
 type BalanceResource struct {
-	Type    string `json:"currency_type"`
+	Type    string `json:"asset_type"`
 	Balance int64  `json:"balance"`
 	// additional trustline data
-	Code   string `json:"currency_code,omitempty"`
-	Issuer string `json:"currency_issuer,omitempty"`
+	Code   string `json:"asset_code,omitempty"`
+	Issuer string `json:"asset_issuer,omitempty"`
 	Limit  int64  `json:"limit,omitempty"`
 }
 
@@ -41,9 +41,9 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 
 	for i, tl := range ac.Trustlines {
 		balances[i] = BalanceResource{
-			Type:    "alphanum",
+			Type:    tl.AssetType,
 			Balance: tl.Balance,
-			Code:    tl.AssetType,
+			Code:    tl.AssetCode,
 			Issuer:  tl.Issuer,
 			Limit:   tl.Tlimit,
 		}

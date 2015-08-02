@@ -7,6 +7,7 @@ import (
 var CoreTrustlineRecordSelect sq.SelectBuilder = sq.Select(
 	"tl.accountid",
 	"tl.issuer",
+	"tl.assetcode",
 	"tl.assettype",
 	"tl.tlimit",
 	"tl.balance",
@@ -17,6 +18,7 @@ var CoreTrustlineRecordSelect sq.SelectBuilder = sq.Select(
 type CoreTrustlineRecord struct {
 	Accountid        string
 	Issuer           string
+	AssetCode        string
 	AssetType        string
 	Tlimit           int64
 	Balance          int64
