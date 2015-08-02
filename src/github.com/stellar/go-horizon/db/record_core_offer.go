@@ -13,12 +13,14 @@ var CoreOfferRecordSelect = sq.Select("co.*").From("offers co")
 
 // CoreOfferRecord is row of data from the `offers` table from stellar-core
 type CoreOfferRecord struct {
-	Accountid            string         `db:"accountid"`
+	Accountid            string         `db:"sellerid"`
 	Offerid              int64          `db:"offerid"`
-	Paysalphanumcurrency sql.NullString `db:"paysalphanumcurrency"`
-	Paysissuer           sql.NullString `db:"paysissuer"`
-	Getsalphanumcurrency sql.NullString `db:"getsalphanumcurrency"`
-	Getsissuer           sql.NullString `db:"getsissuer"`
+	SellingAssetType     sql.NullString `db:"sellingassettype"`
+	SellingAssetCode     sql.NullString `db:"sellingassetcode"`
+	SellingIssuer        sql.NullString `db:"sellingissuer"`
+	BuyingAssetType      sql.NullString `db:"buyingassettype"`
+	BuyingAssetCode      sql.NullString `db:"buyingassetcode"`
+	BuyingIssuer         sql.NullString `db:"buyingissuer"`
 	Amount               int64          `db:"amount"`
 	Pricen               int32          `db:"pricen"`
 	Priced               int32          `db:"priced"`

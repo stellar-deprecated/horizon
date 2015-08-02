@@ -40,8 +40,8 @@ type PriceResource struct {
 func NewOfferResource(op db.CoreOfferRecord) OfferResource {
 	self := fmt.Sprintf("/offers/%d", op.Offerid)
 
-	takerPays := NewOfferCurrencyResource(op.Paysalphanumcurrency, op.Paysissuer)
-	takerGets := NewOfferCurrencyResource(op.Getsalphanumcurrency, op.Getsissuer)
+	takerPays := NewOfferCurrencyResource(op.SellingAssetType, op.SellingIssuer)
+	takerGets := NewOfferCurrencyResource(op.BuyingAssetCode, op.BuyingIssuer)
 
 	return OfferResource{
 		Links: halgo.Links{}.
