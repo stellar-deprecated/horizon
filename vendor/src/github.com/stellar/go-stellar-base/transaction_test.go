@@ -2,9 +2,8 @@ package stellarbase
 
 import (
 	"bytes"
-	"encoding/hex"
+	"encoding/base64"
 	"fmt"
-	"log"
 
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -14,38 +13,60 @@ import (
 //
 // It uses the low-level xdr facilities to create the transaction.
 func ExampleLowLevelTransaction() {
-	spub, spriv, err := GenerateKeyFromSeed("s3Fy8h5LEcYVE8aofthKWHeJpygbntw5HgcekFw93K6XqTW4gEx")
+	spub, spriv, err := GenerateKeyFromSeed("SA26PHIKZM6CXDGR472SSGUQQRYXM6S437ZNHZGRM6QA4FOPLLLFRGDX")
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	dpub, _, err := GenerateKeyFromSeed("sfkPCKA6XgaeHZH3NE57i3QrjVcw61c1noWQCgnHa6KJP2BrbXD")
+	dpub, _, err := GenerateKeyFromSeed("SBQHO2IMYKXAYJFCWGXC7YKLJD2EGDPSK3IUDHVJ6OOTTKLSCK6Z6POM")
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
+	}
+
+	asset, err := xdr.NewAsset(xdr.AssetTypeAssetTypeNative, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	destination, err := AddressToAccountId(dpub.Address())
+	if err != nil {
+		panic(err)
 	}
 
 	op := xdr.PaymentOp{
-		Destination: dpub.KeyData(),
-		Currency:    xdr.NewCurrencyCurrencyTypeNative(),
+		Destination: destination,
+		Asset:       asset,
 		Amount:      50 * 10000000,
 	}
 
+	memo, err := xdr.NewMemo(xdr.MemoTypeMemoNone, nil)
+
+	source, err := AddressToAccountId(spub.Address())
+	if err != nil {
+		panic(err)
+	}
+
+	body, err := xdr.NewOperationBody(xdr.OperationTypePayment, op)
+	if err != nil {
+		panic(err)
+	}
+
 	tx := xdr.Transaction{
-		SourceAccount: spub.KeyData(),
+		SourceAccount: source,
 		Fee:           10,
 		SeqNum:        xdr.SequenceNumber(1),
-		Memo:          xdr.NewMemoMemoNone(),
+		Memo:          memo,
 		Operations: []xdr.Operation{
-			{Body: xdr.NewOperationBodyPayment(op)},
+			{Body: body},
 		},
 	}
 
 	var txBytes bytes.Buffer
 	_, err = xdr.Marshal(&txBytes, tx)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	txHash := Hash(txBytes.Bytes())
@@ -53,7 +74,7 @@ func ExampleLowLevelTransaction() {
 
 	ds := xdr.DecoratedSignature{
 		Hint:      spriv.Hint(),
-		Signature: xdr.Uint512(signature),
+		Signature: xdr.Signature(signature[:]),
 	}
 
 	txe := xdr.TransactionEnvelope{
@@ -64,11 +85,10 @@ func ExampleLowLevelTransaction() {
 	var txeBytes bytes.Buffer
 	_, err = xdr.Marshal(&txeBytes, txe)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
+	txeB64 := base64.StdEncoding.EncodeToString(txeBytes.Bytes())
 
-	txeHex := hex.EncodeToString(txeBytes.Bytes())
-
-	fmt.Printf("tx hex: %s", txeHex)
-	// Output: tx hex: 3658fe7598d20c7a6de3297f84bc52bd2a1ec8c0f1f6c5b41cc1c7571b4331f00000000a000000000000000100000000000000000000000100000000000000012d24692ed08bbf679ba199448870d2191e876fecd92fdd9f6d274da4e6de134100000000000000001dcd650000000001dd302d0c0cee527cf02f6a0aec6916966298712914c63e3c57de74a6e27c29ea234a555fcc36533417afe4e1147815a42529fbca3429bc7caf0a06dc6b383ca6e9d4d80f
+	fmt.Printf("tx base64: %s", txeB64)
+	// Output: tx base64: AAAAAAU08yUQ8sHqhY8j9mXWwERfHC/3cKFSe/spAr0rGtO2AAAACgAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAA+fnTe7/v4whpBUx96oj92jfZPz7S00l3O2xeyeqWIA0AAAAAAAAAAB3NZQAAAAAAAAAAATXnnQoAAABAieruUIGcQH6RlQ+prYflPFU3nED2NvWhtaC+tgnKsqgiKURK4xo/W7EgH0+I6aQok52awbE+ksOxEQ5MLJ9eAw==
 }

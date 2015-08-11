@@ -2,10 +2,61 @@
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
-%#include "generated/Stellar-types.h"
+%#include "xdr/Stellar-types.h"
 
 namespace stellar
 {
+
+typedef PublicKey AccountID;
+typedef opaque Thresholds[4];
+typedef string string32<32>;
+typedef uint64 SequenceNumber;
+
+enum AssetType
+{
+    ASSET_TYPE_NATIVE = 0,
+    ASSET_TYPE_CREDIT_ALPHANUM4 = 1,
+    ASSET_TYPE_CREDIT_ALPHANUM12 = 2
+};
+
+union Asset switch (AssetType type)
+{
+case ASSET_TYPE_NATIVE: // Not credit
+    void;
+
+case ASSET_TYPE_CREDIT_ALPHANUM4:
+    struct
+    {
+        opaque assetCode[4];
+        AccountID issuer;
+    } alphaNum4;
+
+case ASSET_TYPE_CREDIT_ALPHANUM12:
+    struct
+    {
+        opaque assetCode[12];
+        AccountID issuer;
+    } alphaNum12;
+
+    // add other asset types here in the future
+};
+
+// price in fractional representation
+struct Price
+{
+    int32 n; // numerator
+    int32 d; // denominator
+};
+
+// the 'Thresholds' type is packed uint8_t values
+// defined by these indexes
+enum ThresholdIndexes
+{
+    THRESHOLD_MASTER_WEIGHT = 0,
+    THRESHOLD_LOW = 1,
+    THRESHOLD_MED = 2,
+    THRESHOLD_HIGH = 3
+};
 
 enum LedgerEntryType
 {
@@ -16,7 +67,7 @@ enum LedgerEntryType
 
 struct Signer
 {
-    uint256 pubKey;
+    AccountID pubKey;
     uint32 weight; // really only need 1byte
 };
 
@@ -26,7 +77,7 @@ enum AccountFlags
     // if set, TrustLines are created with authorized set to "false"
     // requiring the issuer to set it for each TrustLine
     AUTH_REQUIRED_FLAG = 0x1,
-    // if set, the authorized flag in TrustTines can be cleared
+    // if set, the authorized flag in TrustLines can be cleared
     // otherwise, authorization cannot be revoked
     AUTH_REVOCABLE_FLAG = 0x2
 };
@@ -50,18 +101,26 @@ struct AccountEntry
     AccountID* inflationDest; // Account to vote during inflation
     uint32 flags;             // see AccountFlags
 
+    string32 homeDomain; // can be used for reverse federation and memo lookup
+
     // fields used for signatures
     // thresholds stores unsigned bytes: [weight of master|low|medium|high]
     Thresholds thresholds;
 
-    string32 homeDomain; // can be used for reverse federation and memo lookup
-
     Signer signers<20>; // possible signers for this account
+
+    // reserved for future use
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
 };
 
 /* TrustLineEntry
     A trust line represents a specific trust relationship with
-    a currency/issuer (limit, authorization)
+    a credit/issuer (limit, authorization)
     as well as the balance.
 */
 
@@ -74,14 +133,21 @@ enum TrustLineFlags
 struct TrustLineEntry
 {
     AccountID accountID; // account this trustline belongs to
-    Currency currency;   // currency (with issuer)
-    int64 balance;       // how much of this currency the user has.
-                         // Currency defines the unit for this;
+    Asset asset;   // type of asset (with issuer)
+    int64 balance;       // how much of this asset the user has.
+                         // Asset defines the unit for this;
 
     int64 limit;  // balance cannot be above this
     uint32 flags; // see TrustLineFlags
-};
 
+    // reserved for future use
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
+};
 
 enum OfferEntryFlags
 {
@@ -98,10 +164,10 @@ enum OfferEntryFlags
 */
 struct OfferEntry
 {
-    AccountID accountID;
+    AccountID sellerID;
     uint64 offerID;
-    Currency takerGets; // A
-    Currency takerPays; // B
+    Asset selling; // A
+    Asset buying; // B
     int64 amount;       // amount of A
 
     /* price for this offer:
@@ -111,17 +177,33 @@ struct OfferEntry
     */
     Price price;
     uint32 flags; // see OfferEntryFlags
+
+    // reserved for future use
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
 };
 
 union LedgerEntry switch (LedgerEntryType type)
 {
 case ACCOUNT:
     AccountEntry account;
-
 case TRUSTLINE:
     TrustLineEntry trustLine;
-
 case OFFER:
     OfferEntry offer;
 };
+
+// list of all envelope types used in the application
+// those are prefixes used when building signatures for
+// the respective envelopes
+enum EnvelopeType
+{
+    ENVELOPE_TYPE_SCP = 1,
+    ENVELOPE_TYPE_TX = 2
+};
+
 }

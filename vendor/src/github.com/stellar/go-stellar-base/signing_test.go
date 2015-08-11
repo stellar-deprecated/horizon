@@ -63,8 +63,8 @@ func TestSigning(t *testing.T) {
 
 func TestGeneration(t *testing.T) {
 	Convey("Given a base58 encoded stellar seed", t, func() {
-		seed := "s3Fy8h5LEcYVE8aofthKWHeJpygbntw5HgcekFw93K6XqTW4gEx"
-		address := "gQANmQ3bQkt6VbPrqGmKHq1EuT2cRkFsftDfEhWqdvJgTiibyu"
+		seed := "SDOTALIMPAM2IV65IOZA7KZL7XWZI5BODFXTRVLIHLQZQCKK57PH5F3H"
+		address := "GA3FR7TVTDJAY6TN4MUX7BF4KK6SUHWIYDY7NRNUDTA4OVY3IMY7B6H5"
 
 		Convey("A key pair can be made from the seed", func() {
 			pub, priv, err := GenerateKeyFromSeed(seed)

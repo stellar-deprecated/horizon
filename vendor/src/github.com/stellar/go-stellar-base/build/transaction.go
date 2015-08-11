@@ -80,8 +80,9 @@ func (b *TransactionBuilder) Sign(signers ...stellarbase.Signer) (result Transac
 // to the pubilic key for the address provided
 func (m Defaults) MutateTransaction(o *xdr.Transaction) error {
 	o.Fee = 10
-	o.Memo = xdr.NewMemoMemoNone()
-	return nil
+	memo, err := xdr.NewMemo(xdr.MemoTypeMemoNone, nil)
+	o.Memo = memo
+	return err
 }
 
 // MutateTransaction for SourceAccount sets the transaction's SourceAccount
@@ -99,9 +100,9 @@ func (m PaymentBuilder) MutateTransaction(o *xdr.Transaction) error {
 		return m.Err
 	}
 
-	m.O.Body = xdr.NewOperationBodyPayment(m.P)
+	m.O.Body, m.Err = xdr.NewOperationBody(xdr.OperationTypePayment, m.P)
 	o.Operations = append(o.Operations, m.O)
-	return nil
+	return m.Err
 }
 
 // MutateTransaction for CreateAccountBuilder causes the underylying
@@ -112,9 +113,9 @@ func (m CreateAccountBuilder) MutateTransaction(o *xdr.Transaction) error {
 		return m.Err
 	}
 
-	m.O.Body = xdr.NewOperationBodyCreateAccount(m.CA)
+	m.O.Body, m.Err = xdr.NewOperationBody(xdr.OperationTypeCreateAccount, m.CA)
 	o.Operations = append(o.Operations, m.O)
-	return nil
+	return m.Err
 }
 
 // MutateTransaction for Sequence sets the SeqNum on the transaction.

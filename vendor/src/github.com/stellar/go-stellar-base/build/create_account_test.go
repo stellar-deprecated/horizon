@@ -12,11 +12,11 @@ func TestCreateAccountMutators(t *testing.T) {
 		b := CreateAccountBuilder{}
 
 		Convey("Destination sets the destination of a payment", func() {
-			address := "gLtaC2yiJs3r8YE2bTiVfFs9Mi5KdRoLNLUA45HYVy4iNd7S9p"
+			address := "GAWSI2JO2CF36Z43UGMUJCDQ2IMR5B3P5TMS7XM7NUTU3JHG3YJUDQXA"
 			aid, _ := stellarbase.AddressToAccountId(address)
 
 			b.Mutate(Destination{address})
-			So(b.CA.Destination, ShouldEqual, aid)
+			So(b.CA.Destination.MustEd25519(), ShouldEqual, aid.MustEd25519())
 			So(b.Err, ShouldBeNil)
 		})
 
@@ -27,12 +27,12 @@ func TestCreateAccountMutators(t *testing.T) {
 		})
 
 		Convey("SourceAccount sets the transaction's SourceAccount correctly", func() {
-			address := "gLtaC2yiJs3r8YE2bTiVfFs9Mi5KdRoLNLUA45HYVy4iNd7S9p"
+			address := "GAWSI2JO2CF36Z43UGMUJCDQ2IMR5B3P5TMS7XM7NUTU3JHG3YJUDQXA"
 			aid, _ := stellarbase.AddressToAccountId(address)
 
 			b.Mutate(SourceAccount{address})
 			So(b.O.SourceAccount, ShouldNotBeNil)
-			So(*b.O.SourceAccount, ShouldEqual, aid)
+			So(b.O.SourceAccount.MustEd25519(), ShouldEqual, aid.MustEd25519())
 			So(b.Err, ShouldBeNil)
 		})
 

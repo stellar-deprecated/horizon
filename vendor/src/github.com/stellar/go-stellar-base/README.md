@@ -50,7 +50,7 @@ Now, the low-level creation of a TransactionEnvelope:
 //
 // It uses the low-level xdr facilities to create the transaction.
 func ExampleLowLevelTransaction() {
-	spub, spriv, err := GenerateKeyFromSeed("s3Fy8h5LEcYVE8aofthKWHeJpygbntw5HgcekFw93K6XqTW4gEx")
+	spub, spriv, err := GenerateKeyFromSeed("SDOTALIMPAM2IV65IOZA7KZL7XWZI5BODFXTRVLIHLQZQCKK57PH5F3H")
 
 	if err != nil {
 		log.Fatal(err)
