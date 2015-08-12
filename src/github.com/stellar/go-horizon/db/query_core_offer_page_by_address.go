@@ -12,7 +12,7 @@ type CoreOfferPageByAddressQuery struct {
 
 func (q CoreOfferPageByAddressQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := CoreOfferRecordSelect.
-		Where("co.accountid = ?", q.Address).
+		Where("co.sellerid = ?", q.Address).
 		Limit(uint64(q.Limit))
 
 	cursor, err := q.CursorInt64()

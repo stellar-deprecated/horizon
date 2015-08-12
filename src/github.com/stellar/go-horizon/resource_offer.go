@@ -16,8 +16,8 @@ type OfferResource struct {
 	ID          int64                 `json:"id"`
 	PagingToken string                `json:"paging_token"`
 	Account     string                `json:"account"`
-	TakerPays   OfferCurrencyResource `json:"taker_pays"`
-	TakerGets   OfferCurrencyResource `json:"taker_gets"`
+	Selling     OfferCurrencyResource `json:"selling"`
+	Buying      OfferCurrencyResource `json:"buying"`
 	Amount      int64                 `json:"amount"`
 	Price       PriceResource         `json:"price"`
 	PriceF      float64               `json:"price_f"`
@@ -26,9 +26,9 @@ type OfferResource struct {
 // OfferCurrencyResource is the json resource for a currency component of
 // an offer.
 type OfferCurrencyResource struct {
-	Type   string `json:"currency_type"`
-	Code   string `json:"currency_code,omitempty"`
-	Issuer string `json:"currency_issuer,omitempty"`
+	Type   string `json:"asset_type"`
+	Code   string `json:"asset_code,omitempty"`
+	Issuer string `json:"asset_issuer,omitempty"`
 }
 
 // PriceResource is a price, used by offers, expressed as a fraction, N/D.
@@ -40,8 +40,8 @@ type PriceResource struct {
 func NewOfferResource(op db.CoreOfferRecord) OfferResource {
 	self := fmt.Sprintf("/offers/%d", op.Offerid)
 
-	takerPays := NewOfferCurrencyResource(op.Paysalphanumcurrency, op.Paysissuer)
-	takerGets := NewOfferCurrencyResource(op.Getsalphanumcurrency, op.Getsissuer)
+	selling := NewOfferCurrencyResource(op.SellingAssetCode, op.SellingIssuer)
+	buying := NewOfferCurrencyResource(op.BuyingAssetCode, op.BuyingIssuer)
 
 	return OfferResource{
 		Links: halgo.Links{}.
@@ -50,8 +50,8 @@ func NewOfferResource(op db.CoreOfferRecord) OfferResource {
 		ID:          op.Offerid,
 		PagingToken: op.PagingToken(),
 		Account:     op.Accountid,
-		TakerPays:   takerPays,
-		TakerGets:   takerGets,
+		Selling:   selling,
+		Buying:   buying,
 		Amount:      op.Amount,
 		Price: PriceResource{
 			N: op.Pricen,
