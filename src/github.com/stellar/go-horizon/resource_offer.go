@@ -40,7 +40,7 @@ type PriceResource struct {
 func NewOfferResource(op db.CoreOfferRecord) OfferResource {
 	self := fmt.Sprintf("/offers/%d", op.Offerid)
 
-	selling := NewOfferCurrencyResource(op.SellingAssetType, op.SellingIssuer)
+	selling := NewOfferCurrencyResource(op.SellingAssetCode, op.SellingIssuer)
 	buying := NewOfferCurrencyResource(op.BuyingAssetCode, op.BuyingIssuer)
 
 	return OfferResource{
