@@ -13,22 +13,27 @@ var CoreOfferRecordSelect = sq.Select("co.*").From("offers co")
 
 // CoreOfferRecord is row of data from the `offers` table from stellar-core
 type CoreOfferRecord struct {
-	Accountid            string         `db:"accountid"`
-	Offerid              int64          `db:"offerid"`
-	Paysalphanumcurrency sql.NullString `db:"paysalphanumcurrency"`
-	Paysissuer           sql.NullString `db:"paysissuer"`
-	Getsalphanumcurrency sql.NullString `db:"getsalphanumcurrency"`
-	Getsissuer           sql.NullString `db:"getsissuer"`
-	Amount               int64          `db:"amount"`
-	Pricen               int32          `db:"pricen"`
-	Priced               int32          `db:"priced"`
-	Price                int64          `db:"price"`
-	Flags                int32          `db:"flags"`
+	SellerID string `db:"sellerid"`
+	OfferID  int64  `db:"offerid"`
+
+	SellingAssetType int32          `db:"sellingassettype"`
+	SellingAssetCode sql.NullString `db:"sellingassetcode"`
+	SellingIssuer    sql.NullString `db:"sellingissuer"`
+
+	BuyingAssetType int32          `db:"buyingassettype"`
+	BuyingAssetCode sql.NullString `db:"buyingassetcode"`
+	BuyingIssuer    sql.NullString `db:"buyingissuer"`
+
+	Amount int64 `db:"amount"`
+	Pricen int32 `db:"pricen"`
+	Priced int32 `db:"priced"`
+	Price  int64 `db:"price"`
+	Flags  int32 `db:"flags"`
 }
 
 // PagingToken returns a suitable paging token for the CoreOfferRecord
 func (r CoreOfferRecord) PagingToken() string {
-	return fmt.Sprintf("%d", r.Offerid)
+	return fmt.Sprintf("%d", r.OfferID)
 }
 
 // PriceAsFloat return the price fraction as a floating point approximate.

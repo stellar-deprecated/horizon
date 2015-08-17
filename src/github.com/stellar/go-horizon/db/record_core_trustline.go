@@ -6,19 +6,21 @@ import (
 
 var CoreTrustlineRecordSelect sq.SelectBuilder = sq.Select(
 	"tl.accountid",
+	"tl.assettype",
 	"tl.issuer",
-	"tl.alphanumcurrency",
+	"tl.assetcode",
 	"tl.tlimit",
 	"tl.balance",
 	"tl.flags",
 ).From("trustlines tl")
 
-// A row of data from the `accounts` table from stellar-core
+// A row of data from the `trustlines` table from stellar-core
 type CoreTrustlineRecord struct {
-	Accountid        string
-	Issuer           string
-	Alphanumcurrency string
-	Tlimit           int64
-	Balance          int64
-	Flags            int32
+	Accountid string
+	Assettype int32
+	Issuer    string
+	Assetcode string
+	Tlimit    int64
+	Balance   int64
+	Flags     int32
 }

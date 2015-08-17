@@ -3,9 +3,8 @@ package db
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"reflect"
-    "fmt"
-    
 
 	"golang.org/x/net/context"
 
@@ -45,8 +44,9 @@ type Pageable interface {
 type Record interface{}
 
 type HistoryRecord struct {
-  Id      int64     `db:"id"`
+	Id int64 `db:"id"`
 }
+
 func (r HistoryRecord) PagingToken() string {
 	return fmt.Sprintf("%d", r.Id)
 }

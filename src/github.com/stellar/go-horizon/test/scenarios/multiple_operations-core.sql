@@ -199,7 +199,7 @@ CREATE TABLE txhistory (
 --
 
 COPY accounts (accountid, balance, seqnum, numsubentries, inflationdest, homedomain, thresholds, flags) FROM stdin;
-gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	100000000000000000	0	0	\N		01000000	0
+GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ	100000000000000000	0	0	\N		01000000	0
 \.
 
 

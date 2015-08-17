@@ -20,7 +20,7 @@ func TestLedgerState(t *testing.T) {
 
 		UpdateLedgerState(test.Context(), SqlQuery{horizon}, SqlQuery{core})
 
-		So(horizonLedgerGauge.Value(), ShouldEqual, 4)
-		So(stellarCoreLedgerGauge.Value(), ShouldEqual, 4)
+		So(horizonLedgerGauge.Value(), ShouldEqual, 3)
+		So(stellarCoreLedgerGauge.Value(), ShouldEqual, 3)
 	})
 }

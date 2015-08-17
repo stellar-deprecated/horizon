@@ -15,7 +15,7 @@ func TestOperationByIdQuery(t *testing.T) {
 		var op OperationRecord
 
 		Convey("Existing record behavior", func() {
-			id := int64(17179873280)
+			id := int64(8589938688)
 			q := OperationByIdQuery{
 				SqlQuery{history},
 				id,

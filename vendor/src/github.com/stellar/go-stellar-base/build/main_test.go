@@ -12,7 +12,7 @@ import (
 //
 // It uses the transaction builder system
 func ExampleTransactionBuilder() {
-	_, spriv, err := stellarbase.GenerateKeyFromSeed("s3Fy8h5LEcYVE8aofthKWHeJpygbntw5HgcekFw93K6XqTW4gEx")
+	_, spriv, err := stellarbase.GenerateKeyFromSeed("SDOTALIMPAM2IV65IOZA7KZL7XWZI5BODFXTRVLIHLQZQCKK57PH5F3H")
 
 	if err != nil {
 		log.Fatal(err)
@@ -22,15 +22,14 @@ func ExampleTransactionBuilder() {
 		SourceAccount{spriv.Address()},
 		Sequence{1},
 		Payment(
-			Destination{"gLtaC2yiJs3r8YE2bTiVfFs9Mi5KdRoLNLUA45HYVy4iNd7S9p"},
+			Destination{"GAWSI2JO2CF36Z43UGMUJCDQ2IMR5B3P5TMS7XM7NUTU3JHG3YJUDQXA"},
 			NativeAmount{50 * 10000000},
 		),
 	)
 
 	txe := tx.Sign(&spriv)
-	txeHex, err := txe.Hex()
+	txeB64, err := txe.Base64()
 
-	fmt.Printf("tx hex: %s", txeHex)
-	// Output: tx hex: 3658fe7598d20c7a6de3297f84bc52bd2a1ec8c0f1f6c5b41cc1c7571b4331f00000000a000000000000000100000000000000000000000100000000000000012d24692ed08bbf679ba199448870d2191e876fecd92fdd9f6d274da4e6de134100000000000000001dcd650000000001dd302d0c0cee527cf02f6a0aec6916966298712914c63e3c57de74a6e27c29ea234a555fcc36533417afe4e1147815a42529fbca3429bc7caf0a06dc6b383ca6e9d4d80f
-
+	fmt.Printf("tx base64: %s", txeB64)
+	// Output: tx base64: AAAAADZY/nWY0gx6beMpf4S8Ur0qHsjA8fbFtBzBx1cbQzHwAAAACgAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAALSRpLtCLv2eboZlEiHDSGR6Hb+zZL92fbSdNpObeE0EAAAAAAAAAAB3NZQAAAAAAAAAAAd0wLQwAAABA1GIGEFOmzv8180351J8JA/HBkBI2J+iJFb8U6F+wiESVhBwD/9My4SNVxn4hcO2A4bxrhjsXsDkc/n0S9nf0DQ==
 }

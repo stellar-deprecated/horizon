@@ -15,7 +15,7 @@ func TestTransactionMutators(t *testing.T) {
 		Convey("Defaults works", func() {
 			b.Mutate(Defaults{})
 			So(b.TX.Fee, ShouldEqual, 10)
-			So(b.TX.Memo, ShouldResemble, xdr.NewMemoMemoNone())
+			So(b.TX.Memo.Type, ShouldResemble, xdr.MemoTypeMemoNone)
 		})
 
 		Convey("PaymentBuilder appends its payment to the operation list", func() {
@@ -24,11 +24,11 @@ func TestTransactionMutators(t *testing.T) {
 		})
 
 		Convey("SourceAccount sets the transaction's SourceAccount correctly", func() {
-			address := "gLtaC2yiJs3r8YE2bTiVfFs9Mi5KdRoLNLUA45HYVy4iNd7S9p"
+			address := "GAWSI2JO2CF36Z43UGMUJCDQ2IMR5B3P5TMS7XM7NUTU3JHG3YJUDQXA"
 			aid, _ := stellarbase.AddressToAccountId(address)
 
 			b.Mutate(SourceAccount{address})
-			So(b.TX.SourceAccount, ShouldEqual, aid)
+			So(b.TX.SourceAccount.MustEd25519(), ShouldEqual, aid.MustEd25519())
 			So(b.Err, ShouldBeNil)
 		})
 

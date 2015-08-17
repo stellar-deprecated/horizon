@@ -2,24 +2,10 @@
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
-%#include "generated/Stellar-ledger.h"
+%#include "xdr/Stellar-ledger.h"
 
 namespace stellar
 {
-
-struct StellarBallotValue
-{
-    Hash txSetHash;
-    uint64 closeTime;
-    uint32 baseFee;
-};
-
-struct StellarBallot
-{
-    uint256 nodeID;
-    Signature signature;
-    StellarBallotValue value;
-};
 
 struct Error
 {
@@ -29,10 +15,11 @@ struct Error
 
 struct Hello
 {
-    int protocolVersion;
+    uint32 ledgerVersion;
+    uint32 overlayVersion;
     string versionStr<100>;
     int listeningPort;
-    opaque peerID[32];
+    NodeID peerID;
 };
 
 struct PeerAddress

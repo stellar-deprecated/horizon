@@ -2,7 +2,7 @@ package build
 
 import (
 	"bytes"
-	"encoding/hex"
+	"encoding/base64"
 	"errors"
 
 	"github.com/stellar/go-stellar-base/xdr"
@@ -33,6 +33,19 @@ func (b *TransactionEnvelopeBuilder) Mutate(muts ...TransactionEnvelopeMutator) 
 	}
 }
 
+// MutateTX runs Mutate on the underlying transaction using the provided
+// mutators.
+func (b *TransactionEnvelopeBuilder) MutateTX(muts ...TransactionMutator) {
+	if b.Err != nil {
+		return
+	}
+
+	txb := TransactionBuilder{TX: b.E.Tx}
+	txb.Mutate(muts...)
+	b.E.Tx = txb.TX
+	b.Err = txb.Err
+}
+
 // Bytes encodes the builder's underlying envelope to XDR
 func (b TransactionEnvelopeBuilder) Bytes() ([]byte, error) {
 	if b.Err != nil {
@@ -48,12 +61,11 @@ func (b TransactionEnvelopeBuilder) Bytes() ([]byte, error) {
 	return txBytes.Bytes(), nil
 }
 
-// Hex returns a string which is the xdr-then-hex-encoded form
+// Base64 returns a string which is the xdr-then-base64-encoded form
 // of the builder's underlying transaction envelope
-func (b TransactionEnvelopeBuilder) Hex() (string, error) {
+func (b TransactionEnvelopeBuilder) Base64() (string, error) {
 	bs, err := b.Bytes()
-
-	return hex.EncodeToString(bs), err
+	return base64.StdEncoding.EncodeToString(bs), err
 }
 
 // MutateTransactionEnvelope adds a signature to the provided envelope
@@ -73,7 +85,7 @@ func (m Sign) MutateTransactionEnvelope(txe *xdr.TransactionEnvelope) error {
 
 	ds := xdr.DecoratedSignature{
 		Hint:      m.Key.Hint(),
-		Signature: xdr.Uint512(sig),
+		Signature: xdr.Signature(sig[:]),
 	}
 
 	txe.Signatures = append(txe.Signatures, ds)

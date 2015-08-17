@@ -16,7 +16,7 @@ var operationResourceTypeNames = map[xdr.OperationType]string{
 	xdr.OperationTypePathPayment:        "path_payment",
 	xdr.OperationTypeManageOffer:        "manage_offer",
 	xdr.OperationTypeCreatePassiveOffer: "create_passive_offer",
-	xdr.OperationTypeSetOption:          "set_options",
+	xdr.OperationTypeSetOptions:         "set_options",
 	xdr.OperationTypeChangeTrust:        "change_trust",
 	xdr.OperationTypeAllowTrust:         "allow_trust",
 	xdr.OperationTypeAccountMerge:       "account_merge",

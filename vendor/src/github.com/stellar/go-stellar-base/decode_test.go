@@ -35,8 +35,42 @@ func TestDecode(t *testing.T) {
 		So(err, ShouldNotBeNil)
 	})
 
+	Convey("Decodes Memo", t, func() {
+		data := "AAAAAA=="
+		rawr := strings.NewReader(data)
+		b64r := base64.NewDecoder(base64.StdEncoding, rawr)
+
+		var memo xdr.Memo
+
+		_, err := xdr.Unmarshal(b64r, &memo)
+
+		So(err, ShouldBeNil)
+	})
+
+	Convey("Decodes AccountID", t, func() {
+		data := "AAAAAK6jei3jmoI8TGlD/egc37PXtHKKzWV8wViZBaCu5L5M"
+		rawr := strings.NewReader(data)
+		b64r := base64.NewDecoder(base64.StdEncoding, rawr)
+
+		var id xdr.AccountId
+		_, err := xdr.Unmarshal(b64r, &id)
+
+		So(err, ShouldBeNil)
+	})
+
+	Convey("Decodes OperationBody", t, func() {
+		data := "AAAAAAAAAACuo3ot45qCPExpQ/3oHN+z17Ryis1lfMFYmQWgruS+TAAAAAA7msoA"
+		rawr := strings.NewReader(data)
+		b64r := base64.NewDecoder(base64.StdEncoding, rawr)
+
+		var body xdr.OperationBody
+		_, err := xdr.Unmarshal(b64r, &body)
+
+		So(err, ShouldBeNil)
+	})
+
 	Convey("Decode TransactionResultPair", t, func() {
-		data := "W9EizvB5Q+UMEAJR9w3y+/xvR14aO27zXb/yoQod9L8AAAAAAAAACgAAAAAAAAABAAAAAAAAAAEAAAAA"
+		data := "mf13Xm7tPjMcffhLVA2VXbTs6fV9IpgHFZGKy3zlu/QAAAAAAAAACgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=="
 		rawr := strings.NewReader(data)
 		b64r := base64.NewDecoder(base64.StdEncoding, rawr)
 
@@ -59,10 +93,10 @@ func TestDecode(t *testing.T) {
 		So(opr.Code, ShouldEqual, xdr.OperationResultCodeOpInner)
 
 		oprr := opr.MustTr()
-		So(oprr.Type, ShouldEqual, xdr.OperationTypePayment)
+		So(oprr.Type, ShouldEqual, xdr.OperationTypeCreateAccount)
 
-		pr := oprr.MustPaymentResult()
-		So(pr.Code, ShouldEqual, xdr.PaymentResultCodePaymentSuccess)
+		cr := oprr.MustCreateAccountResult()
+		So(cr.Code, ShouldEqual, xdr.CreateAccountResultCodeCreateAccountSuccess)
 
 		So(func() {
 			oprr.MustAccountMergeResult()
@@ -70,7 +104,7 @@ func TestDecode(t *testing.T) {
 	})
 
 	Convey("Decode TransactionEnvelope", t, func() {
-		data := "rqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAKAAAAAwAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAW5oJtVdnYOVdZqtXpTHBtbcY0mCmfcBIKEgWnlvFIhaAAAAAAAAAAAC+vCAAAAAAa6jei0gQGmrUfm+o2CMv/w32YzJgGYlmgG6CUW3FwyD6AZ/5TtPZqEt9kyC3GJeXfzoS667ZPhPUSNjSWgAeDPHFLcM"
+		data := "AAAAAImbKEDtVjbFbdxfFLI5dfefG6I4jSaU5MVuzd3JYOXvAAAACgAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAAByWDl7wAAAEAza1ouO/OTJDMMwUDewoqooFqHDulZ/nWFekNycPVCRtw70wZIN0UURhx8lYh1e911oahT3nBjAFZgwAwijY0O"
 		rawr := strings.NewReader(data)
 		b64r := base64.NewDecoder(base64.StdEncoding, rawr)
 
@@ -83,7 +117,7 @@ func TestDecode(t *testing.T) {
 		tx := txe.Tx
 
 		So(tx.Fee, ShouldEqual, 10)
-		So(tx.SeqNum, ShouldEqual, 12884901889)
+		So(tx.SeqNum, ShouldEqual, 1)
 
 		So(tx.Memo.Type, ShouldEqual, xdr.MemoTypeMemoNone)
 
@@ -91,13 +125,12 @@ func TestDecode(t *testing.T) {
 
 		So(op.SourceAccount, ShouldBeNil)
 
-		p := op.Body.MustPaymentOp()
-		So(p.Currency.Type, ShouldEqual, xdr.CurrencyTypeCurrencyTypeNative)
-		So(p.Amount, ShouldEqual, 50000000)
+		p := op.Body.MustCreateAccountOp()
+		So(p.StartingBalance, ShouldEqual, 1000000000)
 	})
 
 	Convey("Decode TransactionMeta", t, func() {
-		data := "AAAAAgAAAAEAAAAAbmgm1V2dg5V1mq1elMcG1txjSYKZ9wEgoSBaeW8UiFoAAAAAPpW6gAAAAAMAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAQAAAACuo3ot45qCPExpQ/3oHN+z17Ryis1lfMFYmQWgruS+TAAAAAA4n9l2AAAAAwAAAAEAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA="
+		data := "AAAAAAAAAAEAAAABAAAAAAAAAACJmyhA7VY2xW3cXxSyOXX3nxuiOI0mlOTFbs3dyWDl7wFjRXhdif/2AAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAQAAAAIAAAAAAAAAAAAAAACuo3ot45qCPExpQ/3oHN+z17Ryis1lfMFYmQWgruS+TAAAAAA7msoAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAiZsoQO1WNsVt3F8Usjl1958bojiNJpTkxW7N3clg5e8BY0V4Ie819gAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=="
 		rawr := strings.NewReader(data)
 		b64r := base64.NewDecoder(base64.StdEncoding, rawr)
 
@@ -105,13 +138,14 @@ func TestDecode(t *testing.T) {
 		_, err := xdr.Unmarshal(b64r, &m)
 
 		So(err, ShouldBeNil)
-		So(len(m.Changes), ShouldEqual, 2)
-		m.Changes[0].MustUpdated()
-		m.Changes[1].MustUpdated()
+		tm := m.MustV0()
+		So(len(tm.Changes), ShouldEqual, 1)
+		So(len(tm.Operations), ShouldEqual, 1)
+		So(len(tm.Operations[0].Changes), ShouldEqual, 2)
 	})
 
 	Convey("Roundtrip TransactionEnvelope", t, func() {
-		data := "rqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAKAAAAAwAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAW5oJtVdnYOVdZqtXpTHBtbcY0mCmfcBIKEgWnlvFIhaAAAAAAAAAAAC+vCAAAAAAa6jei0gQGmrUfm+o2CMv/w32YzJgGYlmgG6CUW3FwyD6AZ/5TtPZqEt9kyC3GJeXfzoS667ZPhPUSNjSWgAeDPHFLcM"
+		data := "AAAAAImbKEDtVjbFbdxfFLI5dfefG6I4jSaU5MVuzd3JYOXvAAAACgAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAAByWDl7wAAAEAza1ouO/OTJDMMwUDewoqooFqHDulZ/nWFekNycPVCRtw70wZIN0UURhx8lYh1e911oahT3nBjAFZgwAwijY0O"
 		rawr := strings.NewReader(data)
 		b64r := base64.NewDecoder(base64.StdEncoding, rawr)
 
@@ -130,10 +164,7 @@ func TestDecode(t *testing.T) {
 }
 
 func ExampleDecodeTransaction() {
-	data := "rqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAKAAAAAwAAAAEAAAAAAAA" +
-		"AAAAAAAEAAAAAAAAAAW5oJtVdnYOVdZqtXpTHBtbcY0mCmfcBIKEgWnlvFIhaAAAAAA" +
-		"AAAAAC+vCAAAAAAa6jei0gQGmrUfm+o2CMv/w32YzJgGYlmgG6CUW3FwyD6AZ/5TtPZ" +
-		"qEt9kyC3GJeXfzoS667ZPhPUSNjSWgAeDPHFLcM"
+	data := "AAAAAImbKEDtVjbFbdxfFLI5dfefG6I4jSaU5MVuzd3JYOXvAAAACgAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAAByWDl7wAAAEAza1ouO/OTJDMMwUDewoqooFqHDulZ/nWFekNycPVCRtw70wZIN0UURhx8lYh1e911oahT3nBjAFZgwAwijY0O"
 
 	rawr := strings.NewReader(data)
 	b64r := base64.NewDecoder(base64.StdEncoding, rawr)
@@ -148,6 +179,6 @@ func ExampleDecodeTransaction() {
 	}
 
 	fmt.Printf("This tx has %d operations\n", len(tx.Tx.Operations))
-	// Output: read 180 bytes
+	// Output: read 192 bytes
 	// This tx has 1 operations
 }

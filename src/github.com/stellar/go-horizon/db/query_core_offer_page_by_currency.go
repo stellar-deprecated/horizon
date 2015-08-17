@@ -10,33 +10,30 @@ import (
 type CoreOfferPageByCurrencyQuery struct {
 	SqlQuery
 	PageQuery
-	TakerPaysType   xdr.CurrencyType
-	TakerPaysCode   string
-	TakerPaysIssuer string
-	TakerGetsType   xdr.CurrencyType
-	TakerGetsCode   string
-	TakerGetsIssuer string
+	BuyingAssetType  xdr.AssetType
+	BuyingAssetCode  string
+	BuyingIssuer     string
+	SellingAssetType xdr.AssetType
+	SellingAssetCode string
+	SellingIssuer    string
 }
 
 func (q CoreOfferPageByCurrencyQuery) Select(ctx context.Context, dest interface{}) error {
-	sql := CoreOfferRecordSelect.Limit(uint64(q.Limit))
+	sql := CoreOfferRecordSelect.
+		Limit(uint64(q.Limit)).
+		Where("co.buyingassettype = ?", q.BuyingAssetType).
+		Where("co.sellingassettype = ?", q.SellingAssetType)
 
-	switch q.TakerPaysType {
-	case xdr.CurrencyTypeCurrencyTypeNative:
-		sql = sql.Where("co.paysissuer IS NULL")
-	case xdr.CurrencyTypeCurrencyTypeAlphanum:
+	if q.BuyingAssetType != xdr.AssetTypeAssetTypeNative {
 		sql = sql.
-			Where("co.paysissuer = ?", q.TakerPaysIssuer).
-			Where("co.paysalphanumcurrency = ?", q.TakerPaysCode)
+			Where("co.buyingissuer = ?", q.BuyingIssuer).
+			Where("co.buyingassetcode = ?", q.BuyingAssetCode)
 	}
 
-	switch q.TakerGetsType {
-	case xdr.CurrencyTypeCurrencyTypeNative:
-		sql = sql.Where("co.getsissuer IS NULL")
-	case xdr.CurrencyTypeCurrencyTypeAlphanum:
+	if q.SellingAssetType != xdr.AssetTypeAssetTypeNative {
 		sql = sql.
-			Where("co.getsissuer = ?", q.TakerGetsIssuer).
-			Where("co.getsalphanumcurrency = ?", q.TakerGetsCode)
+			Where("co.sellingissuer = ?", q.SellingIssuer).
+			Where("co.sellingassetcode = ?", q.SellingAssetCode)
 	}
 
 	cursor, err := q.CursorInt64()

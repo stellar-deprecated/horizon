@@ -15,7 +15,7 @@ func TestHistoryAccountByAddressQuery(t *testing.T) {
 		var account HistoryAccountRecord
 
 		Convey("Existing record behavior", func() {
-			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
+			address := "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
 			q := HistoryAccountByAddressQuery{
 				SqlQuery{history},
 				address,

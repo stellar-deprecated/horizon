@@ -58,23 +58,23 @@ func TestTransactionPageQuery(t *testing.T) {
 
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 12884905984)
+			So(record.Id, ShouldEqual, 8589938688)
 
 			// highest id if ordered descending and no cursor
 			MustGet(ctx, makeQuery("", "desc", 0), &record)
-			So(record.Id, ShouldEqual, 17179873280)
+			So(record.Id, ShouldEqual, 12884905984)
 
 			// starts after the cursor if ordered ascending
-			MustGet(ctx, makeQuery("12884905984", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 12884910080)
+			MustGet(ctx, makeQuery("8589938688", "asc", 0), &record)
+			So(record.Id, ShouldEqual, 8589942784)
 
 			// starts before the cursor if ordered descending
-			MustGet(ctx, makeQuery("17179873280", "desc", 0), &record)
-			So(record.Id, ShouldEqual, 12884914176)
+			MustGet(ctx, makeQuery("12884905984", "desc", 0), &record)
+			So(record.Id, ShouldEqual, 8589946880)
 		})
 
 		Convey("restricts to address properly", func() {
-			address := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
+			address := "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
 			q := makeQuery("", "asc", 0)
 			q.AccountAddress = address
 			MustSelect(ctx, q, &records)
@@ -88,7 +88,7 @@ func TestTransactionPageQuery(t *testing.T) {
 
 		Convey("restricts to ledger properly", func() {
 			q := makeQuery("", "asc", 0)
-			q.LedgerSequence = 4
+			q.LedgerSequence = 3
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 1)
