@@ -46,7 +46,7 @@ func TestLedgerActions(t *testing.T) {
 				embedded := result["_embedded"].(map[string]interface{})
 				records := embedded["records"].([]interface{})
 
-				So(len(records), ShouldEqual, 4)
+				So(len(records), ShouldEqual, 3)
 
 			})
 

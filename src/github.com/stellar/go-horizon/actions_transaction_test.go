@@ -15,14 +15,14 @@ func TestTransactionActions(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		Convey("GET /transactions/da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c", func() {
-			w := rh.Get("/transactions/da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c", test.RequestHelperNoop)
+		Convey("GET /transactions/99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4", func() {
+			w := rh.Get("/transactions/99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 
 			var result TransactionResource
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
-			So(result.Hash, ShouldEqual, "da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c")
+			So(result.Hash, ShouldEqual, "99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4")
 		})
 
 		Convey("GET /transactions/not_real", func() {
@@ -37,29 +37,29 @@ func TestTransactionActions(t *testing.T) {
 		})
 
 		Convey("GET /ledgers/:ledger_id/transactions", func() {
-			w := rh.Get("/ledgers/2/transactions", test.RequestHelperNoop)
+			w := rh.Get("/ledgers/1/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 0)
 
-			w = rh.Get("/ledgers/3/transactions", test.RequestHelperNoop)
+			w = rh.Get("/ledgers/2/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 3)
 
-			w = rh.Get("/ledgers/4/transactions", test.RequestHelperNoop)
+			w = rh.Get("/ledgers/3/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 		})
 
 		Convey("GET /accounts/:account_od/transactions", func() {
-			w := rh.Get("/accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC/transactions", test.RequestHelperNoop)
+			w := rh.Get("/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 3)
 
-			w = rh.Get("/accounts/gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA/transactions", test.RequestHelperNoop)
+			w = rh.Get("/accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 
-			w = rh.Get("/accounts/gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ/transactions", test.RequestHelperNoop)
+			w = rh.Get("/accounts/GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 2)
 		})

@@ -28,10 +28,10 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 		}
 
 		simpleQuery := makeQuery("", "asc", 0)
-		simpleQuery.TakerGetsType = xdr.CurrencyTypeCurrencyTypeAlphanum
-		simpleQuery.TakerGetsCode = "USD"
-		simpleQuery.TakerGetsIssuer = "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"
-		simpleQuery.TakerPaysType = xdr.CurrencyTypeCurrencyTypeNative
+		simpleQuery.SellingAssetType = xdr.AssetTypeAssetTypeCreditAlphanum4
+		simpleQuery.SellingAssetCode = "USD"
+		simpleQuery.SellingIssuer = "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
+		simpleQuery.BuyingAssetType = xdr.AssetTypeAssetTypeNative
 
 		Convey("filters properly", func() {
 			// native offers
@@ -41,23 +41,23 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			// all non-native
-			q.TakerGetsType = xdr.CurrencyTypeCurrencyTypeAlphanum
-			q.TakerGetsCode = "USD"
-			q.TakerGetsIssuer = "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"
-			q.TakerPaysType = xdr.CurrencyTypeCurrencyTypeAlphanum
-			q.TakerPaysCode = "BTC"
-			q.TakerPaysIssuer = "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"
+			q.SellingAssetType = xdr.AssetTypeAssetTypeCreditAlphanum4
+			q.SellingAssetCode = "USD"
+			q.SellingIssuer = "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
+			q.BuyingAssetType = xdr.AssetTypeAssetTypeCreditAlphanum4
+			q.BuyingAssetCode = "BTC"
+			q.BuyingIssuer = "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
 
 			MustSelect(ctx, q, &records)
 			So(len(records), ShouldEqual, 3)
 
 			// non-existent order book
-			q.TakerGetsType = xdr.CurrencyTypeCurrencyTypeAlphanum
-			q.TakerGetsCode = "USD"
-			q.TakerGetsIssuer = "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"
-			q.TakerPaysType = xdr.CurrencyTypeCurrencyTypeAlphanum
-			q.TakerPaysCode = "EUR"
-			q.TakerPaysIssuer = "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"
+			q.SellingAssetType = xdr.AssetTypeAssetTypeCreditAlphanum4
+			q.SellingAssetCode = "USD"
+			q.SellingIssuer = "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
+			q.BuyingAssetType = xdr.AssetTypeAssetTypeCreditAlphanum4
+			q.BuyingAssetCode = "EUR"
+			q.BuyingIssuer = "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
 
 			MustSelect(ctx, q, &records)
 			So(len(records), ShouldEqual, 0)

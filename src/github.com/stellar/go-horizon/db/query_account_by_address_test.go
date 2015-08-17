@@ -15,8 +15,8 @@ func TestAccountByAddressQuery(t *testing.T) {
 		var account AccountRecord
 
 		notreal := "not_real"
-		withtl := "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ"
-		notl := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
+		withtl := "GBXGQJWVLWOYHFLVTKWV5FGHA3LNYY2JQKM7OAJAUEQFU6LPCSEFVXON"
+		notl := "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
 
 		q := AccountByAddressQuery{
 			Core:    SqlQuery{core},
@@ -28,7 +28,7 @@ func TestAccountByAddressQuery(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		So(account.Address, ShouldEqual, withtl)
-		So(account.Seqnum, ShouldEqual, 12884901889)
+		So(account.Seqnum, ShouldEqual, 8589934593)
 		So(len(account.Trustlines), ShouldEqual, 1)
 
 		q.Address = notl

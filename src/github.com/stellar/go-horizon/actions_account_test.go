@@ -16,8 +16,8 @@ func TestAccountActions(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		Convey("GET /accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", func() {
-			w := rh.Get("/accounts/gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", test.RequestHelperNoop)
+		Convey("GET /accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", func() {
+			w := rh.Get("/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 200)
 

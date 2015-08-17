@@ -14,8 +14,8 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 	Convey("CoreTrustlinesByAddress", t, func() {
 		var tls []CoreTrustlineRecord
 
-		withtl := "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ"
-		notl := "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC"
+		withtl := "GBXGQJWVLWOYHFLVTKWV5FGHA3LNYY2JQKM7OAJAUEQFU6LPCSEFVXON"
+		notl := "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
 
 		q := CoreTrustlinesByAddressQuery{
 			SqlQuery{core},
@@ -29,10 +29,10 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 		tl := tls[0]
 
 		So(tl.Accountid, ShouldEqual, withtl)
-		So(tl.Issuer, ShouldEqual, "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+		So(tl.Issuer, ShouldEqual, "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
 		So(tl.Balance, ShouldEqual, 500000000)
 		So(tl.Tlimit, ShouldEqual, 9223372036854775807)
-		So(tl.Alphanumcurrency, ShouldEqual, "USD")
+		So(tl.Assetcode, ShouldEqual, "USD")
 
 		q = CoreTrustlinesByAddressQuery{
 			SqlQuery{core},

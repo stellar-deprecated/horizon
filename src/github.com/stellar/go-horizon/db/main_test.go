@@ -106,7 +106,7 @@ func ExampleGet() {
 
 	q := CoreAccountByAddressQuery{
 		SqlQuery{db},
-		"gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
+		"GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
 	}
 
 	var account CoreAccountRecord
@@ -117,7 +117,7 @@ func ExampleGet() {
 	}
 
 	fmt.Printf("%s", account.Accountid)
-	// Output: gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC
+	// Output: GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ
 }
 
 func ExampleSelect() {
@@ -126,7 +126,7 @@ func ExampleSelect() {
 
 	q := CoreAccountByAddressQuery{
 		SqlQuery{db},
-		"gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC",
+		"GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
 	}
 
 	var records []CoreAccountRecord

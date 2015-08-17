@@ -16,7 +16,7 @@ func TestTransactionByHashQuery(t *testing.T) {
 		var record TransactionRecord
 
 		Convey("Existing record behavior", func() {
-			hash := "da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c"
+			hash := "99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4"
 			q := TransactionByHashQuery{SqlQuery{history}, hash}
 			err := Get(ctx, q, &record)
 			So(err, ShouldBeNil)

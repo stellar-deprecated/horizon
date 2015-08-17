@@ -44,7 +44,7 @@ func (action *PaymentsIndexAction) LoadPage() {
 		return
 	}
 
-	action.Page, action.Err = NewOperationResourcePage(action.Records, action.Query.PageQuery, "")
+	action.Page, action.Err = NewOperationResourcePage(action.Records, action.Query.PageQuery, action.Path())
 }
 
 // JSON is a method for actions.JSON

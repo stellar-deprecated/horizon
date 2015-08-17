@@ -16,10 +16,10 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 
 		q := OrderBookSummaryQuery{
 			SqlQuery:    SqlQuery{core},
-			BaseType:    xdr.CurrencyTypeCurrencyTypeAlphanum,
+			BaseType:    xdr.AssetTypeAssetTypeCreditAlphanum4,
 			BaseCode:    "USD",
-			BaseIssuer:  "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq",
-			CounterType: xdr.CurrencyTypeCurrencyTypeNative,
+			BaseIssuer:  "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
+			CounterType: xdr.AssetTypeAssetTypeNative,
 		}
 
 		Convey("works in either direction", func() {
@@ -33,12 +33,12 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 			So(len(result.Bids), ShouldEqual, 3)
 
 			// the asks of one side are the bids on the other
-			So(result.Asks[0].Offerid, ShouldEqual, inversion.Bids[2].Offerid)
-			So(result.Asks[1].Offerid, ShouldEqual, inversion.Bids[1].Offerid)
-			So(result.Asks[2].Offerid, ShouldEqual, inversion.Bids[0].Offerid)
-			So(result.Bids[0].Offerid, ShouldEqual, inversion.Asks[2].Offerid)
-			So(result.Bids[1].Offerid, ShouldEqual, inversion.Asks[1].Offerid)
-			So(result.Bids[2].Offerid, ShouldEqual, inversion.Asks[0].Offerid)
+			So(result.Asks[0].OfferID, ShouldEqual, inversion.Bids[2].OfferID)
+			So(result.Asks[1].OfferID, ShouldEqual, inversion.Bids[1].OfferID)
+			So(result.Asks[2].OfferID, ShouldEqual, inversion.Bids[0].OfferID)
+			So(result.Bids[0].OfferID, ShouldEqual, inversion.Asks[2].OfferID)
+			So(result.Bids[1].OfferID, ShouldEqual, inversion.Asks[1].OfferID)
+			So(result.Bids[2].OfferID, ShouldEqual, inversion.Asks[0].OfferID)
 		})
 
 		Convey("Invert()", func() {

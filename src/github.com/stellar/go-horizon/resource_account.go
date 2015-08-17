@@ -6,6 +6,7 @@ import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
+	"github.com/stellar/go-stellar-base/xdr"
 )
 
 // AccountResource is the summary of an account
@@ -40,13 +41,21 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 	balances := make([]BalanceResource, len(ac.Trustlines)+1)
 
 	for i, tl := range ac.Trustlines {
-		balances[i] = BalanceResource{
-			Type:    "alphanum",
+		balance := BalanceResource{
 			Balance: tl.Balance,
-			Code:    tl.Alphanumcurrency,
-			Issuer:  tl.Issuer,
 			Limit:   tl.Tlimit,
+			Issuer:  tl.Issuer,
+			Code:    tl.Assetcode,
 		}
+
+		switch tl.Assettype {
+		case int32(xdr.AssetTypeAssetTypeCreditAlphanum4):
+			balance.Type = "alphanum_4"
+		case int32(xdr.AssetTypeAssetTypeCreditAlphanum12):
+			balance.Type = "alphanum_12"
+		}
+
+		balances[i] = balance
 	}
 
 	// add native balance

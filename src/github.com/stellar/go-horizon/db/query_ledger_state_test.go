@@ -20,7 +20,7 @@ func TestLedgerStateQuery(t *testing.T) {
 
 		err := Get(ctx, q, &ls)
 		So(err, ShouldBeNil)
-		So(ls.HorizonSequence, ShouldEqual, 4)
-		So(ls.StellarCoreSequence, ShouldEqual, 4)
+		So(ls.HorizonSequence, ShouldEqual, 3)
+		So(ls.StellarCoreSequence, ShouldEqual, 3)
 	})
 }
