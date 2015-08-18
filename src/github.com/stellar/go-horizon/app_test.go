@@ -1,12 +1,14 @@
 package horizon
 
 import (
+	"net/http"
 	"reflect"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/Sirupsen/logrus/hooks/sentry"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/go-horizon/test"
 )
 
 func TestApp(t *testing.T) {
@@ -93,6 +95,25 @@ func TestApp(t *testing.T) {
 
 			So(hooks, expectation.Assertion)
 		}
+	})
+
+	Convey("CORS support", t, func() {
+		app := NewTestApp()
+		defer app.Close()
+		rh := NewRequestHelper(app)
+
+		w := rh.Get("/", test.RequestHelperNoop)
+
+		So(w.Code, ShouldEqual, 200)
+		So(w.HeaderMap.Get("Access-Control-Allow-Origin"), ShouldEqual, "")
+
+		w = rh.Get("/", func(r *http.Request) {
+			r.Header.Set("Origin", "somewhere.com")
+		})
+
+		So(w.Code, ShouldEqual, 200)
+		So(w.HeaderMap.Get("Access-Control-Allow-Origin"), ShouldEqual, "somewhere.com")
+
 	})
 }
 
