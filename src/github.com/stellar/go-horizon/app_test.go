@@ -115,6 +115,20 @@ func TestApp(t *testing.T) {
 		So(w.HeaderMap.Get("Access-Control-Allow-Origin"), ShouldEqual, "somewhere.com")
 
 	})
+
+	Convey("Trailing slash causes redirect", t, func() {
+		test.LoadScenario("base")
+		app := NewTestApp()
+		defer app.Close()
+		rh := NewRequestHelper(app)
+
+		w := rh.Get("/accounts", test.RequestHelperNoop)
+		So(w.Code, ShouldEqual, 200)
+
+		w = rh.Get("/accounts/", test.RequestHelperNoop)
+		So(w.Code, ShouldEqual, 200)
+
+	})
 }
 
 func shouldHaveASentryHook(actual interface{}, options ...interface{}) string {

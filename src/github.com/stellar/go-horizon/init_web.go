@@ -46,6 +46,7 @@ func initWeb(app *App) {
 func initWebMiddleware(app *App) {
 
 	r := app.web.router
+	r.Use(stripTrailingSlashMiddleware())
 	r.Use(middleware.EnvInit)
 	r.Use(app.Middleware)
 	r.Use(middleware.RequestID)
