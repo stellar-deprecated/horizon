@@ -21,11 +21,11 @@ type AccountResource struct {
 
 // BalanceResource represents an accounts holdings for a single currency type
 type BalanceResource struct {
-	Type    string `json:"currency_type"`
+	Type    string `json:"asset_type"`
 	Balance int64  `json:"balance"`
 	// additional trustline data
-	Code   string `json:"currency_code,omitempty"`
-	Issuer string `json:"currency_issuer,omitempty"`
+	Code   string `json:"asset_code,omitempty"`
+	Issuer string `json:"issuer,omitempty"`
 	Limit  int64  `json:"limit,omitempty"`
 }
 
