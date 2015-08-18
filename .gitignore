@@ -6,3 +6,5 @@ docs/public
 
 *.bts
 *.swp
+
+test.go
