@@ -38,6 +38,10 @@ type P struct {
 	Extras   map[string]interface{} `json:"extras,omitempty"`
 }
 
+func (p *P) Error() string {
+	return fmt.Sprintf("problem: %s", p.Type)
+}
+
 // Inflate expands a problem with contextal information.
 // At present it adds the request's id as the problem's Instance, if available.
 func Inflate(ctx context.Context, p *P) {
@@ -58,6 +62,8 @@ func Render(ctx context.Context, w http.ResponseWriter, p interface{}) {
 	switch p := p.(type) {
 	case P:
 		render(ctx, w, p)
+	case *P:
+		render(ctx, w, *p)
 	case error:
 		pp, ok := errToProblemMap[p]
 

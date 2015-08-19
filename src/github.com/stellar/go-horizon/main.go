@@ -1,4 +1,4 @@
 package horizon
 
-//go:generate gb build github.com/nullstyle/go-codegen/cmd/go-codegen
 //go:generate go-codegen
+//go:generate gofmt -w main_generated.go

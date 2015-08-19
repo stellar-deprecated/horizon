@@ -104,6 +104,7 @@ func initWebActions(app *App) {
 	r.Get("/payments", &PaymentsIndexAction{})
 
 	r.Get("/offers/:id", &NotImplementedAction{})
+	r.Get("/order_book", &OrderBookShowAction{})
 
 	// go-horizon doesn't implement everything horizon did,
 	// so we reverse proxy if we can
