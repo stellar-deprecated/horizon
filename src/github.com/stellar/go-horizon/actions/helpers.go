@@ -1,15 +1,22 @@
 package actions
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-stellar-base/xdr"
 )
 
 var (
-	ParamCursor = "cursor"
-	ParamOrder  = "order"
-	ParamLimit  = "limit"
+	ParamCursor     = "cursor"
+	ParamOrder      = "order"
+	ParamLimit      = "limit"
+	AssetTypeValues = map[string]xdr.AssetType{
+		"native":      xdr.AssetTypeAssetTypeNative,
+		"alphanum_4":  xdr.AssetTypeAssetTypeCreditAlphanum4,
+		"alphanum_12": xdr.AssetTypeAssetTypeCreditAlphanum12,
+	}
 )
 
 // GetString retrieves a string from either the URLParams, form or query string.
@@ -114,6 +121,26 @@ func (base *Base) GetPageQuery() db.PageQuery {
 
 	if err != nil {
 		base.Err = err
+	}
+
+	return r
+}
+
+// GetAssetType is a helper that returns a xdr.AssetType by reading a string
+func (base *Base) GetAssetType(name string) xdr.AssetType {
+	if base.Err != nil {
+		return xdr.AssetTypeAssetTypeNative
+	}
+
+	s := base.GetString(name)
+	r, ok := AssetTypeValues[s]
+
+	if base.Err != nil {
+		return xdr.AssetTypeAssetTypeNative
+	}
+
+	if !ok {
+		base.Err = fmt.Errorf("Unknown asset type: %s", s)
 	}
 
 	return r
