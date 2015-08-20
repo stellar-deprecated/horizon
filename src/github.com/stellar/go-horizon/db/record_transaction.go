@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	sq "github.com/lann/squirrel"
 	"time"
 )
@@ -20,6 +21,8 @@ type TransactionRecord struct {
 	MaxFee              int32     `db:"max_fee"`
 	FeePaid             int32     `db:"fee_paid"`
 	OperationCount      int32     `db:"operation_count"`
+	TxResult            sql.NullString  `db:"txresult"`
+	Success             sql.NullBool    `db:"success"`
 	TransactionStatusId int32     `db:"transaction_status_id"`
 	CreatedAt           time.Time `db:"created_at"`
 	UpdatedAt           time.Time `db:"updated_at"`
@@ -28,5 +31,3 @@ type TransactionRecord struct {
 func (r TransactionRecord) TableName() string {
 	return "history_transactions"
 }
-
-
