@@ -1,9 +1,9 @@
 package actions
 
 import (
-	"fmt"
 	"strconv"
 
+	"github.com/stellar/go-horizon/assets"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -132,15 +132,14 @@ func (base *Base) GetAssetType(name string) xdr.AssetType {
 		return xdr.AssetTypeAssetTypeNative
 	}
 
-	s := base.GetString(name)
-	r, ok := AssetTypeValues[s]
+	r, err := assets.Parse(base.GetString(name))
 
 	if base.Err != nil {
 		return xdr.AssetTypeAssetTypeNative
 	}
 
-	if !ok {
-		base.Err = fmt.Errorf("Unknown asset type: %s", s)
+	if err != nil {
+		base.Err = err
 	}
 
 	return r
