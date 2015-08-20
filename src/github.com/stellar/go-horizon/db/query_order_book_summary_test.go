@@ -22,6 +22,35 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 			CounterType: xdr.AssetTypeAssetTypeNative,
 		}
 
+		Convey("loads correctly", func() {
+			var result OrderBookSummaryRecord
+			So(Get(ctx, q, &result), ShouldBeNil)
+
+			So(result.Asks[0].Amount, ShouldEqual, 10)
+			So(result.Asks[0].Pricen, ShouldEqual, 15)
+			So(result.Asks[0].Priced, ShouldEqual, 1)
+
+			So(result.Asks[1].Amount, ShouldEqual, 100)
+			So(result.Asks[1].Pricen, ShouldEqual, 20)
+			So(result.Asks[1].Priced, ShouldEqual, 1)
+
+			So(result.Asks[2].Amount, ShouldEqual, 1000)
+			So(result.Asks[2].Pricen, ShouldEqual, 50)
+			So(result.Asks[2].Priced, ShouldEqual, 1)
+
+			So(result.Bids[0].Amount, ShouldEqual, 200)
+			So(result.Bids[0].Pricen, ShouldEqual, 1)
+			So(result.Bids[0].Priced, ShouldEqual, 5)
+
+			So(result.Bids[1].Amount, ShouldEqual, 11)
+			So(result.Bids[1].Pricen, ShouldEqual, 1)
+			So(result.Bids[1].Priced, ShouldEqual, 9)
+
+			So(result.Bids[2].Amount, ShouldEqual, 1)
+			So(result.Bids[2].Pricen, ShouldEqual, 1)
+			So(result.Bids[2].Priced, ShouldEqual, 10)
+		})
+
 		Convey("works in either direction", func() {
 			var result OrderBookSummaryRecord
 			var inversion OrderBookSummaryRecord
