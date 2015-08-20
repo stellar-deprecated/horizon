@@ -10,7 +10,7 @@ import (
 )
 
 func TestOrderBookActions(t *testing.T) {
-	test.LoadScenario("trades")
+	test.LoadScenario("order_books")
 	app := NewTestApp()
 	defer app.Close()
 	rh := NewRequestHelper(app)
@@ -66,7 +66,7 @@ func TestOrderBookActions(t *testing.T) {
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 		})
 
-		Convey("(same currency):       GET /order_book?base_type=native&counter_type=native", func() {
+		Convey("(same currency): GET /order_book?base_type=native&counter_type=native", func() {
 			w := rh.Get("/order_book?base_type=native&counter_type=native", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			var result map[string]interface{}
@@ -88,11 +88,23 @@ func TestOrderBookActions(t *testing.T) {
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 		})
 
-		Convey("(happy path):          GET /order_book?base_type=native&counter_type=alphanum_4&counter_code=USD&counter_issuer=GD37HGFJ5MA6RIROIZWB6CZGMAOEBJ25SJSSBNW2X34ERX3O4BDF54SJ", func() {})
+		Convey("(happy path): GET /order_book?base_type=native&counter_type=alphanum_4&counter_code=USD&counter_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", func() {
+			w := rh.Get("/order_book?base_type=native&counter_type=alphanum_4&counter_code=USD&counter_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", test.RequestHelperNoop)
+			t.Log(w.Body.String())
+			So(w.Code, ShouldEqual, 200)
+			var result OrderBookSummaryResource
+			err := json.Unmarshal(w.Body.Bytes(), &result)
+			So(err, ShouldBeNil)
 
-		Convey("Reversing the base/counter assets returns an summary where asks/bids are reversed", func() {
+			So(result.Base.AssetType, ShouldEqual, "native")
+			So(result.Base.AssetCode, ShouldEqual, "")
+			So(result.Base.AssetIssuer, ShouldEqual, "")
+			So(result.Counter.AssetType, ShouldEqual, "alphanum_4")
+			So(result.Counter.AssetCode, ShouldEqual, "USD")
+			So(result.Counter.AssetIssuer, ShouldEqual, "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
+			So(len(result.Asks), ShouldEqual, 3)
+			So(len(result.Bids), ShouldEqual, 3)
 
 		})
-
 	})
 }

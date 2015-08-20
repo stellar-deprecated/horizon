@@ -18,7 +18,7 @@ type OrderBookSummaryResource struct {
 	Bids    []PriceLevelResource `json:"bids"`
 	Asks    []PriceLevelResource `json:"asks"`
 	Base    AssetResource        `json:"base"`
-	Counter AssetResource        `josn:"counter"`
+	Counter AssetResource        `json:"counter"`
 }
 
 type PriceLevelResource struct {
@@ -45,8 +45,8 @@ func NewOrderBookSummaryResource(query db.OrderBookSummaryQuery, summary db.Orde
 	}
 
 	result = OrderBookSummaryResource{
-		Bids: []PriceLevelResource{},
-		Asks: []PriceLevelResource{},
+		Bids: offersToPriceLevels(summary.Bids, true),
+		Asks: offersToPriceLevels(summary.Asks, false),
 		Base: AssetResource{
 			AssetType:   bt,
 			AssetCode:   query.BaseCode,
@@ -57,6 +57,47 @@ func NewOrderBookSummaryResource(query db.OrderBookSummaryQuery, summary db.Orde
 			AssetCode:   query.CounterCode,
 			AssetIssuer: query.CounterIssuer,
 		},
+	}
+
+	return
+}
+
+// offersToPriceLevels collapses an array of offers into an array of PriceLevelResource objects.
+// offers at the same price are collapsed into a single "Price Level"
+func offersToPriceLevels(offers []db.CoreOfferRecord, bids bool) (result []PriceLevelResource) {
+	result = []PriceLevelResource{}
+	var current PriceLevelResource
+
+	for _, o := range offers {
+
+		// if accumulator holds some amount and the price is different than the current iteration
+		// finish the accumulator by adding it onto the result then reset
+		if current.Amount != 0 && o.PriceAsFloat() != current.PriceF {
+			result = append(result, current)
+			current = PriceLevelResource{}
+		}
+
+		current.Amount += o.Amount
+
+		if bids {
+			// bids should be priced as the inversion of an offer, since all offers are technically asks
+			current.PriceF = 1.0 / o.PriceAsFloat()
+			current.Price = PriceResource{
+				N: o.Priced,
+				D: o.Pricen,
+			}
+		} else {
+			current.PriceF = o.PriceAsFloat()
+			current.Price = PriceResource{
+				N: o.Pricen,
+				D: o.Priced,
+			}
+		}
+
+	}
+
+	if current.Amount != 0 {
+		result = append(result, current)
 	}
 
 	return
