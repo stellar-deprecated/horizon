@@ -2,9 +2,7 @@ package horizon
 
 import (
 	"fmt"
-
 	"github.com/jagregory/halgo"
-
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
 )
@@ -21,9 +19,10 @@ type TransactionResource struct {
 	MaxFee           int32  `json:"max_fee"`
 	FeePaid          int32  `json:"fee_paid"`
 	OperationCount   int32  `json:"operation_count"`
-	ResultCode       int32  `json:"result_code"`
-	ResultCodeString string `json:"result_code_s"`
+	//ResultCode       int32  `json:"result_code"`
+	//ResultCodeString string `json:"result_code_s"`
 	EnvelopeXdr      string `json:"envelope_xdr"`
+	Success          bool   `json:"success"`
 	ResultXdr        string `json:"result_xdr"`
 	ResultMetaXdr    string `json:"result_meta_xdr"`
 }
@@ -32,6 +31,11 @@ type TransactionResource struct {
 func NewTransactionResource(tx db.TransactionRecord) TransactionResource {
 	self := fmt.Sprintf("/transactions/%s", tx.TransactionHash)
 
+	var success bool = true; // for backward compatibility
+	if tx.Success.Valid {
+		success = tx.Success.Bool
+	}
+	
 	return TransactionResource{
 		Links: halgo.Links{}.
 			Self(self).
@@ -50,10 +54,11 @@ func NewTransactionResource(tx db.TransactionRecord) TransactionResource {
 		MaxFee:           tx.MaxFee,
 		FeePaid:          tx.FeePaid,
 		OperationCount:   tx.OperationCount,
-		ResultCode:       0, //NOTE: if at some point a history_transaction row records the result code, use it
-		ResultCodeString: "tx_success",
+		Success:          success,
+		//ResultCode:       0, //NOTE: if at some point a history_transaction row records the result code, use it
+		//ResultCodeString: "TODO",
 		EnvelopeXdr:      "TODO",
-		ResultXdr:        "TODO",
+		ResultXdr:        tx.TxResult.String,
 		ResultMetaXdr:    "TODO",
 	}
 }
