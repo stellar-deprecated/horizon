@@ -38,17 +38,17 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 			So(result.Asks[2].Pricen, ShouldEqual, 50)
 			So(result.Asks[2].Priced, ShouldEqual, 1)
 
-			So(result.Bids[0].Amount, ShouldEqual, 200)
+			So(result.Bids[0].Amount, ShouldEqual, 1)
 			So(result.Bids[0].Pricen, ShouldEqual, 1)
-			So(result.Bids[0].Priced, ShouldEqual, 5)
+			So(result.Bids[0].Priced, ShouldEqual, 10)
 
 			So(result.Bids[1].Amount, ShouldEqual, 11)
 			So(result.Bids[1].Pricen, ShouldEqual, 1)
 			So(result.Bids[1].Priced, ShouldEqual, 9)
 
-			So(result.Bids[2].Amount, ShouldEqual, 1)
+			So(result.Bids[2].Amount, ShouldEqual, 200)
 			So(result.Bids[2].Pricen, ShouldEqual, 1)
-			So(result.Bids[2].Priced, ShouldEqual, 10)
+			So(result.Bids[2].Priced, ShouldEqual, 5)
 		})
 
 		Convey("works in either direction", func() {
@@ -62,12 +62,12 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 			So(len(result.Bids), ShouldEqual, 3)
 
 			// the asks of one side are the bids on the other
-			So(result.Asks[0].OfferID, ShouldEqual, inversion.Bids[2].OfferID)
+			So(result.Asks[0].OfferID, ShouldEqual, inversion.Bids[0].OfferID)
 			So(result.Asks[1].OfferID, ShouldEqual, inversion.Bids[1].OfferID)
-			So(result.Asks[2].OfferID, ShouldEqual, inversion.Bids[0].OfferID)
-			So(result.Bids[0].OfferID, ShouldEqual, inversion.Asks[2].OfferID)
+			So(result.Asks[2].OfferID, ShouldEqual, inversion.Bids[2].OfferID)
+			So(result.Bids[0].OfferID, ShouldEqual, inversion.Asks[0].OfferID)
 			So(result.Bids[1].OfferID, ShouldEqual, inversion.Asks[1].OfferID)
-			So(result.Bids[2].OfferID, ShouldEqual, inversion.Asks[0].OfferID)
+			So(result.Bids[2].OfferID, ShouldEqual, inversion.Asks[2].OfferID)
 		})
 
 		Convey("Invert()", func() {

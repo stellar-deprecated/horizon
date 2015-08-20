@@ -34,7 +34,7 @@ func (q OrderBookSummaryQuery) Select(ctx context.Context, dest interface{}) err
 
 	bidsQuery := CoreOfferPageByCurrencyQuery{
 		SqlQuery:         q.SqlQuery,
-		PageQuery:        PageQuery{Limit: OrderBookSummaryPageSize, Order: OrderDescending},
+		PageQuery:        PageQuery{Limit: OrderBookSummaryPageSize, Order: OrderAscending},
 		BuyingAssetType:  q.BaseType,
 		BuyingAssetCode:  q.BaseCode,
 		BuyingIssuer:     q.BaseIssuer,
