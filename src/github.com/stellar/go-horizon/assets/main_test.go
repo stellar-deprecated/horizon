@@ -18,11 +18,11 @@ func TestAssets(t *testing.T) {
 		So(result, ShouldEqual, xdr.AssetTypeAssetTypeNative)
 		So(err, ShouldBeNil)
 
-		result, err = Parse("alphanum_4")
+		result, err = Parse("credit_alphanum4")
 		So(result, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum4)
 		So(err, ShouldBeNil)
 
-		result, err = Parse("alphanum_12")
+		result, err = Parse("credit_alphanum12")
 		So(result, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum12)
 		So(err, ShouldBeNil)
 
@@ -44,11 +44,11 @@ func TestAssets(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		result, err = String(xdr.AssetTypeAssetTypeCreditAlphanum4)
-		So(result, ShouldEqual, "alphanum_4")
+		So(result, ShouldEqual, "credit_alphanum4")
 		So(err, ShouldBeNil)
 
 		result, err = String(xdr.AssetTypeAssetTypeCreditAlphanum12)
-		So(result, ShouldEqual, "alphanum_12")
+		So(result, ShouldEqual, "credit_alphanum12")
 		So(err, ShouldBeNil)
 
 		result, err = String(xdr.AssetType(15))

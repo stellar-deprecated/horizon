@@ -42,25 +42,25 @@ func TestOrderBookActions(t *testing.T) {
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 		})
 
-		Convey("(missing code): GET /order_book?selling_type=native&buying_type=alphanum_4&buying_issuer=123", func() {
-			w := rh.Get("/order_book?selling_type=native&buying_type=alphanum_4&buying_issuer=123", test.RequestHelperNoop)
+		Convey("(missing code): GET /order_book?selling_type=native&buying_type=credit_alphanum4&buying_issuer=123", func() {
+			w := rh.Get("/order_book?selling_type=native&buying_type=credit_alphanum4&buying_issuer=123", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 400)
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 
-			w = rh.Get("/order_book?buying_type=native&selling_type=alphanum_4&selling_issuer=123", test.RequestHelperNoop)
+			w = rh.Get("/order_book?buying_type=native&selling_type=credit_alphanum4&selling_issuer=123", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 400)
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 		})
 
-		Convey("(missing issuer): GET /order_book?selling_type=native&buying_type=alphanum_4&buying_code=USD", func() {
-			w := rh.Get("/order_book?selling_type=native&buying_type=alphanum_4&buying_code=USD", test.RequestHelperNoop)
+		Convey("(missing issuer): GET /order_book?selling_type=native&buying_type=credit_alphanum4&buying_code=USD", func() {
+			w := rh.Get("/order_book?selling_type=native&buying_type=credit_alphanum4&buying_code=USD", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 400)
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 
-			w = rh.Get("/order_book?buying_type=native&selling_type=alphanum_4&selling_code=USD", test.RequestHelperNoop)
+			w = rh.Get("/order_book?buying_type=native&selling_type=credit_alphanum4&selling_code=USD", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 400)
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
@@ -81,15 +81,15 @@ func TestOrderBookActions(t *testing.T) {
 
 		})
 
-		Convey("(incomplete currency): GET /order_book?selling_type=native&buying_type=alphanum_4&buying_code=USD", func() {
-			w := rh.Get("/order_book?selling_type=native&buying_type=alphanum_4&buying_code=USD", test.RequestHelperNoop)
+		Convey("(incomplete currency): GET /order_book?selling_type=native&buying_type=credit_alphanum4&buying_code=USD", func() {
+			w := rh.Get("/order_book?selling_type=native&buying_type=credit_alphanum4&buying_code=USD", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 400)
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 		})
 
-		Convey("(happy path): GET /order_book?selling_type=native&buying_type=alphanum_4&buying_code=USD&buying_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", func() {
-			w := rh.Get("/order_book?selling_type=native&buying_type=alphanum_4&buying_code=USD&buying_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", test.RequestHelperNoop)
+		Convey("(happy path): GET /order_book?selling_type=native&buying_type=credit_alphanum4&buying_code=USD&buying_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", func() {
+			w := rh.Get("/order_book?selling_type=native&buying_type=credit_alphanum4&buying_code=USD&buying_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", test.RequestHelperNoop)
 			t.Log(w.Body.String())
 			So(w.Code, ShouldEqual, 200)
 			var result OrderBookSummaryResource
@@ -99,7 +99,7 @@ func TestOrderBookActions(t *testing.T) {
 			So(result.Selling.AssetType, ShouldEqual, "native")
 			So(result.Selling.AssetCode, ShouldEqual, "")
 			So(result.Selling.AssetIssuer, ShouldEqual, "")
-			So(result.Buying.AssetType, ShouldEqual, "alphanum_4")
+			So(result.Buying.AssetType, ShouldEqual, "credit_alphanum4")
 			So(result.Buying.AssetCode, ShouldEqual, "USD")
 			So(result.Buying.AssetIssuer, ShouldEqual, "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
 			So(len(result.Asks), ShouldEqual, 3)

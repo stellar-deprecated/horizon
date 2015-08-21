@@ -62,7 +62,7 @@ InvalidOrderBook:
 		Status: http.StatusBadRequest,
 		Detail: "The parameters that specify what order book to view are invalid in some way. " +
 			"Please ensure that your type parameters (selling_type and buying_type) are one the " +
-			"following valid values: native, alphanum_4, alphanum_12.  Also ensure that you " +
+			"following valid values: native, credit_alphanum4, credit_alphanum12.  Also ensure that you " +
 			"have specified selling_code and selling_issuer if selling_type is not 'native', as well " +
 			"as buying_code and buying_issuer if buying_type is not 'native'",
 	}
