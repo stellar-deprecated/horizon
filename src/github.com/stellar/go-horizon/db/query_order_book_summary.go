@@ -5,8 +5,11 @@ import (
 	"golang.org/x/net/context"
 )
 
+// OrderBookSummaryPageSize is the default limit of price levels returned per "side" of an order book
 const OrderBookSummaryPageSize = 20
 
+// OrderBookSummarySQL is the raw sql query (postgresql style placeholders) to query for
+// a summary of price levels for a given order book.
 const OrderBookSummarySQL = `
 SELECT 
 	*,
@@ -34,7 +37,7 @@ FROM
 		co.pricen,
 		co.priced,
 		co.price
-	LIMIT 15
+	LIMIT $7 
 
 ) UNION (
 	-- This query returns the "bids" portion, inverting the where clauses
@@ -59,12 +62,14 @@ FROM
 		co.pricen,
 		co.priced,
 		co.price
-	LIMIT 15
+	LIMIT $7
 )) summary
 
 ORDER BY type, pricef
 `
 
+// OrderBookSummaryQuery is a query from which you should be able to drive a
+// order book summary client interface (bid/ask spread, prices and volume, etc).
 type OrderBookSummaryQuery struct {
 	SqlQuery
 	BaseType      xdr.AssetType
@@ -75,6 +80,7 @@ type OrderBookSummaryQuery struct {
 	CounterIssuer string
 }
 
+// Invert returns a new query in which the bids/asks have swapped places.
 func (q OrderBookSummaryQuery) Invert() OrderBookSummaryQuery {
 
 	return OrderBookSummaryQuery{
@@ -88,6 +94,7 @@ func (q OrderBookSummaryQuery) Invert() OrderBookSummaryQuery {
 	}
 }
 
+// Select executes the query, populating the provided OrderBookSummaryRecord with data.
 func (q OrderBookSummaryQuery) Select(ctx context.Context, dest interface{}) error {
 	args := []interface{}{
 		q.BaseType,
@@ -96,6 +103,7 @@ func (q OrderBookSummaryQuery) Select(ctx context.Context, dest interface{}) err
 		q.CounterType,
 		q.CounterCode,
 		q.CounterIssuer,
+		OrderBookSummaryPageSize,
 	}
 
 	return q.SqlQuery.SelectRaw(ctx, OrderBookSummarySQL, args, dest)
