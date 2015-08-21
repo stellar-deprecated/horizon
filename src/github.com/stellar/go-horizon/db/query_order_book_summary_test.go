@@ -24,50 +24,59 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 
 		Convey("loads correctly", func() {
 			var result OrderBookSummaryRecord
-			So(Get(ctx, q, &result), ShouldBeNil)
+			So(Select(ctx, q, &result), ShouldBeNil)
 
-			So(result.Asks[0].Amount, ShouldEqual, 10)
-			So(result.Asks[0].Pricen, ShouldEqual, 15)
-			So(result.Asks[0].Priced, ShouldEqual, 1)
+			asks := result.Asks()
+			bids := result.Bids()
 
-			So(result.Asks[1].Amount, ShouldEqual, 100)
-			So(result.Asks[1].Pricen, ShouldEqual, 20)
-			So(result.Asks[1].Priced, ShouldEqual, 1)
+			So(asks[0].Amount, ShouldEqual, 10)
+			So(asks[0].Pricen, ShouldEqual, 15)
+			So(asks[0].Priced, ShouldEqual, 1)
 
-			So(result.Asks[2].Amount, ShouldEqual, 1000)
-			So(result.Asks[2].Pricen, ShouldEqual, 50)
-			So(result.Asks[2].Priced, ShouldEqual, 1)
+			So(asks[1].Amount, ShouldEqual, 100)
+			So(asks[1].Pricen, ShouldEqual, 20)
+			So(asks[1].Priced, ShouldEqual, 1)
 
-			So(result.Bids[0].Amount, ShouldEqual, 1)
-			So(result.Bids[0].Pricen, ShouldEqual, 1)
-			So(result.Bids[0].Priced, ShouldEqual, 10)
+			So(asks[2].Amount, ShouldEqual, 1000)
+			So(asks[2].Pricen, ShouldEqual, 50)
+			So(asks[2].Priced, ShouldEqual, 1)
 
-			So(result.Bids[1].Amount, ShouldEqual, 11)
-			So(result.Bids[1].Pricen, ShouldEqual, 1)
-			So(result.Bids[1].Priced, ShouldEqual, 9)
+			So(bids[0].Amount, ShouldEqual, 1)
+			So(bids[0].Pricen, ShouldEqual, 10)
+			So(bids[0].Priced, ShouldEqual, 1)
 
-			So(result.Bids[2].Amount, ShouldEqual, 200)
-			So(result.Bids[2].Pricen, ShouldEqual, 1)
-			So(result.Bids[2].Priced, ShouldEqual, 5)
+			So(bids[1].Amount, ShouldEqual, 11)
+			So(bids[1].Pricen, ShouldEqual, 9)
+			So(bids[1].Priced, ShouldEqual, 1)
+
+			So(bids[2].Amount, ShouldEqual, 200)
+			So(bids[2].Pricen, ShouldEqual, 5)
+			So(bids[2].Priced, ShouldEqual, 1)
 		})
 
 		Convey("works in either direction", func() {
 			var result OrderBookSummaryRecord
 			var inversion OrderBookSummaryRecord
 
-			So(Get(ctx, q, &result), ShouldBeNil)
-			So(Get(ctx, q.Invert(), &inversion), ShouldBeNil)
+			So(Select(ctx, q, &result), ShouldBeNil)
+			So(Select(ctx, q.Invert(), &inversion), ShouldBeNil)
 
-			So(len(result.Asks), ShouldEqual, 3)
-			So(len(result.Bids), ShouldEqual, 3)
+			asks := result.Asks()
+			bids := result.Bids()
+
+			iasks := inversion.Asks()
+			ibids := inversion.Bids()
+
+			So(len(result), ShouldEqual, 6)
+			So(len(inversion), ShouldEqual, 6)
 
 			// the asks of one side are the bids on the other
-			So(result.Asks[0].OfferID, ShouldEqual, inversion.Bids[0].OfferID)
-			So(result.Asks[1].OfferID, ShouldEqual, inversion.Bids[1].OfferID)
-			So(result.Asks[2].OfferID, ShouldEqual, inversion.Bids[2].OfferID)
-			So(result.Bids[0].OfferID, ShouldEqual, inversion.Asks[0].OfferID)
-			So(result.Bids[1].OfferID, ShouldEqual, inversion.Asks[1].OfferID)
-			So(result.Bids[2].OfferID, ShouldEqual, inversion.Asks[2].OfferID)
+			So(asks[0].Pricef, ShouldEqual, ibids[0].InvertPricef())
+			So(asks[1].Pricef, ShouldEqual, ibids[1].InvertPricef())
+			So(asks[2].Pricef, ShouldEqual, ibids[2].InvertPricef())
+			So(bids[0].Pricef, ShouldEqual, iasks[0].InvertPricef())
+			So(bids[1].Pricef, ShouldEqual, iasks[1].InvertPricef())
+			So(bids[2].Pricef, ShouldEqual, iasks[2].InvertPricef())
 		})
 
 		Convey("Invert()", func() {

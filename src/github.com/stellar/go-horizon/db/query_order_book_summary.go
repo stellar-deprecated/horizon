@@ -7,6 +7,60 @@ import (
 
 const OrderBookSummaryPageSize = 20
 
+const OrderBookSummarySQL = `
+SELECT 
+  *,
+	(pricen :: double precision / priced :: double precision) as pricef
+
+FROM
+((
+	SELECT 
+		'ask' as type,
+		co.pricen,
+		co.priced,
+		SUM(co.amount) as amount
+
+	FROM  offers co
+
+	WHERE co.sellingassettype = $1
+	AND   co.sellingassetcode = $2
+	AND   co.sellingissuer    = $3
+	AND   co.buyingassettype  = $4
+	AND   co.buyingassetcode  = $5
+	AND   co.buyingissuer     = $6
+
+	GROUP BY
+		co.pricen,
+		co.priced,
+		co.price
+	LIMIT 15
+
+) UNION (
+	SELECT 
+		'bid'  as type,
+		co.priced as pricen,
+		co.pricen as priced,
+		SUM(co.amount) as amount
+
+	FROM offers co
+
+	WHERE co.sellingassettype = $4
+	AND   co.sellingassetcode = $5
+	AND   co.sellingissuer    = $6
+	AND   co.buyingassettype  = $1
+	AND   co.buyingassetcode  = $2
+	AND   co.buyingissuer     = $3
+
+	GROUP BY
+		co.pricen,
+		co.priced,
+		co.price
+	LIMIT 15
+)) summary
+
+ORDER BY type, pricef
+`
+
 type OrderBookSummaryQuery struct {
 	SqlQuery
 	BaseType      xdr.AssetType
@@ -31,40 +85,14 @@ func (q OrderBookSummaryQuery) Invert() OrderBookSummaryQuery {
 }
 
 func (q OrderBookSummaryQuery) Select(ctx context.Context, dest interface{}) error {
-
-	bidsQuery := CoreOfferPageByCurrencyQuery{
-		SqlQuery:         q.SqlQuery,
-		PageQuery:        PageQuery{Limit: OrderBookSummaryPageSize, Order: OrderAscending},
-		BuyingAssetType:  q.BaseType,
-		BuyingAssetCode:  q.BaseCode,
-		BuyingIssuer:     q.BaseIssuer,
-		SellingAssetType: q.CounterType,
-		SellingAssetCode: q.CounterCode,
-		SellingIssuer:    q.CounterIssuer,
+	args := []interface{}{
+		q.BaseType,
+		q.BaseCode,
+		q.BaseIssuer,
+		q.CounterType,
+		q.CounterCode,
+		q.CounterIssuer,
 	}
 
-	asksQuery := CoreOfferPageByCurrencyQuery{
-		SqlQuery:         q.SqlQuery,
-		PageQuery:        PageQuery{Limit: OrderBookSummaryPageSize, Order: OrderAscending},
-		BuyingAssetType:  q.CounterType,
-		BuyingAssetCode:  q.CounterCode,
-		BuyingIssuer:     q.CounterIssuer,
-		SellingAssetType: q.BaseType,
-		SellingAssetCode: q.BaseCode,
-		SellingIssuer:    q.BaseIssuer,
-	}
-
-	result := OrderBookSummaryRecord{}
-
-	err := Select(ctx, bidsQuery, &result.Bids)
-	if err != nil {
-		return err
-	}
-
-	err = Select(ctx, asksQuery, &result.Asks)
-	if err != nil {
-		return err
-	}
-
-	return setOn([]OrderBookSummaryRecord{result}, dest)
+	return q.SqlQuery.SelectRaw(ctx, OrderBookSummarySQL, args, dest)
 }

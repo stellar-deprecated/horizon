@@ -72,7 +72,7 @@ InvalidOrderBook:
 
 // LoadRecord populates action.Record
 func (action *OrderBookShowAction) LoadRecord() {
-	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+	action.Err = db.Select(action.Ctx, action.Query, &action.Record)
 }
 
 // LoadResource populates action.Record
