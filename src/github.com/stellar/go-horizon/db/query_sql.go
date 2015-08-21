@@ -14,7 +14,6 @@ type SqlQuery struct {
 }
 
 func (q SqlQuery) Select(ctx context.Context, sql sq.SelectBuilder, dest interface{}) error {
-	db := sqlx.NewDb(q.DB, "postgres")
 	sql = sql.PlaceholderFormat(sq.Dollar)
 	query, args, err := sql.ToSql()
 
@@ -22,6 +21,12 @@ func (q SqlQuery) Select(ctx context.Context, sql sq.SelectBuilder, dest interfa
 		return err
 	}
 
+	return q.SelectRaw(ctx, query, args, dest)
+}
+
+// SelectRaw runs the provided postgres query and args against this sqlquery's db.
+func (q SqlQuery) SelectRaw(ctx context.Context, query string, args []interface{}, dest interface{}) error {
+	db := sqlx.NewDb(q.DB, "postgres")
 	log.WithField(ctx, "sql", query).Info("query sql")
 	log.WithField(ctx, "args", args).Debug("query args")
 
@@ -29,7 +34,6 @@ func (q SqlQuery) Select(ctx context.Context, sql sq.SelectBuilder, dest interfa
 }
 
 func (q SqlQuery) Get(ctx context.Context, sql sq.SelectBuilder, dest interface{}) error {
-	db := sqlx.NewDb(q.DB, "postgres")
 	sql = sql.PlaceholderFormat(sq.Dollar)
 	query, args, err := sql.ToSql()
 
@@ -37,6 +41,12 @@ func (q SqlQuery) Get(ctx context.Context, sql sq.SelectBuilder, dest interface{
 		return err
 	}
 
+	return q.GetRaw(ctx, query, args, dest)
+}
+
+// GetRaw runs the provided postgres query and args against this sqlquery's db.
+func (q SqlQuery) GetRaw(ctx context.Context, query string, args []interface{}, dest interface{}) error {
+	db := sqlx.NewDb(q.DB, "postgres")
 	log.WithField(ctx, "sql", query).Info("query sql")
 	log.WithField(ctx, "args", args).Debug("query args")
 
