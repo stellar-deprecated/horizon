@@ -1,5 +1,7 @@
 package db
 
+// PriceLevelRecord is a collapsed view of multiple offers at the same price that
+// contains the summed amount from all the member offers. Used by OrderBookSummaryRecord
 type PriceLevelRecord struct {
 	Type   string
 	Pricen int32
@@ -8,6 +10,8 @@ type PriceLevelRecord struct {
 	Amount int64
 }
 
+// InvertPricef returns the inverted price of the price-level, i.e. what the price would be if you were
+// viewing the price level from the other side of the bid/ask dichotomy.
 func (p *PriceLevelRecord) InvertPricef() float64 {
 	return float64(p.Priced) / float64(p.Pricen)
 }
@@ -16,6 +20,7 @@ func (p *PriceLevelRecord) InvertPricef() float64 {
 // counter currency
 type OrderBookSummaryRecord []PriceLevelRecord
 
+// Asks filters the summary into a slice of PriceLevelRecords where the type is 'ask'
 func (o OrderBookSummaryRecord) Asks() []PriceLevelRecord {
 	result := []PriceLevelRecord{}
 
@@ -28,6 +33,7 @@ func (o OrderBookSummaryRecord) Asks() []PriceLevelRecord {
 	return result
 }
 
+// Bids filters the summary into a slice of PriceLevelRecords where the type is 'bid'
 func (o OrderBookSummaryRecord) Bids() []PriceLevelRecord {
 	result := []PriceLevelRecord{}
 

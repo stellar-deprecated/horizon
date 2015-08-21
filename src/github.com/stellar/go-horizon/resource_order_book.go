@@ -1,15 +1,9 @@
 package horizon
 
 import (
-	_ "database/sql"
-	_ "fmt"
-
 	"github.com/jagregory/halgo"
-
 	"github.com/stellar/go-horizon/assets"
 	"github.com/stellar/go-horizon/db"
-	_ "github.com/stellar/go-horizon/render/hal"
-	_ "github.com/stellar/go-stellar-base/xdr"
 )
 
 // OrderBookSummaryResource is the display form of an OrderBookSummary record.
@@ -21,18 +15,22 @@ type OrderBookSummaryResource struct {
 	Counter AssetResource        `json:"counter"`
 }
 
+// PriceLevelResource is the display form of a PriceLevelRecord
 type PriceLevelResource struct {
 	Price  PriceResource `json:"price"`
 	PriceF float64       `json:"price_f"`
 	Amount int64         `json:"amount"`
 }
 
+// AssetResource is the display form of a Asset in the stellar network
 type AssetResource struct {
 	AssetType   string `json:"asset_type"`
 	AssetCode   string `json:"asset_code,ignoreempty"`
 	AssetIssuer string `json:"asset_issuer,ignoreempty"`
 }
 
+// NewOrderBookSummaryResource converts the provided query and summary into a json object
+// that can be displayed to the end user.
 func NewOrderBookSummaryResource(query db.OrderBookSummaryQuery, summary db.OrderBookSummaryRecord) (result OrderBookSummaryResource, err error) {
 	bt, err := assets.String(query.BaseType)
 	if err != nil {

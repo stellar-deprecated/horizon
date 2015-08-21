@@ -8,10 +8,13 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
-var (
+const (
+	// ParamCursor is a query string param name
 	ParamCursor = "cursor"
-	ParamOrder  = "order"
-	ParamLimit  = "limit"
+	// ParamOrder is a query string param name
+	ParamOrder = "order"
+	// ParamLimit is a query string param name
+	ParamLimit = "limit"
 )
 
 // GetString retrieves a string from either the URLParams, form or query string.
