@@ -72,12 +72,12 @@ ORDER BY type, pricef
 // order book summary client interface (bid/ask spread, prices and volume, etc).
 type OrderBookSummaryQuery struct {
 	SqlQuery
-	BaseType      xdr.AssetType
-	BaseCode      string
-	BaseIssuer    string
-	CounterType   xdr.AssetType
-	CounterCode   string
-	CounterIssuer string
+	SellingType   xdr.AssetType
+	SellingCode   string
+	SellingIssuer string
+	BuyingType    xdr.AssetType
+	BuyingCode    string
+	BuyingIssuer  string
 }
 
 // Invert returns a new query in which the bids/asks have swapped places.
@@ -85,24 +85,24 @@ func (q OrderBookSummaryQuery) Invert() OrderBookSummaryQuery {
 
 	return OrderBookSummaryQuery{
 		SqlQuery:      q.SqlQuery,
-		BaseType:      q.CounterType,
-		BaseCode:      q.CounterCode,
-		BaseIssuer:    q.CounterIssuer,
-		CounterType:   q.BaseType,
-		CounterCode:   q.BaseCode,
-		CounterIssuer: q.BaseIssuer,
+		SellingType:   q.BuyingType,
+		SellingCode:   q.BuyingCode,
+		SellingIssuer: q.BuyingIssuer,
+		BuyingType:    q.SellingType,
+		BuyingCode:    q.SellingCode,
+		BuyingIssuer:  q.SellingIssuer,
 	}
 }
 
 // Select executes the query, populating the provided OrderBookSummaryRecord with data.
 func (q OrderBookSummaryQuery) Select(ctx context.Context, dest interface{}) error {
 	args := []interface{}{
-		q.BaseType,
-		q.BaseCode,
-		q.BaseIssuer,
-		q.CounterType,
-		q.CounterCode,
-		q.CounterIssuer,
+		q.SellingType,
+		q.SellingCode,
+		q.SellingIssuer,
+		q.BuyingType,
+		q.BuyingCode,
+		q.BuyingIssuer,
 		OrderBookSummaryPageSize,
 	}
 

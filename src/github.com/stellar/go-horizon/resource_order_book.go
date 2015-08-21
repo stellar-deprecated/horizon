@@ -11,8 +11,8 @@ type OrderBookSummaryResource struct {
 	halgo.Links
 	Bids    []PriceLevelResource `json:"bids"`
 	Asks    []PriceLevelResource `json:"asks"`
-	Base    AssetResource        `json:"base"`
-	Counter AssetResource        `json:"counter"`
+	Selling AssetResource        `json:"base"`
+	Buying  AssetResource        `json:"counter"`
 }
 
 // PriceLevelResource is the display form of a PriceLevelRecord
@@ -32,12 +32,12 @@ type AssetResource struct {
 // NewOrderBookSummaryResource converts the provided query and summary into a json object
 // that can be displayed to the end user.
 func NewOrderBookSummaryResource(query db.OrderBookSummaryQuery, summary db.OrderBookSummaryRecord) (result OrderBookSummaryResource, err error) {
-	bt, err := assets.String(query.BaseType)
+	bt, err := assets.String(query.SellingType)
 	if err != nil {
 		return
 	}
 
-	ct, err := assets.String(query.CounterType)
+	ct, err := assets.String(query.BuyingType)
 	if err != nil {
 		return
 	}
@@ -45,15 +45,15 @@ func NewOrderBookSummaryResource(query db.OrderBookSummaryQuery, summary db.Orde
 	result = OrderBookSummaryResource{
 		Bids: newPriceLevelResources(summary.Bids()),
 		Asks: newPriceLevelResources(summary.Bids()),
-		Base: AssetResource{
+		Selling: AssetResource{
 			AssetType:   bt,
-			AssetCode:   query.BaseCode,
-			AssetIssuer: query.BaseIssuer,
+			AssetCode:   query.SellingCode,
+			AssetIssuer: query.SellingIssuer,
 		},
-		Counter: AssetResource{
+		Buying: AssetResource{
 			AssetType:   ct,
-			AssetCode:   query.CounterCode,
-			AssetIssuer: query.CounterIssuer,
+			AssetCode:   query.BuyingCode,
+			AssetIssuer: query.BuyingIssuer,
 		},
 	}
 

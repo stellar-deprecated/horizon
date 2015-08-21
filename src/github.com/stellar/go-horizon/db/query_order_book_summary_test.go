@@ -15,11 +15,11 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 		test.LoadScenario("order_books")
 
 		q := OrderBookSummaryQuery{
-			SqlQuery:    SqlQuery{core},
-			BaseType:    xdr.AssetTypeAssetTypeCreditAlphanum4,
-			BaseCode:    "USD",
-			BaseIssuer:  "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
-			CounterType: xdr.AssetTypeAssetTypeNative,
+			SqlQuery:      SqlQuery{core},
+			SellingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,
+			SellingCode:   "USD",
+			SellingIssuer: "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
+			BuyingType:    xdr.AssetTypeAssetTypeNative,
 		}
 
 		Convey("loads correctly", func() {
@@ -81,12 +81,12 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 
 		Convey("Invert()", func() {
 			q2 := q.Invert()
-			So(q2.BaseType, ShouldEqual, q.CounterType)
-			So(q2.BaseCode, ShouldEqual, q.CounterCode)
-			So(q2.BaseIssuer, ShouldEqual, q.CounterIssuer)
-			So(q2.CounterType, ShouldEqual, q.BaseType)
-			So(q2.CounterCode, ShouldEqual, q.BaseCode)
-			So(q2.CounterIssuer, ShouldEqual, q.BaseIssuer)
+			So(q2.SellingType, ShouldEqual, q.BuyingType)
+			So(q2.SellingCode, ShouldEqual, q.BuyingCode)
+			So(q2.SellingIssuer, ShouldEqual, q.BuyingIssuer)
+			So(q2.BuyingType, ShouldEqual, q.SellingType)
+			So(q2.BuyingCode, ShouldEqual, q.SellingCode)
+			So(q2.BuyingIssuer, ShouldEqual, q.SellingIssuer)
 		})
 	})
 }

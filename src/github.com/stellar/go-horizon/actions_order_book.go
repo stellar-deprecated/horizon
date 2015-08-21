@@ -21,34 +21,34 @@ type OrderBookShowAction struct {
 func (action *OrderBookShowAction) LoadQuery() {
 	action.Query = db.OrderBookSummaryQuery{
 		SqlQuery:      action.App.CoreQuery(),
-		BaseType:      action.GetAssetType("base_type"),
-		BaseIssuer:    action.GetString("base_issuer"),
-		BaseCode:      action.GetString("base_code"),
-		CounterType:   action.GetAssetType("counter_type"),
-		CounterIssuer: action.GetString("counter_issuer"),
-		CounterCode:   action.GetString("counter_code"),
+		SellingType:   action.GetAssetType("selling_type"),
+		SellingIssuer: action.GetString("selling_issuer"),
+		SellingCode:   action.GetString("selling_code"),
+		BuyingType:    action.GetAssetType("buying_type"),
+		BuyingIssuer:  action.GetString("buying_issuer"),
+		BuyingCode:    action.GetString("buying_code"),
 	}
 
 	if action.Err != nil {
 		goto InvalidOrderBook
 	}
 
-	if action.Query.BaseType != xdr.AssetTypeAssetTypeNative {
-		if action.Query.BaseCode == "" {
+	if action.Query.SellingType != xdr.AssetTypeAssetTypeNative {
+		if action.Query.SellingCode == "" {
 			goto InvalidOrderBook
 		}
 
-		if action.Query.BaseIssuer == "" {
+		if action.Query.SellingIssuer == "" {
 			goto InvalidOrderBook
 		}
 	}
 
-	if action.Query.CounterType != xdr.AssetTypeAssetTypeNative {
-		if action.Query.CounterCode == "" {
+	if action.Query.BuyingType != xdr.AssetTypeAssetTypeNative {
+		if action.Query.BuyingCode == "" {
 			goto InvalidOrderBook
 		}
 
-		if action.Query.CounterIssuer == "" {
+		if action.Query.BuyingIssuer == "" {
 			goto InvalidOrderBook
 		}
 	}
@@ -61,10 +61,10 @@ InvalidOrderBook:
 		Title:  "Invalid Order Book Parameters",
 		Status: http.StatusBadRequest,
 		Detail: "The parameters that specify what order book to view are invalid in some way. " +
-			"Please ensure that your type parameters (base_type and counter_type) are one the " +
+			"Please ensure that your type parameters (selling_type and buying_type) are one the " +
 			"following valid values: native, alphanum_4, alphanum_12.  Also ensure that you " +
-			"have specified base_code and base_issuer if base_type is not 'native', as well " +
-			"as counter_code and counter_issuer if counter_type is not 'native'",
+			"have specified selling_code and selling_issuer if selling_type is not 'native', as well " +
+			"as buying_code and buying_issuer if buying_type is not 'native'",
 	}
 
 	return
