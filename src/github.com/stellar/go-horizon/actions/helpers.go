@@ -9,14 +9,9 @@ import (
 )
 
 var (
-	ParamCursor     = "cursor"
-	ParamOrder      = "order"
-	ParamLimit      = "limit"
-	AssetTypeValues = map[string]xdr.AssetType{
-		"native":      xdr.AssetTypeAssetTypeNative,
-		"alphanum_4":  xdr.AssetTypeAssetTypeCreditAlphanum4,
-		"alphanum_12": xdr.AssetTypeAssetTypeCreditAlphanum12,
-	}
+	ParamCursor = "cursor"
+	ParamOrder  = "order"
+	ParamLimit  = "limit"
 )
 
 // GetString retrieves a string from either the URLParams, form or query string.
