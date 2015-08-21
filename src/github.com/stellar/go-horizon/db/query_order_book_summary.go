@@ -9,11 +9,12 @@ const OrderBookSummaryPageSize = 20
 
 const OrderBookSummarySQL = `
 SELECT 
-  *,
+	*,
 	(pricen :: double precision / priced :: double precision) as pricef
 
 FROM
 ((
+	-- This query returns the "asks" portion of the summary, and it is very straightforward
 	SELECT 
 		'ask' as type,
 		co.pricen,
@@ -36,6 +37,9 @@ FROM
 	LIMIT 15
 
 ) UNION (
+	-- This query returns the "bids" portion, inverting the where clauses
+	-- and the pricen/priced.  This inversion is necessary to produce the "bid"
+	-- view of a given offer (which are stored in the db as an offer to sell)
 	SELECT 
 		'bid'  as type,
 		co.priced as pricen,
