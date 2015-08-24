@@ -21,12 +21,12 @@ type OrderBookShowAction struct {
 func (action *OrderBookShowAction) LoadQuery() {
 	action.Query = db.OrderBookSummaryQuery{
 		SqlQuery:      action.App.CoreQuery(),
-		SellingType:   action.GetAssetType("selling_type"),
+		SellingType:   action.GetAssetType("selling_asset_type"),
 		SellingIssuer: action.GetString("selling_issuer"),
-		SellingCode:   action.GetString("selling_code"),
-		BuyingType:    action.GetAssetType("buying_type"),
+		SellingCode:   action.GetString("selling_asset_code"),
+		BuyingType:    action.GetAssetType("buying_asset_type"),
 		BuyingIssuer:  action.GetString("buying_issuer"),
-		BuyingCode:    action.GetString("buying_code"),
+		BuyingCode:    action.GetString("buying_asset_code"),
 	}
 
 	if action.Err != nil {
@@ -61,10 +61,10 @@ InvalidOrderBook:
 		Title:  "Invalid Order Book Parameters",
 		Status: http.StatusBadRequest,
 		Detail: "The parameters that specify what order book to view are invalid in some way. " +
-			"Please ensure that your type parameters (selling_type and buying_type) are one the " +
+			"Please ensure that your type parameters (selling_asset_type and buying_asset_type) are one the " +
 			"following valid values: native, credit_alphanum4, credit_alphanum12.  Also ensure that you " +
-			"have specified selling_code and selling_issuer if selling_type is not 'native', as well " +
-			"as buying_code and buying_issuer if buying_type is not 'native'",
+			"have specified selling_asset_code and selling_issuer if selling_asset_type is not 'native', as well " +
+			"as buying_asset_code and buying_issuer if buying_asset_type is not 'native'",
 	}
 
 	return
