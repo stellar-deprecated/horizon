@@ -9,6 +9,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-horizon/test"
+	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/zenazn/goji/web"
 )
 
@@ -20,13 +21,16 @@ func TestHelpers(t *testing.T) {
 			Ctx: test.Context(),
 			GojiCtx: web.C{
 				URLParams: map[string]string{
-					"blank": "",
-					"zero":  "0",
-					"two":   "2",
-					"32min": fmt.Sprint(math.MinInt32),
-					"32max": fmt.Sprint(math.MaxInt32),
-					"64min": fmt.Sprint(math.MinInt64),
-					"64max": fmt.Sprint(math.MaxInt64),
+					"blank":       "",
+					"zero":        "0",
+					"two":         "2",
+					"32min":       fmt.Sprint(math.MinInt32),
+					"32max":       fmt.Sprint(math.MaxInt32),
+					"64min":       fmt.Sprint(math.MinInt64),
+					"64max":       fmt.Sprint(math.MaxInt64),
+					"native_type": "native",
+					"4_type":      "credit_alphanum4",
+					"12_type":     "credit_alphanum12",
 				},
 				Env: map[interface{}]interface{}{},
 			},
@@ -93,6 +97,21 @@ func TestHelpers(t *testing.T) {
 			So(cursor, ShouldEqual, "hello")
 			So(limit, ShouldEqual, 2)
 			So(order, ShouldEqual, "")
+		})
+
+		Convey("GetAssetType", func() {
+			t := action.GetAssetType("native_type")
+			So(t, ShouldEqual, xdr.AssetTypeAssetTypeNative)
+
+			t = action.GetAssetType("4_type")
+			So(t, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum4)
+
+			t = action.GetAssetType("12_type")
+			So(t, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum12)
+
+			So(action.Err, ShouldBeNil)
+			action.GetAssetType("cursor")
+			So(action.Err, ShouldNotBeNil)
 		})
 
 		Convey("Last-Event-ID overrides cursor", func() {

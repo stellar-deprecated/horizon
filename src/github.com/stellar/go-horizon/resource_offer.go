@@ -76,9 +76,9 @@ func NewOfferAssetResource(aType int32, code sql.NullString, issuer sql.NullStri
 	case xdr.AssetTypeAssetTypeNative:
 		result.Type = "native"
 	case xdr.AssetTypeAssetTypeCreditAlphanum4:
-		result.Type = "alphanum_4"
+		result.Type = "credit_alphanum4"
 	case xdr.AssetTypeAssetTypeCreditAlphanum12:
-		result.Type = "alphanum_12"
+		result.Type = "credit_alphanum12"
 	default:
 		result.Type = fmt.Sprintf("unknown:%d", aType)
 	}

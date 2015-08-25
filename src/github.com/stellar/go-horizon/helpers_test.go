@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/PuerkitoBio/throttled"
+	"github.com/stellar/go-horizon/render/problem"
 	"github.com/stellar/go-horizon/test"
 )
 
@@ -24,7 +25,7 @@ func NewTestConfig() Config {
 	return Config{
 		DatabaseUrl:            test.DatabaseUrl(),
 		StellarCoreDatabaseUrl: test.StellarCoreDatabaseUrl(),
-		RateLimit:              throttled.PerHour(10),
+		RateLimit:              throttled.PerHour(1000),
 	}
 }
 
@@ -59,6 +60,28 @@ func ShouldBePageOf(actual interface{}, options ...interface{}) string {
 
 	if length != expected {
 		return fmt.Sprintf("Expected %d records in page, got %d", expected, length)
+	}
+
+	return ""
+}
+
+func ShouldBeProblem(a interface{}, options ...interface{}) string {
+	body := a.(*bytes.Buffer)
+	expected := options[0].(problem.P)
+
+	var actual problem.P
+	err := json.Unmarshal(body.Bytes(), &actual)
+
+	if err != nil {
+		return fmt.Sprintf("Could not unmarshal json into problem struct:\n%s\n", body.String())
+	}
+
+	if expected.Type != "" && actual.Type != expected.Type {
+		return fmt.Sprintf("Mismatched problem type: %s expected, got %s", expected.Type, actual.Type)
+	}
+
+	if expected.Status != 0 && actual.Status != expected.Status {
+		return fmt.Sprintf("Mismatched problem status: %s expected, got %s", expected.Status, actual.Status)
 	}
 
 	return ""

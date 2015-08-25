@@ -89,3 +89,14 @@ NotAcceptable:
 	problem.Render(base.Ctx, base.W, problem.NotAcceptable)
 	return
 }
+
+// Do executes the provided func iff there is no current error for the action
+func (base *Base) Do(fns ...func()) {
+	for _, fn := range fns {
+		if base.Err != nil {
+			return
+		}
+
+		fn()
+	}
+}

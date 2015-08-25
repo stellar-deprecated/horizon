@@ -3,13 +3,18 @@ package actions
 import (
 	"strconv"
 
+	"github.com/stellar/go-horizon/assets"
 	"github.com/stellar/go-horizon/db"
+	"github.com/stellar/go-stellar-base/xdr"
 )
 
-var (
+const (
+	// ParamCursor is a query string param name
 	ParamCursor = "cursor"
-	ParamOrder  = "order"
-	ParamLimit  = "limit"
+	// ParamOrder is a query string param name
+	ParamOrder = "order"
+	// ParamLimit is a query string param name
+	ParamLimit = "limit"
 )
 
 // GetString retrieves a string from either the URLParams, form or query string.
@@ -111,6 +116,25 @@ func (base *Base) GetPageQuery() db.PageQuery {
 	}
 
 	r, err := db.NewPageQuery(base.GetPagingParams())
+
+	if err != nil {
+		base.Err = err
+	}
+
+	return r
+}
+
+// GetAssetType is a helper that returns a xdr.AssetType by reading a string
+func (base *Base) GetAssetType(name string) xdr.AssetType {
+	if base.Err != nil {
+		return xdr.AssetTypeAssetTypeNative
+	}
+
+	r, err := assets.Parse(base.GetString(name))
+
+	if base.Err != nil {
+		return xdr.AssetTypeAssetTypeNative
+	}
 
 	if err != nil {
 		base.Err = err

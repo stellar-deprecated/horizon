@@ -3,8 +3,9 @@ docs/public
 /tmp/
 /pkg
 /bin
-
+/vendor/pkg
+/vendor/bin
 *.bts
 *.swp
 
-test.go
+/test.go

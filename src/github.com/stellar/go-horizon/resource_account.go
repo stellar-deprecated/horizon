@@ -50,9 +50,9 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 
 		switch tl.Assettype {
 		case int32(xdr.AssetTypeAssetTypeCreditAlphanum4):
-			balance.Type = "alphanum_4"
+			balance.Type = "credit_alphanum4"
 		case int32(xdr.AssetTypeAssetTypeCreditAlphanum12):
-			balance.Type = "alphanum_12"
+			balance.Type = "credit_alphanum12"
 		}
 
 		balances[i] = balance

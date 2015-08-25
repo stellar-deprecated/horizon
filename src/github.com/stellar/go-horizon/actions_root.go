@@ -19,7 +19,7 @@ var globalRootResource = RootResource{
 		Link("account_transactions", "/accounts/{address}/transactions{?cursor,limit,order}").
 		Link("transaction", "/transactions/{hash}").
 		Link("transactions", "/transactions{?cursor,limit,order}").
-		Link("orderbook", "/orderbooks{?base_type,base_code,base_issuer,counter_type,counter_code,counter_issuer}").
+		Link("order_book", "/order_book{?selling_asset_type,selling_asset_code,selling_issuer,buying_asset_type,buying_asset_code,buying_issuer}").
 		Link("metrics", "/metrics").
 		Link("friendbot", "/friendbot{?addr}"),
 }
