@@ -21,6 +21,9 @@ type TransactionRecord struct {
 	FeePaid             int32     `db:"fee_paid"`
 	OperationCount      int32     `db:"operation_count"`
 	TransactionStatusId int32     `db:"transaction_status_id"`
+	TxEnvelope          string    `db:"tx_envelope"`
+	TxResult            string    `db:"tx_result"`
+	TxMeta              string    `db:"tx_meta"`
 	CreatedAt           time.Time `db:"created_at"`
 	UpdatedAt           time.Time `db:"updated_at"`
 }
@@ -28,5 +31,3 @@ type TransactionRecord struct {
 func (r TransactionRecord) TableName() string {
 	return "history_transactions"
 }
-
-
