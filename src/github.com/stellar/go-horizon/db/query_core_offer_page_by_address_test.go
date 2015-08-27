@@ -27,7 +27,7 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 		var records []CoreOfferRecord
 
 		Convey("works with native offers", func() {
-			MustSelect(ctx, makeQuery("", "asc", 0, "GA4WKBJM5IA2IPHLGJUI5LQHVAYRPMF7UEU57LFELTFQMR5PNTKMU5L5"), &records)
+			MustSelect(ctx, makeQuery("", "asc", 0, "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU"), &records)
 			So(len(records), ShouldEqual, 1)
 		})
 
@@ -35,14 +35,14 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 			MustSelect(ctx, makeQuery("", "desc", 0, "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"), &records)
 			So(len(records), ShouldEqual, 0)
 
-			MustSelect(ctx, makeQuery("", "asc", 0, "GAJFK65MU3WQW4PZYJXBS7LXLXHHZB2RNVX7EC6DUZYU2NE4VMANPX2W"), &records)
+			MustSelect(ctx, makeQuery("", "asc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &records)
 			So(len(records), ShouldEqual, 3)
 
 		})
 
 		Convey("orders properly", func() {
 			// asc orders ascending by id
-			MustSelect(ctx, makeQuery("", "asc", 0, "GASH7FZ4JYEF2DWA3W5T4Z7HBLP5INYDOEEXQU2G7MR3M5V7R4LOBZ6X"), &records)
+			MustSelect(ctx, makeQuery("", "asc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &records)
 
 			So(records, ShouldBeOrderedAscending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
@@ -50,7 +50,7 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 			})
 
 			// desc orders descending by id
-			MustSelect(ctx, makeQuery("", "desc", 0, "GASH7FZ4JYEF2DWA3W5T4Z7HBLP5INYDOEEXQU2G7MR3M5V7R4LOBZ6X"), &records)
+			MustSelect(ctx, makeQuery("", "desc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &records)
 
 			So(records, ShouldBeOrderedDescending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
@@ -60,30 +60,30 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 
 		Convey("limits properly", func() {
 			// returns number specified
-			MustSelect(ctx, makeQuery("", "asc", 2, "GAJFK65MU3WQW4PZYJXBS7LXLXHHZB2RNVX7EC6DUZYU2NE4VMANPX2W"), &records)
+			MustSelect(ctx, makeQuery("", "asc", 2, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &records)
 			So(len(records), ShouldEqual, 2)
 
 			// returns all rows if limit is higher
-			MustSelect(ctx, makeQuery("", "asc", 10, "GAJFK65MU3WQW4PZYJXBS7LXLXHHZB2RNVX7EC6DUZYU2NE4VMANPX2W"), &records)
+			MustSelect(ctx, makeQuery("", "asc", 10, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &records)
 			So(len(records), ShouldEqual, 3)
 		})
 
 		Convey("cursor works properly", func() {
 			var record CoreOfferRecord
 			// lowest id if ordered ascending and no cursor
-			MustGet(ctx, makeQuery("", "asc", 0, "GAJFK65MU3WQW4PZYJXBS7LXLXHHZB2RNVX7EC6DUZYU2NE4VMANPX2W"), &record)
+			MustGet(ctx, makeQuery("", "asc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &record)
 			So(record.OfferID, ShouldEqual, 1)
 
 			// highest id if ordered descending and no cursor
-			MustGet(ctx, makeQuery("", "desc", 0, "GAJFK65MU3WQW4PZYJXBS7LXLXHHZB2RNVX7EC6DUZYU2NE4VMANPX2W"), &record)
+			MustGet(ctx, makeQuery("", "desc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &record)
 			So(record.OfferID, ShouldEqual, 3)
 
 			// starts after the cursor if ordered ascending
-			MustGet(ctx, makeQuery("1", "asc", 0, "GAJFK65MU3WQW4PZYJXBS7LXLXHHZB2RNVX7EC6DUZYU2NE4VMANPX2W"), &record)
+			MustGet(ctx, makeQuery("1", "asc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &record)
 			So(record.OfferID, ShouldEqual, 2)
 
 			// starts before the cursor if ordered descending
-			MustGet(ctx, makeQuery("3", "desc", 0, "GAJFK65MU3WQW4PZYJXBS7LXLXHHZB2RNVX7EC6DUZYU2NE4VMANPX2W"), &record)
+			MustGet(ctx, makeQuery("3", "desc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &record)
 			So(record.OfferID, ShouldEqual, 2)
 		})
 
