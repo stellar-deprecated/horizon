@@ -52,9 +52,9 @@ func NewTransactionResource(tx db.TransactionRecord) TransactionResource {
 		OperationCount:   tx.OperationCount,
 		ResultCode:       0, //NOTE: if at some point a history_transaction row records the result code, use it
 		ResultCodeString: "tx_success",
-		EnvelopeXdr:      "TODO",
-		ResultXdr:        "TODO",
-		ResultMetaXdr:    "TODO",
+		EnvelopeXdr:      tx.TxEnvelope.String,
+		ResultXdr:        tx.TxResult.String,
+		ResultMetaXdr:    tx.TxMeta.String,
 	}
 }
 
