@@ -5,6 +5,7 @@ import (
 	"math"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -111,6 +112,46 @@ func (p PageQuery) CursorInt64() (int64, error) {
 
 }
 
+// CursorInt64Pair parses this query's Cursor string as two int64s, separated by the provided separator
+func (p PageQuery) CursorInt64Pair(sep string) (l int64, r int64, err error) {
+	if p.Cursor == "" {
+		switch p.Order {
+		case OrderAscending:
+			l = 0
+			r = 0
+		case OrderDescending:
+			l = math.MaxInt64
+			r = math.MaxInt64
+		default:
+			err = ErrInvalidOrder
+		}
+		return
+	}
+
+	parts := strings.SplitN(p.Cursor, sep, 2)
+
+	if len(parts) != 2 {
+		err = ErrInvalidCursor
+		return
+	}
+
+	l, err = strconv.ParseInt(parts[0], 10, 64)
+	if err != nil {
+		return
+	}
+
+	r, err = strconv.ParseInt(parts[1], 10, 64)
+	if err != nil {
+		return
+	}
+
+	if l < 0 || r < 0 {
+		err = ErrInvalidCursor
+	}
+
+	return
+}
+
 // NewPageQuery creates a new PageQuery struct, ensuring the order, limit, and
 // cursor are set to the appropriate defaults and are valid.
 func NewPageQuery(
@@ -147,4 +188,14 @@ func NewPageQuery(
 	}
 
 	return
+}
+
+// MustPageQuery behaves as NewPageQuery, but panics upon error
+func MustPageQuery(cursor string, order string, limit int32) PageQuery {
+	r, err := NewPageQuery(cursor, order, limit)
+	if err != nil {
+		panic(err)
+	}
+
+	return r
 }
