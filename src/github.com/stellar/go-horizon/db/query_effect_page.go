@@ -95,6 +95,18 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 		)
 	}
 
+	// filter by operation
+	if q.OperationID != 0 {
+		start := ParseTotalOrderId(q.OperationID)
+		end := start
+		end.OperationOrder++
+		sql = sql.Where(
+			"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
+			start.ToInt64(),
+			end.ToInt64(),
+		)
+	}
+
 	// filter by account address
 	if q.AccountAddress != "" {
 		var account HistoryAccountRecord

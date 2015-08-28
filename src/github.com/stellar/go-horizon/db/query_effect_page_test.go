@@ -114,6 +114,21 @@ func TestEffectPageQuery(t *testing.T) {
 			}
 		})
 
+		Convey("restricts to operation properly", func() {
+			q := makeQuery("", "asc", 0)
+			q.OperationID = 8589938688
+			MustSelect(ctx, q, &records)
+
+			So(len(records), ShouldEqual, 3)
+
+			for _, r := range records {
+				toid := ParseTotalOrderId(r.HistoryOperationID)
+				So(toid.LedgerSequence, ShouldEqual, 2)
+				So(toid.TransactionOrder, ShouldEqual, 1)
+				So(toid.OperationOrder, ShouldEqual, 0) //TODO: fix this to 1 when we resolve indexing issues
+			}
+		})
+
 		Convey("restricts to transaction properly", func() {
 			q := makeQuery("", "asc", 0)
 			q.TransactionHash = "99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4"
