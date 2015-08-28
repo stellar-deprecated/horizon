@@ -19,6 +19,9 @@ const (
 
 	// OrderDescending is used to indicate an descending order in request params
 	OrderDescending = "desc"
+
+	// DefaultPairSep is the default separator used to separate two numbers for CursorInt64Pair
+	DefaultPairSep = "-"
 )
 
 var (
