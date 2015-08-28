@@ -12,7 +12,6 @@ var EffectRecordSelect sq.SelectBuilder = sq.
 	From("history_effects heff")
 
 type EffectRecord struct {
-	HistoryRecord
 	HistoryAccountID   int64          `db:"history_account_id"`
 	HistoryOperationID int64          `db:"history_operation_id"`
 	Order              int32          `db:"order"`
@@ -33,4 +32,8 @@ func (r EffectRecord) Details() (result map[string]interface{}, err error) {
 // ID returns a lexically ordered id for this effect record
 func (r EffectRecord) ID() string {
 	return fmt.Sprintf("%019d-%010d", r.HistoryOperationID, r.Order)
+}
+
+func (r EffectRecord) PagingToken() string {
+	return fmt.Sprintf("%d-%d", r.HistoryOperationID, r.Order)
 }
