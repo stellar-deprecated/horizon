@@ -32,6 +32,13 @@ func (q TransactionPageQuery) Select(ctx context.Context, dest interface{}) erro
 	}
 
 	if q.LedgerSequence != 0 {
+		var ledger LedgerRecord
+		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
+
+		if err != nil {
+			return err
+		}
+
 		sql = sql.Where("ht.ledger_sequence = ?", q.LedgerSequence)
 	}
 
