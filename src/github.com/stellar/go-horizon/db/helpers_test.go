@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"math"
 	"reflect"
 
 	"github.com/stellar/go-horizon/test"
 	"golang.org/x/net/context"
 )
+
+// OrderComparator is a func to compare two arbitrary values, used by the
+// ShouldBeOrdered assertion
+type OrderComparator func(idx int, l interface{}, r interface{}) string
 
 func OpenTestDatabase() *sql.DB {
 
@@ -31,18 +34,27 @@ func OpenStellarCoreTestDatabase() *sql.DB {
 	return result
 }
 
-func ShouldBeOrderedAscending(actual interface{}, options ...interface{}) string {
+func ShouldBeOrdered(actual interface{}, options ...interface{}) string {
 	rv := reflect.ValueOf(actual)
-	t := options[0].(func(interface{}) int64)
+	if rv.Len() == 0 {
+		return "slice is empty"
+	}
 
-	prev := int64(0)
+	if rv.Len() == 1 {
+		return "slice has only one element"
+	}
 
-	for i := 0; i < rv.Len(); i++ {
-		r := rv.Index(i).Interface()
-		cur := t(r)
+	t := options[0].(OrderComparator)
 
-		if cur <= prev {
-			return fmt.Sprintf("not ordered ascending: idx:%s has order %d, which is less than the previous:%d", i, cur, prev)
+	prev := rv.Index(0).Interface()
+
+	for i := 1; i < rv.Len(); i++ {
+		cur := rv.Index(i).Interface()
+
+		msg := t(i, prev, cur)
+
+		if msg != "" {
+			return msg
 		}
 
 		prev = cur
@@ -51,25 +63,46 @@ func ShouldBeOrderedAscending(actual interface{}, options ...interface{}) string
 	return ""
 }
 
-func ShouldBeOrderedDescending(actual interface{}, options ...interface{}) string {
-	rv := reflect.ValueOf(actual)
-
+func ShouldBeOrderedAscending(actual interface{}, options ...interface{}) string {
 	t := options[0].(func(interface{}) int64)
 
-	prev := int64(math.MaxInt64)
+	var cmp OrderComparator = func(idx int, l interface{}, r interface{}) string {
+		lnum := t(l)
+		rnum := t(r)
 
-	for i := 0; i < rv.Len(); i++ {
-		r := rv.Index(i).Interface()
-		cur := t(r)
-
-		if cur >= prev {
-			return fmt.Sprintf("not ordered descending: idx:%d has order %d, which is more than the previous:%d", i, cur, prev)
+		if lnum > rnum {
+			return fmt.Sprintf(
+				"not ordered ascending: idx:%s has order %d, which is less than the previous:%d",
+				idx,
+				rnum,
+				lnum)
 		}
 
-		prev = cur
+		return ""
 	}
 
-	return ""
+	return ShouldBeOrdered(actual, cmp)
+}
+
+func ShouldBeOrderedDescending(actual interface{}, options ...interface{}) string {
+	t := options[0].(func(interface{}) int64)
+
+	var cmp OrderComparator = func(idx int, l interface{}, r interface{}) string {
+		lnum := t(l)
+		rnum := t(r)
+
+		if lnum < rnum {
+			return fmt.Sprintf(
+				"not ordered descending: idx:%d has order %d, which is more than the previous:%d",
+				idx,
+				rnum,
+				lnum)
+		}
+
+		return ""
+	}
+
+	return ShouldBeOrdered(actual, cmp)
 }
 
 // Mock Dump Query

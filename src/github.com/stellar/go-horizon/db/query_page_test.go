@@ -1,6 +1,8 @@
 package db
 
 import (
+	"math"
+	"strconv"
 	"testing"
 
 	_ "github.com/lib/pq"
@@ -9,18 +11,17 @@ import (
 
 func TestPageQuery(t *testing.T) {
 	Convey("NewPageQuery", t, func() {
+		var p PageQuery
 
 		Convey("Sets attributes correctly", func() {
-			p, err := NewPageQuery("10", "desc", 15)
-			So(err, ShouldBeNil)
+			p = MustPageQuery("10", "desc", 15)
 			So(p.Cursor, ShouldEqual, "10")
 			So(p.Order, ShouldEqual, "desc")
 			So(p.Limit, ShouldEqual, 15)
 		})
 
 		Convey("Defaults to ordered asc", func() {
-			p, err := NewPageQuery("", "", 0)
-			So(err, ShouldBeNil)
+			p = MustPageQuery("", "", 0)
 			So(p.Order, ShouldEqual, "asc")
 		})
 
@@ -31,45 +32,91 @@ func TestPageQuery(t *testing.T) {
 
 		Convey("CursorInt64", func() {
 			Convey("Defaults to 0 when ordered asc", func() {
-				p, err := NewPageQuery("", "asc", 0)
-				So(err, ShouldBeNil)
+				p = MustPageQuery("", "asc", 0)
 				cursor, err := p.CursorInt64()
 				So(err, ShouldBeNil)
 				So(cursor, ShouldEqual, 0)
 			})
 
 			Convey("Defaults to MaxInt64 when ordered desc", func() {
-				p, err := NewPageQuery("", "desc", 0)
-				So(err, ShouldBeNil)
+				p = MustPageQuery("", "desc", 0)
 				cursor, err := p.CursorInt64()
 				So(err, ShouldBeNil)
 				So(cursor, ShouldEqual, 9223372036854775807)
 			})
 
 			Convey("Errors when cursor is not parseable as a number", func() {
-				p, err := NewPageQuery("not_a_number", "", 0)
-				So(err, ShouldBeNil)
-				_, err = p.CursorInt64()
+				p = MustPageQuery("not_a_number", "", 0)
+				_, err := p.CursorInt64()
 				So(err, ShouldEqual, ErrInvalidCursor)
 			})
 
 			Convey("Errors when cursor is less than zero", func() {
-				p, err := NewPageQuery("-1", "", 0)
+				p = MustPageQuery("-1", "", 0)
+				_, err := p.CursorInt64()
+				So(err, ShouldEqual, ErrInvalidCursor)
+			})
+		})
+
+		Convey("CursorInt64Pair", func() {
+			Convey("Parses the numbers correctly", func() {
+				p = MustPageQuery("1231-4456", "asc", 0)
+				l, r, err := p.CursorInt64Pair("-")
 				So(err, ShouldBeNil)
-				_, err = p.CursorInt64()
+				So(l, ShouldEqual, 1231)
+				So(r, ShouldEqual, 4456)
+			})
+
+			Convey("Defaults to 0,0 when ordered asc", func() {
+				p = MustPageQuery("", "asc", 0)
+				l, r, err := p.CursorInt64Pair("-")
+				So(err, ShouldBeNil)
+				So(l, ShouldEqual, 0)
+				So(r, ShouldEqual, 0)
+			})
+
+			Convey("Defaults to MaxInt64, MaxInt64 when ordered desc", func() {
+				p = MustPageQuery("", "desc", 0)
+				l, r, err := p.CursorInt64Pair("-")
+				So(err, ShouldBeNil)
+				So(l, ShouldEqual, math.MaxInt64)
+				So(r, ShouldEqual, math.MaxInt64)
+			})
+
+			Convey("Errors when cursor has no instance of the separator in it", func() {
+				p = MustPageQuery("nosep", "", 0)
+				_, _, err := p.CursorInt64Pair("-")
+				So(err, ShouldEqual, ErrInvalidCursor)
+			})
+
+			Convey("Errors when cursor has an unparselable number contained within", func() {
+				p = MustPageQuery("123-foo", "", 0)
+				_, _, err := p.CursorInt64Pair("-")
+				So(err, ShouldHaveSameTypeAs, &strconv.NumError{})
+
+				p = MustPageQuery("foo-123", "", 0)
+				_, _, err = p.CursorInt64Pair("-")
+				So(err, ShouldHaveSameTypeAs, &strconv.NumError{})
+			})
+
+			Convey("Errors when cursor has a number that is less than zero", func() {
+				p = MustPageQuery("-1:123", "", 0)
+				_, _, err := p.CursorInt64Pair(":")
+				So(err, ShouldEqual, ErrInvalidCursor)
+
+				p = MustPageQuery("111:-123", "", 0)
+				_, _, err = p.CursorInt64Pair(":")
 				So(err, ShouldEqual, ErrInvalidCursor)
 			})
 		})
 
 		Convey("Defaults to limit 10", func() {
-			p, err := NewPageQuery("", "", 0)
-			So(err, ShouldBeNil)
+			p = MustPageQuery("", "", 0)
 			So(p.Limit, ShouldEqual, 10)
 		})
 
 		Convey("Maxes to limit 10", func() {
-			p, err := NewPageQuery("", "", 0)
-			So(err, ShouldBeNil)
+			p = MustPageQuery("", "", 0)
 			So(p.Limit, ShouldEqual, 10)
 		})
 
