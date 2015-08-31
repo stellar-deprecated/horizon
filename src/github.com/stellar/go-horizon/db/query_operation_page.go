@@ -62,6 +62,12 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 
 	// filter by ledger sequence
 	if q.LedgerSequence != 0 {
+		var ledger LedgerRecord
+		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
+
+		if err != nil {
+			return err
+		}
 		start := TotalOrderId{LedgerSequence: q.LedgerSequence}
 		end := TotalOrderId{LedgerSequence: q.LedgerSequence + 1}
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())

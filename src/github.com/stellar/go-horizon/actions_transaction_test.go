@@ -30,6 +30,11 @@ func TestTransactionActions(t *testing.T) {
 			So(w.Code, ShouldEqual, 404)
 		})
 
+		Convey("GET /ledgers/100/transactions", func() {
+			w := rh.Get("/ledgers/100/transactions", test.RequestHelperNoop)
+			So(w.Code, ShouldEqual, 404)
+		})
+
 		Convey("GET /transactions", func() {
 			w := rh.Get("/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
