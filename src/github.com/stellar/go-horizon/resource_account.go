@@ -6,6 +6,7 @@ import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/go-horizon/db"
 	"github.com/stellar/go-horizon/render/hal"
+	"github.com/stellar/go-stellar-base"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
@@ -22,14 +23,14 @@ type AccountResource struct {
 // BalanceResource represents an accounts holdings for a single currency type
 type BalanceResource struct {
 	Type    string `json:"asset_type"`
-	Balance int64  `json:"balance"`
+	Balance string `json:"balance"`
 	// additional trustline data
 	Code   string `json:"asset_code,omitempty"`
 	Issuer string `json:"issuer,omitempty"`
-	Limit  int64  `json:"limit,omitempty"`
+	Limit  string `json:"limit,omitempty"`
 }
 
-// NewAccountResource creates a new AccountResource from a provided db.CoreAccountRecord and
+// NewAccountRsource creates a new AccountResource from a provided db.CoreAccountRecord and
 // a provided db.AccountRecord.
 //
 // panics if the two records are not for the same logical account.
@@ -42,8 +43,8 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 
 	for i, tl := range ac.Trustlines {
 		balance := BalanceResource{
-			Balance: tl.Balance,
-			Limit:   tl.Tlimit,
+			Balance: AmountToString(tl.Balance),
+			Limit:   AmountToString(tl.Tlimit),
 			Issuer:  tl.Issuer,
 			Code:    tl.Assetcode,
 		}
@@ -59,7 +60,7 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 	}
 
 	// add native balance
-	balances[len(ac.Trustlines)] = BalanceResource{Type: "native", Balance: ac.Balance}
+	balances[len(ac.Trustlines)] = BalanceResource{Type: "native", Balance: AmountToString(ac.Balance)}
 
 	return AccountResource{
 		Links: halgo.Links{}.
@@ -74,4 +75,10 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 		Sequence:    ac.Seqnum,
 		Balances:    balances,
 	}
+}
+
+func AmountToString(amount int64) string {
+	whole := amount / stellarbase.One
+	frac := amount % stellarbase.One
+	return fmt.Sprintf("%d.%07d", whole, frac)
 }

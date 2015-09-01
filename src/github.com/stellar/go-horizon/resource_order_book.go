@@ -17,9 +17,9 @@ type OrderBookSummaryResource struct {
 
 // PriceLevelResource is the display form of a PriceLevelRecord
 type PriceLevelResource struct {
-	Price  PriceResource `json:"price"`
-	PriceF float64       `json:"price_f"`
-	Amount int64         `json:"amount"`
+	PriceR PriceResource `json:"price_r"`
+	Price  string        `json:"price"`
+	Amount string        `json:"amount"`
 }
 
 // AssetResource is the display form of a Asset in the stellar network
@@ -65,8 +65,8 @@ func newPriceLevelResources(records []db.PriceLevelRecord) []PriceLevelResource 
 
 	for i, rec := range records {
 		result[i] = PriceLevelResource{
-			PriceF: rec.Pricef,
-			Price: PriceResource{
+			Price: rec.PriceAsString(),
+			PriceR: PriceResource{
 				N: rec.Pricen,
 				D: rec.Priced,
 			},
