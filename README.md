@@ -1,5 +1,5 @@
-# Note this code is pre-alpha.
-It is definitely not ready yet for production.
+# Note this code is alpha.
+It is not ready yet for production.
 
 # Horizon
 [![Build Status](https://travis-ci.org/stellar/go-horizon.svg?branch=master)](https://travis-ci.org/stellar/go-horizon)
