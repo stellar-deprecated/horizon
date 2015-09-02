@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jagregory/halgo"
 
@@ -16,6 +17,7 @@ type TransactionResource struct {
 	PagingToken      string `json:"paging_token"`
 	Hash             string `json:"hash"`
 	Ledger           int32  `json:"ledger"`
+	LedgerCloseTime  time.Time `json:"created_at"`
 	Account          string `json:"account"`
 	AccountSequence  int64  `json:"account_sequence"`
 	MaxFee           int32  `json:"max_fee"`
@@ -45,6 +47,7 @@ func NewTransactionResource(tx db.TransactionRecord) TransactionResource {
 		PagingToken:      tx.PagingToken(),
 		Hash:             tx.TransactionHash,
 		Ledger:           tx.LedgerSequence,
+		LedgerCloseTime:  tx.LedgerCloseTime,
 		Account:          tx.Account,
 		AccountSequence:  tx.AccountSequence,
 		MaxFee:           tx.MaxFee,
