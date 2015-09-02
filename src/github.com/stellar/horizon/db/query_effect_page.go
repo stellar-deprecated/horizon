@@ -11,10 +11,7 @@ import (
 type EffectPageQuery struct {
 	SqlQuery
 	PageQuery
-	AccountAddress  string
-	LedgerSequence  int32
-	TransactionHash string
-	OperationID     int64
+	Filter SQLFilter
 }
 
 // Select executes the query and returns the results
@@ -54,48 +51,9 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 			OrderBy("heff.history_operation_id desc, heff.order desc")
 	}
 
-	err = checkOptions(
-		q.AccountAddress != "",
-		q.LedgerSequence != 0,
-		q.TransactionHash != "",
-		q.OperationID != 0,
-	)
-
-	if err != nil {
-		return
-	}
-
-	// filter by ledger sequence
-	if q.LedgerSequence != 0 {
-		f := &EffectLedgerFilter{q.LedgerSequence}
-		sql, err = f.Apply(ctx, sql)
-		if err != nil {
-			return
-		}
-	}
-
-	// filter by transaction hash
-	if q.TransactionHash != "" {
-		f := &EffectTransactionFilter{q.SqlQuery, q.TransactionHash}
-		sql, err = f.Apply(ctx, sql)
-		if err != nil {
-			return
-		}
-	}
-
-	// filter by operation
-	if q.OperationID != 0 {
-		f := &EffectOperationFilter{q.OperationID}
-		sql, err = f.Apply(ctx, sql)
-		if err != nil {
-			return
-		}
-	}
-
-	// filter by account address
-	if q.AccountAddress != "" {
-		f := &EffectAccountFilter{q.SqlQuery, q.AccountAddress}
-		sql, err = f.Apply(ctx, sql)
+	// apply filter
+	if q.Filter != nil {
+		sql, err = q.Filter.Apply(ctx, sql)
 		if err != nil {
 			return
 		}

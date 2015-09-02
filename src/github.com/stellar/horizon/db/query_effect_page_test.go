@@ -93,7 +93,7 @@ func TestEffectPageQuery(t *testing.T) {
 		Convey("restricts to address properly", func() {
 			address := "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU"
 			q := makeQuery("", "asc", 0)
-			q.AccountAddress = address
+			q.Filter = &EffectAccountFilter{q.SqlQuery, address}
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 3)
@@ -104,7 +104,7 @@ func TestEffectPageQuery(t *testing.T) {
 
 		Convey("restricts to ledger properly", func() {
 			q := makeQuery("", "asc", 0)
-			q.LedgerSequence = 3
+			q.Filter = &EffectLedgerFilter{3}
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 2)
@@ -132,7 +132,8 @@ func TestEffectPageQuery(t *testing.T) {
 
 		Convey("restricts to transaction properly", func() {
 			q := makeQuery("", "asc", 0)
-			q.TransactionHash = "c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74"
+			hash := "c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74"
+			q.Filter = &EffectTransactionFilter{q.SqlQuery, hash}
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 3)
@@ -142,42 +143,6 @@ func TestEffectPageQuery(t *testing.T) {
 				So(toid.LedgerSequence, ShouldEqual, 2)
 				So(toid.TransactionOrder, ShouldEqual, 1)
 			}
-		})
-
-		Convey("errors if more than one filter is supplied", func() {
-			table := []struct {
-				Hash    string
-				Ledger  int32
-				Address string
-				Op      int64
-			}{
-				// all on
-				{"1", 1, "1", 1},
-				// three on
-				{"", 1, "1", 1},
-				{"1", 0, "1", 1},
-				{"1", 1, "", 1},
-				{"1", 1, "1", 0},
-				// two on
-				{"1", 1, "", 0},
-				{"", 1, "1", 0},
-				{"", 0, "1", 1},
-				{"1", 0, "1", 0},
-				{"", 1, "", 1},
-				{"1", 0, "", 1},
-			}
-
-			for _, o := range table {
-				q := makeQuery("", "asc", 0)
-				q.TransactionHash = o.Hash
-				q.LedgerSequence = o.Ledger
-				q.AccountAddress = o.Address
-				q.OperationID = o.Op
-
-				err := Select(ctx, q, &records)
-				So(err, ShouldNotBeNil)
-			}
-
 		})
 
 	})
