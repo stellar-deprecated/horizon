@@ -43,7 +43,7 @@ func NewOperationResource(op db.OperationRecord) (OperationResource, error) {
 
 	result["_links"] = halgo.Links{}.
 		Self(self).
-		Link("transactions", "/transactions/%d", op.TransactionId).
+		Link("transaction", "/transactions/%d", op.TransactionId).
 		Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions).
 		Link("precedes", "/operations?cursor=%s&order=asc", op.PagingToken()).
 		Link("succeeds", "/operations?cursor=%s&order=desc", op.PagingToken()).
