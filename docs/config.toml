@@ -1,6 +1,0 @@
-baseurl = "http://stellar.github.io/go-horizon"
-languageCode = "en-us"
-title = "Horizon"
-
-[params]
-  exampleurl = "https://horizon-testnet.stellar.org"
