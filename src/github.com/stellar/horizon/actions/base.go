@@ -90,7 +90,8 @@ NotAcceptable:
 	return
 }
 
-// Do executes the provided func iff there is no current error for the action
+// Do executes the provided func iff there is no current error for the action. Provides
+// a nicer way to invoke a set of steps that each may set `action.Err` during execution
 func (base *Base) Do(fns ...func()) {
 	for _, fn := range fns {
 		if base.Err != nil {

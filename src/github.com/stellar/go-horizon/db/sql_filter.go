@@ -19,8 +19,9 @@ type CompositeSQLFilter struct {
 
 // Apply applies each constituent filter of this composite to the SelectBuilder in order.
 func (cf *CompositeSQLFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (res sq.SelectBuilder, err error) {
+	res = sql
 	for _, f := range cf.Filters {
-		res, err = f.Apply(ctx, sql)
+		res, err = f.Apply(ctx, res)
 
 		if err != nil {
 			return

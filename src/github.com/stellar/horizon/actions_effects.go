@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
@@ -62,7 +61,6 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 
 // LoadQuery sets action.Query from the request params
 func (action *EffectIndexAction) LoadQuery() {
-	action.ValidateInt64(actions.ParamCursor)
 	action.Query = db.EffectPageQuery{
 		SqlQuery:  action.App.HistoryQuery(),
 		PageQuery: action.GetPageQuery(),
