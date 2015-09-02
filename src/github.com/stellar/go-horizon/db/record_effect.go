@@ -8,11 +8,13 @@ import (
 )
 
 var EffectRecordSelect sq.SelectBuilder = sq.
-	Select("heff.*").
-	From("history_effects heff")
+	Select("heff.*, hacc.address").
+	From("history_effects heff").
+	LeftJoin("history_accounts hacc ON hacc.id = heff.history_account_id")
 
 type EffectRecord struct {
 	HistoryAccountID   int64          `db:"history_account_id"`
+	InitiatorAddress   string         `db:"address"`
 	HistoryOperationID int64          `db:"history_operation_id"`
 	Order              int32          `db:"order"`
 	Type               int32          `db:"type"`
