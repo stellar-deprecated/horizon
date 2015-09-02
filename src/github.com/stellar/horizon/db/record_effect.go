@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	sq "github.com/lann/squirrel"
+	"golang.org/x/net/context"
 )
 
 var EffectRecordSelect sq.SelectBuilder = sq.
@@ -38,4 +39,92 @@ func (r EffectRecord) ID() string {
 
 func (r EffectRecord) PagingToken() string {
 	return fmt.Sprintf("%d-%d", r.HistoryOperationID, r.Order)
+}
+
+// SQLFilter implementerations
+
+// EffectTypeFilter represents a filter that excludes all rows that do not match the
+// type specified by the filter
+type EffectTypeFilter struct {
+	Type int32
+}
+
+func (f *EffectTypeFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	return sql.Where("heff.type = ?", f.Type), nil
+}
+
+// EffectAccountFilter represents a filter that excludes all rows that do not apply to
+// the account specified
+type EffectAccountFilter struct {
+	SqlQuery
+	AccountAddress string
+}
+
+func (f *EffectAccountFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	var account HistoryAccountRecord
+	err := Get(ctx, HistoryAccountByAddressQuery{f.SqlQuery, f.AccountAddress}, &account)
+
+	if err != nil {
+		return sql, err
+	}
+
+	return sql.Where("heff.history_account_id = ?", account.Id), nil
+}
+
+// EffectLedgerFilter represents a filter that excludes all rows that did not occur
+// in the specified ledger
+type EffectLedgerFilter struct {
+	LedgerSequence int32
+}
+
+func (f *EffectLedgerFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	start := TotalOrderId{LedgerSequence: f.LedgerSequence}
+	end := TotalOrderId{LedgerSequence: f.LedgerSequence + 1}
+	return sql.Where(
+		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
+		start.ToInt64(),
+		end.ToInt64(),
+	), nil
+}
+
+// EffectTransactionFilter represents a filter that excludes all rows that did not occur
+// in the specified transaction
+type EffectTransactionFilter struct {
+	SqlQuery
+	TransactionHash string
+}
+
+func (f *EffectTransactionFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	var tx TransactionRecord
+	err := Get(ctx, TransactionByHashQuery{f.SqlQuery, f.TransactionHash}, &tx)
+
+	if err != nil {
+		return sql, nil
+	}
+
+	start := ParseTotalOrderId(tx.Id)
+	end := start
+	end.TransactionOrder++
+	return sql.Where(
+		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
+		start.ToInt64(),
+		end.ToInt64(),
+	), nil
+}
+
+// EffectOperationFilter represents a filter that excludes all rows that did not occur
+// in the specified operation
+type EffectOperationFilter struct {
+	OperationID int64
+}
+
+func (f *EffectOperationFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	start := ParseTotalOrderId(f.OperationID)
+	end := start
+	end.OperationOrder++
+	return sql.Where(
+		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
+		start.ToInt64(),
+		end.ToInt64(),
+	), nil
 }
