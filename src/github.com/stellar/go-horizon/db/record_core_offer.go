@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"math/big"
 
 	sq "github.com/lann/squirrel"
 )
@@ -24,11 +25,12 @@ type CoreOfferRecord struct {
 	BuyingAssetCode sql.NullString `db:"buyingassetcode"`
 	BuyingIssuer    sql.NullString `db:"buyingissuer"`
 
-	Amount int64 `db:"amount"`
-	Pricen int32 `db:"pricen"`
-	Priced int32 `db:"priced"`
-	Price  int64 `db:"price"`
-	Flags  int32 `db:"flags"`
+	Amount       int64 `db:"amount"`
+	Pricen       int32 `db:"pricen"`
+	Priced       int32 `db:"priced"`
+	Price        int64 `db:"price"`
+	Flags        int32 `db:"flags"`
+	Lastmodified int32 `db:"lastmodified"`
 }
 
 // PagingToken returns a suitable paging token for the CoreOfferRecord
@@ -37,6 +39,6 @@ func (r CoreOfferRecord) PagingToken() string {
 }
 
 // PriceAsFloat return the price fraction as a floating point approximate.
-func (r CoreOfferRecord) PriceAsFloat() float64 {
-	return float64(r.Pricen) / float64(r.Priced)
+func (r CoreOfferRecord) PriceAsString() string {
+	return big.NewRat(int64(r.Pricen), int64(r.Priced)).FloatString(7)
 }

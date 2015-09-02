@@ -19,9 +19,9 @@ type OfferResource struct {
 	Seller      string             `json:"seller"`
 	Selling     OfferAssetResource `json:"selling"`
 	Buying      OfferAssetResource `json:"buying"`
-	Amount      int64              `json:"amount"`
-	Price       PriceResource      `json:"price"`
-	PriceF      float64            `json:"price_f"`
+	Amount      string             `json:"amount"`
+	PriceR      PriceResource      `json:"price_r"`
+	Price       string             `json:"price"`
 }
 
 // OfferAssetResource is the json resource for an asset component of
@@ -54,12 +54,12 @@ func NewOfferResource(op db.CoreOfferRecord) OfferResource {
 		Seller:      op.SellerID,
 		Buying:      buying,
 		Selling:     selling,
-		Amount:      op.Amount,
-		Price: PriceResource{
+		Amount:      AmountToString(op.Amount),
+		PriceR: PriceResource{
 			N: op.Pricen,
 			D: op.Priced,
 		},
-		PriceF: op.PriceAsFloat(),
+		Price: op.PriceAsString(),
 	}
 }
 
