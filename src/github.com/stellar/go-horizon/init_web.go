@@ -70,7 +70,7 @@ func initWebMiddleware(app *App) {
 // provided app.  All route registration should be implemented here.
 func initWebActions(app *App) {
 	r := app.web.router
-	r.Get("/", rootAction)
+	r.Get("/", &RootAction{})
 	r.Get("/metrics", &MetricsAction{})
 
 	// ledger actions

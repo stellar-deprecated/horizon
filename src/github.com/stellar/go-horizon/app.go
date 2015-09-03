@@ -29,6 +29,8 @@ type App struct {
 	redis      *redis.Pool
 	log        *logrus.Entry
 	logMetrics *log.Metrics
+  coreVersion    string
+  horizonVersion string
 }
 
 // AppFromContext retrieves a *App from the context tree.
