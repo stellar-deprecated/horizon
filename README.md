@@ -5,8 +5,7 @@ It is not ready yet for production.
 [![Build Status](https://travis-ci.org/stellar/horizon.svg?branch=master)](https://travis-ci.org/stellar/horizon)
 [![docs examples](https://sourcegraph.com/api/repos/github.com/stellar/horizon/.badges/docs-examples.svg)](https://sourcegraph.com/github.com/stellar/horizon)
 
-Horizon is the [client facing API](/docs) server
-for the Stellar ecosystem. 
+Horizon is the [client facing API](/docs) server for the Stellar ecosystem.  It acts as the interface between stellar-core and applications that want to access the Stellar network. It allows you to submit transactions to the network, check the status of accounts, subscribe to event streams, etc. See [an overview of the Stellar ecosystem](https://github.com/stellar/docs/blob/master/concepts/ecosystem.md) for more details.
 
 
 ## Building
