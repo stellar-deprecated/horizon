@@ -54,9 +54,11 @@ func NewEffectResource(op db.EffectRecord) (EffectResource, error) {
 	result["_links"] = halgo.Links{}.
 		Link("precedes", "/effects?cursor=%s&order=asc", op.PagingToken()).
 		Link("succeeds", "/effects?cursor=%s&order=desc", op.PagingToken()).
+		Link("operation", "/operations/%d", op.HistoryOperationID).
 		Items
 	result["paging_token"] = op.PagingToken()
 	result["type"] = op.Type
+	result["account"] = op.Account
 
 	ts, ok := effectResourceTypeNames[op.Type]
 
