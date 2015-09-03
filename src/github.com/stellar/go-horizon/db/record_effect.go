@@ -14,7 +14,7 @@ var EffectRecordSelect sq.SelectBuilder = sq.
 
 type EffectRecord struct {
 	HistoryAccountID   int64          `db:"history_account_id"`
-	InitiatorAddress   string         `db:"address"`
+	Account            string         `db:"address"`
 	HistoryOperationID int64          `db:"history_operation_id"`
 	Order              int32          `db:"order"`
 	Type               int32          `db:"type"`

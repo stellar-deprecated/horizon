@@ -58,7 +58,7 @@ func NewEffectResource(op db.EffectRecord) (EffectResource, error) {
 		Items
 	result["paging_token"] = op.PagingToken()
 	result["type"] = op.Type
-	result["initiator"] = op.InitiatorAddress
+	result["account"] = op.Account
 
 	ts, ok := effectResourceTypeNames[op.Type]
 
