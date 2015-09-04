@@ -27,7 +27,7 @@ curl https://horizon-testnet.stellar.org/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G
 ### JavaScript Example Request
 
 ```js
-var StellarLib = require('js-stellar-lib');
+var StellarLib = require('js-stellar-sdk');
 var server = new StellarLib.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
 server.accounts("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ")
