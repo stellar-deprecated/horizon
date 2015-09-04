@@ -10,13 +10,12 @@ Horizon is the client facing API server for the Stellar ecosystem.  It acts as t
 - [Building & Installing] (/README.md)
 - [Horizon administration] (/docs/admin.md)
 - Using Horizon
-  - [ Overview ] (/docs/guide/overview.md)
-  - [ Response Format ] (/docs/guide/response.md)
+  - [ Response Format ] (/docs/guide/responses.md)
   - [ Errors ] (/docs/guide/errors.md)
   - [ XDR ] (/docs/guide/xdr.md)
   - [ Paging ] (/docs/guide/paging.md)
-  - [ Rate Limiting ] (/docs/guide/rate_limiting.md)
+  - [ Rate Limiting ] (/docs/guide/rate-limiting.md)
 - Tutorial
-  - [Follow Payments] (/docs/tutorials/follow.md)
-- [Reference Guide] (/docs/reference/readme.md)
+  - [Follow Payments] (/docs/tutorials/follow-received-payments.md)
+- [Reference Guide] (/docs/reference/)
 - [Contributing] (/CONTRIBUTING.md)
