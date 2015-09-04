@@ -17,6 +17,8 @@ import (
 )
 
 var appContextKey = 0
+// You can override this variable using: gb build -ldflags "-X main.version aabbccdd"
+var version = "version"
 
 type App struct {
 	config     Config
@@ -33,6 +35,10 @@ type App struct {
   horizonVersion string
 }
 
+func SetVersion(v string) {
+  version = v;
+}
+
 // AppFromContext retrieves a *App from the context tree.
 func AppFromContext(ctx context.Context) (*App, bool) {
 	a, ok := ctx.Value(&appContextKey).(*App)
@@ -40,7 +46,7 @@ func AppFromContext(ctx context.Context) (*App, bool) {
 }
 
 // NewApp constructs an new App instance from the provided config.
-func NewApp(config Config, version string) (*App, error) {
+func NewApp(config Config) (*App, error) {
 
 	result := &App{config: config}
   result.horizonVersion = version

@@ -15,10 +15,12 @@ import (
 
 var app *horizon.App
 var rootCmd *cobra.Command
-// You can override this variable using: gb build -ldflags "-X main.horizonVersion aabbccdd"
-var horizonVersion = "beta"
+var version string
 
 func main() {
+  if version != "" {
+    horizon.SetVersion(version)
+  }
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.Execute()
 }
@@ -160,7 +162,7 @@ func run(cmd *cobra.Command, args []string) {
 		LogglyHost:             viper.GetString("loggly-host"),
 	}
 
-	app, err = horizon.NewApp(config, horizonVersion)
+	app, err = horizon.NewApp(config)
 
 	if err != nil {
 		log.Fatal(err.Error())
