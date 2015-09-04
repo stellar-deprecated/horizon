@@ -4,8 +4,6 @@ import (
   "fmt"
   "io/ioutil"
   "net/http"
-  "os/exec"
-  "strings"
   "encoding/json"
 )
 
@@ -34,15 +32,6 @@ func initStellarCoreVersion(app *App) {
   app.coreVersion = serverInfo["build"]
 }
 
-func initHorizonVersion(app *App) {
-  version, err := exec.Command("git", "describe", "--always", "--dirty", "--tags").Output()
-  if err != nil {
-    app.log.Panic(app.ctx, err)
-  }
-  app.horizonVersion = strings.TrimSpace(string(version))
-}
-
 func init() {
   appInit.Add("stellarCoreVersion", initStellarCoreVersion, "app-context", "log")
-  appInit.Add("horizonVersion", initHorizonVersion, "app-context", "log")
 }

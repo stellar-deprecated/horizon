@@ -40,9 +40,10 @@ func AppFromContext(ctx context.Context) (*App, bool) {
 }
 
 // NewApp constructs an new App instance from the provided config.
-func NewApp(config Config) (*App, error) {
+func NewApp(config Config, version string) (*App, error) {
 
 	result := &App{config: config}
+  result.horizonVersion = version
 	appInit.Run(result)
 
 	return result, nil
