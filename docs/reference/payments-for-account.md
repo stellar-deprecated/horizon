@@ -33,7 +33,7 @@ curl https://horizon-testnet.stellar.org/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5
 ### JavaScript Example Request
 
 ```js
-var StellarLib = require('js-stellar-lib');
+var StellarLib = require('js-stellar-sdk');
 var server = new StellarLib.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
 server.accounts("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ")
@@ -103,7 +103,7 @@ This endpoint responds with a [page][] of [payment operations][].
 
 This endpoint can be also streaming data using [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-Use [js-stellar-lib](https://github.com/stellar/js-stellar-lib/) to stream payments.
+Use [js-stellar-sdk](https://github.com/stellar/js-stellar-sdk/) to stream payments.
 
 ## Problems
 
