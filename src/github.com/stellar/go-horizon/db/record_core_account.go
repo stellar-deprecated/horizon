@@ -1,7 +1,7 @@
 package db
 
 import (
-	"database/sql"
+	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
 )
 
@@ -11,6 +11,7 @@ var CoreAccountRecordSelect sq.SelectBuilder = sq.Select(
 	"a.seqnum",
 	"a.numsubentries",
 	"a.inflationdest",
+	"a.homedomain",
 	"a.thresholds",
 	"a.flags",
 ).From("accounts a")
@@ -21,7 +22,8 @@ type CoreAccountRecord struct {
 	Balance       int64
 	Seqnum        int64
 	Numsubentries int32
-	Inflationdest sql.NullString
+	Inflationdest null.String
+	HomeDomain    null.String
 	Thresholds    string
 	Flags         int32
 }
