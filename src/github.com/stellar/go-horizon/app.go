@@ -31,12 +31,12 @@ type App struct {
 	redis      *redis.Pool
 	log        *logrus.Entry
 	logMetrics *log.Metrics
-  coreVersion    string
-  horizonVersion string
+	coreVersion    string
+	horizonVersion string
 }
 
 func SetVersion(v string) {
-  version = v;
+	version = v;
 }
 
 // AppFromContext retrieves a *App from the context tree.
@@ -49,7 +49,7 @@ func AppFromContext(ctx context.Context) (*App, bool) {
 func NewApp(config Config) (*App, error) {
 
 	result := &App{config: config}
-  result.horizonVersion = version
+	result.horizonVersion = version
 	appInit.Run(result)
 
 	return result, nil
