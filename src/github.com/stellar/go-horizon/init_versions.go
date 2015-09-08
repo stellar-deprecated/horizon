@@ -1,10 +1,10 @@
 package horizon
 
 import (
-  "fmt"
-  "io/ioutil"
-  "net/http"
-  "encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"encoding/json"
 )
 
 func initStellarCoreVersion(app *App) {
