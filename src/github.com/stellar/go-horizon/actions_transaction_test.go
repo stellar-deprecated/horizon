@@ -15,14 +15,14 @@ func TestTransactionActions(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		Convey("GET /transactions/99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4", func() {
-			w := rh.Get("/transactions/99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4", test.RequestHelperNoop)
+		Convey("GET /transactions/c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74", func() {
+			w := rh.Get("/transactions/c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 
 			var result TransactionResource
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
-			So(result.Hash, ShouldEqual, "99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4")
+			So(result.Hash, ShouldEqual, "c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74")
 		})
 
 		Convey("GET /transactions/not_real", func() {
@@ -56,7 +56,7 @@ func TestTransactionActions(t *testing.T) {
 		})
 
 		Convey("GET /accounts/:account_od/transactions", func() {
-			w := rh.Get("/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/transactions", test.RequestHelperNoop)
+			w := rh.Get("/accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 3)
 

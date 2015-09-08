@@ -45,11 +45,11 @@ func TestPaymentActions(t *testing.T) {
 		Convey("GET /transactions/:tx_id/payments", func() {
 			test.LoadScenario("pathed_payment")
 
-			w := rh.Get("/transactions/b90cc19c414426269ce9c245d7b079c34735a6d8a7afca594ce7cc362673269a/payments", test.RequestHelperNoop)
+			w := rh.Get("/transactions/42450ffe3956b8618cffaae48665c252869440aeb41fd8bf4921929a61982630/payments", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 0)
 
-			w = rh.Get("/transactions/c3399f16ed7edb2327fb8b44fe6af021eab1ab1f3d48bcca3ca4eb0fb4d47773/payments", test.RequestHelperNoop)
+			w = rh.Get("/transactions/95324dec7c94f8cc992522794b2a84a732cddcb5641992589cfe328884a4c132/payments", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 		})

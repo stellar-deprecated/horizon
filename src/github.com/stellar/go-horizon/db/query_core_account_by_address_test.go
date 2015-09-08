@@ -15,7 +15,7 @@ func TestCoreAccountByAddressQuery(t *testing.T) {
 		var account CoreAccountRecord
 
 		Convey("Existing record behavior", func() {
-			address := "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
+			address := "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
 			q := CoreAccountByAddressQuery{
 				SqlQuery{core},
 				address,

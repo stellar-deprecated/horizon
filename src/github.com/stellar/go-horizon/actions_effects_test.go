@@ -36,27 +36,27 @@ func TestEffectActions(t *testing.T) {
 		})
 
 		Convey("GET /accounts/:account_id/effects", func() {
-			w := rh.Get("/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/effects", test.RequestHelperNoop)
+			w := rh.Get("/accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H/effects", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 6)
+			So(w.Body, ShouldBePageOf, 3)
 
 			w = rh.Get("/accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2/effects", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 1)
+			So(w.Body, ShouldBePageOf, 2)
 
 			w = rh.Get("/accounts/GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU/effects", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 2)
+			So(w.Body, ShouldBePageOf, 3)
 		})
 
 		Convey("GET /transactions/:tx_id/effects", func() {
-			w := rh.Get("/transactions/99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4/effects", test.RequestHelperNoop)
+			w := rh.Get("/transactions/c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74/effects", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 3)
 		})
 
 		Convey("GET /operations/:op_id/effects", func() {
-			w := rh.Get("/operations/8589938688/effects", test.RequestHelperNoop)
+			w := rh.Get("/operations/8589938689/effects", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 3)
 		})

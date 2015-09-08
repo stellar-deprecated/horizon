@@ -37,7 +37,7 @@ func TestOperationActions(t *testing.T) {
 		})
 
 		Convey("GET /accounts/:account_id/operations", func() {
-			w := rh.Get("/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/operations", test.RequestHelperNoop)
+			w := rh.Get("/accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H/operations", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 3)
 
@@ -51,23 +51,23 @@ func TestOperationActions(t *testing.T) {
 		})
 
 		Convey("GET /transactions/:tx_id/operations", func() {
-			w := rh.Get("/transactions/99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4/operations", test.RequestHelperNoop)
+			w := rh.Get("/transactions/c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74/operations", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 
-			w = rh.Get("/transactions/7c51321eac0223879d74a63ea63ec0fb5aa8091f4a775f47263ebf6add8c3db5/operations", test.RequestHelperNoop)
+			w = rh.Get("/transactions/f70627f6d076a346902bdeaa0d55d8403dfcbdfad1c79d58baf54031a5c477ce/operations", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 		})
 
 		Convey("GET /operations/:id", func() {
-			w := rh.Get("/operations/8589938688", test.RequestHelperNoop)
+			w := rh.Get("/operations/8589938689", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 
 			var result OperationResource
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
-			So(result["paging_token"], ShouldEqual, "8589938688")
+			So(result["paging_token"], ShouldEqual, "8589938689")
 
 			w = rh.Get("/operations/10", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 404)
@@ -78,7 +78,6 @@ func TestOperationActions(t *testing.T) {
 
 			So(w.Code, ShouldEqual, 404)
 		})
-
 
 	})
 }
