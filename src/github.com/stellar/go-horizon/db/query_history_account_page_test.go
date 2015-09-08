@@ -57,19 +57,19 @@ func TestHistoryPageQuery(t *testing.T) {
 
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 8589938688)
+			So(record.Id, ShouldEqual, 8589938689)
 
 			// highest id if ordered descending and no cursor
 			MustGet(ctx, makeQuery("", "desc", 0), &record)
-			So(record.Id, ShouldEqual, 8589946880)
+			So(record.Id, ShouldEqual, 8589946881)
 
 			// starts after the cursor if ordered ascending
-			MustGet(ctx, makeQuery("8589938688", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 8589942784)
+			MustGet(ctx, makeQuery("8589938689", "asc", 0), &record)
+			So(record.Id, ShouldEqual, 8589942785)
 
 			// starts before the cursor if ordered descending
-			MustGet(ctx, makeQuery("8589946880", "desc", 0), &record)
-			So(record.Id, ShouldEqual, 8589942784)
+			MustGet(ctx, makeQuery("8589946881", "desc", 0), &record)
+			So(record.Id, ShouldEqual, 8589942785)
 		})
 
 	})

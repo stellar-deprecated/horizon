@@ -74,7 +74,7 @@ func TestTransactionPageQuery(t *testing.T) {
 		})
 
 		Convey("restricts to address properly", func() {
-			address := "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
+			address := "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
 			q := makeQuery("", "asc", 0)
 			q.AccountAddress = address
 			MustSelect(ctx, q, &records)

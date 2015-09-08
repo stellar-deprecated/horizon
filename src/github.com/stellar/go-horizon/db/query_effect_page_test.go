@@ -71,23 +71,23 @@ func TestEffectPageQuery(t *testing.T) {
 
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0), &record)
-			So(record.HistoryOperationID, ShouldEqual, 8589938688)
-			So(record.Order, ShouldEqual, 0)
+			So(record.HistoryOperationID, ShouldEqual, 8589938689)
+			So(record.Order, ShouldEqual, 1)
 
 			// highest id if ordered descending and no cursor
 			MustGet(ctx, makeQuery("", "desc", 0), &record)
-			So(record.HistoryOperationID, ShouldEqual, 12884905984)
-			So(record.Order, ShouldEqual, 1)
+			So(record.HistoryOperationID, ShouldEqual, 12884905985)
+			So(record.Order, ShouldEqual, 2)
 
 			// starts after the cursor if ordered ascending
-			MustGet(ctx, makeQuery("8589938688-0", "asc", 0), &record)
-			So(record.HistoryOperationID, ShouldEqual, 8589938688)
-			So(record.Order, ShouldEqual, 1)
+			MustGet(ctx, makeQuery("8589938689-1", "asc", 0), &record)
+			So(record.HistoryOperationID, ShouldEqual, 8589938689)
+			So(record.Order, ShouldEqual, 2)
 
 			// starts before the cursor if ordered descending
-			MustGet(ctx, makeQuery("12884905984-1", "desc", 0), &record)
-			So(record.HistoryOperationID, ShouldEqual, 12884905984)
-			So(record.Order, ShouldEqual, 0)
+			MustGet(ctx, makeQuery("12884905985-2", "desc", 0), &record)
+			So(record.HistoryOperationID, ShouldEqual, 12884905985)
+			So(record.Order, ShouldEqual, 1)
 		})
 
 		Convey("restricts to address properly", func() {
@@ -96,9 +96,10 @@ func TestEffectPageQuery(t *testing.T) {
 			q.AccountAddress = address
 			MustSelect(ctx, q, &records)
 
-			So(len(records), ShouldEqual, 2)
-			So(records[0].HistoryAccountID, ShouldEqual, 8589938688)
-			So(records[1].HistoryAccountID, ShouldEqual, 8589938688)
+			So(len(records), ShouldEqual, 3)
+			So(records[0].HistoryAccountID, ShouldEqual, 8589938689)
+			So(records[1].HistoryAccountID, ShouldEqual, 8589938689)
+			So(records[2].HistoryAccountID, ShouldEqual, 8589938689)
 		})
 
 		Convey("restricts to ledger properly", func() {
@@ -116,7 +117,7 @@ func TestEffectPageQuery(t *testing.T) {
 
 		Convey("restricts to operation properly", func() {
 			q := makeQuery("", "asc", 0)
-			q.OperationID = 8589938688
+			q.OperationID = 8589938689
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 3)
@@ -125,13 +126,13 @@ func TestEffectPageQuery(t *testing.T) {
 				toid := ParseTotalOrderId(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 				So(toid.TransactionOrder, ShouldEqual, 1)
-				So(toid.OperationOrder, ShouldEqual, 0) //TODO: fix this to 1 when we resolve indexing issues
+				So(toid.OperationOrder, ShouldEqual, 1)
 			}
 		})
 
 		Convey("restricts to transaction properly", func() {
 			q := makeQuery("", "asc", 0)
-			q.TransactionHash = "99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4"
+			q.TransactionHash = "c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74"
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 3)

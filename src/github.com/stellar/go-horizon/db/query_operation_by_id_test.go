@@ -15,7 +15,7 @@ func TestOperationByIdQuery(t *testing.T) {
 		var op OperationRecord
 
 		Convey("Existing record behavior", func() {
-			id := int64(8589938688)
+			id := int64(8589938689)
 			q := OperationByIdQuery{
 				SqlQuery{history},
 				id,
@@ -23,7 +23,7 @@ func TestOperationByIdQuery(t *testing.T) {
 			err := Get(ctx, q, &op)
 			So(err, ShouldBeNil)
 			So(op.Id, ShouldEqual, id)
-			So(op.TransactionId, ShouldEqual, id)
+			So(op.TransactionId, ShouldEqual, id-1)
 		})
 
 		Convey("Missing record behavior", func() {

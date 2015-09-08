@@ -32,7 +32,7 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 		})
 
 		Convey("filters properly", func() {
-			MustSelect(ctx, makeQuery("", "desc", 0, "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"), &records)
+			MustSelect(ctx, makeQuery("", "desc", 0, "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"), &records)
 			So(len(records), ShouldEqual, 0)
 
 			MustSelect(ctx, makeQuery("", "asc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &records)

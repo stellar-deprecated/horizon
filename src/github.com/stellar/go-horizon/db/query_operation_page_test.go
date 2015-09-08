@@ -56,19 +56,19 @@ func TestOperationPageQuery(t *testing.T) {
 
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 8589938688)
+			So(record.Id, ShouldEqual, 8589938689)
 
 			// highest id if ordered descending and no cursor
 			MustGet(ctx, makeQuery("", "desc", 0), &record)
-			So(record.Id, ShouldEqual, 12884905984)
+			So(record.Id, ShouldEqual, 12884905985)
 
 			// starts after the cursor if ordered ascending
-			MustGet(ctx, makeQuery("8589938688", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 8589942784)
+			MustGet(ctx, makeQuery("8589938689", "asc", 0), &record)
+			So(record.Id, ShouldEqual, 8589942785)
 
 			// starts before the cursor if ordered descending
-			MustGet(ctx, makeQuery("12884905984", "desc", 0), &record)
-			So(record.Id, ShouldEqual, 8589946880)
+			MustGet(ctx, makeQuery("12884905985", "desc", 0), &record)
+			So(record.Id, ShouldEqual, 8589946881)
 		})
 
 		Convey("restricts to address properly", func() {
@@ -78,8 +78,8 @@ func TestOperationPageQuery(t *testing.T) {
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 2)
-			So(records[0].Id, ShouldEqual, 8589946880)
-			So(records[1].Id, ShouldEqual, 12884905984)
+			So(records[0].Id, ShouldEqual, 8589946881)
+			So(records[1].Id, ShouldEqual, 12884905985)
 		})
 
 		Convey("restricts to ledger properly", func() {
@@ -97,7 +97,7 @@ func TestOperationPageQuery(t *testing.T) {
 
 		Convey("restricts to transaction properly", func() {
 			q := makeQuery("", "asc", 0)
-			q.TransactionHash = "99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4"
+			q.TransactionHash = "c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74"
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 1)
