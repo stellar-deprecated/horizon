@@ -15,8 +15,12 @@ import (
 
 var app *horizon.App
 var rootCmd *cobra.Command
+var version string
 
 func main() {
+	if version != "" {
+		horizon.SetVersion(version)
+	}
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.Execute()
 }
