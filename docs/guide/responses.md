@@ -60,8 +60,16 @@ valid URI before navigating to it.
 
 ## Pages
 
-TODO
+Pages represent a subset of a larger collection of objects.
+As an example, it would be unfeasible to provide the
+[All Transactions][transactions_all] endpoint without paging.  Over time there
+will be millions of transactions in the Stellar network's ledger and returning
+them all over a single request would be unfeasible.
+
+Read more about paging in following docs:
+- [Page][resources/page.md],
+- [Paging][guide/paging.md]
 
 ## Streaming via Server-Sent Events
 
-TODO
+Horizon is capable of streaming certain endpoints using Server-Sent Events. Read more about streaming in [Follow Received Payments][tutorials/follow-received-payments.md] tutorial.
