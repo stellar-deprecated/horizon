@@ -5,7 +5,7 @@ category: Tutorials
 ---
 
 This tutorial shows how easy it is to watch for incoming payments on an [account][concept_account]
-using JavaScript and `EventSource`.  We will eschew using `js-stellar-sdk`, the
+using JavaScript and `EventSource`.  We will eschew using [`js-stellar-sdk`](https://github.com/stellar/js-stellar-sdk), the
 high-level helper library, to show that it is possible for you to perform this
 task on your own, with whatever programming language you would like to use.
 
@@ -21,7 +21,7 @@ In this tutorial we will learn:
 
 - How to create a new account.
 - How to fund your account using friendbot
-- How to follow payments to your account using EventSource and Server-Sent Events.
+- How to follow payments to your account using curl and EventSource.
 
 ## Project Skeleton
 
@@ -93,16 +93,109 @@ succeeds, you should see a response like:
 ```
 
 After a few seconds, the Stellar network will perform consensus, close the
-ledger, and your account will have been created.  Next up we will write a script
+ledger, and your account will have been created.  Next up we will write a command
 that watches for new payments to your account and outputs a message to the
 terminal.
 
-## Following payments
+## Following payments using `curl`
 
-TODO
+To follow new payments connected to your account you simply need to send `Accept: text/event-stream` header to `/payments` endpoint.
+
+```bash
+$ curl -H 'Accept: text/event-stream' https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3/payments
+```
+
+As a result you will see something like:
+
+```
+retry: 1000
+event: open
+data: "hello"
+
+id: 713226564145153
+data: {"_links":{"effects":{"href":"/operations/713226564145153/effects/{?cursor,limit,order}","templated":true},"precedes":{"href":"/operations?cursor=713226564145153\u0026order=asc"},"self":{"href":"/operations/713226564145153"},"succeeds":{"href":"/operations?cursor=713226564145153\u0026order=desc"},"transactions":{"href":"/transactions/713226564145152"}},"account":"GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3","funder":"GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K","id":713226564145153,"paging_token":"713226564145153","starting_balance":1e+09,"type":0,"type_s":"create_account"}
+```
+
+Every time you will receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions (`/transactions`) and operations (`/operations`).
+
+## Following payments using `EventStream`
+
+Another way to follow payments is writing a simple JS script that will stream payments and print them to console. Create `stream_payments.js` file and paste the following code into it:
+
+```js
+var EventSource = require('eventsource');
+var es = new EventSource('https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3/payments');
+es.onmessage = function(message) {
+	var result = message.data ? JSON.parse(message.data) : message;
+	console.log('New payment:');
+	console.log(result);
+};
+es.onerror = function(error) {
+	console.log('An error occured!');
+}
+```
+Now, run our script: `node stream_payments.js`. You should see following output:
+```
+New payment:
+{ _links: 
+   { effects: 
+      { href: '/operations/713226564145153/effects/{?cursor,limit,order}',
+        templated: true },
+     precedes: { href: '/operations?cursor=713226564145153&order=asc' },
+     self: { href: '/operations/713226564145153' },
+     succeeds: { href: '/operations?cursor=713226564145153&order=desc' },
+     transactions: { href: '/transactions/713226564145152' } },
+  account: 'GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3',
+  funder: 'GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K',
+  id: 713226564145153,
+  paging_token: '713226564145153',
+  starting_balance: 1000000000,
+  type: 0,
+  type_s: 'create_account' }
+```
 
 ## Testing it out
 
-TODO
+We now how to stream accounts. Let's check if our solution actually works and if new payments appear. Let's say a new payment from our account to another account.
+
+First, let's check our account sequence number so we can create a payment operations. To do this we send a request to horizon:
+
+```bash
+$ curl https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3
+```
+
+Sequence number can be found under `sequence` field. Currently sequence number is `713226564141056`. Let's save this value somewhere.
+
+Now, create `make_payment.js` file and paste the following code into it:
+
+```js
+var StellarBase = require("stellar-base");
+
+var keypair = StellarBase.Keypair.fromSeed('SCU36VV2OYTUMDSSU4EIVX4UUHY3XC7N44VL4IJ26IOG6HVNC7DY5UJO');
+var account = new StellarBase.Account(keypair.address(), 713226564141056);
+
+var asset = StellarBase.Asset.native();
+var amount = 100000000; // 100 XLM
+var transaction = new StellarBase.TransactionBuilder(account)
+  .addOperation(StellarBase.Operation.payment({
+    destination: StellarBase.Keypair.random().address(),
+    asset: asset,
+    amount: amount
+  }))
+  .addSigner(keypair)
+  .build();
+
+console.log(transaction.toEnvelope().toXDR().toString("base64"));
+```
+
+After running this script you should see signed transaction blob. To submit this transaction we send it to horizon or stellar-core. But before we do it, let's open a new console and start our previous script by `node stream_payments.js`.
+
+Now to send a transaction just use horizon:
+
+```bash
+curl -H "Content-Type: application/json" -X POST -d '{"tx":"AAAAAH6Sq76F4cHVMWvGG4AtNtFVIvayUxSgR401rPY9ej3TAAAD6AACiK0AAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAKc1j3y10+nI+sxuXlmFz71JS35mp/RcPCP45Gw0obdAAAAAAAAAAAAExLQAAAAAAAAAAAT16PdMAAABAsJTBC5N5B9Q/9+ZKS7qkMd/wZHWlP6uCCFLzeD+JWT60/VgGFCpzQhZmMg2k4Vg+AwKJTwko3d7Jt3Y6WhjLCg=="}' https://horizon-testnet.stellar.org/transactions
+```
+
+You should see a new payment in a window running `stream_payments.js` script.
 
 [concept_account]: https://github.com/stellar/docs/tree/master/docs/accounts.md
