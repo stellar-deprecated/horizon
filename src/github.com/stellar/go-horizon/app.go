@@ -18,7 +18,7 @@ import (
 
 var appContextKey = 0
 // You can override this variable using: gb build -ldflags "-X main.version aabbccdd"
-var version = "version"
+var version = ""
 
 type App struct {
 	config     Config
