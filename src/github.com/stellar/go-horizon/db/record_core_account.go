@@ -21,8 +21,8 @@ var CoreAccountRecordSelect sq.SelectBuilder = sq.Select(
 ).From("accounts a")
 
 const (
-   FlagAuthRequired = 1 << iota
-   FlagAuthRevocable = 1 << iota
+	FlagAuthRequired = 1 << iota
+	FlagAuthRevocable = 1 << iota
 )
 
 // A row of data from the `accounts` table from stellar-core
