@@ -43,14 +43,14 @@ type SignerResource struct {
 }
 
 type ThresholdsResource struct {
-    LowThreshold  byte `json:"low_threshold"`
-    MedThreshold  byte `json:"med_threshold"`
-    HighThreshold byte `json:"high_threshold"`
+	LowThreshold  byte `json:"low_threshold"`
+	MedThreshold  byte `json:"med_threshold"`
+	HighThreshold byte `json:"high_threshold"`
 }
 
 type FlagsResource struct {
-    AuthRequired  bool `json:"auth_required"`
-    AuthRevocable bool `json:"auth_revocable"`
+	AuthRequired  bool `json:"auth_required"`
+	AuthRevocable bool `json:"auth_revocable"`
 }
 
 // NewAccountRsource creates a new AccountResource from a provided db.CoreAccountRecord and
