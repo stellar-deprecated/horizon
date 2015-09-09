@@ -2,8 +2,6 @@ package horizon
 
 import (
 	"fmt"
-	"strings"
-	"encoding/base64"
 
 	"github.com/guregu/null"
 	"github.com/jagregory/halgo"
@@ -16,17 +14,17 @@ import (
 // AccountResource is the summary of an account
 type AccountResource struct {
 	halgo.Links
-	ID            string             `json:"id"`
-	PagingToken   string             `json:"paging_token"`
-	Address       string             `json:"address"`
-	Sequence      int64              `json:"sequence"`
-	Numsubentries int32              `json:"numsubentries"`
-	InflationDest null.String        `json:"inflation_destination"`
-	HomeDomain    null.String        `json:"home_domain"`
-	Thresholds    map[string]byte    `json:"thresholds"`
-	Flags         map[string]bool    `json:"flags"`
-	Balances      []BalanceResource  `json:"balances"`
-	Signers       []SignerResource   `json:"signers"`
+	ID                    string             `json:"id"`
+	PagingToken           string             `json:"paging_token"`
+	Address               string             `json:"address"`
+	Sequence              int64              `json:"sequence"`
+	SubentryCount         int32              `json:"subentry_count"`
+	InflationDestination  null.String        `json:"inflation_destination"`
+	HomeDomain            null.String        `json:"home_domain"`
+	Thresholds            ThresholdsResource `json:"thresholds"`
+	Flags                 FlagsResource      `json:"flags"`
+	Balances              []BalanceResource  `json:"balances"`
+	Signers               []SignerResource   `json:"signers"`
 }
 
 // BalanceResource represents an accounts holdings for a single currency type
@@ -42,6 +40,17 @@ type BalanceResource struct {
 type SignerResource struct {
 	Address string `json:"address"`
 	Weight  int32  `json:"weight"`
+}
+
+type ThresholdsResource struct {
+    LowThreshold  byte `json:"low_threshold"`
+    MedThreshold  byte `json:"med_threshold"`
+    HighThreshold byte `json:"high_threshold"`
+}
+
+type FlagsResource struct {
+    AuthRequired  bool `json:"auth_required"`
+    AuthRevocable bool `json:"auth_revocable"`
 }
 
 // NewAccountRsource creates a new AccountResource from a provided db.CoreAccountRecord and
@@ -76,32 +85,31 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 	// add native balance
 	balances[len(ac.Trustlines)] = BalanceResource{Type: "native", Balance: AmountToString(ac.Balance)}
 
+	// thresholds
+	var thresholds ThresholdsResource
+	xdrThresholds, err := ac.DecodeThresholds()
+	if err == nil {
+		thresholds = ThresholdsResource{
+			LowThreshold: xdrThresholds[1],
+			MedThreshold: xdrThresholds[2],
+			HighThreshold: xdrThresholds[3],
+		}
+	}
+
 	// signers
-	signers := make([]SignerResource, len(ac.Signers))
+	signers := make([]SignerResource, len(ac.Signers)+1)
 
 	for i, s := range ac.Signers {
 		signers[i] = SignerResource{Address: s.Publickey, Weight: s.Weight}
 	}
 
-	// thresholds
-	reader := strings.NewReader(ac.Thresholds)
-	b64r := base64.NewDecoder(base64.StdEncoding, reader)
-	var xdrThresholds xdr.Thresholds
-	_, err := xdr.Unmarshal(b64r, &xdrThresholds)
-
-	var thresholdsMap map[string]byte
-	if err == nil {
-		thresholdsMap = make(map[string]byte)
-		thresholdsMap["threshold_master_weight"] = xdrThresholds[0]
-		thresholdsMap["threshold_low"] = xdrThresholds[1]
-		thresholdsMap["threshold_med"] = xdrThresholds[2]
-		thresholdsMap["threshold_high"] = xdrThresholds[3]
-	}
+	signers[len(ac.Signers)] = SignerResource{Address: ac.Address, Weight: int32(xdrThresholds[0])}
 
 	// flags
-	flagsMap := make(map[string]bool)
-	flagsMap["auth_required_flag"] = IsTrue(ac.Flags & 1)
-	flagsMap["auth_revocable_flag"] = IsTrue(ac.Flags & 2)
+	flags := FlagsResource{
+		AuthRequired: ac.IsAuthRequired(),
+		AuthRevocable: ac.IsAuthRevocable(),
+	}
 
 	return AccountResource{
 		Links: halgo.Links{}.
@@ -110,17 +118,17 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 			Link("operations", "%s/operations/%s", self, hal.StandardPagingOptions).
 			Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions).
 			Link("offers", "%s/offers/%s", self, hal.StandardPagingOptions),
-		ID:            address,
-		PagingToken:   ac.PagingToken(),
-		Address:       address,
-		Sequence:      ac.Seqnum,
-		Numsubentries: ac.Numsubentries,
-		InflationDest: ac.Inflationdest,
-		HomeDomain:    ac.HomeDomain,
-		Thresholds:    thresholdsMap,
-		Flags:         flagsMap,
-		Balances:      balances,
-		Signers:       signers,
+		ID:                   address,
+		PagingToken:          ac.PagingToken(),
+		Address:              address,
+		Sequence:             ac.Seqnum,
+		SubentryCount:        ac.Numsubentries,
+		InflationDestination: ac.Inflationdest,
+		HomeDomain:           ac.HomeDomain,
+		Thresholds:           thresholds,
+		Flags:                flags,
+		Balances:             balances,
+		Signers:              signers,
 	}
 }
 
@@ -128,11 +136,4 @@ func AmountToString(amount int64) string {
 	whole := amount / stellarbase.One
 	frac := amount % stellarbase.One
 	return fmt.Sprintf("%d.%07d", whole, frac)
-}
-
-func IsTrue(value int32) bool {
-  if value != 0 {
-    return true
-  }
-  return false
 }
