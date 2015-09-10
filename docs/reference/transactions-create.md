@@ -45,7 +45,7 @@ submission of the provided transaction to stellar-core.
 | ------------------- | ------ | ------------------------------------------------------------- |
 | `hash`              | string | A hex-encoded hash of the submitted transaction.              |
 | `result`            | string | Distilled summary of the result.  See "Result" section below. |
-| `submission_result` | string | A hex-encoded `TransactionResult` [XDR][] object.                 |
+| `submission_result` | string | A hex-encoded `TransactionResult` [XDR](../guide/xdr.md) object.                 |
 
 ### Result
 
@@ -54,8 +54,8 @@ The `result` attribute of a response from this endpoint can be one of the follow
 | `result`         |                                                                                                                                             |
 | -----------------| --------------------------------------------------------------------------------------------------------------------------                  |
 | malformed        | The transaction was sufficiently malformed that we could not interpret it.                                                                  |
-| already_finished | The hash for this transaction hash is either in the [history][concept_history] database or is in the stellar core database.                 |
-| received         | The transaction was submitted and received by stellar core, and will be included in consideration for a validated [ledger][resources_ledger]|
+| already_finished | The hash for this transaction hash is either in the history database or is in the stellar-core database.                 |
+| received         | The transaction was submitted and received by stellar core, and will be included in consideration for a validated [ledger](./resources/ledger.md)|
 | failed           | The submission to stellar core failed, and was not received by the network.  Refer to the `submission_result` for details.                  |
 | connection_failed| Horizon could not connect to stellar core.                                                                                                  |
 
@@ -72,9 +72,5 @@ The `result` attribute of a response from this endpoint can be one of the follow
 
 ## Problems
 
-This endpoint should only respond with [standard problems][].
+This endpoint should only respond with [standard problems](../guide/problems.md#Standard_Problems).
 
-[standard problems]: ../guide/problems.md#Standard_Problems
-[resources_ledger]: ./resources/ledger.md
-[XDR]: ../guide/xdr.md
-[concept_history][https://github.com/stellar/docs/tree/master/docs/history.md]
