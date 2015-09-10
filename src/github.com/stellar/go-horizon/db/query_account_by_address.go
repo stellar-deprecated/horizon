@@ -31,6 +31,12 @@ func (q AccountByAddressQuery) Select(ctx context.Context, dest interface{}) err
 	if err != nil {
 		return err
 	}
+
+	cq = CoreSignersByAddressQuery{q.Core, q.Address}
+	err = Select(ctx, cq, &result.Signers)
+	if err != nil {
+		return err
+	}
 	setOn([]AccountRecord{result}, dest)
 	return nil
 }
