@@ -117,7 +117,7 @@ func TestEffectPageQuery(t *testing.T) {
 
 		Convey("restricts to operation properly", func() {
 			q := makeQuery("", "asc", 0)
-			q.OperationID = 8589938689
+			q.Filter = &EffectOperationFilter{8589938689}
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 3)
