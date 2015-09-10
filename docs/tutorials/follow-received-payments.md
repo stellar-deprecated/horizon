@@ -116,7 +116,7 @@ id: 713226564145153
 data: {"_links":{"effects":{"href":"/operations/713226564145153/effects/{?cursor,limit,order}","templated":true},"precedes":{"href":"/operations?cursor=713226564145153\u0026order=asc"},"self":{"href":"/operations/713226564145153"},"succeeds":{"href":"/operations?cursor=713226564145153\u0026order=desc"},"transactions":{"href":"/transactions/713226564145152"}},"account":"GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3","funder":"GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K","id":713226564145153,"paging_token":"713226564145153","starting_balance":1e+09,"type":0,"type_s":"create_account"}
 ```
 
-Every time you will receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions (`/transactions`) and operations (`/operations`).
+Every time you receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions (`/transactions`) and operations (`/operations`).
 
 ## Following payments using `EventStream`
 
@@ -156,7 +156,7 @@ New payment:
 
 ## Testing it out
 
-We now how to stream accounts. Let's check if our solution actually works and if new payments appear. Let's say a new payment from our account to another account.
+We now know how to stream accounts. Let's check if our solution actually works and if new payments appear. Let's say a new payment from our account to another account.
 
 First, let's check our account sequence number so we can create a payment operations. To do this we send a request to horizon:
 
@@ -188,7 +188,7 @@ var transaction = new StellarBase.TransactionBuilder(account)
 console.log(transaction.toEnvelope().toXDR().toString("base64"));
 ```
 
-After running this script you should see signed transaction blob. To submit this transaction we send it to horizon or stellar-core. But before we do it, let's open a new console and start our previous script by `node stream_payments.js`.
+After running this script you should see a signed transaction blob. To submit this transaction we send it to horizon or stellar-core. But before we do, let's open a new console and start our previous script by `node stream_payments.js`.
 
 Now to send a transaction just use horizon:
 
@@ -198,4 +198,4 @@ curl -H "Content-Type: application/json" -X POST -d '{"tx":"AAAAAH6Sq76F4cHVMWvG
 
 You should see a new payment in a window running `stream_payments.js` script.
 
-[concept_account]: https://github.com/stellar/docs/tree/master/docs/accounts.md
+[concept_account]: https://github.com/stellar/docs/tree/master/concepts/accounts.md
