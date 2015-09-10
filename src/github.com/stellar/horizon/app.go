@@ -17,26 +17,27 @@ import (
 )
 
 var appContextKey = 0
+
 // You can override this variable using: gb build -ldflags "-X main.version aabbccdd"
 var version = ""
 
 type App struct {
-	config     Config
-	metrics    metrics.Registry
-	web        *Web
-	historyDb  *sql.DB
-	coreDb     *sql.DB
-	ctx        context.Context
-	cancel     func()
-	redis      *redis.Pool
-	log        *logrus.Entry
-	logMetrics *log.Metrics
+	config         Config
+	metrics        metrics.Registry
+	web            *Web
+	historyDb      *sql.DB
+	coreDb         *sql.DB
+	ctx            context.Context
+	cancel         func()
+	redis          *redis.Pool
+	log            *logrus.Entry
+	logMetrics     *log.Metrics
 	coreVersion    string
 	horizonVersion string
 }
 
 func SetVersion(v string) {
-	version = v;
+	version = v
 }
 
 // AppFromContext retrieves a *App from the context tree.
@@ -55,7 +56,7 @@ func NewApp(config Config) (*App, error) {
 	return result, nil
 }
 
-// Serve starts the go-horizon system, binding it to a socket, setting up
+// Serve starts the horizon system, binding it to a socket, setting up
 // the shutdown signals and starting the appropriate db-streaming pumps.
 func (a *App) Serve() {
 

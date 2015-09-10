@@ -25,7 +25,7 @@ ask contributors to follow so that we can merge your changes quickly.
 * <a href="https://docs.google.com/forms/d/1g7EF6PERciwn7zfmfke5Sir2n10yddGGSXyZsq98tVY/viewform?usp=send_form">Sign the Contributor License Agreement</a>.
 * All content, comments, and pull requests must follow the [Stellar Community Guidelines](https://www.stellar.org/community-guidelines/). 
 * Push your changes to a topic branch in your fork of the repository.
-* Submit a pull request to the [go-horizon repository](https://github.com/stellar/go-horizon) in the Stellar organization.
+* Submit a pull request to the [horizon repository](https://github.com/stellar/horizon) in the Stellar organization.
  * Include a descriptive [commit message](https://github.com/erlang/otp/wiki/Writing-good-commit-messages).
  * Changes contributed via pull request should focus on a single issue at a time.
  * Rebase your local changes against the master branch. Resolve any conflicts that arise.
@@ -43,10 +43,10 @@ an issue number.
 
 # Additional Resources
 
-* [Bug tracker (Github)](https://github.com/stellar/go-horizon/issues)
+* [Bug tracker (Github)](https://github.com/stellar/horizon/issues)
 * <a href="https://docs.google.com/forms/d/1g7EF6PERciwn7zfmfke5Sir2n10yddGGSXyZsq98tVY/viewform?usp=send_form">Contributor License Agreement</a>
 * [Explore the API](http://docs.stellarhorizon.apiary.io/)
-* [Readme for go-horizon](https://github.com/stellar/go-horizon/blob/master/README.md)
+* [Readme for horizon](https://github.com/stellar/horizon/blob/master/README.md)
 * #stellar-dev IRC channel on freenode.org
 * #dev channel on [Slack](http://slack.stellar.org)
 

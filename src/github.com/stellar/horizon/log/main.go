@@ -12,7 +12,7 @@ var contextKey = 0
 var defaultLogger *logrus.Entry
 var defaultMetrics *Metrics
 
-// New creates a new logger according to go-horizon specifications.
+// New creates a new logger according to horizon specifications.
 func New() (result *logrus.Entry, m *Metrics) {
 	m = NewMetrics()
 	l := logrus.New()

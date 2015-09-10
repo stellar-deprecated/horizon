@@ -17,7 +17,7 @@ import (
 	"github.com/zenazn/goji/web/middleware"
 )
 
-// Web contains the http server related fields for go-horizon: the router,
+// Web contains the http server related fields for horizon: the router,
 // rate limiter, etc.
 type Web struct {
 	router      *web.Mux
@@ -41,7 +41,7 @@ func initWeb(app *App) {
 	problem.RegisterError(db.ErrNoResults, problem.NotFound)
 }
 
-// initWebMiddleware installs the middleware stack used for go-horizon onto the
+// initWebMiddleware installs the middleware stack used for horizon onto the
 // provided app.
 func initWebMiddleware(app *App) {
 
@@ -66,7 +66,7 @@ func initWebMiddleware(app *App) {
 	r.Use(app.web.RateLimitMiddleware)
 }
 
-// initWebActions installs the routing configuration of go-horizon onto the
+// initWebActions installs the routing configuration of horizon onto the
 // provided app.  All route registration should be implemented here.
 func initWebActions(app *App) {
 	r := app.web.router
@@ -108,7 +108,7 @@ func initWebActions(app *App) {
 	r.Get("/offers/:id", &NotImplementedAction{})
 	r.Get("/order_book", &OrderBookShowAction{})
 
-	// go-horizon doesn't implement everything horizon did,
+	// horizon doesn't implement everything ruby-horizon did,
 	// so we reverse proxy if we can
 	if app.config.RubyHorizonUrl != "" {
 
