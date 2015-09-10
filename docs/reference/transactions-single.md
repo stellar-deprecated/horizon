@@ -27,8 +27,8 @@ curl https://horizon-testnet.stellar.org/transactions/6391dd190f15f7d1665ba53c63
 ### JavaScript Example Request
 
 ```js
-var StellarLib = require('js-stellar-sdk');
-var server = new StellarLib.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
 server.transactions('3c8ef808df9d5d240ba0d495629df9da5653b1be2daf05d43b49c5bcbfe099bd')
   .then(function (transactionResult) {

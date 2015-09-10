@@ -29,8 +29,8 @@ curl https://horizon-testnet.stellar.org/transactions?limit=200&order=desc
 ### JavaScript Example Request
 
 ```javascript
-var StellarLib = require('js-stellar-sdk');
-var server = new StellarLib.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
 server.accounts()
   .then(function (accountResults) {

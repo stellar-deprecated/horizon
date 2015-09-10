@@ -5,7 +5,7 @@ category: Tutorials
 ---
 
 This tutorial shows how easy it is to watch for incoming payments on an [account][concept_account]
-using JavaScript and `EventSource`.  We will eschew using [`js-stellar-sdk`](https://github.com/stellar/js-stellar-sdk), the
+using JavaScript and `EventSource`.  We will eschew using [`stellar-sdk`](https://github.com/stellar/stellar-sdk), the
 high-level helper library, to show that it is possible for you to perform this
 task on your own, with whatever programming language you would like to use.
 

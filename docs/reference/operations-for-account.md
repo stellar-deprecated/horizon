@@ -30,8 +30,8 @@ curl https://horizon-testnet.stellar.org/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSX
 ### JavaScript Example Request
 
 ```js
-var StellarLib = require('js-stellar-sdk');
-var server = new StellarLib.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
 server.accounts('GAKLBGHNHFQ3BMUYG5KU4BEWO6EYQHZHAXEWC33W34PH2RBHZDSQBD75', 'operations')
   .then(function (operationsResult) {
@@ -99,7 +99,7 @@ This endpoint responds with a list of operations that occurred in the ledger as 
 
 This endpoint can be also streaming data using [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-Use [js-stellar-sdk](https://github.com/stellar/js-stellar-sdk/) to stream operations.
+Use [stellar-sdk](https://github.com/stellar/stellar-sdk/) to stream operations.
 
 ## Problems
 

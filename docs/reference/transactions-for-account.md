@@ -39,7 +39,7 @@ _Endpoint not implemented_
 
 This endpoint can be also streaming data using [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-Use [js-stellar-sdk](https://github.com/stellar/js-stellar-sdk/) to stream transactions.
+Use [stellar-sdk](https://github.com/stellar/stellar-sdk/) to stream transactions.
 
 ## Problems
 
