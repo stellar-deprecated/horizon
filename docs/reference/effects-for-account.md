@@ -33,7 +33,62 @@ The list of effects.
 
 ### Example Response
 
-Endpoint not implemented yet.
+```json
+{
+  "_embedded": {
+    "records": [
+      {
+        "_links": {
+          "operation": {
+            "href": "/operations/214748368897"
+          },
+          "precedes": {
+            "href": "/effects?cursor=214748368897-1\u0026order=asc"
+          },
+          "succeeds": {
+            "href": "/effects?cursor=214748368897-1\u0026order=desc"
+          }
+        },
+        "account": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
+        "paging_token": "214748368897-1",
+        "starting_balance": "100.0",
+        "type": 0,
+        "type_s": "account_created"
+      },
+      {
+        "_links": {
+          "operation": {
+            "href": "/operations/214748368897"
+          },
+          "precedes": {
+            "href": "/effects?cursor=214748368897-3\u0026order=asc"
+          },
+          "succeeds": {
+            "href": "/effects?cursor=214748368897-3\u0026order=desc"
+          }
+        },
+        "account": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
+        "paging_token": "214748368897-3",
+        "public_key": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
+        "type": 10,
+        "type_s": "signer_created",
+        "weight": 2
+      }
+    ]
+  },
+  "_links": {
+    "next": {
+      "href": "/accounts/GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK/effects?order=asc\u0026limit=10\u0026cursor=214748368897-3"
+    },
+    "prev": {
+      "href": "/accounts/GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK/effects?order=desc\u0026limit=10\u0026cursor=214748368897-1"
+    },
+    "self": {
+      "href": "/accounts/GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK/effects?order=asc\u0026limit=10\u0026cursor="
+    }
+  }
+}
+```
 
 ## Errors
 
