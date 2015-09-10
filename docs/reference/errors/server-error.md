@@ -10,7 +10,7 @@ Horizon does not expose information such as stack traces or raw error messages t
 
 If you are encountering this error on a server you control, please check the Horizon log files for more details. The logs should contain detailed information to help you discover the root issue.
 
-If you are encountering this error on the public Stellar infrastructure, please report an error on [Horizon's issue tracker](https://github.com/stellar/go-horizon/issues) and include the instance attribute.  Any other information, such as the request that triggered the response, would be most welcome.
+If you are encountering this error on the public Stellar infrastructure, please report an error on [Horizon's issue tracker](https://github.com/stellar/horizon/issues) and include the instance attribute.  Any other information, such as the request that triggered the response, would be most welcome.
 
 ## Attributes
 
