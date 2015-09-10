@@ -4,7 +4,7 @@ title: Post Transaction
 category: Endpoints
 ---
 
-Posts a new [transactions][resource_transaction] to the Stellar Network.  Note that creating a valid
+Posts a new [transaction](./resources/transaction.md) to the Stellar Network.  Note that creating a valid
 transactions and signing it properly is the responsibility of your
 client library.
 
@@ -76,6 +76,5 @@ This endpoint should only respond with [standard problems][].
 
 [standard problems]: ../guide/problems.md#Standard_Problems
 [resources_ledger]: ./resources/ledger.md
-[resources_transaction]: ./resources/transaction.md
 [XDR]: ../guide/xdr.md
 [concept_history][https://github.com/stellar/docs/tree/master/docs/history.md]
