@@ -4,7 +4,7 @@ title: Follow Received Payments
 category: Tutorials
 ---
 
-This tutorial shows how easy it is to watch for incoming payments on an [account](https://github.com/stellar/docs/tree/master/concepts/accounts.md)
+This tutorial shows how easy it is to watch for incoming payments on an [account](../reference/resources/account.md)
 using JavaScript and `EventSource`.  We will eschew using [`stellar-sdk`](https://github.com/stellar/stellar-sdk), the
 high-level helper library, to show that it is possible for you to perform this
 task on your own, with whatever programming language you would like to use.
