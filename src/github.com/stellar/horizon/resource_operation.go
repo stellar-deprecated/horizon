@@ -5,9 +5,9 @@ import (
 
 	"github.com/jagregory/halgo"
 
+	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
-	"github.com/stellar/go-stellar-base/xdr"
 )
 
 var operationResourceTypeNames = map[xdr.OperationType]string{
@@ -44,7 +44,7 @@ func NewOperationResource(op db.OperationRecord) (OperationResource, error) {
 	result["_links"] = halgo.Links{}.
 		Self(self).
 		Link("transaction", "/transactions/%d", op.TransactionId).
-		Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions).
+		Link("effects", "%s/effects%s", self, hal.StandardPagingOptions).
 		Link("precedes", "/operations?cursor=%s&order=asc", op.PagingToken()).
 		Link("succeeds", "/operations?cursor=%s&order=desc", op.PagingToken()).
 		Items
