@@ -4,7 +4,7 @@ title: Follow Received Payments
 category: Tutorials
 ---
 
-This tutorial shows how easy it is to watch for incoming payments on an [account][concept_account]
+This tutorial shows how easy it is to watch for incoming payments on an [account](https://github.com/stellar/docs/tree/master/concepts/accounts.md)
 using JavaScript and `EventSource`.  We will eschew using [`stellar-sdk`](https://github.com/stellar/stellar-sdk), the
 high-level helper library, to show that it is possible for you to perform this
 task on your own, with whatever programming language you would like to use.
@@ -20,7 +20,7 @@ This tutorial assumes that you:
 In this tutorial we will learn:
 
 - How to create a new account.
-- How to fund your account using friendbot
+- How to fund your account using friendbot.
 - How to follow payments to your account using curl and EventSource.
 
 ## Project Skeleton
@@ -99,7 +99,7 @@ terminal.
 
 ## Following payments using `curl`
 
-To follow new payments connected to your account you simply need to send `Accept: text/event-stream` header to `/payments` endpoint.
+To follow new payments connected to your account you simply need to send `Accept: text/event-stream` header to the [/payments](../reference/payments-all.md) endpoint.
 
 ```bash
 $ curl -H 'Accept: text/event-stream' https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3/payments
@@ -116,7 +116,7 @@ id: 713226564145153
 data: {"_links":{"effects":{"href":"/operations/713226564145153/effects/{?cursor,limit,order}","templated":true},"precedes":{"href":"/operations?cursor=713226564145153\u0026order=asc"},"self":{"href":"/operations/713226564145153"},"succeeds":{"href":"/operations?cursor=713226564145153\u0026order=desc"},"transactions":{"href":"/transactions/713226564145152"}},"account":"GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3","funder":"GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K","id":713226564145153,"paging_token":"713226564145153","starting_balance":1e+09,"type":0,"type_s":"create_account"}
 ```
 
-Every time you receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions (`/transactions`) and operations (`/operations`).
+Every time you receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions [/transactions](../reference/transactions-all.md) and operations [/operations](../reference/operations-all.md).
 
 ## Following payments using `EventStream`
 
@@ -156,15 +156,15 @@ New payment:
 
 ## Testing it out
 
-We now know how to stream accounts. Let's check if our solution actually works and if new payments appear. Let's say a new payment from our account to another account.
+We now know how to get a stream of transactions to an account. Let's check if our solution actually works and if new payments appear. Let's watch as we send a payment from our account to another account.
 
-First, let's check our account sequence number so we can create a payment operations. To do this we send a request to horizon:
+First, let's check our account sequence number so we can create a payment operation. To do this we send a request to horizon:
 
 ```bash
 $ curl https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3
 ```
 
-Sequence number can be found under `sequence` field. Currently sequence number is `713226564141056`. Let's save this value somewhere.
+Sequence number can be found under the `sequence` field. The current sequence number is `713226564141056`. Save this value somewhere.
 
 Now, create `make_payment.js` file and paste the following code into it:
 
@@ -198,4 +198,3 @@ curl -H "Content-Type: application/json" -X POST -d '{"tx":"AAAAAH6Sq76F4cHVMWvG
 
 You should see a new payment in a window running `stream_payments.js` script.
 
-[concept_account]: https://github.com/stellar/docs/tree/master/concepts/accounts.md
