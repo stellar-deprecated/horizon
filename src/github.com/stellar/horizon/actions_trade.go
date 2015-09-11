@@ -44,6 +44,24 @@ func (action *TradeIndexAction) LoadQuery() {
 		return
 	}
 
+	// HACK: see if it looks like we're specifying an order book on params
+	// try to load it if so
+	if action.GetString("selling_asset_type") != "" {
+		params := action.GetOrderBook()
+
+		action.Query.Filter = db.FilterAll(
+			action.Query.Filter,
+			&db.EffectOrderBookFilter{
+				SellingType:   params.SellingType,
+				SellingCode:   params.SellingCode,
+				SellingIssuer: params.SellingIssuer,
+				BuyingType:    params.BuyingType,
+				BuyingCode:    params.BuyingCode,
+				BuyingIssuer:  params.BuyingIssuer,
+			},
+		)
+	}
+
 }
 
 // LoadRecords populates action.Records
