@@ -5,6 +5,36 @@ import (
 	"encoding/json"
 	"fmt"
 	sq "github.com/lann/squirrel"
+	"golang.org/x/net/context"
+)
+
+const (
+	// account effects
+	EffectAccountCreated           = 0 // from create_account
+	EffectAccountRemoved           = 1 // from merge_account
+	EffectAccountCredited          = 2 // from create_account, payment, path_payment, merge_account
+	EffectAccountDebited           = 3 // from create_account, payment, path_payment, create_account
+	EffectAccountThresholdsUpdated = 4 // from set_options
+	EffectAccountHomeDomainUpdated = 5 // from set_options
+	EffectAccountFlagsUpdated      = 6 // from set_options
+
+	// signer effects
+	EffectSignerCreated = 10 // from set_options
+	EffectSignerRemoved = 11 // from set_options
+	EffectSignerUpdated = 12 // from set_options
+
+	// trustline effects
+	EffectTrustlineCreated      = 20 // from change_trust
+	EffectTrustlineRemoved      = 21 // from change_trust
+	EffectTrustlineUpdated      = 22 // from change_trust, allow_trust
+	EffectTrustlineAuthorized   = 23 // from allow_trust
+	EffectTrustlineDeauthorized = 24 // from allow_trust
+
+	// trading effects
+	EffectOfferCreated = 30 // from manage_offer, creat_passive_offer
+	EffectOfferRemoved = 31 // from manage_offer, creat_passive_offer, path_payment
+	EffectOfferUpdated = 32 // from manage_offer, creat_passive_offer, path_payment
+	EffectTrade        = 33 // from manage_offer, creat_passive_offer, path_payment
 )
 
 var EffectRecordSelect sq.SelectBuilder = sq.
@@ -38,4 +68,92 @@ func (r EffectRecord) ID() string {
 
 func (r EffectRecord) PagingToken() string {
 	return fmt.Sprintf("%d-%d", r.HistoryOperationID, r.Order)
+}
+
+// SQLFilter implementerations
+
+// EffectTypeFilter represents a filter that excludes all rows that do not match the
+// type specified by the filter
+type EffectTypeFilter struct {
+	Type int32
+}
+
+func (f *EffectTypeFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	return sql.Where("heff.type = ?", f.Type), nil
+}
+
+// EffectAccountFilter represents a filter that excludes all rows that do not apply to
+// the account specified
+type EffectAccountFilter struct {
+	SqlQuery
+	AccountAddress string
+}
+
+func (f *EffectAccountFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	var account HistoryAccountRecord
+	err := Get(ctx, HistoryAccountByAddressQuery{f.SqlQuery, f.AccountAddress}, &account)
+
+	if err != nil {
+		return sql, err
+	}
+
+	return sql.Where("heff.history_account_id = ?", account.Id), nil
+}
+
+// EffectLedgerFilter represents a filter that excludes all rows that did not occur
+// in the specified ledger
+type EffectLedgerFilter struct {
+	LedgerSequence int32
+}
+
+func (f *EffectLedgerFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	start := TotalOrderId{LedgerSequence: f.LedgerSequence}
+	end := TotalOrderId{LedgerSequence: f.LedgerSequence + 1}
+	return sql.Where(
+		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
+		start.ToInt64(),
+		end.ToInt64(),
+	), nil
+}
+
+// EffectTransactionFilter represents a filter that excludes all rows that did not occur
+// in the specified transaction
+type EffectTransactionFilter struct {
+	SqlQuery
+	TransactionHash string
+}
+
+func (f *EffectTransactionFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	var tx TransactionRecord
+	err := Get(ctx, TransactionByHashQuery{f.SqlQuery, f.TransactionHash}, &tx)
+
+	if err != nil {
+		return sql, nil
+	}
+
+	start := ParseTotalOrderId(tx.Id)
+	end := start
+	end.TransactionOrder++
+	return sql.Where(
+		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
+		start.ToInt64(),
+		end.ToInt64(),
+	), nil
+}
+
+// EffectOperationFilter represents a filter that excludes all rows that did not occur
+// in the specified operation
+type EffectOperationFilter struct {
+	OperationID int64
+}
+
+func (f *EffectOperationFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
+	start := ParseTotalOrderId(f.OperationID)
+	end := start
+	end.OperationOrder++
+	return sql.Where(
+		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
+		start.ToInt64(),
+		end.ToInt64(),
+	), nil
 }

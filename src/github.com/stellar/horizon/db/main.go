@@ -194,3 +194,8 @@ func validateDestination(dest interface{}) error {
 
 	return nil
 }
+
+func FilterAll(filters ...SQLFilter) *CompositeSQLFilter {
+	return &CompositeSQLFilter{filters}
+
+}

@@ -13,21 +13,21 @@ import (
 // TransactionResource is the display form of a transaction.
 type TransactionResource struct {
 	halgo.Links
-	ID               string `json:"id"`
-	PagingToken      string `json:"paging_token"`
-	Hash             string `json:"hash"`
-	Ledger           int32  `json:"ledger"`
+	ID               string    `json:"id"`
+	PagingToken      string    `json:"paging_token"`
+	Hash             string    `json:"hash"`
+	Ledger           int32     `json:"ledger"`
 	LedgerCloseTime  time.Time `json:"created_at"`
-	Account          string `json:"account"`
-	AccountSequence  int64  `json:"account_sequence"`
-	MaxFee           int32  `json:"max_fee"`
-	FeePaid          int32  `json:"fee_paid"`
-	OperationCount   int32  `json:"operation_count"`
-	ResultCode       int32  `json:"result_code"`
-	ResultCodeString string `json:"result_code_s"`
-	EnvelopeXdr      string `json:"envelope_xdr"`
-	ResultXdr        string `json:"result_xdr"`
-	ResultMetaXdr    string `json:"result_meta_xdr"`
+	Account          string    `json:"account"`
+	AccountSequence  int64     `json:"account_sequence"`
+	MaxFee           int32     `json:"max_fee"`
+	FeePaid          int32     `json:"fee_paid"`
+	OperationCount   int32     `json:"operation_count"`
+	ResultCode       int32     `json:"result_code"`
+	ResultCodeString string    `json:"result_code_s"`
+	EnvelopeXdr      string    `json:"envelope_xdr"`
+	ResultXdr        string    `json:"result_xdr"`
+	ResultMetaXdr    string    `json:"result_meta_xdr"`
 }
 
 // NewTransactionResource returns a new resource from a TransactionRecord
@@ -39,8 +39,8 @@ func NewTransactionResource(tx db.TransactionRecord) TransactionResource {
 			Self(self).
 			Link("account", "/accounts/%s", tx.Account).
 			Link("ledger", "/ledgers/%d", tx.LedgerSequence).
-			Link("operations", "%s/operations/%s", self, hal.StandardPagingOptions).
-			Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions).
+			Link("operations", "%s/operations%s", self, hal.StandardPagingOptions).
+			Link("effects", "%s/effects%s", self, hal.StandardPagingOptions).
 			Link("precedes", "/transactions?cursor=%s&order=asc", tx.PagingToken()).
 			Link("succeeds", "/transactions?cursor=%s&order=desc", tx.PagingToken()),
 		ID:               tx.TransactionHash,

@@ -28,9 +28,9 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 	return LedgerResource{
 		Links: halgo.Links{}.
 			Self(self).
-			Link("transactions", "%s/transactions/%s", self, hal.StandardPagingOptions).
-			Link("operations", "%s/operations/%s", self, hal.StandardPagingOptions).
-			Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions),
+			Link("transactions", "%s/transactions%s", self, hal.StandardPagingOptions).
+			Link("operations", "%s/operations%s", self, hal.StandardPagingOptions).
+			Link("effects", "%s/effects%s", self, hal.StandardPagingOptions),
 		ID:               in.LedgerHash,
 		PagingToken:      in.PagingToken(),
 		Hash:             in.LedgerHash,

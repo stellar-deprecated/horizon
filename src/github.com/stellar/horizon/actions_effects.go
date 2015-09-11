@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
@@ -62,14 +61,29 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 
 // LoadQuery sets action.Query from the request params
 func (action *EffectIndexAction) LoadQuery() {
-	action.ValidateInt64(actions.ParamCursor)
 	action.Query = db.EffectPageQuery{
-		SqlQuery:        action.App.HistoryQuery(),
-		PageQuery:       action.GetPageQuery(),
-		AccountAddress:  action.GetString("account_id"),
-		LedgerSequence:  action.GetInt32("ledger_id"),
-		TransactionHash: action.GetString("tx_id"),
-		OperationID:     action.GetInt64("op_id"),
+		SqlQuery:  action.App.HistoryQuery(),
+		PageQuery: action.GetPageQuery(),
+	}
+
+	if address := action.GetString("account_id"); address != "" {
+		action.Query.Filter = &db.EffectAccountFilter{action.Query.SqlQuery, address}
+		return
+	}
+
+	if seq := action.GetInt32("ledger_id"); seq != 0 {
+		action.Query.Filter = &db.EffectLedgerFilter{seq}
+		return
+	}
+
+	if tx := action.GetString("tx_id"); tx != "" {
+		action.Query.Filter = &db.EffectTransactionFilter{action.Query.SqlQuery, tx}
+		return
+	}
+
+	if op := action.GetInt64("op_id"); op != 0 {
+		action.Query.Filter = &db.EffectOperationFilter{op}
+		return
 	}
 }
 

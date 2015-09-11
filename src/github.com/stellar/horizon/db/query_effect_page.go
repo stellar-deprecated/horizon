@@ -11,10 +11,7 @@ import (
 type EffectPageQuery struct {
 	SqlQuery
 	PageQuery
-	AccountAddress  string
-	LedgerSequence  int32
-	TransactionHash string
-	OperationID     int64
+	Filter SQLFilter
 }
 
 // Select executes the query and returns the results
@@ -54,69 +51,12 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 			OrderBy("heff.history_operation_id desc, heff.order desc")
 	}
 
-	err = checkOptions(
-		q.AccountAddress != "",
-		q.LedgerSequence != 0,
-		q.TransactionHash != "",
-		q.OperationID != 0,
-	)
-
-	if err != nil {
-		return
-	}
-
-	// filter by ledger sequence
-	if q.LedgerSequence != 0 {
-		start := TotalOrderId{LedgerSequence: q.LedgerSequence}
-		end := TotalOrderId{LedgerSequence: q.LedgerSequence + 1}
-		sql = sql.Where(
-			"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
-			start.ToInt64(),
-			end.ToInt64(),
-		)
-	}
-
-	// filter by transaction hash
-	if q.TransactionHash != "" {
-		var tx TransactionRecord
-		err = Get(ctx, TransactionByHashQuery{q.SqlQuery, q.TransactionHash}, &tx)
-
+	// apply filter
+	if q.Filter != nil {
+		sql, err = q.Filter.Apply(ctx, sql)
 		if err != nil {
 			return
 		}
-
-		start := ParseTotalOrderId(tx.Id)
-		end := start
-		end.TransactionOrder++
-		sql = sql.Where(
-			"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
-			start.ToInt64(),
-			end.ToInt64(),
-		)
-	}
-
-	// filter by operation
-	if q.OperationID != 0 {
-		start := ParseTotalOrderId(q.OperationID)
-		end := start
-		end.OperationOrder++
-		sql = sql.Where(
-			"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
-			start.ToInt64(),
-			end.ToInt64(),
-		)
-	}
-
-	// filter by account address
-	if q.AccountAddress != "" {
-		var account HistoryAccountRecord
-		err = Get(ctx, HistoryAccountByAddressQuery{q.SqlQuery, q.AccountAddress}, &account)
-
-		if err != nil {
-			return
-		}
-
-		sql = sql.Where("heff.history_account_id = ?", account.Id)
 	}
 
 	return q.SqlQuery.Select(ctx, sql, dest)

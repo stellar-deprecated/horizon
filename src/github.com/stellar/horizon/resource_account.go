@@ -5,26 +5,26 @@ import (
 
 	"github.com/guregu/null"
 	"github.com/jagregory/halgo"
-	"github.com/stellar/horizon/db"
-	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/go-stellar-base"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/render/hal"
 )
 
 // AccountResource is the summary of an account
 type AccountResource struct {
 	halgo.Links
-	ID                    string             `json:"id"`
-	PagingToken           string             `json:"paging_token"`
-	Address               string             `json:"address"`
-	Sequence              int64              `json:"sequence"`
-	SubentryCount         int32              `json:"subentry_count"`
-	InflationDestination  null.String        `json:"inflation_destination"`
-	HomeDomain            null.String        `json:"home_domain"`
-	Thresholds            ThresholdsResource `json:"thresholds"`
-	Flags                 FlagsResource      `json:"flags"`
-	Balances              []BalanceResource  `json:"balances"`
-	Signers               []SignerResource   `json:"signers"`
+	ID                   string             `json:"id"`
+	PagingToken          string             `json:"paging_token"`
+	Address              string             `json:"address"`
+	Sequence             int64              `json:"sequence"`
+	SubentryCount        int32              `json:"subentry_count"`
+	InflationDestination null.String        `json:"inflation_destination"`
+	HomeDomain           null.String        `json:"home_domain"`
+	Thresholds           ThresholdsResource `json:"thresholds"`
+	Flags                FlagsResource      `json:"flags"`
+	Balances             []BalanceResource  `json:"balances"`
+	Signers              []SignerResource   `json:"signers"`
 }
 
 // BalanceResource represents an accounts holdings for a single currency type
@@ -90,8 +90,8 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 	xdrThresholds, err := ac.DecodeThresholds()
 	if err == nil {
 		thresholds = ThresholdsResource{
-			LowThreshold: xdrThresholds[1],
-			MedThreshold: xdrThresholds[2],
+			LowThreshold:  xdrThresholds[1],
+			MedThreshold:  xdrThresholds[2],
 			HighThreshold: xdrThresholds[3],
 		}
 	}
@@ -107,17 +107,17 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 
 	// flags
 	flags := FlagsResource{
-		AuthRequired: ac.IsAuthRequired(),
+		AuthRequired:  ac.IsAuthRequired(),
 		AuthRevocable: ac.IsAuthRevocable(),
 	}
 
 	return AccountResource{
 		Links: halgo.Links{}.
 			Self(self).
-			Link("transactions", "%s/transactions/%s", self, hal.StandardPagingOptions).
-			Link("operations", "%s/operations/%s", self, hal.StandardPagingOptions).
-			Link("effects", "%s/effects/%s", self, hal.StandardPagingOptions).
-			Link("offers", "%s/offers/%s", self, hal.StandardPagingOptions),
+			Link("transactions", "%s/transactions%s", self, hal.StandardPagingOptions).
+			Link("operations", "%s/operations%s", self, hal.StandardPagingOptions).
+			Link("effects", "%s/effects%s", self, hal.StandardPagingOptions).
+			Link("offers", "%s/offers%s", self, hal.StandardPagingOptions),
 		ID:                   address,
 		PagingToken:          ac.PagingToken(),
 		Address:              address,

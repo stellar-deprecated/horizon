@@ -22,10 +22,10 @@ func (action *OrderBookShowAction) LoadQuery() {
 	action.Query = db.OrderBookSummaryQuery{
 		SqlQuery:      action.App.CoreQuery(),
 		SellingType:   action.GetAssetType("selling_asset_type"),
-		SellingIssuer: action.GetString("selling_issuer"),
+		SellingIssuer: action.GetString("selling_asset_issuer"),
 		SellingCode:   action.GetString("selling_asset_code"),
 		BuyingType:    action.GetAssetType("buying_asset_type"),
-		BuyingIssuer:  action.GetString("buying_issuer"),
+		BuyingIssuer:  action.GetString("buying_asset_issuer"),
 		BuyingCode:    action.GetString("buying_asset_code"),
 	}
 

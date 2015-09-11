@@ -42,13 +42,13 @@ func TestOrderBookActions(t *testing.T) {
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 		})
 
-		Convey("(missing code): GET /order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_issuer=123", func() {
-			w := rh.Get("/order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_issuer=123", test.RequestHelperNoop)
+		Convey("(missing code): GET /order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_issuer=123", func() {
+			w := rh.Get("/order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_issuer=123", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 400)
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 
-			w = rh.Get("/order_book?buying_asset_type=native&selling_asset_type=credit_alphanum4&selling_issuer=123", test.RequestHelperNoop)
+			w = rh.Get("/order_book?buying_asset_type=native&selling_asset_type=credit_alphanum4&selling_asset_issuer=123", test.RequestHelperNoop)
 
 			So(w.Code, ShouldEqual, 400)
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
@@ -88,8 +88,8 @@ func TestOrderBookActions(t *testing.T) {
 			So(w.Body, ShouldBeProblem, problem.P{Type: "invalid_order_book"})
 		})
 
-		Convey("(happy path): GET /order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=USD&buying_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", func() {
-			w := rh.Get("/order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=USD&buying_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", test.RequestHelperNoop)
+		Convey("(happy path): GET /order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=USD&buying_asset_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", func() {
+			w := rh.Get("/order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=USD&buying_asset_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", test.RequestHelperNoop)
 			t.Log(w.Body.String())
 			So(w.Code, ShouldEqual, 200)
 			var result OrderBookSummaryResource
