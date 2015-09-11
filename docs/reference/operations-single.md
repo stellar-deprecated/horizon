@@ -4,7 +4,7 @@ title: Operation Details
 category: Endpoints
 ---
 
-The operation details endpoint provides information on a single [operation][resources_operation]. The operation ID provided in the `id` argument specifies which operation to load.
+The operation details endpoint provides information on a single [operation](./resources/operation.md). The operation ID provided in the `id` argument specifies which operation to load.
 
 ## Request
 
@@ -43,7 +43,7 @@ server.operations('77309415424')
 
 ## Response
 
-This endpoint responds with a single Operation.  See [operation resource][] for reference.
+This endpoint responds with a single Operation.  See [operation resource](./resources/operation.md) for reference.
 
 ### Example Response
 
@@ -77,13 +77,7 @@ This endpoint responds with a single Operation.  See [operation resource][] for 
 }
 ```
 
-## Problems
+## Possible Errors
 
-- The [standard problems][].
-- [not_found][problems/not_found]: A `not_found` problem will be returned if there is no operation whose ID matches the `id` argument.
-
-[operation resource]: ./resource/operation.md
-[resources_operation]: ./resources/operation.md
-[transaction]: ./resource/transaction.md
-[problems/not_found]: ../problem/not_found.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

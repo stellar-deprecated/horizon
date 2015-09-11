@@ -4,7 +4,8 @@ title: All Ledgers
 category: Endpoints
 ---
 
-This endpoint represents all [ledgers][resources_ledger].
+This endpoint represents all [ledgers](./resources/ledger.md).
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to get notifications as ledgers are closed by the Stellar network.
 
 ## Request
 
@@ -46,7 +47,7 @@ server.ledgers()
 ```
 ## Response
 
-This endpoint responds with a list of ledgers.  See [ledger resource][] for reference.
+This endpoint responds with a list of ledgers.  See [ledger resource](./resources/ledger.md) for reference.
 
 ### Example Response
 
@@ -127,7 +128,5 @@ This endpoint responds with a list of ledgers.  See [ledger resource][] for refe
 
 - The [standard errors](../guide/errors.md#Standard_Errors).
 
-[ledger resource]: ./resource/ledger.md
-[transaction]: ./resource/transaction.md
-[resources_ledger]: ./resources/ledger.md
+
 

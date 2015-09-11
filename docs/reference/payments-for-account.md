@@ -4,9 +4,9 @@ title: Payments for account
 category: Endpoints
 ---
 
-This endpoint responds with a collection of [Payment operations][] resources for the account specified in the arguments.  Specifically, any payment in which the specified account participates, either as sender or receiver.
+This endpoint responds with a collection of [Payment operations](./resources/operation.md) resources for the [account](./resources/account.md) specified in the arguments.  Specifically, any payment in which the specified account participates, either as sender or receiver.
 
-This endpoint is particularly useful for following along with payments made by an [accounts][resources_account].  A client can retrieve quick notification about payments made to a specific account by using [response streaming][].
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new payments to or from an account as they get made in the Stellar network.
 
 ## Request
 
@@ -46,7 +46,7 @@ server.accounts("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ")
 ```
 ## Response
 
-This endpoint responds with a [page][] of [payment operations][].
+This endpoint responds with a [page](./resources/page.md) of [payment operations](./resources/operation.md).
 
 ### Example Response
 
@@ -99,25 +99,8 @@ This endpoint responds with a [page][] of [payment operations][].
 
 ```
 
-## Streaming
 
-This endpoint can be also streaming data using [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-Use [stellar-sdk](https://github.com/stellar/stellar-sdk/) to stream payments.
+## Possible Errors
 
-## Problems
-
-This endpoint should only respond with [standard problems][].
-
-## Tutorials
-
-- [Follow payments sent to an account][]
-
-[page]: ./resource/page.md
-[Payment operations]: ./resource/operation.md#payment
-[payment operations]: ./resource/operation.md#payment
-[response streaming]: ../guide/response_streaming.md
-[standard problems]: ../guide/problems.md#Standard_Problems
-[resources_account]: ./resources/account.md
-[resources_operation]: ./resources/operation.md
-[Follow payments sent to an account]: tutorial/follow_received_payments.md
+- The [standard errors](../guide/errors.md#Standard_Errors).

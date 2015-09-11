@@ -4,7 +4,7 @@ title: Effects for operation
 category: Endpoints
 ---
 
-This endpoint represents all [effects][resources_effects] that occurred in the [ledger][resources_ledger] as a result of a given [operation][resources_operation].
+This endpoint represents all [effects](./resources/effect.md) that occurred in the [ledger](./resources/ledger.md) as a result of a given [operation](./resources/operation.md).
 
 ## Request
 
@@ -29,7 +29,7 @@ curl https://horizon-testnet.stellar.org/operations/77309415424/effects
 
 ## Response
 
-This endpoint responds with a list of effects that occurred in the ledger as a result of a given operation. See [effect resource][] for reference.
+This endpoint responds with a list of effects that occurred in the ledger as a result of a given operation. See [effect resource](./resources/effect.md) for reference.
 
 ### Example Response
 
@@ -109,14 +109,8 @@ This endpoint responds with a list of effects that occurred in the ledger as a r
 }
 ```
 
-## Errors
+## Possible Errors
 
-- The [standard errors][].
-- [not_found][errors/not_found]: A `not_found` errors will be returned if there are no effects for operation whose ID matches the `id` argument.
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` errors will be returned if there are no effects for operation whose ID matches the `id` argument.
 
-[effect resource]: ./resource/effect.md
-[problems/not_found]: ../problem/not_found.md
-[resources_effects]: ./resources/effect.md
-[resources_ledger]: ./resources/ledger.md
-[resources_operation]: ./resources/operation.md
-[standard errors]: ../guide/errors.md#Standard_Errors

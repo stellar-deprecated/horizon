@@ -4,7 +4,8 @@ title: All Transactions
 category: Endpoints
 ---
 
-This endpoint represents all validated [transactions][resource_transaction].
+This endpoint represents all validated [transactions](./resources/transaction.md)].
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new transactions as they get made in the Stellar network.
 
 ## Request
 
@@ -49,7 +50,7 @@ server.transactions()
 
 ## Response
 
-This endpoint responds with a list of transactions.  See [transaction resource][] for reference.
+This endpoint responds with a list of transactions.  See [transaction resource](./resources/transaction.md) for reference.
 
 ### Example Response
 
@@ -155,10 +156,6 @@ This endpoint responds with a list of transactions.  See [transaction resource][
 }
 ```
 
-## Problems
+## Possible Errors
 
-- The [standard problems][].
-
-[transaction resource]: ./resource/transaction.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).

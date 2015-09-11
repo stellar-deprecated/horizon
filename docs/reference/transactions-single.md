@@ -4,7 +4,7 @@ title: Transaction Details
 category: Endpoints
 ---
 
-The transaction details endpoint provides information on a single [transaction][resource_transaction]. The transaction hash provided in the `hash` argument specifies which transaction to load.
+The transaction details endpoint provides information on a single [transaction](./resources/transaction.md). The transaction hash provided in the `hash` argument specifies which transaction to load.
 
 ## Request
 
@@ -41,7 +41,7 @@ server.transactions('3c8ef808df9d5d240ba0d495629df9da5653b1be2daf05d43b49c5bcbfe
 
 ## Response
 
-This endpoint responds with a single Transaction.  See [transaction resource][] for reference.
+This endpoint responds with a single Transaction.  See [transaction resource](./resources/transaction.md) for reference.
 
 ### Example Response
 
@@ -89,12 +89,7 @@ This endpoint responds with a single Transaction.  See [transaction resource][] 
 }
 ```
 
-## Problems
+## Possible Errors
 
-- The [standard problems][].
-- [not_found][]: A `not_found` problem will be returned if there is no transaction whose hash matches the `hash` argument.
-
-[transaction resource]: ./resource/transaction.md
-[not_found]: ../problem/not_found.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

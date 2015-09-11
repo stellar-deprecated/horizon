@@ -4,7 +4,9 @@ title: Operations for account
 category: Endpoints
 ---
 
-This endpoint represents all [operations][resources_operation] that occurred in the [ledger][resources_ledger] as a result of [transactions][resource_transaction] submitted by the [accounts][resources_account].
+This endpoint represents all [operations](./resources/operation.md) that were included in valid [transactions](./resources/transaction.md) submitted by a particular [account](./resources/account.md).
+
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new operations on an account as they get made in the Stellar network.
 
 ## Request
 
@@ -44,7 +46,7 @@ server.accounts('GAKLBGHNHFQ3BMUYG5KU4BEWO6EYQHZHAXEWC33W34PH2RBHZDSQBD75', 'ope
 
 ## Response
 
-This endpoint responds with a list of operations that occurred in the ledger as a result of transactions submitted by the account. See [operation resource][] for reference.
+This endpoint responds with a list of operations that occurred in the ledger as a result of transactions submitted by the account. See [operation resource](./resources/operation.md) for reference.
 
 ### Example Response
 
@@ -95,21 +97,8 @@ This endpoint responds with a list of operations that occurred in the ledger as 
 }
 ```
 
-## Streaming
 
-This endpoint can be also streaming data using [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
+## Possible Errors
 
-Use [stellar-sdk](https://github.com/stellar/stellar-sdk/) to stream operations.
-
-## Problems
-
-- The [standard problems][].
-- [not_found][problems/not_found]: A `not_found` problem will be returned if the account whose address matches the `address` does not exist.
-
-[operation resource]: ./resource/operation.md
-[resources_operation]: ./resources/operation.md
-[problems/not_found]: ../problem/not_found.md
-[resources_account]: ./resources/account.md
-[resources_ledger]: ./resources/ledger.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

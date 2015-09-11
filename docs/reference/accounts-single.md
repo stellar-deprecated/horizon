@@ -4,7 +4,7 @@ title: Account Details
 category: Endpoints
 ---
 
-Returns information and links relating to a single [account][resources_account].
+Returns information and links relating to a single [account](./resources/account.md).
 
 ## Request
 
@@ -41,7 +41,7 @@ server.accounts("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ")
 
 ## Response
 
-This endpoint responds with the details of a single account for a given address. See [account resource][] for reference.
+This endpoint responds with the details of a single account for a given address. See [account resource](./resources/account.md) for reference.
 
 ### Example Response
 ```json
@@ -80,12 +80,9 @@ This endpoint responds with the details of a single account for a given address.
 }
 ```
 
-## Errors
+## Possible Errors
 
-- The [standard errors][].
-- [not_found][errors/not_found]: A `not_found` error will be returned if there is no account whose ID matches the `address` argument.
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.
 
-[account resource]: ./resource/account.md
-[resources_account]: ./resources/account.md
-[errors/not_found]: ../errors/not_found.md
-[standard error]: ../guide/errors.md#Standard_Errors
+

@@ -4,7 +4,10 @@ title: All Accounts
 category: Endpoints
 ---
 
-The all accounts endpoint returns a collection of all the [accounts][resources_account] that have ever existed. Results are ordered by account creation time. An address may show up multiple times if they were [merged][operations_accountMerge] and then [created][operations_createAccount] again.
+The all accounts endpoint returns a collection of all the [accounts](./resources/account.md) that have ever existed. Results
+are ordered by account creation time. An address may show up multiple times if they were [merged](./resources/operation.md#Account_Merge) and then [created](./resources/operation.md#Create_Account) again.
+
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new accounts as they get made in the Stellar network.
 
 ## Request
 
@@ -50,7 +53,7 @@ server.accounts()
 
 ## Response
 
-Returns a returns a collection of [accounts][].
+Returns a returns a collection of [accounts](./resources/account.md).
 
 ### Example Response
 
@@ -126,11 +129,6 @@ Returns a returns a collection of [accounts][].
 
 ## errors
 
-- The [standard errors][].
+- The [standard errors](../guide/errors.md#Standard_Errors).
 
-[page]: ./resource/paging.md
-[accounts]: ./resource/account.md
-[operations_accountMerge]: ./resource/operations.md#Account_Merge
-[operations_createAccount]: ./resource/operations.md#Create_Account
-[resources_account]: ./resources/account.md
-[standard errors]: ../guide/errors.md#Standard_Errors
+

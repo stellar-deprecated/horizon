@@ -4,7 +4,7 @@ title: Payments for transaction
 category: Endpoints
 ---
 
-This endpoint represents all payment [operations][resources_operation] that are part of a given [transaction][resource_transaction].
+This endpoint represents all payment [operations](./resources/operation.md) that are part of a given [transaction](./resources/transaction.md).
 
 ## Request
 
@@ -43,7 +43,7 @@ server.transactions('3c8ef808df9d5d240ba0d495629df9da5653b1be2daf05d43b49c5bcbfe
 ```
 ## Response
 
-This endpoint responds with a list of payments operations that are part of a given transaction. See [operation resource][] for more information about operations (and payment operations).
+This endpoint responds with a list of payments operations that are part of a given transaction. See [operation resource](./resources/operation.md) for more information about operations (and payment operations).
 
 ### Example Response
 
@@ -93,13 +93,7 @@ This endpoint responds with a list of payments operations that are part of a giv
   }
 ```
 
-## Problems
+## Possible Errors
 
-- The [standard problems][].
-- [not_found][problems/not_found]: A `not_found` problem will be returned if there is no transaction hash matches the `hash` argument.
-
-[operation resource]: ./resource/operation.md
-[problems/not_found]: ../problem/not_found.md
-[resources_operation]: ./resources/operation.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.
