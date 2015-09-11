@@ -4,7 +4,7 @@ title: Effects for transaction
 category: Endpoints
 ---
 
-This endpoint represents all [effects][resources_effects] that occurred in the [ledger][resources_ledger] as a result of a given [transaction][resource_transaction].
+This endpoint represents all [effects](./resources/effect.md) that occurred in the [ledger](./resources/ledger.md) as a result of a given [transaction](./resources/transaction.md).
 
 ## Request
 
@@ -29,7 +29,7 @@ curl https://horizon-testnet.stellar.org/transactions/6391dd190f15f7d1665ba53c63
 
 ## Response
 
-This endpoint responds with a list of effects that occurred in the ledger as a result of a given transaction. See [effect resource][] for reference.
+This endpoint responds with a list of effects that occurred in the ledger as a result of a given transaction. See [effect resource](./resources/effect.md) for reference.
 
 ### Example Response
 
@@ -111,13 +111,5 @@ This endpoint responds with a list of effects that occurred in the ledger as a r
 
 ## Errors
 
-- The [standard errors][].
-- [not_found][errors/not_found]: A `not_found` error will be returned if there are no effects for transaction whose hash matches the `hash` argument.
-
-[effect resource]: ./resource/effect.md
-[transaction]: ./resource/transaction.md
-[errors/not_found]: ../error/not_found.md
-[resources_effects]: ./resources/effect.md
-[resources_ledger]: ./resources/ledger.md
-[resources_transaction]: ./resources/transaction.md
-[standard errors]: ../guide/errors.md#Standard_Errors
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there are no effects for transaction whose hash matches the `hash` argument.

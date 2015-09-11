@@ -4,7 +4,7 @@ title: Transactions for ledger
 category: Endpoints
 ---
 
-This endpoint represents all [transactions][resource_transaction] in a given [ledger][resources_ledger].
+This endpoint represents all [transactions](./resources/transaction.md) in a given [ledger](./resources/ledger.md).
 
 ## Request
 
@@ -44,7 +44,7 @@ server.ledgers('8365', 'transactions')
 
 ## Response
 
-This endpoint responds with a list of transactions in a given ledger.  See [transaction resource][] for reference.
+This endpoint responds with a list of transactions in a given ledger.  See [transaction resource](./resources/transaction.md) for reference.
 
 ### Example Response
 
@@ -109,13 +109,7 @@ This endpoint responds with a list of transactions in a given ledger.  See [tran
 }
 ```
 
-## Problems
+## Possible Errors
 
-- The [standard problems][].
-- [not_found][problems/not_found]: A `not_found` problem will be returned if there are no transactions in the ledger whose ID matches the `hash` argument.
-
-[transaction resource]: ./resource/transaction.md
-[problems/not_found]: ../problem/not_found.md
-[resources_ledger]: ./resources/ledger.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

@@ -4,7 +4,7 @@ title: Payments for ledger
 category: Endpoints
 ---
 
-This endpoint represents all payment [operations][resources_operation] that are part of a [transactions][resource_transaction] in a given [ledger][resources_ledger].
+This endpoint represents all payment [operations](./resources/operation.md) that are part of a valid [transactions](./resources/transaction.md) in a given [ledger](./resources/ledger.md).
 
 ## Request
 
@@ -44,7 +44,7 @@ server.ledgers('10866', 'payments')
 
 ## Response
 
-This endpoint responds with a list of payment operations in a given ledger.  See [operation resource][] for more information about operations (and payment operations).
+This endpoint responds with a list of payment operations in a given ledger.  See [operation resource](./resources/operation.md) for more information about operations (and payment operations).
 
 ### Example Response
 
@@ -95,14 +95,7 @@ This endpoint responds with a list of payment operations in a given ledger.  See
 }
 ```
 
-## Problems
+## Possible Errors
 
-- The [standard problems][].
-- [not_found][problems/not_found]: A `not_found` problem will be returned if the ledger whose ID is equal to `id` argument does not exist.
-
-[operation resource]: ./resource/operation.md
-[problems/not_found]: ../problem/not_found.md
-[resources_operation]: ./resources/operation.md
-[resources_ledger]: ./resources/ledger.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

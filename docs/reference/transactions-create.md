@@ -70,7 +70,7 @@ The `result` attribute of a response from this endpoint can be one of the follow
 }
 ```
 
-## Problems
+## Possible Errors
 
-This endpoint should only respond with [standard problems](../guide/problems.md#Standard_Problems).
+- The [standard errors](../guide/errors.md#Standard_Errors).
 

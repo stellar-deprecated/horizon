@@ -4,7 +4,7 @@ title: Ledger Details
 category: Endpoints
 ---
 
-The ledger details endpoint provides information on a single [ledger][resources_ledger].
+The ledger details endpoint provides information on a single [ledger](./resources/ledger.md).
 
 ## Request
 
@@ -41,7 +41,7 @@ server.ledgers('69858')
 ```
 ## Response
 
-This endpoint responds with a single Ledger.  See [ledger resource][] for reference.
+This endpoint responds with a single Ledger.  See [ledger resource](./resources/ledger.md) for reference.
 
 ### Example Response
 
@@ -78,9 +78,7 @@ This endpoint responds with a single Ledger.  See [ledger resource][] for refere
 ## Errors
 
 - The [standard errors](../guide/errors.md#Standard_Errors).
-- [not_found](../error/not_found.md): A `not_found` error will be returned if there is no ledger whose ID matches the `id` argument.
+- [not_found](./error/not_found.md): A `not_found` error will be returned if there is no ledger whose ID matches the `id` argument.
 
-[ledger resource]: ./resource/ledger.md
-[transaction]: ./resource/transaction.md
-[resources_ledger]: ./resources/ledger.md
+
 

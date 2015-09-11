@@ -4,7 +4,8 @@ title: Transactions for account
 category: Endpoints
 ---
 
-This endpoint represents all [transactions][resource_transaction] submitted by an [accounts][resources_account].
+This endpoint represents all [transactions](./resources/transaction.md) submitted by an [accounts](./resources/account.md).
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new transactions from a given account as they get made in the Stellar network.
 
 ## Request
 
@@ -29,25 +30,15 @@ curl https://horizon-testnet.stellar.org/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G
 
 ## Response
 
-This endpoint responds with a list of transactions for a given account. See [transaction resource][] for reference.
+This endpoint responds with a list of transactions for a given account. See [transaction resource](./resources/transaction.md) for reference.
 
 ### Example Response
 
 _Endpoint not implemented_
 
-## Streaming
 
-This endpoint can be also streaming data using [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
 
-Use [stellar-sdk](https://github.com/stellar/stellar-sdk/) to stream transactions.
+## Possible Errors
 
-## Problems
-
-- The [standard problems][].
-- [not_found][problems/not_found]: A `not_found` problem will be returned if there are no transactions in the account whose address matches the `address` argument.
-
-[transaction resource]: ./resource/transaction.md
-[problems/not_found]: ../problem/not_found.md
-[resources_account]: ./resources/account.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

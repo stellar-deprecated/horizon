@@ -6,7 +6,7 @@ category: Endpoints
 
 Effects are the ways that the ledger was changed by any transaction.
 
-This endpoint represents all [effects][resources_effects] that occurred in the given [ledger][resources_ledger].
+This endpoint represents all [effects](./resources/effect.md) that occurred in the given [ledger](./resources/ledger.md).
 
 ## Request
 
@@ -31,7 +31,7 @@ curl https://horizon-testnet.stellar.org/ledgers/69859/effects
 
 ## Response
 
-This endpoint responds with a list of effects that occurred in the ledger. See [effect resource][] for reference.
+This endpoint responds with a list of effects that occurred in the ledger. See [effect resource](./resources/effect.md) for reference.
 
 ### Example Response
 
@@ -111,13 +111,7 @@ This endpoint responds with a list of effects that occurred in the ledger. See [
 }
 ```
 
-## Errors
+## Possible Errors
 
-- The [standard errors][].
-- [not_found][errors/not_found]: A `not_found` error will be returned if there are no effects for a given ledger.
-
-[effect resource]: ./resource/effect.md
-[errors/not_found]: ../error/not_found.md
-[resources_effects]: ./resources/effect.md
-[resources_ledger]: ./resources/ledger.md
-[standard errors]: ../guide/errors.md#Standard_Errors
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./error/not_found.md): A `not_found` error will be returned if there are no effects for a given ledger.

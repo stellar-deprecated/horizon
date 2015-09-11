@@ -4,7 +4,8 @@ title: All Operations
 category: Endpoints
 ---
 
-This endpoint represents all [operations][resources_operation] that are part of validated [transactions][resource_transaction].
+This endpoint represents all [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md).
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new accounts as they get made in the Stellar network.
 
 ## Request
 
@@ -49,7 +50,7 @@ server.operations()
 
 ## Response
 
-This endpoint responds with a list of operations. See [operation resource][] for reference.
+This endpoint responds with a list of operations. See [operation resource](./resources/operation.md) for reference.
 
 ### Example Response
 
@@ -127,11 +128,6 @@ This endpoint responds with a list of operations. See [operation resource][] for
 }
 ```
 
-## Problems
+## Possible Errors
 
-- The [standard problems][].
-
-[operation resource]: ./resource/operation.md
-[resources_operation]: ./resources/operation.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).

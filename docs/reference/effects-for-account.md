@@ -4,7 +4,9 @@ title: Effects for account
 category: Endpoints
 ---
 
-This endpoint represents all [effects][resources_effects] that changed a given [account][resources_account]. It will return relevant effects from the creation of the account to the current ledger.
+This endpoint represents all [effects](./resources/effect.md) that changed a given [account](./resources/account.md). It will return relevant effects from the creation of the account to the current ledger.
+
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new effects as transactions happen in the Stellar network.
 
 ## Request
 
@@ -90,16 +92,8 @@ The list of effects.
 }
 ```
 
-## Errors
+## Possible Errors
 
-- The [standard errors][].
-- [not_found][errors/not_found]: A `not_found` error will be returned if there are no effects for the given account.
+- The [standard errors](../guide/errors.md#Standard_Errors).
+- [not_found](./errors/not_found.md): A `not_found` error will be returned if there are no effects for the given account.
 
-[effect resource]: ./resource/effect.md
-[transaction]: ./resource/transaction.md
-[errors/not_found]: ../errors/not_found.md
-[resources_account]: ./resources/account.md
-[resources_effects]: ./resources/effect.md
-[resources_ledger]: ./resources/ledger.md
-[resources_transaction]: ./resources/transaction.md
-[standard errors]: ../guide/errors.md#Standard_Errors
