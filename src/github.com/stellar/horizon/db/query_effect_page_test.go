@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/test"
 )
 
@@ -145,5 +146,42 @@ func TestEffectPageQuery(t *testing.T) {
 			}
 		})
 
+	})
+}
+
+func TestEffectPageQueryByOrderBook(t *testing.T) {
+	test.LoadScenario("trades")
+
+	Convey("EffectOrderBookFilter", t, func() {
+		var records []EffectRecord
+
+		Convey("restricts to order book properly", func() {
+			q := EffectPageQuery{
+				SqlQuery:  SqlQuery{history},
+				PageQuery: MustPageQuery("", "asc", 0),
+				Filter: &EffectOrderBookFilter{
+					SellingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,
+					SellingCode:   "EUR",
+					SellingIssuer: "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG",
+					BuyingType:    xdr.AssetTypeAssetTypeCreditAlphanum4,
+					BuyingCode:    "USD",
+					BuyingIssuer:  "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
+				},
+			}
+
+			MustSelect(ctx, q, &records)
+
+			So(len(records), ShouldEqual, 1)
+			r := records[0]
+			dets, _ := r.Details()
+
+			So(dets["sold_asset_type"].(string), ShouldEqual, "credit_alphanum4")
+			So(dets["sold_asset_code"], ShouldEqual, "EUR")
+			So(dets["sold_asset_issuer"], ShouldEqual, "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG")
+
+			So(dets["bought_asset_type"].(string), ShouldEqual, "credit_alphanum4")
+			So(dets["bought_asset_code"], ShouldEqual, "USD")
+			So(dets["bought_asset_issuer"], ShouldEqual, "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
+		})
 	})
 }
