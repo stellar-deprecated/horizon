@@ -4,7 +4,7 @@ title: All Payments
 category: Endpoints
 ---
 
-This endpoint represents all payment [operations][resources_operation] that are part of validated [transactions][resource_transaction].
+This endpoint represents all payment [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md). This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new payments as they get made in the Stellar network.
 
 ## Request
 
@@ -35,7 +35,7 @@ curl https://horizon-testnet.stellar.org/payments?cursor=1234&order=desc
 
 ## Response
 
-This endpoint responds with a list of payments. See [operation resource][] for more information about operations (and payment operations).
+This endpoint responds with a list of payments. See [operation resource](./resources/operation.md) for more information about operations (and payment operations).
 
 ### Example Response
 
@@ -113,11 +113,6 @@ This endpoint responds with a list of payments. See [operation resource][] for m
 }
 ```
 
-## Problems
+## Possible Errors
 
-- The [standard problems][].
-
-[operation resource]: ./resource/operation.md
-[resources_operation]: ./resources/operation.md
-[resources_transaction]: ./resources/transaction.md
-[standard problems]: ../guide/problems.md#Standard_Problems
+- The [standard errors](../guide/errors.md#Standard_Errors).
