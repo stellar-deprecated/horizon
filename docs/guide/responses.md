@@ -62,14 +62,15 @@ valid URI before navigating to it.
 
 Pages represent a subset of a larger collection of objects.
 As an example, it would be unfeasible to provide the
-[All Transactions][transactions_all] endpoint without paging.  Over time there
+[All Transactions](../reference/transactions-all.md) endpoint without paging.  Over time there
 will be millions of transactions in the Stellar network's ledger and returning
 them all over a single request would be unfeasible.
 
 Read more about paging in following docs:
-- [Page][resources/page.md],
-- [Paging][guide/paging.md]
+- [Page](../reference/resources/page.md)
+- [Paging](./paging.md)
 
-## Streaming via Server-Sent Events
+## Streaming
 
-Horizon is capable of streaming certain endpoints using Server-Sent Events. Read more about streaming in [Follow Received Payments][tutorials/follow-received-payments.md] tutorial.
+Certain endpoints in Horizon can be called in streaming mode using Server-Sent Events. This mode will keep the connection to horizon open and horizon will continue to return responses as ledgers close. All parameters for the endpoints that allow this mode are the same. The way a caller initiates this mode is by setting `Accept: text/event-stream` in the HTTP header when you make the request.
+You can read an example of using the streaming mode in the  [Follow Received Payments](tutorials/follow-received-payments.md) tutorial.
