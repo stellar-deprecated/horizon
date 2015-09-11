@@ -1,9 +1,14 @@
 package horizon
 
 import (
+	"errors"
 	"github.com/jagregory/halgo"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+)
+
+var (
+	ErrInvalidTrade = errors.New("cannot create TradeResource from invalid effect")
 )
 
 // EffectResource is the json form of a row from the history_effects
@@ -25,7 +30,10 @@ type TradeResource struct {
 // NewTradeResource initializes a new resource from an EffectRecord
 func NewTradeResource(r db.EffectRecord) (result TradeResource, err error) {
 
-	// TODO: error out if the effect is not a trade effect
+	if r.Type != db.EffectTrade {
+		err = ErrInvalidTrade
+		return
+	}
 
 	var details map[string]interface{}
 	details, err = r.Details()
@@ -34,8 +42,11 @@ func NewTradeResource(r db.EffectRecord) (result TradeResource, err error) {
 		return
 	}
 
-	seller := details["seller"].(string)
-	//TODO: error out if the seller is not a string
+	seller, ok := details["seller"].(string)
+	if !ok {
+		err = ErrInvalidTrade
+		return
+	}
 
 	result = TradeResource{
 		Links: halgo.Links{}.
