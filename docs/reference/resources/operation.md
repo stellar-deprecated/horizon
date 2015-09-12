@@ -4,16 +4,34 @@ title: Operation
 category: Resources
 ---
 
-Operations are objects that represent a desired change to the ledger: payments,
+[Operations](https://github.com/stellar/docs/blob/master/concepts/operations.md) are objects that represent a desired change to the ledger: payments,
 offers to exchange currency, changes made to account options, etc.  Operations
-are submitted to the Stellar Network grouped in a [Transaction][transactions].
+are submitted to the Stellar network grouped in a [Transaction](./resources/transaction.md).
 
-An operation is one of 10 types: Create Account, Payment, Path Payment, Manage Offer, Create Passive Offer, Set Options, Change Trust, Allow Trust, Account Merge, Inflation. See the section "Operation Types" below.
+To learn more about the concept of operations in the Stellar network, take a look at the [Stellar operations concept guide](https://github.com/stellar/docs/blob/master/concepts/operations.md).
+
+## Operation Types
+
+There are 10 different operation types:
+
+|     type_s           | type | description |
+| -------------------- | ---- |-------------|
+| [CREATE_ACCOUNT](#create-account)       |    0 | Creates a new account in Stellar network.
+| [PAYMENT](#payment)              |    1 | Sends a simple payment between two accounts in Stellar network.
+| [PATH_PAYMENT](#path-payment)         |    2 | Sends a path payment between two accounts in the Stellar network.
+| [MANAGE_OFFER](#manage-offer)         |    3 | Creates, updates or deletes an offer in the Stellar network.
+| [CREATE_PASSIVE_OFFER](#create-passive-offer) |    4 | Creates an offer that won't consume a counter offer that exactly matches this offer.
+| [SET_OPTIONS](#set-options)          |    5 | Sets account options (inflation destination, adding signers, etc.)
+| [CHANGE_TRUST](#change-trust)         |    6 | Creates, updates or deletes a trust line.
+| [ALLOW_TRUST](#allow-trust)          |    7 | Updates the "authorized" flag of an existing trust line this is called by the issuer of the related currency.
+| [ACCOUNT_MERGE](#account-merge)        |    8 | Deletes account and transfers remaining balance to destination account.
+| [INFLATION](#inflation)            |    9 | Runs inflation.
+
 
 Every operation type shares a set of common attributes and links, some operations also contain
 additional attributes and links specific to that operation type.
 
-To learn more about the concept of operations in the Stellar network, take a look at the [Stellar operations concept guide][concept_operations].
+
 
 ## Common Attributes
 
@@ -34,28 +52,9 @@ To learn more about the concept of operations in the Stellar network, take a loo
 | transaction |         | The transaction this operation is part of |
 
 
-## Operation Types
-
-There are 10 different operation types:
-
-|     type_s           | type | description |
-| -------------------- | ---- |-------------|
-| CREATE_ACCOUNT       |    0 | Creates a new account in Stellar network.
-| PAYMENT              |    1 | Sends a simple payment between two accounts in Stellar network.
-| PATH_PAYMENT         |    2 | Sends a path payment between two accounts in the Stellar network.
-| MANAGE_OFFER         |    3 | Creates, updates or deletes an offer in the Stellar network.
-| CREATE_PASSIVE_OFFER |    4 | Creates an offer that won't consume a counter offer that exactly matches this offer.
-| SET_OPTIONS          |    5 | Sets account options (inflation destination, adding signers, etc.)
-| CHANGE_TRUST         |    6 | Creates, updates or deletes a trust line.
-| ALLOW_TRUST          |    7 | Updates the "authorized" flag of an existing trust line this is called by the issuer of the related currency.
-| ACCOUNT_MERGE        |    8 | Deletes account and transfers remaining balance to destination account.
-| INFLATION            |    9 | Runs inflation.
-
 
 Each operation type will have a different set of attributes, in addition to the
 common attributes listed above.
-
-<a id="create_account"></a>
 
 
 ### Create Account
@@ -103,7 +102,7 @@ Create Account operation represents a new account creation.
 }
 ```
 
-<a id="payment"></a>
+
 ### Payment
 
 A payment operation represents a payment from one account to another.  This payment
@@ -159,7 +158,6 @@ can be either a simple native currency payment or a fiat currency payment.
 ```
 
 
-<a id="path_payment"></a>
 ### Path Payment
 
 A payment operation represents a payment from one account to another through a path.  This type of payment starts as one type of asset and ends as another type of asset. There can be other assets that are traded into and out of along the path.
@@ -214,7 +212,6 @@ A payment operation represents a payment from one account to another through a p
 }
 ```
 
-<a id="manage_offer"></a>
 ### Manage Offer
 
 A "Manage Offer" operation can create, update or delete an
@@ -284,7 +281,6 @@ To delete the offer change amount of the offer to `0`.
 }
 ```
 
-<a id="create_passive_offer"></a>
 ### Create Passive Offer
 
 “Create Passive Offer” operation creates an offer that won't consume a counter offer that exactly matches this offer. This is useful for offers just used as 1:1 exchanges for path payments. Use Manage Offer to manage this offer after using this operation to create it.
@@ -314,7 +310,7 @@ Use “Set Options” operation to set following options to your account:
 | signer_key | string | The address of the new signer. |
 | signer_weight | int | The weight of the new signer (1-255). |
 
-<a id="change_trust"></a>
+
 ### Change Trust
 
 Use “Change Trust” operation to create/update/delete a trust line from the source account to another. The issuer being trusted and the asset code are in the given Asset object.
@@ -346,7 +342,6 @@ Heads up! Unless the issuing account has AUTH_REVOCABLE_FLAG set than the "autho
 | --------------- | ------ | ----------------- |
 |                 |        |                   |
 
-<a id="account_merge"></a>
 ### Account Merge
 
 Removes the account and transfers all remaining lumens to the destination account.
@@ -360,7 +355,6 @@ Removes the account and transfers all remaining lumens to the destination accoun
 
 
 
-<a id="inflation"></a>
 ### Inflation
 
 Runs inflation.
@@ -378,17 +372,9 @@ Runs inflation.
 
 |                   Resource                   |    Type    |            Resource URI Template            |
 | -------------------------------------------- | ---------- | ---------------------------------- |
-| [All Operations][operations_all]             | Collection | `/operations`                      |
-| [Operations Details][operations_single]      | Single     | `/operations/:id`                  |
-| [Ledger Operations][operations_for_ledger]   | Collection | `/ledgers/{id}/operations{?cursor,limit,order}` |
-| [Account Operations][operations_for_account] | Collection | `/accounts/:account_id/operations` |
-| [Account Payments][payments_for_account]     | Collection | `/accounts/:account_id/payments` |
+| [All Operations](../operations-all.md)            | Collection | `/operations`                      |
+| [Operations Details](../operations-single.md)      | Single     | `/operations/:id`                  |
+| [Ledger Operations](../operations-for-ledger.md)   | Collection | `/ledgers/{id}/operations{?cursor,limit,order}` |
+| [Account Operations](../operations-for-account.md) | Collection | `/accounts/:account_id/operations` |
+| [Account Payments](../payments-for-account.md)     | Collection | `/accounts/:account_id/payments` |
 
-
-[transactions]: ./resource/transaction.md
-[operations_all]: ../endpoint/operations_all.md
-[operations_single]: ../endpoint/operations_single.md
-[operations_for_account]: ../endpoint/operations_for_account.md
-[operations_for_ledger]: ../endpoint/operations_for_ledger.md
-[payments_for_account]: ../endpoint/payments_for_account.md
-[concept_operations]: https://github.com/stellar/docs/tree/master/docs/operations.md
