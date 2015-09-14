@@ -3,6 +3,7 @@ package assets
 import (
 	"testing"
 
+	"github.com/go-errors/errors"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -27,10 +28,10 @@ func TestAssets(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		result, err = Parse("not_real")
-		So(err, ShouldEqual, ErrInvalidString)
+		So(errors.Is(err, ErrInvalidString), ShouldBeTrue)
 
 		result, err = Parse("")
-		So(err, ShouldEqual, ErrInvalidString)
+		So(errors.Is(err, ErrInvalidString), ShouldBeTrue)
 	})
 
 	Convey("String", t, func() {
@@ -52,6 +53,6 @@ func TestAssets(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		result, err = String(xdr.AssetType(15))
-		So(err, ShouldEqual, ErrInvalidValue)
+		So(errors.Is(err, ErrInvalidValue), ShouldBeTrue)
 	})
 }
