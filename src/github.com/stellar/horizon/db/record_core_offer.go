@@ -25,12 +25,12 @@ type CoreOfferRecord struct {
 	BuyingAssetCode sql.NullString `db:"buyingassetcode"`
 	BuyingIssuer    sql.NullString `db:"buyingissuer"`
 
-	Amount       int64 `db:"amount"`
-	Pricen       int32 `db:"pricen"`
-	Priced       int32 `db:"priced"`
-	Price        int64 `db:"price"`
-	Flags        int32 `db:"flags"`
-	Lastmodified int32 `db:"lastmodified"`
+	Amount       int64   `db:"amount"`
+	Pricen       int32   `db:"pricen"`
+	Priced       int32   `db:"priced"`
+	Price        float64 `db:"price"`
+	Flags        int32   `db:"flags"`
+	Lastmodified int32   `db:"lastmodified"`
 }
 
 // PagingToken returns a suitable paging token for the CoreOfferRecord

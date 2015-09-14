@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/horizon/test"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/test"
 )
 
 func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
@@ -70,7 +70,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 
 			So(records, ShouldBeOrderedAscending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
-				return r.(CoreOfferRecord).Price
+				return int64(r.(CoreOfferRecord).Price * 10000000)
 			})
 
 			// asc orders ascending by price
@@ -80,7 +80,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 
 			So(records, ShouldBeOrderedDescending, func(r interface{}) int64 {
 				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
-				return r.(CoreOfferRecord).Price
+				return int64(r.(CoreOfferRecord).Price * 10000000)
 			})
 		})
 
@@ -103,27 +103,27 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			// lowest price if ordered ascending and no cursor
 			q := simpleQuery
 			MustGet(ctx, q, &record)
-			So(record.Price, ShouldEqual, 150000000)
+			So(record.Price, ShouldEqual, 15)
 
 			// highest id if ordered descending and no cursor
 			q = simpleQuery
 			q.PageQuery.Order = "desc"
 			q.PageQuery.Cursor = fmt.Sprintf("%d", math.MaxInt64)
 			MustGet(ctx, q, &record)
-			So(record.Price, ShouldEqual, 500000000)
+			So(record.Price, ShouldEqual, 50)
 
 			// starts after the cursor if ordered ascending
 			q = simpleQuery
-			q.PageQuery.Cursor = "150000000"
+			q.PageQuery.Cursor = "15"
 			MustGet(ctx, q, &record)
-			So(record.Price, ShouldEqual, 200000000)
+			So(record.Price, ShouldEqual, 20)
 
 			// starts before the cursor if ordered descending
 			q = simpleQuery
 			q.PageQuery.Order = "desc"
-			q.PageQuery.Cursor = "500000000"
+			q.PageQuery.Cursor = "50"
 			MustGet(ctx, q, &record)
-			So(record.Price, ShouldEqual, 200000000)
+			So(record.Price, ShouldEqual, 20)
 		})
 
 	})
