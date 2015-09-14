@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/assets"
 	"golang.org/x/net/context"
 )
 
@@ -156,4 +158,71 @@ func (f *EffectOperationFilter) Apply(ctx context.Context, sql sq.SelectBuilder)
 		start.ToInt64(),
 		end.ToInt64(),
 	), nil
+}
+
+// EffectOrderBookFilter represents a filter that excludes all rows that did not occur
+// in the specified order book
+type EffectOrderBookFilter struct {
+	SellingType   xdr.AssetType
+	SellingCode   string
+	SellingIssuer string
+	BuyingType    xdr.AssetType
+	BuyingCode    string
+	BuyingIssuer  string
+}
+
+func (f *EffectOrderBookFilter) Apply(ctx context.Context, in sq.SelectBuilder) (sql sq.SelectBuilder, err error) {
+	sql = in
+
+	sellingType, err := assets.String(f.SellingType)
+	if err != nil {
+		return
+	}
+
+	buyingType, err := assets.String(f.BuyingType)
+	if err != nil {
+		return
+	}
+
+	if f.SellingType == xdr.AssetTypeAssetTypeNative {
+		sql = sql.Where(`
+				(heff.details->>'sold_asset_type' = ? 
+		AND heff.details->>'sold_asset_code' IS NULL 
+		AND heff.details->>'sold_asset_issuer' IS NULL)`,
+			sellingType,
+		)
+	} else {
+		sql = sql.Where(`
+				(heff.details->>'sold_asset_type' = ? 
+		AND heff.details->>'sold_asset_code' = ?
+		AND heff.details->>'sold_asset_issuer' = ?)`,
+			sellingType,
+			f.SellingCode,
+			f.SellingIssuer,
+		)
+	}
+
+	if f.BuyingType == xdr.AssetTypeAssetTypeNative {
+		sql = sql.Where(`
+				(heff.details->>'bought_asset_type' = ? 
+		AND heff.details->>'bought_asset_code' IS NULL 
+		AND heff.details->>'bought_asset_issuer' IS NULL)`,
+			buyingType,
+		)
+	} else {
+		sql = sql.Where(`
+				(heff.details->>'bought_asset_type' = ? 
+		AND heff.details->>'bought_asset_code' = ?
+		AND heff.details->>'bought_asset_issuer' = ?)`,
+			buyingType,
+			f.BuyingCode,
+			f.BuyingIssuer,
+		)
+	}
+
+	if err != nil {
+		return
+	}
+
+	return
 }

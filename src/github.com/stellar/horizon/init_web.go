@@ -89,6 +89,7 @@ func initWebActions(app *App) {
 	r.Get("/accounts/:account_id/payments", &PaymentsIndexAction{})
 	r.Get("/accounts/:account_id/effects", &EffectIndexAction{})
 	r.Get("/accounts/:account_id/offers", &OffersByAccountAction{})
+	r.Get("/accounts/:account_id/trades", &TradeIndexAction{})
 
 	// transaction actions
 	r.Get("/transactions", &TransactionIndexAction{})
@@ -107,6 +108,7 @@ func initWebActions(app *App) {
 
 	r.Get("/offers/:id", &NotImplementedAction{})
 	r.Get("/order_book", &OrderBookShowAction{})
+	r.Get("/order_book/trades", &TradeIndexAction{})
 
 	// horizon doesn't implement everything ruby-horizon did,
 	// so we reverse proxy if we can

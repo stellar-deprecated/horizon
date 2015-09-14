@@ -1,10 +1,11 @@
 package horizon
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/stellar/horizon/log"
 	"io/ioutil"
 	"net/http"
-	"encoding/json"
 )
 
 func initStellarCoreVersion(app *App) {
@@ -12,16 +13,18 @@ func initStellarCoreVersion(app *App) {
 		return
 	}
 
-	resp, err := http.Get(fmt.Sprint(app.config.StellarCoreUrl,"/info"))
+	resp, err := http.Get(fmt.Sprint(app.config.StellarCoreUrl, "/info"))
 
 	if err != nil {
-		app.log.Panic(app.ctx, err)
+		log.Warnf(app.ctx, "could not load stellar-core version: %s", err)
+		return
 	}
 
 	defer resp.Body.Close()
 	contents, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		app.log.Panic(app.ctx, err)
+		log.Warnf(app.ctx, "could not load stellar-core version: %s", err)
+		return
 	}
 
 	var responseJson map[string]*json.RawMessage
