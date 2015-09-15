@@ -1,10 +1,8 @@
 package log
 
 import (
-	"runtime"
-	"strings"
-
 	"github.com/Sirupsen/logrus"
+	"github.com/go-errors/errors"
 	"golang.org/x/net/context"
 )
 
@@ -43,6 +41,16 @@ func WithField(ctx context.Context, key string, value interface{}) *logrus.Entry
 
 func WithFields(ctx context.Context, fields logrus.Fields) *logrus.Entry {
 	return FromContext(ctx).WithFields(fields)
+}
+
+func WithStack(ctx context.Context, stackProvider interface{}) *logrus.Entry {
+	stack := "unknown"
+
+	if stackProvider, ok := stackProvider.(*errors.Error); ok {
+		stack = string(stackProvider.Stack())
+	}
+
+	return WithField(ctx, "stack", stack)
 }
 
 // FromContext retrieves the current registered logger from the provided
@@ -126,19 +134,19 @@ func Warnln(ctx context.Context, args ...interface{}) {
 // Errorf logs a message at the Error severity.  Delegates to the
 // logrus.Logger bound to the provided context.
 func Errorf(ctx context.Context, format string, args ...interface{}) {
-	addSourceLocations(FromContext(ctx)).Errorf(format, args...)
+	FromContext(ctx).Errorf(format, args...)
 }
 
 // Error logs a message at the Error severity.  Delegates to the
 // logrus.Logger bound to the provided context.
 func Error(ctx context.Context, args ...interface{}) {
-	addSourceLocations(FromContext(ctx)).Error(args...)
+	FromContext(ctx).Error(args...)
 }
 
 // Errorln logs a message at the Error severity.  Delegates to the
 // logrus.Logger bound to the provided context.
 func Errorln(ctx context.Context, args ...interface{}) {
-	addSourceLocations(FromContext(ctx)).Errorln(args...)
+	FromContext(ctx).Errorln(args...)
 }
 
 // Panicf logs a message at the Panic severity.  Delegates to the
@@ -157,19 +165,4 @@ func Panic(ctx context.Context, args ...interface{}) {
 // logrus.Logger bound to the provided context.
 func Panicln(ctx context.Context, args ...interface{}) {
 	FromContext(ctx).Panicln(args...)
-}
-
-func addSourceLocations(e *logrus.Entry) *logrus.Entry {
-	_, file, line, _ := runtime.Caller(2)
-
-	// attempt to strip the project prefix
-	parts := strings.SplitN(file, "horizon/", 2)
-	if len(parts) == 2 {
-		file = parts[1]
-	}
-
-	return e.WithFields(logrus.Fields{
-		"file": file,
-		"line": line,
-	})
 }
