@@ -2,8 +2,8 @@ package horizon
 
 import (
 	"net/http"
-	"runtime"
 
+	"github.com/go-errors/errors"
 	gctx "github.com/goji/context"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/render/problem"
@@ -19,15 +19,8 @@ func RecoverMiddleware(c *web.C, h http.Handler) http.Handler {
 
 		defer func() {
 			if err := recover(); err != nil {
-				stack := make([]byte, 4096) // 4k of stack should be sufficient to see the source
-				n := runtime.Stack(stack, false)
-
-				log.
-					WithField(ctx, "stacktrace", string(stack[:n])).
-					Errorf("panic: %+v", err)
-
-				//TODO: include stack trace if in debug mode
-				problem.Render(gctx.FromC(*c), w, problem.ServerError)
+				err := errors.Wrap(err, 2)
+				problem.Render(ctx, w, err)
 			}
 		}()
 
