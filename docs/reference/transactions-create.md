@@ -45,7 +45,7 @@ submission of the provided transaction to stellar-core.
 | ------------------- | ------ | ------------------------------------------------------------- |
 | `hash`              | string | A hex-encoded hash of the submitted transaction.              |
 | `result`            | string | Distilled summary of the result.  See "Result" section below. |
-| `submission_result` | string | A hex-encoded `TransactionResult` [XDR](../guide/xdr.md) object.                 |
+| `submission_result` | string | A base64 encoded `TransactionResult` [XDR](../guide/xdr.md) object.                 |
 
 ### Result
 
