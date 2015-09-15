@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-errors/errors"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
@@ -68,7 +69,7 @@ func (base *Base) GetInt64(name string) int64 {
 	asI64, err := strconv.ParseInt(asStr, 10, 64)
 
 	if err != nil {
-		base.Err = err
+		base.Err = errors.Wrap(err, 1)
 		return 0
 	}
 
@@ -96,7 +97,7 @@ func (base *Base) GetInt32(name string) int32 {
 	asI64, err := strconv.ParseInt(asStr, 10, 32)
 
 	if err != nil {
-		base.Err = err
+		base.Err = errors.Wrap(err, 1)
 		return 0
 	}
 
