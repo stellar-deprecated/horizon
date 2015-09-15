@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-errors/errors"
 	gctx "github.com/goji/context"
-	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/zenazn/goji/web"
 )
