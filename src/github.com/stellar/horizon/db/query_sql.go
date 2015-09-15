@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 
+	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/horizon/log"
@@ -22,7 +23,7 @@ func (q SqlQuery) Select(ctx context.Context, sql sq.SelectBuilder, dest interfa
 	query, args, err := sql.ToSql()
 
 	if err != nil {
-		return err
+		return errors.Wrap(err, 1)
 	}
 
 	return q.SelectRaw(ctx, query, args, dest)
@@ -44,7 +45,7 @@ func (q SqlQuery) Get(ctx context.Context, sql sq.SelectBuilder, dest interface{
 	query, args, err := sql.ToSql()
 
 	if err != nil {
-		return err
+		return errors.Wrap(err, 1)
 	}
 
 	return q.GetRaw(ctx, query, args, dest)

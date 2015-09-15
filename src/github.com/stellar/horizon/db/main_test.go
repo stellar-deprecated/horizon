@@ -56,28 +56,28 @@ func TestDBPackage(t *testing.T) {
 		Convey("returns an error when the provided destination is nil", func() {
 			query := &mockQuery{5}
 			err := Select(ctx, query, nil)
-			So(err, ShouldEqual, ErrDestinationNil)
+			So(err, test.ShouldBeErr, ErrDestinationNil)
 		})
 
 		Convey("returns an error when the provided destination is not a pointer", func() {
 			var records []mockResult
 			query := &mockQuery{5}
 			err := Select(ctx, query, records)
-			So(err, ShouldEqual, ErrDestinationNotPointer)
+			So(err, test.ShouldBeErr, ErrDestinationNotPointer)
 		})
 
 		Convey("returns an error when the provided destination is not a slice", func() {
 			var records string
 			query := &mockQuery{5}
 			err := Select(ctx, query, &records)
-			So(err, ShouldEqual, ErrDestinationNotSlice)
+			So(err, test.ShouldBeErr, ErrDestinationNotSlice)
 		})
 
 		Convey("returns an error when the provided destination is a slice of an invalid type", func() {
 			var records []string
 			query := &mockQuery{5}
 			err := Select(ctx, query, &records)
-			So(err, ShouldEqual, ErrDestinationIncompatible)
+			So(err, test.ShouldBeErr, ErrDestinationIncompatible)
 		})
 	})
 
@@ -90,7 +90,7 @@ func TestDBPackage(t *testing.T) {
 		})
 
 		Convey("Missing records returns nil", func() {
-			So(Get(ctx, &mockQuery{0}, &result), ShouldEqual, ErrNoResults)
+			So(Get(ctx, &mockQuery{0}, &result), test.ShouldBeErr, ErrNoResults)
 		})
 
 		Convey("Properly forwards non-RecordNotFound errors", func() {

@@ -37,7 +37,7 @@ package db
 //
 //   Expressed in network byte order.
 //
-// Operation Index: 10-bits
+// Operation Index: 12-bits
 //
 //   The index of the operation within its parent transaction. Accommodates up
 //   to 4095 operations per transaction.

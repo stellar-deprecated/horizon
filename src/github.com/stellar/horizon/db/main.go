@@ -2,12 +2,13 @@ package db
 
 import (
 	"database/sql"
-	"errors"
+	stderr "errors"
 	"fmt"
 	"reflect"
 
 	"golang.org/x/net/context"
 
+	"github.com/go-errors/errors"
 	_ "github.com/lib/pq" // allow postgres sql connections
 )
 
@@ -27,7 +28,8 @@ var ErrDestinationNil = errors.New("dest is nil")
 var ErrDestinationIncompatible = errors.New("Retrieved results' type is not compatible with dest")
 
 // ErrNoResults is returned when no results are found during a `Get` call
-var ErrNoResults = errors.New("No record found")
+// NOTE: this is not a go-errors based error, as stack traces are unnecessary
+var ErrNoResults = stderr.New("No record found")
 
 // Query is the interface to implement to plug a struct into the query system.
 // see doc.go for an example.
@@ -56,12 +58,12 @@ func (r HistoryRecord) PagingToken() string {
 func Open(url string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", url)
 	if err != nil {
-		return db, err
+		return db, errors.Wrap(err, 1)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		return db, err
+		return db, errors.Wrap(err, 1)
 	}
 
 	return db, nil
@@ -80,7 +82,7 @@ func Select(ctx context.Context, query Query, dest interface{}) error {
 	rv := reflect.Indirect(rvp)
 
 	if dv.Kind() != reflect.Slice {
-		return ErrDestinationNotSlice
+		return errors.New(ErrDestinationNotSlice)
 	}
 
 	err := query.Select(ctx, rvp.Interface())
@@ -162,19 +164,19 @@ func checkOptions(clauses ...bool) error {
 
 func setOn(src interface{}, dest interface{}) error {
 	if dest == nil {
-		return ErrDestinationNil
+		return errors.New(ErrDestinationNil)
 	}
 
 	rv := reflect.ValueOf(src)
 	dvp := reflect.ValueOf(dest)
 
 	if dvp.Kind() != reflect.Ptr {
-		return ErrDestinationNotPointer
+		return errors.New(ErrDestinationNotPointer)
 	}
 
 	dv := reflect.Indirect(dvp)
 	if !rv.Type().AssignableTo(dv.Type()) {
-		return ErrDestinationIncompatible
+		return errors.New(ErrDestinationIncompatible)
 	}
 
 	dv.Set(rv)
@@ -183,13 +185,13 @@ func setOn(src interface{}, dest interface{}) error {
 
 func validateDestination(dest interface{}) error {
 	if dest == nil {
-		return ErrDestinationNil
+		return errors.New(ErrDestinationNil)
 	}
 
 	dvp := reflect.ValueOf(dest)
 
 	if dvp.Kind() != reflect.Ptr {
-		return ErrDestinationNotPointer
+		return errors.New(ErrDestinationNotPointer)
 	}
 
 	return nil
