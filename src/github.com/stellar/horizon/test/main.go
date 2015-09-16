@@ -6,7 +6,10 @@ package test
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 
@@ -109,4 +112,10 @@ func ContextWithLogBuffer() (context.Context, *bytes.Buffer) {
 	ctx := glog.Context(context.Background(), l)
 	return ctx, output
 
+}
+
+func StaticMockServer(response string) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, response)
+	}))
 }

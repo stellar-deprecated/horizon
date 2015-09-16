@@ -1,6 +1,7 @@
 package txsub
 
 import (
+	"fmt"
 	"github.com/rcrowley/go-metrics"
 	"golang.org/x/net/context"
 	"time"
@@ -111,6 +112,17 @@ type SubmissionResult struct {
 	Err error
 
 	Duration time.Duration
+}
+
+// FailedTransactionError represent an error that occurred because
+// stellar-core rejected the transaction.  ResultXDR is a base64
+// encoded TransactionResult struct
+type FailedTransactionError struct {
+	ResultXDR string
+}
+
+func (err *FailedTransactionError) Error() string {
+	return fmt.Sprintf("tx failed: %s", err.ResultXDR)
 }
 
 // Submit submits the provided base64 encoded transaction envelope to the
