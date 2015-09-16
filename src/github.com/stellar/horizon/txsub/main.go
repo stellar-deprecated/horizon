@@ -49,10 +49,13 @@ type ResultProvider interface {
 
 // Listener represents some client who is interested in retrieving the result
 // of a specific transaction.
-type Listener <-chan Result
+type Listener chan<- Result
 
 // OpenSubmissionList represents the structure that tracks pending transactions
 // and forwards Result structs on to listeners as they become available.
+//
+// NOTE:  An implementation of this interface will be called from multiple go-routines
+// concurrently.
 //
 // NOTE:  A Listener must be a buffered channel.  A panic will trigger if you
 // provide an unbuffered channel
