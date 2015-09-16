@@ -2,11 +2,11 @@ package db
 
 import (
 	"math"
-	"strconv"
 	"testing"
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/test"
 )
 
 func TestPageQuery(t *testing.T) {
@@ -27,7 +27,7 @@ func TestPageQuery(t *testing.T) {
 
 		Convey("Errors when order is not 'asc' ord 'desc'", func() {
 			_, err := NewPageQuery("", "foo", 0)
-			So(err, ShouldEqual, ErrInvalidOrder)
+			So(err, test.ShouldBeErr, ErrInvalidOrder)
 		})
 
 		Convey("CursorInt64", func() {
@@ -48,13 +48,13 @@ func TestPageQuery(t *testing.T) {
 			Convey("Errors when cursor is not parseable as a number", func() {
 				p = MustPageQuery("not_a_number", "", 0)
 				_, err := p.CursorInt64()
-				So(err, ShouldEqual, ErrInvalidCursor)
+				So(err, test.ShouldBeErr, ErrInvalidCursor)
 			})
 
 			Convey("Errors when cursor is less than zero", func() {
 				p = MustPageQuery("-1", "", 0)
 				_, err := p.CursorInt64()
-				So(err, ShouldEqual, ErrInvalidCursor)
+				So(err, test.ShouldBeErr, ErrInvalidCursor)
 			})
 		})
 
@@ -86,27 +86,27 @@ func TestPageQuery(t *testing.T) {
 			Convey("Errors when cursor has no instance of the separator in it", func() {
 				p = MustPageQuery("nosep", "", 0)
 				_, _, err := p.CursorInt64Pair("-")
-				So(err, ShouldEqual, ErrInvalidCursor)
+				So(err, test.ShouldBeErr, ErrInvalidCursor)
 			})
 
 			Convey("Errors when cursor has an unparselable number contained within", func() {
 				p = MustPageQuery("123-foo", "", 0)
 				_, _, err := p.CursorInt64Pair("-")
-				So(err, ShouldHaveSameTypeAs, &strconv.NumError{})
+				So(err, ShouldNotBeNil)
 
 				p = MustPageQuery("foo-123", "", 0)
 				_, _, err = p.CursorInt64Pair("-")
-				So(err, ShouldHaveSameTypeAs, &strconv.NumError{})
+				So(err, ShouldNotBeNil)
 			})
 
 			Convey("Errors when cursor has a number that is less than zero", func() {
 				p = MustPageQuery("-1:123", "", 0)
 				_, _, err := p.CursorInt64Pair(":")
-				So(err, ShouldEqual, ErrInvalidCursor)
+				So(err, test.ShouldBeErr, ErrInvalidCursor)
 
 				p = MustPageQuery("111:-123", "", 0)
 				_, _, err = p.CursorInt64Pair(":")
-				So(err, ShouldEqual, ErrInvalidCursor)
+				So(err, test.ShouldBeErr, ErrInvalidCursor)
 			})
 		})
 
@@ -122,7 +122,7 @@ func TestPageQuery(t *testing.T) {
 
 		Convey("Errors when limit is less than zero", func() {
 			_, err := NewPageQuery("", "", -1)
-			So(err, ShouldEqual, ErrInvalidLimit)
+			So(err, test.ShouldBeErr, ErrInvalidLimit)
 		})
 
 		Convey("Errors when limit is greater than 200", func() {
@@ -130,7 +130,7 @@ func TestPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			_, err = NewPageQuery("", "", 201)
-			So(err, ShouldEqual, ErrInvalidLimit)
+			So(err, test.ShouldBeErr, ErrInvalidLimit)
 		})
 	})
 }

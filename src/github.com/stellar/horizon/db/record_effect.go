@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/go-errors/errors"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
@@ -59,6 +60,10 @@ func (r EffectRecord) Details() (result map[string]interface{}, err error) {
 	}
 
 	err = json.Unmarshal([]byte(r.DetailsString.String), &result)
+
+	if err != nil {
+		err = errors.Wrap(err, 1)
+	}
 
 	return
 }

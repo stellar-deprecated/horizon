@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-errors/errors"
 	"github.com/stellar/horizon/context/requestid"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
@@ -65,14 +66,7 @@ func Render(ctx context.Context, w http.ResponseWriter, p interface{}) {
 	case *P:
 		render(ctx, w, *p)
 	case error:
-		pp, ok := errToProblemMap[p]
-
-		if !ok {
-			log.Error(ctx, p)
-			pp = ServerError
-		}
-
-		render(ctx, w, pp)
+		renderErr(ctx, w, p)
 	default:
 		panic(fmt.Sprintf("Invalid problem: %v+", p))
 	}
@@ -86,13 +80,31 @@ func render(ctx context.Context, w http.ResponseWriter, p P) {
 	js, err := json.MarshalIndent(p, "", "  ")
 
 	if err != nil {
-		log.Error(ctx, err)
+		err := errors.Wrap(err, 1)
+		log.WithStack(ctx, err).Error(err)
 		http.Error(w, "error rendering problem", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(p.Status)
 	w.Write(js)
+}
+
+func renderErr(ctx context.Context, w http.ResponseWriter, err error) {
+	origErr := err
+
+	if err, ok := err.(*errors.Error); ok {
+		origErr = err.Err
+	}
+
+	p, ok := errToProblemMap[origErr]
+
+	if !ok {
+		p = ServerError
+	}
+
+	log.WithStack(ctx, err).Error(err)
+	render(ctx, w, p)
 }
 
 // Well-known and reused problems below:

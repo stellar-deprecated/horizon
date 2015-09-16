@@ -1,9 +1,10 @@
 package db
 
 import (
-	"strings"
 	"encoding/base64"
+	"strings"
 
+	"github.com/go-errors/errors"
 	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
@@ -21,7 +22,7 @@ var CoreAccountRecordSelect sq.SelectBuilder = sq.Select(
 ).From("accounts a")
 
 const (
-	FlagAuthRequired = 1 << iota
+	FlagAuthRequired  = 1 << iota
 	FlagAuthRevocable = 1 << iota
 )
 
@@ -49,6 +50,11 @@ func (ac CoreAccountRecord) DecodeThresholds() (xdr.Thresholds, error) {
 	reader := strings.NewReader(ac.Thresholds)
 	b64r := base64.NewDecoder(base64.StdEncoding, reader)
 	var xdrThresholds xdr.Thresholds
+
 	_, err := xdr.Unmarshal(b64r, &xdrThresholds)
+	if err != nil {
+		err = errors.Wrap(err, 1)
+	}
+
 	return xdrThresholds, err
 }

@@ -2,11 +2,13 @@ package log
 
 import (
 	"bytes"
+	"errors"
 	"testing"
 
 	"golang.org/x/net/context"
 
 	"github.com/Sirupsen/logrus"
+	ge "github.com/go-errors/errors"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -140,6 +142,25 @@ func TestLogPackage(t *testing.T) {
 
 			So(output.String(), ShouldContainSubstring, "level=panic")
 			So(output.String(), ShouldContainSubstring, "msg=foo")
+		})
+	})
+
+	Convey("WithStack", t, func() {
+		output := new(bytes.Buffer)
+		l, _ := New()
+		l.Logger.Formatter.(*logrus.TextFormatter).DisableColors = true
+		l.Logger.Out = output
+		ctx := Context(context.Background(), l)
+
+		Convey("Adds stack=unknown when the provided err has not stack info", func() {
+			WithStack(ctx, errors.New("broken")).Error("test")
+			So(output.String(), ShouldContainSubstring, "stack=unknown")
+		})
+		Convey("Adds the stack properly if a go-errors.Error is provided", func() {
+			err := ge.New("broken")
+			WithStack(ctx, err).Error("test")
+			// simply ensure that the line creating the above error is in the log
+			So(output.String(), ShouldContainSubstring, "main_test.go:")
 		})
 	})
 

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"errors"
+	"github.com/go-errors/errors"
 	"math"
 	"reflect"
 	"strconv"
@@ -74,12 +74,12 @@ func (p PageQuery) GetContinuations(records interface{}) (next PageQuery, prev P
 
 	first, ok := rv.Index(0).Interface().(Pageable)
 	if !ok {
-		err = ErrNotPageable
+		err = errors.New(ErrNotPageable)
 	}
 
 	last, ok := rv.Index(l - 1).Interface().(Pageable)
 	if !ok {
-		err = ErrNotPageable
+		err = errors.New(ErrNotPageable)
 	}
 
 	next.Cursor = last.PagingToken()
@@ -97,18 +97,18 @@ func (p PageQuery) CursorInt64() (int64, error) {
 		case OrderDescending:
 			return math.MaxInt64, nil
 		default:
-			return 0, ErrInvalidOrder
+			return 0, errors.New(ErrInvalidOrder)
 		}
 	}
 
 	i, err := strconv.ParseInt(p.Cursor, 10, 64)
 
 	if err != nil {
-		return 0, ErrInvalidCursor
+		return 0, errors.New(ErrInvalidCursor)
 	}
 
 	if i < 0 {
-		return 0, ErrInvalidCursor
+		return 0, errors.New(ErrInvalidCursor)
 	}
 
 	return i, nil
@@ -126,7 +126,7 @@ func (p PageQuery) CursorInt64Pair(sep string) (l int64, r int64, err error) {
 			l = math.MaxInt64
 			r = math.MaxInt64
 		default:
-			err = ErrInvalidOrder
+			err = errors.New(ErrInvalidOrder)
 		}
 		return
 	}
@@ -134,22 +134,24 @@ func (p PageQuery) CursorInt64Pair(sep string) (l int64, r int64, err error) {
 	parts := strings.SplitN(p.Cursor, sep, 2)
 
 	if len(parts) != 2 {
-		err = ErrInvalidCursor
+		err = errors.New(ErrInvalidCursor)
 		return
 	}
 
 	l, err = strconv.ParseInt(parts[0], 10, 64)
 	if err != nil {
+		err = errors.Wrap(err, 1)
 		return
 	}
 
 	r, err = strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
+		err = errors.Wrap(err, 1)
 		return
 	}
 
 	if l < 0 || r < 0 {
-		err = ErrInvalidCursor
+		err = errors.New(ErrInvalidCursor)
 	}
 
 	return
@@ -170,7 +172,7 @@ func NewPageQuery(
 	case OrderAscending, OrderDescending:
 		result.Order = order
 	default:
-		err = ErrInvalidOrder
+		err = errors.New(ErrInvalidOrder)
 		return
 	}
 
@@ -181,10 +183,10 @@ func NewPageQuery(
 	case limit == 0:
 		result.Limit = DefaultPageSize
 	case limit < 0:
-		err = ErrInvalidLimit
+		err = errors.New(ErrInvalidLimit)
 		return
 	case limit > MaxPageSize:
-		err = ErrInvalidLimit
+		err = errors.New(ErrInvalidLimit)
 		return
 	default:
 		result.Limit = limit

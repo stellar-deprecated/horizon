@@ -2,7 +2,7 @@
 package assets
 
 import (
-	"errors"
+	"github.com/go-errors/errors"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
@@ -26,7 +26,7 @@ func Parse(aType string) (result xdr.AssetType, err error) {
 	result, ok := AssetTypeMap[aType]
 
 	if !ok {
-		err = ErrInvalidString
+		err = errors.New(ErrInvalidString)
 	}
 
 	return
@@ -40,5 +40,5 @@ func String(aType xdr.AssetType) (string, error) {
 		}
 	}
 
-	return "", ErrInvalidValue
+	return "", errors.New(ErrInvalidValue)
 }
