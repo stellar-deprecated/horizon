@@ -8,8 +8,7 @@ import (
 )
 
 func TestDefaultSubmitter(t *testing.T) {
-	ctx := test.Context()
-	_ = ctx
+
 	Convey("submitter (The default Submitter implementation)", t, func() {
 
 		Convey("submits to the configured stellar-core instance correctly", func() {
@@ -35,6 +34,12 @@ func TestDefaultSubmitter(t *testing.T) {
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
 			sr := s.Submit("hello")
 			So(sr.Err, ShouldBeNil)
+		})
+
+		Convey("errors when the stellar-core url is empty", func() {
+			s := NewDefaultSubmitter(http.DefaultClient, "")
+			sr := s.Submit("hello")
+			So(sr.Err, ShouldNotBeNil)
 		})
 
 		Convey("errors when the stellar-core url is not parseable", func() {
