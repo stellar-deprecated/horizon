@@ -78,7 +78,7 @@ This endpoint responds with a [page](./resources/page.md) of [payment operations
         "type_s": "payment",
         "sender": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
         "receiver": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU",
-        "currency": {
+        "asset": {
           "code": "XLM"
         },
         "amount": 1000000000,

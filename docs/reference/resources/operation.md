@@ -23,7 +23,7 @@ There are 10 different operation types:
 | [CREATE_PASSIVE_OFFER](#create-passive-offer) |    4 | Creates an offer that won't consume a counter offer that exactly matches this offer.
 | [SET_OPTIONS](#set-options)          |    5 | Sets account options (inflation destination, adding signers, etc.)
 | [CHANGE_TRUST](#change-trust)         |    6 | Creates, updates or deletes a trust line.
-| [ALLOW_TRUST](#allow-trust)          |    7 | Updates the "authorized" flag of an existing trust line this is called by the issuer of the related currency.
+| [ALLOW_TRUST](#allow-trust)          |    7 | Updates the "authorized" flag of an existing trust line this is called by the issuer of the related asset.
 | [ACCOUNT_MERGE](#account-merge)        |    8 | Deletes account and transfers remaining balance to destination account.
 | [INFLATION](#inflation)            |    9 | Runs inflation.
 
@@ -44,12 +44,12 @@ additional attributes and links specific to that operation type.
 
 ## Common Links
 
-|             | Example |                  Relation                 |
-| ----------- | ------- | ----------------------------------------- |
-| self        |         | Relative link to the current operation    |
-| succeeds    |         | Relative link to the list of operations succeeding the current operation. |
-| precedes    |         | Relative link to the list of operations preceding the current operation. |
-| transaction |         | The transaction this operation is part of |
+|             |                  Relation                 |
+| ----------- | ----------------------------------------- |
+| self        | Relative link to the current operation    |
+| succeeds    | Relative link to the list of operations succeeding the current operation. |
+| precedes    | Relative link to the list of operations preceding the current operation. |
+| transaction | The transaction this operation is part of |
 
 
 
@@ -68,7 +68,7 @@ Create Account operation represents a new account creation.
 | id     | int64 | Operation ID. |
 | account     | AccountID | A new account that was funded. |
 | funder     | AccountID | Account that funded a new account. |
-| starting_balance | int64 | Amount the account was funded. |
+| starting_balance | string | Amount the account was funded. |
 
 
 #### Example
@@ -96,7 +96,7 @@ Create Account operation represents a new account creation.
   "funder": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO",
   "id": 402494270214144,
   "paging_token": "402494270214144",
-  "starting_balance": 1000000000,
+  "starting_balance": "10000.0",
   "type": 0,
   "type_s": "create_account"
 }
@@ -106,7 +106,7 @@ Create Account operation represents a new account creation.
 ### Payment
 
 A payment operation represents a payment from one account to another.  This payment
-can be either a simple native currency payment or a fiat currency payment.
+can be either a simple native asset payment or a fiat asset payment.
 
 #### Attributes
 
@@ -146,8 +146,8 @@ can be either a simple native currency payment or a fiat currency payment.
       "href": "/transactions/58402965295104"
     }
   },
-  "amount": 300000000,
-  "currency_type": "native",
+  "amount": "200.0",
+  "asset_type": "native",
   "from": "GAKLBGHNHFQ3BMUYG5KU4BEWO6EYQHZHAXEWC33W34PH2RBHZDSQBD75",
   "id": 58402965295104,
   "paging_token": "58402965295104",
@@ -174,43 +174,11 @@ A payment operation represents a payment from one account to another through a p
 
 #### Links
 
-|          |                            Example                            |      Relation     |
-| -------- | ------------------------------------------------------------- | ----------------- |
-| sender   | /accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2  | Sending account   |
-| receiver | /accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ | Receiving account |
+TODO
 
 #### Example
 
-```json
-{
-  "_links": {
-    "effects": {
-      "href": "/operations/54554674597889/effects/{?cursor,limit,order}",
-      "templated": true
-    },
-    "precedes": {
-      "href": "/operations?cursor=54554674597889&order=asc"
-    },
-    "self": {
-      "href": "/operations/54554674597889"
-    },
-    "succeeds": {
-      "href": "/operations?cursor=54554674597889&order=desc"
-    },
-    "transactions": {
-      "href": "/transactions/54554674597888"
-    }
-  },
-  "amount": 2e+16,
-  "currency_type": "native",
-  "from": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
-  "id": 54554674597889,
-  "paging_token": "54554674597889",
-  "to": "GCB2NV2O2TMC3CMTIZ3MIAKEIGC75LZ7LNX3TKWTI24KOBIAWXROWLRO",
-  "type": 1,
-  "type_s": "payment"
-}
-```
+TODO
 
 ### Manage Offer
 
@@ -234,10 +202,16 @@ To delete the offer change amount of the offer to `0`.
 
 | Field           |  Type  | Description       |
 | --------------- | ------ | ----------------- |
-| id     | int64 | Operation ID. |
 | offer_id | int64 | Offer ID. |
-| amount     | int64 | Amount of asset to be sold. |
-| price | Object | n: price numerator, d: price denominator |
+| amount     | string | Amount of asset to be sold. |
+| buying_asset_code | string | The code of asset to buy. |
+| buying_asset_issuer | string | The issuer of asset to buy. |
+| buying_asset_type | string | The type of asset to buy. |
+| price | string | Price to buy a buying_asset |
+| price_r | Object | n: price numerator, d: price denominator |
+| selling_asset_code | string | The code of asset to sell. |
+| selling_asset_issuer | string | The issuer of asset to sell. |
+| selling_asset_type | string | The type of asset to sell. |
 
 
 #### Links
@@ -252,30 +226,37 @@ To delete the offer change amount of the offer to `0`.
 {
   "_links": {
     "effects": {
-      "href": "/operations/1777609654407168/effects/{?cursor,limit,order}",
+      "href": "/operations/592323234762753/effects{?cursor,limit,order}",
       "templated": true
     },
     "precedes": {
-      "href": "/operations?cursor=1777609654407168\u0026order=asc"
+      "href": "/operations?cursor=592323234762753\u0026order=asc"
     },
     "self": {
-      "href": "/operations/1777609654407168"
+      "href": "/operations/592323234762753"
     },
     "succeeds": {
-      "href": "/operations?cursor=1777609654407168\u0026order=desc"
+      "href": "/operations?cursor=592323234762753\u0026order=desc"
     },
-    "transactions": {
-      "href": "/transactions/1777609654407168"
+    "transaction": {
+      "href": "/transactions/592323234762752"
     }
   },
-  "amount": 100,
-  "id": 1777609654407168,
-  "offer_id": 0,
-  "paging_token": "1777609654407168",
-  "price": {
+  "amount": "100.0",
+  "buying_asset_code": "CHP",
+  "buying_asset_issuer": "GAC2ZUXVI5266NMMGDPBMXHH4BTZKJ7MMTGXRZGX2R5YLMFRYLJ7U5EA",
+  "buying_asset_type": "credit_alphanum4",
+  "id": 592323234762753,
+  "offer_id": 8,
+  "paging_token": "592323234762753",
+  "price": "2.0",
+  "price_r": {
     "d": 1,
     "n": 2
   },
+  "selling_asset_code": "YEN",
+  "selling_asset_issuer": "GDVXG2FMFFSUMMMBIUEMWPZAIU2FNCH7QNGJMWRXRD6K5FZK5KJS4DDR",
+  "selling_asset_type": "credit_alphanum4",
   "type": 3,
   "type_s": "manage_offer"
 }
@@ -301,6 +282,7 @@ Use “Set Options” operation to set following options to your account:
   * AUTH_REVOCABLE_FLAG (0x2) - if set, the authorized flag in TrustLines can be cleared otherwise, authorization cannot be revoked.
 * Set the account’s inflation destination.
 * Add new signers to the account.
+* Set home domain.
 
 
 #### Attributes
@@ -309,7 +291,44 @@ Use “Set Options” operation to set following options to your account:
 | --------------- | ------ | ----------------- |
 | signer_key | string | The address of the new signer. |
 | signer_weight | int | The weight of the new signer (1-255). |
+| master_key_weight | int | The weight of the master key (1-255). |
+| low_threshold | int | The sum weight for the low threshold. |
+| med_threshold | int | The sum weight for the medium threshold. |
+| high_threshold | int | The sum weight for the high threshold. |
+| home_domain | string | The home domain used for reverse federation lookup |
 
+
+#### Example
+
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/696867033714691/effects{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=696867033714691\u0026order=asc"
+    },
+    "self": {
+      "href": "/operations/696867033714691"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=696867033714691\u0026order=desc"
+    },
+    "transaction": {
+      "href": "/transactions/696867033714688"
+    }
+  },
+  "high_threshold": 3,
+  "id": 696867033714691,
+  "low_threshold": 0,
+  "med_threshold": 3,
+  "paging_token": "696867033714691",
+  "type": 5,
+  "type_s": "set_options"
+}
+```
 
 ### Change Trust
 
@@ -328,13 +347,47 @@ To delete a trust line set `limit` parameter to `0`.
 | trustor | string | Trustor account. |
 | limit | string | The limit for the asset. |
 
+#### Example
+
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/574731048718337/effects{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=574731048718337\u0026order=asc"
+    },
+    "self": {
+      "href": "/operations/574731048718337"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=574731048718337\u0026order=desc"
+    },
+    "transaction": {
+      "href": "/transactions/574731048718336"
+    }
+  },
+  "asset_code": "CHP",
+  "asset_issuer": "GAC2ZUXVI5266NMMGDPBMXHH4BTZKJ7MMTGXRZGX2R5YLMFRYLJ7U5EA",
+  "asset_type": "credit_alphanum4",
+  "id": 574731048718337,
+  "limit": "5.0",
+  "paging_token": "574731048718337",
+  "trustee": "GAC2ZUXVI5266NMMGDPBMXHH4BTZKJ7MMTGXRZGX2R5YLMFRYLJ7U5EA",
+  "trustor": "GDVXG2FMFFSUMMMBIUEMWPZAIU2FNCH7QNGJMWRXRD6K5FZK5KJS4DDR",
+  "type": 6,
+  "type_s": "change_trust"
+}
+```
 
 <a id="allow_trust"></a>
 ### Allow Trust
 
 Updates the "authorized" flag of an existing trust line this is called by the issuer of the asset.
 
-Heads up! Unless the issuing account has AUTH_REVOCABLE_FLAG set than the "authorized" flag can only be set and never cleared.
+Heads up! Unless the issuing account has `AUTH_REVOCABLE_FLAG` set than the "authorized" flag can only be set and never cleared.
 
 #### Attributes
 
@@ -342,6 +395,7 @@ Heads up! Unless the issuing account has AUTH_REVOCABLE_FLAG set than the "autho
 | --------------- | ------ | ----------------- |
 |                 |        |                   |
 
+<a id="account_merge"></a>
 ### Account Merge
 
 Removes the account and transfers all remaining lumens to the destination account.
@@ -350,11 +404,39 @@ Removes the account and transfers all remaining lumens to the destination accoun
 
 | Field           |  Type  | Description       |
 | --------------- | ------ | ----------------- |
-|                 |        |                   |
+| into | string | Address where funds of deleted account were transferred. |
 
+#### Example
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/799357838299137/effects{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=799357838299137\u0026order=asc"
+    },
+    "self": {
+      "href": "/operations/799357838299137"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=799357838299137\u0026order=desc"
+    },
+    "transaction": {
+      "href": "/transactions/799357838299136"
+    }
+  },
+  "account": "GBCR5OVQ54S2EKHLBZMK6VYMTXZHXN3T45Y6PRX4PX4FXDMJJGY4FD42",
+  "id": 799357838299137,
+  "into": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
+  "paging_token": "799357838299137",
+  "type": 8,
+  "type_s": "account_merge"
+}
+```
 
-
-
+<a id="inflation"></a>
 ### Inflation
 
 Runs inflation.
@@ -364,9 +446,6 @@ Runs inflation.
 | Field           |  Type  | Description       |
 | --------------- | ------ | ----------------- |
 |                 |        |                   |
-
-
-
 
 ## Endpoints
 

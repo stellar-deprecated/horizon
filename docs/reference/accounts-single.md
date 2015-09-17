@@ -73,7 +73,7 @@ This endpoint responds with the details of a single account for a given address.
   "sequence": 66035122176002,
   "balances": [
     {
-      "currency_type": "native",
+      "asset_type": "native",
       "balance": 999999980
     }
   ]

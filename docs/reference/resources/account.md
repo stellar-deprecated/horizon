@@ -17,7 +17,7 @@ When horizon returns information about an account it uses the following format:
 | paging_token | number           | A paging token suitable for use as a `cursor` parameter.                                                                |
 | address      | string           | The account' public key encoded into a base32 string representation.                                                    |
 | sequence     | number           | The current sequence number that can be used when submitting a transaction from this account.                           |
-| balances     | array of objects | An array of the native currency or credits this account holds.                                                          |
+| balances     | array of objects | An array of the native asset or credits this account holds.                                                          |
 
 ## Links
 | rel          | Example                                                                                           | Description                                                | `templated` |
@@ -59,7 +59,7 @@ When horizon returns information about an account it uses the following format:
   "sequence": 132564165591040,
   "balances": [
     {
-      "currency_type": "native",
+      "asset_type": "native",
       "balance": 1000000000
     }
   ]
