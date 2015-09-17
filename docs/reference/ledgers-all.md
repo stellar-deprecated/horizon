@@ -32,6 +32,7 @@ curl https://horizon-testnet.stellar.org/ledgers?limit=200&order=desc
 
 ```js
 server.ledgers()
+  .call()
   .then(function (ledgerResult) {
     // page 1
     console.log(ledgerResult.records)

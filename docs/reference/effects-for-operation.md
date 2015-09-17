@@ -26,6 +26,22 @@ GET /operations/{id}/effects{?cursor,limit,order}
 ```sh
 curl https://horizon-testnet.stellar.org/operations/77309415424/effects
 ```
+```javascript
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+
+server.effects()
+  .forOperation("141733924865")
+  .call()
+  .then(function (effectResults) {
+    //page 1
+    console.log(effectResults.records)
+  })
+  .catch(function (err) {
+    console.log(err)
+  })
+
+```
 
 ## Response
 

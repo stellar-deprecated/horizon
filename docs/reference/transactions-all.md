@@ -36,6 +36,7 @@ var StellarSdk = require('stellar-sdk');
 var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
 server.transactions()
+  .call()
   .then(function (transactionResult) {
     //page 1
     console.log(transactionResult.records);
