@@ -1,6 +1,7 @@
 package txsub
 
 import (
+	"github.com/go-errors/errors"
 	"sync"
 	"time"
 )
@@ -32,6 +33,10 @@ func (s *submissionList) Add(hash string, l Listener) error {
 
 	if cap(l) == 0 {
 		panic("Unbuffered listener cannot be added to OpenSubmissionList")
+	}
+
+	if len(hash) != 64 {
+		return errors.New("Unexpected transaction hash length: must be 64 hex characters")
 	}
 
 	os, ok := s.submissions[hash]
@@ -68,7 +73,7 @@ func (s *submissionList) Finish(r Result) error {
 	return nil
 }
 
-func (s *submissionList) Clean(maxAge time.Duration) error {
+func (s *submissionList) Clean(maxAge time.Duration) (int, error) {
 	s.Lock()
 	defer s.Unlock()
 
@@ -78,7 +83,7 @@ func (s *submissionList) Clean(maxAge time.Duration) error {
 		}
 	}
 
-	return nil
+	return len(s.submissions), nil
 }
 
 func (s *submissionList) Pending() []string {

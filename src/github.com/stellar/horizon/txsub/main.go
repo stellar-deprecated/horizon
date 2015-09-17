@@ -69,7 +69,7 @@ type OpenSubmissionList interface {
 	Finish(Result) error
 
 	// Clean removes any open submissions over the provided age.
-	Clean(time.Duration) error
+	Clean(time.Duration) (int, error)
 
 	// Pending return a list of transaction hashes that have at least one
 	// listener registered to them in this list.
