@@ -4,7 +4,7 @@ title: All Transactions
 category: Endpoints
 ---
 
-This endpoint represents all validated [transactions](./resources/transaction.md)].
+This endpoint represents all validated [transactions](./resources/transaction.md).
 This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new transactions as they get made in the Stellar network.
 
 ## Request
