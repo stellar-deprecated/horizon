@@ -27,14 +27,14 @@ case ASSET_TYPE_NATIVE: // Not credit
 case ASSET_TYPE_CREDIT_ALPHANUM4:
     struct
     {
-        opaque assetCode[4];
+        opaque assetCode[4]; // 1 to 4 characters
         AccountID issuer;
     } alphaNum4;
 
 case ASSET_TYPE_CREDIT_ALPHANUM12:
     struct
     {
-        opaque assetCode[12];
+        opaque assetCode[12]; // 5 to 12 characters
         AccountID issuer;
     } alphaNum12;
 
@@ -98,7 +98,7 @@ struct AccountEntry
     SequenceNumber seqNum;    // last sequence number used for this account
     uint32 numSubEntries;     // number of sub-entries this account has
                               // drives the reserve
-    AccountID* inflationDest; // Account to vote during inflation
+    AccountID* inflationDest; // Account to vote for during inflation
     uint32 flags;             // see AccountFlags
 
     string32 homeDomain; // can be used for reverse federation and memo lookup
@@ -133,7 +133,7 @@ enum TrustLineFlags
 struct TrustLineEntry
 {
     AccountID accountID; // account this trustline belongs to
-    Asset asset;   // type of asset (with issuer)
+    Asset asset;         // type of asset (with issuer)
     int64 balance;       // how much of this asset the user has.
                          // Asset defines the unit for this;
 
@@ -167,8 +167,8 @@ struct OfferEntry
     AccountID sellerID;
     uint64 offerID;
     Asset selling; // A
-    Asset buying; // B
-    int64 amount;       // amount of A
+    Asset buying;  // B
+    int64 amount;  // amount of A
 
     /* price for this offer:
         price of A in terms of B
@@ -187,14 +187,28 @@ struct OfferEntry
     ext;
 };
 
-union LedgerEntry switch (LedgerEntryType type)
+struct LedgerEntry
 {
-case ACCOUNT:
-    AccountEntry account;
-case TRUSTLINE:
-    TrustLineEntry trustLine;
-case OFFER:
-    OfferEntry offer;
+    uint32 lastModifiedLedgerSeq; // ledger the LedgerEntry was last changed
+
+    union switch (LedgerEntryType type)
+    {
+    case ACCOUNT:
+        AccountEntry account;
+    case TRUSTLINE:
+        TrustLineEntry trustLine;
+    case OFFER:
+        OfferEntry offer;
+    }
+    data;
+
+    // reserved for future use
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
 };
 
 // list of all envelope types used in the application
@@ -205,5 +219,4 @@ enum EnvelopeType
     ENVELOPE_TYPE_SCP = 1,
     ENVELOPE_TYPE_TX = 2
 };
-
 }

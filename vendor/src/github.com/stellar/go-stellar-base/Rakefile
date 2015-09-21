@@ -39,7 +39,7 @@ namespace :xdr do
     require "pathname"
     require "xdrgen"
     require 'fileutils'
-    FileUtils.rm("xdr/xdr_generated.go")
+    FileUtils.rm_f("xdr/xdr_generated.go")
 
     compilation = Xdrgen::Compilation.new(
       LOCAL_XDR_PATHS,
