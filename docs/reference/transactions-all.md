@@ -5,7 +5,8 @@ category: Endpoints
 ---
 
 This endpoint represents all validated [transactions](./resources/transaction.md).
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new transactions as they get made in the Stellar network.
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode. This makes it possible to use it to listen for new transactions as they get made in the Stellar network.
+If called in streaming mode Horizon will start at the earliest known transaction unless a cursor is set. In that case it will start from the cursor.
 
 ## Request
 
@@ -50,7 +51,9 @@ server.transactions()
 
 ## Response
 
-This endpoint responds with a list of transactions.  See [transaction resource](./resources/transaction.md) for reference.
+If called normally this endpoint responds with a [page](./resources/page.md) of transactions.
+If called in streaming mode the transaction resources are returned individually.
+See [transaction resource](./resources/transaction.md) for reference.
 
 ### Example Response
 

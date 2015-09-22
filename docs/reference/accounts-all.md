@@ -8,6 +8,7 @@ The all accounts endpoint returns a collection of all the [accounts](./resources
 are ordered by account creation time. An address may show up multiple times if they were [merged](./resources/operation.md#Account_Merge) and then [created](./resources/operation.md#Create_Account) again.
 
 This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new accounts as they get made in the Stellar network.
+If called in streaming mode Horizon will start at the earliest known account unless a cursor is set. In that case it will start from the cursor.
 
 ## Request
 
@@ -53,7 +54,9 @@ server.accounts()
 
 ## Response
 
-Returns a returns a collection of [accounts](./resources/account.md).
+If called normally this endpoint responds with a [page](./resources/page.md) of accounts.
+If called in streaming mode the account resources are returned individually.
+See [accounts](./resources/account.md) for reference.
 
 ### Example Response
 
