@@ -3,6 +3,8 @@ package txsub
 import (
 	"fmt"
 	"github.com/rcrowley/go-metrics"
+	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
 	"time"
 )
@@ -11,9 +13,10 @@ import (
 // Its methods tie together the various pieces used to reliably submit transactions
 // to a stellar-core instance.
 type System struct {
-	OpenSubmissionList
-	ResultProvider
-	Submitter
+	pending           OpenSubmissionList
+	results           ResultProvider
+	submitter         Submitter
+	networkPassphrase string
 
 	Metrics struct {
 		// SubmissionTimer exposes timing metrics about the rate and latency of
@@ -41,10 +44,10 @@ type System struct {
 // of each transaction in the open submission list at each tick (i.e. ledger close)
 type ResultProvider interface {
 	// Look up a result by transaction hash
-	ResultByHash(string) Result
+	ResultByHash(string) (Result, bool)
 
 	// Look up a result by address and sequence number
-	ResultByAddressAndSequence(string, int64) Result
+	ResultByAddressAndSequence(string, uint64) (Result, bool)
 }
 
 // Listener represents some client who is interested in retrieving the result
@@ -114,7 +117,27 @@ type SubmissionResult struct {
 	// inclusion in the ledger (i.e. A successful submission).
 	Err error
 
+	// Duration records the time it took to submit a transaction
+	// to stellar-core
 	Duration time.Duration
+}
+
+func (s SubmissionResult) IsBadSeq() (bool, error) {
+	if s.Err == nil {
+		return false, nil
+	}
+
+	fte, ok := s.Err.(*FailedTransactionError)
+	if !ok {
+		return false, nil
+	}
+
+	result, err := fte.Result()
+	if err != nil {
+		return false, err
+	}
+
+	return result.Result.Code == xdr.TransactionResultCodeTxBadSeq, nil
 }
 
 // FailedTransactionError represent an error that occurred because
@@ -128,6 +151,11 @@ func (err *FailedTransactionError) Error() string {
 	return fmt.Sprintf("tx failed: %s", err.ResultXDR)
 }
 
+func (fte *FailedTransactionError) Result() (result xdr.TransactionResult, err error) {
+	err = xdr.SafeUnmarshalBase64(fte.ResultXDR, &result)
+	return
+}
+
 // Submit submits the provided base64 encoded transaction envelope to the
 // network using this submission system.
 func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result) {
@@ -135,39 +163,68 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	result = response
 
 	// calculate hash of transaction
-	hash, err := hashForEnvelope(ctx, env)
+	info, err := extractEnvelopeInfo(ctx, env, sys.networkPassphrase)
 	if err != nil {
 		response <- Result{Err: err}
 		return
 	}
 
-	_ = hash
-
 	// check the configured result provider for an existing result
-	//TODO
+	r, found := sys.results.ResultByHash(info.Hash)
 
-	// if result is available, return it
-	// if not, continue
-	// TODO
+	if found {
+		response <- r
+		return
+	}
 
 	// submit to stellar-core
-	// TODO
+	sr := sys.submitter.Submit(env)
 
 	// if received or duplicate, add to the open submissions list
-	// if error is txBAD_SEQ, consult result provider using address and sequence
-	//   if the result _is not_ for this envelope, return the error
-	//   if the result _is_ for this envelope return the result
-	//   if no result is found, add to the open submissions list
-	//TODO
+	if sr.Err == nil {
+		sys.pending.Add(info.Hash, response)
+		return
+	}
 
+	// any error other than "txBAD_SEQ" is a failure
+	isBad, err := sr.IsBadSeq()
+	if err != nil {
+		response <- Result{Err: err}
+		return
+	}
+
+	if !isBad {
+		response <- Result{Err: sr.Err}
+		return
+	}
+
+	r, found = sys.results.ResultByAddressAndSequence(info.SourceAddress, info.Sequence)
+
+	// If the found result is the same hash, use it as the result
+	if found && r.Hash == info.Hash {
+		response <- r
+		return
+	}
+
+	// finally, return the bad_seq error if the hash is different
+	response <- Result{Err: sr.Err}
 	return
 }
 
 // Ticker triggers the system to update itself with any new data available.
 func (sys *System) Tick(ctx context.Context) {
-	// Load the list of open submission hashes
-	// For each, check for a result
-	//	If a result is found, finish the submission using the result
-	// Trigger a Clean() on the submission list
-	// Update metrics
+	for _, hash := range sys.pending.Pending() {
+		r, ok := sys.results.ResultByHash(hash)
+
+		if ok {
+			sys.pending.Finish(r)
+		}
+	}
+
+	stillOpen, err := sys.pending.Clean(1 * time.Minute)
+	if err != nil {
+		log.WithStack(ctx, err).Error(err)
+	}
+
+	sys.Metrics.OpenSubmissionsGauge.Update(int64(stillOpen))
 }
