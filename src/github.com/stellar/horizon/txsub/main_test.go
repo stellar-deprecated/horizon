@@ -49,6 +49,9 @@ func TestTxsub(t *testing.T) {
 
 				So(r.Err, ShouldNotBeNil)
 				So(submitter.WasSubmittedTo, ShouldBeTrue)
+				So(system.Metrics.SuccessfulSubmissionsMeter.Count(), ShouldEqual, 0)
+				So(system.Metrics.FailedSubmissionsMeter.Count(), ShouldEqual, 1)
+				So(system.Metrics.SubmissionTimer.Count(), ShouldEqual, 1)
 			})
 
 			Convey("if the error is bad_seq and the result at the transaction's sequence number is for the same hash, return result", func() {
@@ -86,6 +89,9 @@ func TestTxsub(t *testing.T) {
 				So(len(pending), ShouldEqual, 1)
 				t.Logf("passphrase: %s", system.networkPassphrase)
 				So(pending[0], ShouldEqual, successTx.Hash)
+				So(system.Metrics.SuccessfulSubmissionsMeter.Count(), ShouldEqual, 1)
+				So(system.Metrics.FailedSubmissionsMeter.Count(), ShouldEqual, 0)
+				So(system.Metrics.SubmissionTimer.Count(), ShouldEqual, 1)
 			})
 		})
 

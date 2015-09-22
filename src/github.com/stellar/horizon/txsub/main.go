@@ -6,6 +6,7 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
+	"sync"
 	"time"
 )
 
@@ -13,6 +14,7 @@ import (
 // Its methods tie together the various pieces used to reliably submit transactions
 // to a stellar-core instance.
 type System struct {
+	sync.Once
 	pending           OpenSubmissionList
 	results           ResultProvider
 	submitter         Submitter
@@ -159,6 +161,7 @@ func (fte *FailedTransactionError) Result() (result xdr.TransactionResult, err e
 // Submit submits the provided base64 encoded transaction envelope to the
 // network using this submission system.
 func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result) {
+	sys.init(ctx)
 	response := make(chan Result, 1)
 	result = response
 
@@ -179,12 +182,16 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 
 	// submit to stellar-core
 	sr := sys.submitter.Submit(env)
+	sys.Metrics.SubmissionTimer.Update(sr.Duration)
 
 	// if received or duplicate, add to the open submissions list
 	if sr.Err == nil {
+		sys.Metrics.SuccessfulSubmissionsMeter.Mark(1)
 		sys.pending.Add(info.Hash, response)
 		return
 	}
+
+	sys.Metrics.FailedSubmissionsMeter.Mark(1)
 
 	// any error other than "txBAD_SEQ" is a failure
 	isBad, err := sr.IsBadSeq()
@@ -213,6 +220,7 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 
 // Ticker triggers the system to update itself with any new data available.
 func (sys *System) Tick(ctx context.Context) {
+	sys.init(ctx)
 	for _, hash := range sys.pending.Pending() {
 		r, ok := sys.results.ResultByHash(hash)
 
@@ -227,4 +235,13 @@ func (sys *System) Tick(ctx context.Context) {
 	}
 
 	sys.Metrics.OpenSubmissionsGauge.Update(int64(stillOpen))
+}
+
+func (sys *System) init(ctx context.Context) {
+	sys.Do(func() {
+		sys.Metrics.FailedSubmissionsMeter = metrics.NewMeter()
+		sys.Metrics.SuccessfulSubmissionsMeter = metrics.NewMeter()
+		sys.Metrics.SubmissionTimer = metrics.NewTimer()
+		sys.Metrics.OpenSubmissionsGauge = metrics.NewGauge()
+	})
 }
