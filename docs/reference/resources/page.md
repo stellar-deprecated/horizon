@@ -6,7 +6,7 @@ category: Resources
 
 Pages represent a subset of a larger collection of objects.
 As an example, it would be unfeasible to provide the
-[All Transactions][transactions_all] endpoint without paging.  Over time there
+[All Transactions](../transactions-all.md) endpoint without paging.  Over time there
 will be millions of transactions in the Stellar network's ledger and returning
 them all over a single request would be unfeasible.
 
@@ -23,8 +23,7 @@ The `cursor` attribute itself is an opaque value meaning that users should not t
 
 ## Embedded Resources
 
-A page contains an embedded set of `records`, regardless of the contained
-resource.
+A page contains an embedded set of `records`, regardless of the contained resource.
 
 ## Links
 
@@ -90,7 +89,5 @@ A page provides a couple of links to ease in iteration.
 
 ## Endpoints
 
-Any endpoint that provides a collection of resources should represent them as
-pages.
+Any endpoint that provides a collection of resources will represent them as pages.
 
-[transactions_all]: ../endpoint/transactions_all.md
