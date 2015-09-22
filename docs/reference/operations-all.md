@@ -5,7 +5,7 @@ category: Endpoints
 ---
 
 This endpoint represents all [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md).
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new accounts as they get made in the Stellar network.
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen as operations are processed in the Stellar network.
 
 ## Request
 

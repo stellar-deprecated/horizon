@@ -4,7 +4,7 @@ title: Payments for account
 category: Endpoints
 ---
 
-This endpoint responds with a collection of [Payment operations](./resources/operation.md) resources for the [account](./resources/account.md) specified in the arguments.  Specifically, any payment in which the specified account participates, either as sender or receiver.
+This endpoint responds with a collection of [Payment operations](./resources/operation.md) where the given [account](./resources/account.md) was either the sender or receiver.
 
 This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new payments to or from an account as they get made in the Stellar network.
 

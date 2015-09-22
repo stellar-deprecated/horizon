@@ -4,7 +4,7 @@ title: Effects for transaction
 category: Endpoints
 ---
 
-This endpoint represents all [effects](./resources/effect.md) that occurred in the [ledger](./resources/ledger.md) as a result of a given [transaction](./resources/transaction.md).
+This endpoint represents all [effects](./resources/effect.md) that occurred as a result of a given [transaction](./resources/transaction.md).
 
 ## Request
 
@@ -29,7 +29,7 @@ curl https://horizon-testnet.stellar.org/transactions/6391dd190f15f7d1665ba53c63
 
 ## Response
 
-This endpoint responds with a list of effects that occurred in the ledger as a result of a given transaction. See [effect resource](./resources/effect.md) for reference.
+This endpoint responds with a list of effects on the ledger as a result of a given transaction. See [effect resource](./resources/effect.md) for reference.
 
 ### Example Response
 
