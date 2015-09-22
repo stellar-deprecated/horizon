@@ -8,6 +8,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/rcrowley/go-metrics"
+	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/render/sse"
@@ -22,18 +23,19 @@ var appContextKey = 0
 var version = ""
 
 type App struct {
-	config         Config
-	metrics        metrics.Registry
-	web            *Web
-	historyDb      *sql.DB
-	coreDb         *sql.DB
-	ctx            context.Context
-	cancel         func()
-	redis          *redis.Pool
-	log            *logrus.Entry
-	logMetrics     *log.Metrics
-	coreVersion    string
-	horizonVersion string
+	config            Config
+	metrics           metrics.Registry
+	web               *Web
+	historyDb         *sql.DB
+	coreDb            *sql.DB
+	ctx               context.Context
+	cancel            func()
+	redis             *redis.Pool
+	log               *logrus.Entry
+	logMetrics        *log.Metrics
+	coreVersion       string
+	horizonVersion    string
+	networkPassphrase string
 }
 
 func SetVersion(v string) {
@@ -51,6 +53,7 @@ func NewApp(config Config) (*App, error) {
 
 	result := &App{config: config}
 	result.horizonVersion = version
+	result.networkPassphrase = build.DefaultNetwork.Passphrase
 	appInit.Run(result)
 
 	return result, nil
