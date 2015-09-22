@@ -22,7 +22,7 @@ const (
 var (
 	PublicNetwork  = Network{PublicNetworkPassphrase}
 	TestNetwork    = Network{TestNetworkPassphrase}
-	DefaultNetwork = PublicNetwork
+	DefaultNetwork = TestNetwork
 )
 
 // Defaults is a mutator that sets defaults

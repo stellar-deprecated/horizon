@@ -48,7 +48,7 @@ func (b *TransactionBuilder) Mutate(muts ...TransactionMutator) {
 func (b *TransactionBuilder) Hash() ([32]byte, error) {
 	var txBytes bytes.Buffer
 
-	_, err := fmt.Fprint(&txBytes, b.NetworkID)
+	_, err := fmt.Fprintf(&txBytes, "%s", b.NetworkID)
 	if err != nil {
 		return [32]byte{}, err
 	}
