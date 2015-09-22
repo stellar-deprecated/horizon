@@ -4,8 +4,8 @@ title: Transactions for account
 category: Endpoints
 ---
 
-This endpoint represents all [transactions](./resources/transaction.md) submitted by an [accounts](./resources/account.md).
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new transactions from a given account as they get made in the Stellar network.
+This endpoint represents all [transactions](./resources/transaction.md) that affected a given [account](./resources/account.md).
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new transactions as that affect a given account as they get made in the Stellar network.
 
 ## Request
 
@@ -30,13 +30,11 @@ curl https://horizon-testnet.stellar.org/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G
 
 ## Response
 
-This endpoint responds with a list of transactions for a given account. See [transaction resource](./resources/transaction.md) for reference.
+This endpoint responds with a list of transactions that changed a given account's state. See [transaction resource](./resources/transaction.md) for reference.
 
 ### Example Response
 
-_Endpoint not implemented_
-
-
+TODO
 
 ## Possible Errors
 

@@ -4,9 +4,9 @@ title: Operations for account
 category: Endpoints
 ---
 
-This endpoint represents all [operations](./resources/operation.md) that were included in valid [transactions](./resources/transaction.md) submitted by a particular [account](./resources/account.md).
+This endpoint represents all [operations](./resources/operation.md) that were included in valid [transactions](./resources/transaction.md) that affected a particular [account](./resources/account.md).
 
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new operations on an account as they get made in the Stellar network.
+This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new operations that affect a given account as they happen.
 
 ## Request
 
@@ -46,7 +46,7 @@ server.accounts('GAKLBGHNHFQ3BMUYG5KU4BEWO6EYQHZHAXEWC33W34PH2RBHZDSQBD75', 'ope
 
 ## Response
 
-This endpoint responds with a list of operations that occurred in the ledger as a result of transactions submitted by the account. See [operation resource](./resources/operation.md) for reference.
+This endpoint responds with a list of operations that affected the given account. See [operation resource](./resources/operation.md) for reference.
 
 ### Example Response
 

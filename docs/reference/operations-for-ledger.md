@@ -4,7 +4,7 @@ title: Operations for ledger
 category: Endpoints
 ---
 
-This endpoint returns all [operations](./resources/operation.md) that were part of a valid [transaction](./resources/transaction.md) in a given [ledger](./resources/ledger.md).
+This endpoint returns all [operations](./resources/operation.md) that occurred in a given [ledger](./resources/ledger.md).
 
 ## Request
 

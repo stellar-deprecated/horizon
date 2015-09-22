@@ -4,7 +4,7 @@ title: Effects for ledger
 category: Endpoints
 ---
 
-Effects are the ways that the ledger was changed by any transaction.
+Effects are the specific ways that the ledger was changed by any operation.
 
 This endpoint represents all [effects](./resources/effect.md) that occurred in the given [ledger](./resources/ledger.md).
 
