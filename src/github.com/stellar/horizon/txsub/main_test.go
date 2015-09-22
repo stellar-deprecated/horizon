@@ -96,8 +96,25 @@ func TestTxsub(t *testing.T) {
 		})
 
 		Convey("Tick", func() {
-			// At each tick
-			// TODO:   if no open transactions, don't error out
+
+			Convey("no-ops if there are no open submissions", func() {
+				system.Tick(ctx)
+			})
+
+			Convey("finishes any available transactions", func() {
+				l := make(chan Result, 1)
+				system.pending.Add(successTx.Hash, l)
+				system.Tick(ctx)
+				So(len(l), ShouldEqual, 0)
+				So(len(system.pending.Pending()), ShouldEqual, 1)
+
+				results.ResultForHash = &successTx
+				system.Tick(ctx)
+
+				So(len(l), ShouldEqual, 1)
+				So(len(system.pending.Pending()), ShouldEqual, 0)
+			})
+
 			// TODO:   checks for results, finishing any available
 			// TODO:   times-out and removes old submissions
 			// TODO:   if open transactions, but result provider has no new results, keep transactions in open list
