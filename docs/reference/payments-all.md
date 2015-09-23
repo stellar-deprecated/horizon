@@ -33,6 +33,21 @@ curl https://horizon-testnet.stellar.org/payments?limit=200
 curl https://horizon-testnet.stellar.org/payments?cursor=1234&order=desc
 ```
 
+### JavaScript Example Request
+
+```js
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+
+server.payments()
+  .call()
+  .then(function (paymentResults) {
+    console.log(paymentResults.records)
+  })
+  .catch(function (err) {
+    console.log(err)
+  })
+```
 ## Response
 
 This endpoint responds with a list of payments. See [operation resource](./resources/operation.md) for more information about operations (and payment operations).

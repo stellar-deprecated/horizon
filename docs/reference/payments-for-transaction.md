@@ -33,7 +33,9 @@ curl https://horizon-testnet.stellar.org/transactions/3c8ef808df9d5d240ba0d49562
 var StellarSdk = require('stellar-sdk');
 var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
-server.transactions('3c8ef808df9d5d240ba0d495629df9da5653b1be2daf05d43b49c5bcbfe099bd', 'payments')
+server.payments()
+  .forTransaction("3c8ef808df9d5d240ba0d495629df9da5653b1be2daf05d43b49c5bcbfe099bd")
+  .call()
   .then(function (paymentResult) {
     console.log(paymentResult.records);
   })

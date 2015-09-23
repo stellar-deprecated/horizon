@@ -30,7 +30,9 @@ curl https://horizon-testnet.stellar.org/operations/77309415424
 var StellarSdk = require('stellar-sdk');
 var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
-server.operations('77309415424')
+server.operations()
+  .operation('77309415424')
+  .call()
   .then(function (operationsResult) {
     console.log(operationsResult)
   })

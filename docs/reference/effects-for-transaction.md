@@ -27,6 +27,25 @@ GET /transactions/{hash}/effects{?cursor,limit,order}
 curl https://horizon-testnet.stellar.org/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a/effects
 ```
 
+### JavaScript Example Request
+
+```javascript
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+
+server.effects()
+  .forTransaction("2ca4cb42fda85f4f0b4bc0a0dc6517a7f109761d0da784cb7c38fb6ee378b1b5")
+  .call()
+  .then(function (effectResults) {
+    //page 1
+    console.log(effectResults.records)
+  })
+  .catch(function (err) {
+    console.log(err)
+  })
+
+```
+
 ## Response
 
 This endpoint responds with a list of effects on the ledger as a result of a given transaction. See [effect resource](./resources/effect.md) for reference.

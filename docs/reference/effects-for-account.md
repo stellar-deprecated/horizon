@@ -29,6 +29,25 @@ GET /accounts/{account}/effects{?cursor,limit,order}
 curl https://horizon-testnet.stellar.org/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36/effects
 ```
 
+### JavaScript Example Request
+
+```javascript
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+
+server.effects()
+  .forAccount("GD6VWBXI6NY3AOOR55RLVQ4MNIDSXE5JSAVXUTF35FRRI72LYPI3WL6Z")
+  .call()
+  .then(function (effectResults) {
+    //page 1
+    console.log(effectResults.records)
+  })
+  .catch(function (err) {
+    console.log(err)
+  })
+
+```
+
 ## Response
 
 The list of effects.

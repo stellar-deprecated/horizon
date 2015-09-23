@@ -29,6 +29,25 @@ GET /ledgers/{id}/effects{?cursor,limit,order}
 curl https://horizon-testnet.stellar.org/ledgers/69859/effects
 ```
 
+### JavaScript Example Request
+
+```javascript
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+
+server.effects()
+  .forLedger("2")
+  .call()
+  .then(function (effectResults) {
+    //page 1
+    console.log(effectResults.records)
+  })
+  .catch(function (err) {
+    console.log(err)
+  })
+
+```
+
 ## Response
 
 This endpoint responds with a list of effects that occurred in the ledger. See [effect resource](./resources/effect.md) for reference.

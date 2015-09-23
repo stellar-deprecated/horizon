@@ -30,7 +30,9 @@ curl https://horizon-testnet.stellar.org/ledgers/69859
 var StellarSdk = require('./stellar-sdk')
 var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
-server.ledgers('69858')
+server.ledgers()
+  .ledger('69858')
+  .call()
   .then(function(ledgerResult) {
     console.log(ledgerResult)
   })
