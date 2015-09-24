@@ -5,10 +5,10 @@
 ## Attributes
 | Attribute    | Type             |                                                                                                                        |
 |--------------|------------------|------------------------------------------------------------------------------------------------------------------------|
-| bids | object     |  Array of objects of {`price_r`, `price`, `amount`} (see [offers][]).  These represent prices and amounts accounts are willing to buy for the given `selling` and `buying` pair. |
-| asks | object |  Array of objects of {`price_r`, `price`, `amount`} (see [offers][]).  These represent prices and amounts accounts are willing to sell for the given `selling` and `buying` pair.|
-| selling | [Asset][] | The Asset this offer wants to sell.|
-| buying | [Asset][] | The Asset this offer wants to buy.|
+| bids | object     |  Array of {`price_r`, `price`, `amount`} objects (see [offers](./offer.md)).  These represent prices and amounts accounts are willing to buy for the given `selling` and `buying` pair. |
+| asks | object |  Array of {`price_r`, `price`, `amount`} objects (see [offers](./offer.md)).  These represent prices and amounts accounts are willing to sell for the given `selling` and `buying` pair.|
+| selling | [Asset](http://stellar.org/developers/learn/concepts/assets/) | The Asset this offer wants to sell.|
+| buying | [Asset](http://stellar.org/developers/learn/concepts/assets/) | The Asset this offer wants to buy.|
 
 ## Links
 
@@ -19,10 +19,8 @@ This resource has no links.
 
 | Resource                 | Type       | Resource URI Template                |
 |--------------------------|------------|--------------------------------------|
-| [Orderbook Details][]       | Single | `/orderbook?{orderbook_params}`       |
-| [Trades for Orderbook][]       | Collection | `/orderbook?{orderbook_params}`       |
+| [Orderbook Details](../orderbook_details.md)       | Single | `/orderbook?{orderbook_params}`       |
+| [Trades for Orderbook]( ../trades_for_orderbook.md)       | Collection | `/orderbook/trades?{orderbook_params}`       |
 
-[Asset]: http://stellar.org/developers/learn/concepts/assets/
-[Orderbook Details]: ../orderbook_details.md
-[Trades for Orderbook]: ../trades_for_orderbook.md
-[offers]: ./offer.md
+
+

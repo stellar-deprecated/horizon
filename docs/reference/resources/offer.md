@@ -14,8 +14,8 @@ Horizon only returns offers that belong to a particular account.  When it does, 
 | id           | integer           | The ID of this offer. |
 | paging_token | string           | A paging token suitable for use as a `cursor` parameter.                                                                |
 | seller      | string           | Address of the account making this offer.                                                    |
-| selling     | [Asset][]           | The Asset this offer wants to sell.                      |
-| buying     | [Asset][] | The Asset this offer wants to buy. |
+| selling     | [Asset](http://stellar.org/developers/learn/concepts/assets/)           | The Asset this offer wants to sell.                      |
+| buying     | [Asset](http://stellar.org/developers/learn/concepts/assets/) | The Asset this offer wants to buy. |
 | amount | string | The amount of `selling` the account making this offer is willing to sell.|
 | price_r | object | An object of a number numerator and number denominator that represent the buy and sell price of the currencies on offer.|
 | price| string | A number representing the decimal form of `price_r`.|
@@ -30,8 +30,6 @@ Horizon only returns offers that belong to a particular account.  When it does, 
 
 | Resource                 | Type       | Resource URI Template                |
 |--------------------------|------------|--------------------------------------|
-| [Account Offers][]       | Collection | `/accounts/:account_id/offers`       |
+| [Account Offers](../offers_for_account.md)       | Collection | `/accounts/:account_id/offers`       |
 
 
-[Account Offers]: ../offers_for_account.md
-[Asset]: http://stellar.org/developers/learn/concepts/assets/

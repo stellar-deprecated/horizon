@@ -4,7 +4,8 @@ title: Offers for account
 category: Endpoints
 ---
 
-People on the Stellar network can make [offers](http://stellar.org/developers/learn/concepts/exchange/) to buy or sell assets. 
+People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  This endpoint represents all the offers a particular account makes.
+
 
 ## Request
 
@@ -16,9 +17,20 @@ GET /accounts/{account}/offers{?cursor,limit,order}
 
 | name | notes | description | example |
 | ---- | ----- | ----------- | ------- |
+| `account` | required, string | Account address | `GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36` |
 | `?cursor` | optional, any, default _null_ | A paging token, specifying where to start returning records from. | `12884905984` |
 | `?order`  | optional, string, default `asc` | The order in which to return rows, "asc" or "desc". | `asc` |
 | `?limit`  | optional, number, default: `10` | Maximum number of records to return. | `200` |
+
+### curl Example Request
+
+```sh
+curl https://horizon-testnet.stellar.org/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36/offers
+```
+
+## Response
+
+The list of offers.
 
 ## Possible Errors
 
