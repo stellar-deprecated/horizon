@@ -57,55 +57,56 @@ This endpoint responds with a list of transactions in a given ledger.  See [tran
       {
         "_links": {
           "account": {
-            "href": "/accounts/GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO"
+            "href": "/accounts/GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K"
           },
           "effects": {
-            "href": "/transactions/6082107f0b5f018bbcd901f142e4f297cbd6b494158baf3a5e69e7e35dc654a3/effects/{?cursor,limit,order}",
+            "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a/effects{?cursor,limit,order}",
             "templated": true
           },
           "ledger": {
-            "href": "/ledgers/69018"
+            "href": "/ledgers/146970"
           },
           "operations": {
-            "href": "/transactions/6082107f0b5f018bbcd901f142e4f297cbd6b494158baf3a5e69e7e35dc654a3/operations/{?cursor,limit,order}",
+            "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a/operations{?cursor,limit,order}",
             "templated": true
           },
           "precedes": {
-            "href": "/transactions?cursor=296430052839424&order=asc"
+            "href": "/transactions?cursor=631231343497216\u0026order=asc"
           },
           "self": {
-            "href": "/transactions/6082107f0b5f018bbcd901f142e4f297cbd6b494158baf3a5e69e7e35dc654a3"
+            "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a"
           },
           "succeeds": {
-            "href": "/transactions?cursor=296430052839424&order=desc"
+            "href": "/transactions?cursor=631231343497216\u0026order=desc"
           }
         },
-        "id": "6082107f0b5f018bbcd901f142e4f297cbd6b494158baf3a5e69e7e35dc654a3",
-        "paging_token": "296430052839424",
-        "hash": "6082107f0b5f018bbcd901f142e4f297cbd6b494158baf3a5e69e7e35dc654a3",
-        "ledger": 69018,
-        "account": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO",
-        "account_sequence": 77309411361,
-        "max_fee": 10,
-        "fee_paid": 10,
+        "id": "fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a",
+        "paging_token": "631231343497216",
+        "hash": "fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a",
+        "ledger": 146970,
+        "created_at": "2015-09-24T10:07:09Z",
+        "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
+        "account_sequence": 279172874343,
+        "max_fee": 0,
+        "fee_paid": 0,
         "operation_count": 1,
         "result_code": 0,
         "result_code_s": "tx_success",
-        "envelope_xdr": "TODO",
-        "result_xdr": "TODO",
-        "result_meta_xdr": "TODO"
+        "envelope_xdr": "AAAAAGXNhLrhGtltTwCpmqlarh7s1DB2hIkbP//jgzn4Fos/AAAACgAAAEEAAABnAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA2ddmTOFAgr21Crs2RXRGLhiAKxicZb/IERyEZL/Y2kUAAAAXSHboAAAAAAAAAAAB+BaLPwAAAECDEEZmzbgBr5fc3mfJsCjWPDtL6H8/vf16me121CC09ONyWJZnw0PUvp4qusmRwC6ZKfLDdk8F3Rq41s+yOgQD",
+        "result_xdr": "AAAAAAAAAAoAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=",
+        "result_meta_xdr": "AAAAAAAAAAEAAAACAAAAAAACPhoAAAAAAAAAANnXZkzhQIK9tQq7NkV0Ri4YgCsYnGW/yBEchGS/2NpFAAAAF0h26AAAAj4aAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAQACPhoAAAAAAAAAAGXNhLrhGtltTwCpmqlarh7s1DB2hIkbP//jgzn4Fos/AABT8kS2c/oAAABBAAAAZwAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA"
       }
     ]
   },
   "_links": {
     "next": {
-      "href": "/ledgers/69018/transactions?order=asc&limit=10&cursor=296430052839424"
+      "href": "/ledgers/146970/transactions?order=asc\u0026limit=10\u0026cursor=631231343497216"
     },
     "prev": {
-      "href": "/ledgers/69018/transactions?order=desc&limit=10&cursor=296430052839424"
+      "href": "/ledgers/146970/transactions?order=desc\u0026limit=10\u0026cursor=631231343497216"
     },
     "self": {
-      "href": "/ledgers/69018/transactions?order=asc&limit=10&cursor="
+      "href": "/ledgers/146970/transactions?order=asc\u0026limit=10\u0026cursor="
     }
   }
 }

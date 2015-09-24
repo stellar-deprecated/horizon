@@ -47,43 +47,44 @@ To learn more about the concept of transactions in the Stellar network, take a l
 {
   "_links": {
     "account": {
-      "href": "/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
+      "href": "/accounts/GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K"
     },
     "effects": {
-      "href": "/transactions/75fe8425d8b19a69689d98b68527c1ef9f83ce068c2c1c9fff5386d62b2af53f/effects/{?cursor,limit,order}",
+      "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a/effects{?cursor,limit,order}",
       "templated": true
     },
     "ledger": {
-      "href": "/ledgers/18"
+      "href": "/ledgers/146970"
     },
     "operations": {
-      "href": "/transactions/75fe8425d8b19a69689d98b68527c1ef9f83ce068c2c1c9fff5386d62b2af53f/operations/{?cursor,limit,order}",
+      "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a/operations{?cursor,limit,order}",
       "templated": true
     },
     "precedes": {
-      "href": "/transactions?cursor=77309415424&order=asc"
+      "href": "/transactions?cursor=631231343497216\u0026order=asc"
     },
     "self": {
-      "href": "/transactions/75fe8425d8b19a69689d98b68527c1ef9f83ce068c2c1c9fff5386d62b2af53f"
+      "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a"
     },
     "succeeds": {
-      "href": "/transactions?cursor=77309415424&order=desc"
+      "href": "/transactions?cursor=631231343497216\u0026order=desc"
     }
   },
-  "id": "75fe8425d8b19a69689d98b68527c1ef9f83ce068c2c1c9fff5386d62b2af53f",
-  "paging_token": "77309415424",
-  "hash": "75fe8425d8b19a69689d98b68527c1ef9f83ce068c2c1c9fff5386d62b2af53f",
-  "ledger": 18,
-  "account": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
-  "account_sequence": 1,
-  "max_fee": 10,
-  "fee_paid": 10,
+  "id": "fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a",
+  "paging_token": "631231343497216",
+  "hash": "fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a",
+  "ledger": 146970,
+  "created_at": "2015-09-24T10:07:09Z",
+  "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
+  "account_sequence": 279172874343,
+  "max_fee": 0,
+  "fee_paid": 0,
   "operation_count": 1,
   "result_code": 0,
   "result_code_s": "tx_success",
-  "envelope_xdr": "TODO",
-  "result_xdr": "TODO",
-  "result_meta_xdr": "TODO"
+  "envelope_xdr": "AAAAAGXNhLrhGtltTwCpmqlarh7s1DB2hIkbP//jgzn4Fos/AAAACgAAAEEAAABnAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA2ddmTOFAgr21Crs2RXRGLhiAKxicZb/IERyEZL/Y2kUAAAAXSHboAAAAAAAAAAAB+BaLPwAAAECDEEZmzbgBr5fc3mfJsCjWPDtL6H8/vf16me121CC09ONyWJZnw0PUvp4qusmRwC6ZKfLDdk8F3Rq41s+yOgQD",
+  "result_xdr": "AAAAAAAAAAoAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=",
+  "result_meta_xdr": "AAAAAAAAAAEAAAACAAAAAAACPhoAAAAAAAAAANnXZkzhQIK9tQq7NkV0Ri4YgCsYnGW/yBEchGS/2NpFAAAAF0h26AAAAj4aAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAQACPhoAAAAAAAAAAGXNhLrhGtltTwCpmqlarh7s1DB2hIkbP//jgzn4Fos/AABT8kS2c/oAAABBAAAAZwAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA"
 }
 ```
 

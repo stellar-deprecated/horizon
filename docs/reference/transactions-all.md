@@ -65,96 +65,98 @@ See [transaction resource](./resources/transaction.md) for reference.
       {
         "_links": {
           "account": {
-            "href": "/accounts/GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO"
+            "href": "/accounts/GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K"
           },
           "effects": {
-            "href": "/transactions/e648b8f9b00c6a04267b3d204c97d08181a13a9b8f3dce8ba28e96b03114b149/effects/{?cursor,limit,order}",
+            "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a/effects{?cursor,limit,order}",
             "templated": true
           },
           "ledger": {
-            "href": "/ledgers/82090"
+            "href": "/ledgers/146970"
           },
           "operations": {
-            "href": "/transactions/e648b8f9b00c6a04267b3d204c97d08181a13a9b8f3dce8ba28e96b03114b149/operations/{?cursor,limit,order}",
+            "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a/operations{?cursor,limit,order}",
             "templated": true
           },
           "precedes": {
-            "href": "/transactions?cursor=352573865332736&order=asc"
+            "href": "/transactions?cursor=631231343497216\u0026order=asc"
           },
           "self": {
-            "href": "/transactions/e648b8f9b00c6a04267b3d204c97d08181a13a9b8f3dce8ba28e96b03114b149"
+            "href": "/transactions/fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a"
           },
           "succeeds": {
-            "href": "/transactions?cursor=352573865332736&order=desc"
+            "href": "/transactions?cursor=631231343497216\u0026order=desc"
           }
         },
-        "id": "e648b8f9b00c6a04267b3d204c97d08181a13a9b8f3dce8ba28e96b03114b149",
-        "paging_token": "352573865332736",
-        "hash": "e648b8f9b00c6a04267b3d204c97d08181a13a9b8f3dce8ba28e96b03114b149",
-        "ledger": 82090,
-        "account": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO",
-        "account_sequence": 77309411366,
-        "max_fee": 10,
-        "fee_paid": 10,
+        "id": "fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a",
+        "paging_token": "631231343497216",
+        "hash": "fa78cb43d72171fdb2c6376be12d57daa787b1fa1a9fdd0e9453e1f41ee5f15a",
+        "ledger": 146970,
+        "created_at": "2015-09-24T10:07:09Z",
+        "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
+        "account_sequence": 279172874343,
+        "max_fee": 0,
+        "fee_paid": 0,
         "operation_count": 1,
         "result_code": 0,
         "result_code_s": "tx_success",
-        "envelope_xdr": "TODO",
-        "result_xdr": "TODO",
-        "result_meta_xdr": "TODO"
+        "envelope_xdr": "AAAAAGXNhLrhGtltTwCpmqlarh7s1DB2hIkbP//jgzn4Fos/AAAACgAAAEEAAABnAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA2ddmTOFAgr21Crs2RXRGLhiAKxicZb/IERyEZL/Y2kUAAAAXSHboAAAAAAAAAAAB+BaLPwAAAECDEEZmzbgBr5fc3mfJsCjWPDtL6H8/vf16me121CC09ONyWJZnw0PUvp4qusmRwC6ZKfLDdk8F3Rq41s+yOgQD",
+        "result_xdr": "AAAAAAAAAAoAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=",
+        "result_meta_xdr": "AAAAAAAAAAEAAAACAAAAAAACPhoAAAAAAAAAANnXZkzhQIK9tQq7NkV0Ri4YgCsYnGW/yBEchGS/2NpFAAAAF0h26AAAAj4aAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAQACPhoAAAAAAAAAAGXNhLrhGtltTwCpmqlarh7s1DB2hIkbP//jgzn4Fos/AABT8kS2c/oAAABBAAAAZwAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA"
       },
       {
         "_links": {
           "account": {
-            "href": "/accounts/GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO"
+            "href": "/accounts/GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K"
           },
           "effects": {
-            "href": "/transactions/90bbf06388a0b3c7f77a7f964d8e24d76e7631a9ed4a03aad37cd99371ce0280/effects/{?cursor,limit,order}",
+            "href": "/transactions/90ad6cfc9b0911bdbf202cace78ae7ecf50989c424288670dadb69bf8237c1b3/effects{?cursor,limit,order}",
             "templated": true
           },
           "ledger": {
-            "href": "/ledgers/73976"
+            "href": "/ledgers/144798"
           },
           "operations": {
-            "href": "/transactions/90bbf06388a0b3c7f77a7f964d8e24d76e7631a9ed4a03aad37cd99371ce0280/operations/{?cursor,limit,order}",
+            "href": "/transactions/90ad6cfc9b0911bdbf202cace78ae7ecf50989c424288670dadb69bf8237c1b3/operations{?cursor,limit,order}",
             "templated": true
           },
           "precedes": {
-            "href": "/transactions?cursor=317724500692992&order=asc"
+            "href": "/transactions?cursor=621902674530304\u0026order=asc"
           },
           "self": {
-            "href": "/transactions/90bbf06388a0b3c7f77a7f964d8e24d76e7631a9ed4a03aad37cd99371ce0280"
+            "href": "/transactions/90ad6cfc9b0911bdbf202cace78ae7ecf50989c424288670dadb69bf8237c1b3"
           },
           "succeeds": {
-            "href": "/transactions?cursor=317724500692992&order=desc"
+            "href": "/transactions?cursor=621902674530304\u0026order=desc"
           }
         },
-        "id": "90bbf06388a0b3c7f77a7f964d8e24d76e7631a9ed4a03aad37cd99371ce0280",
-        "paging_token": "317724500692992",
-        "hash": "90bbf06388a0b3c7f77a7f964d8e24d76e7631a9ed4a03aad37cd99371ce0280",
-        "ledger": 73976,
-        "account": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO",
-        "account_sequence": 77309411365,
-        "max_fee": 10,
-        "fee_paid": 10,
+        "id": "90ad6cfc9b0911bdbf202cace78ae7ecf50989c424288670dadb69bf8237c1b3",
+        "paging_token": "621902674530304",
+        "hash": "90ad6cfc9b0911bdbf202cace78ae7ecf50989c424288670dadb69bf8237c1b3",
+        "ledger": 144798,
+        "created_at": "2015-09-24T07:49:38Z",
+        "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
+        "account_sequence": 279172874342,
+        "max_fee": 0,
+        "fee_paid": 0,
         "operation_count": 1,
         "result_code": 0,
         "result_code_s": "tx_success",
-        "envelope_xdr": "TODO",
-        "result_xdr": "TODO",
-        "result_meta_xdr": "TODO"
+        "envelope_xdr": "AAAAAGXNhLrhGtltTwCpmqlarh7s1DB2hIkbP//jgzn4Fos/AAAACgAAAEEAAABmAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAMPT7P7buwqnMueFS4NV10vE2q3C/mcAy4jx03/RdSGsAAAAXSHboAAAAAAAAAAAB+BaLPwAAAEBPWWMNSWyPBbQlhRheXyvAFDVx1rnf68fdDOUHPdDIkHdUczBpzvCjpdgwhQ2NYOX5ga1ZgOIWLy789YNnuIcL",
+        "result_xdr": "AAAAAAAAAAoAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=",
+        "result_meta_xdr": "AAAAAAAAAAEAAAACAAAAAAACNZ4AAAAAAAAAADD0+z+27sKpzLnhUuDVddLxNqtwv5nAMuI8dN/0XUhrAAAAF0h26AAAAjWeAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAQACNZ4AAAAAAAAAAGXNhLrhGtltTwCpmqlarh7s1DB2hIkbP//jgzn4Fos/AABUCY0tXAQAAABBAAAAZgAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA"
       }
     ]
   },
   "_links": {
     "next": {
-      "href": "/transactions?order=desc&limit=2&cursor=317724500692992"
+      "href": "/transactions?order=desc\u0026limit=2\u0026cursor=621902674530304"
     },
     "prev": {
-      "href": "/transactions?order=asc&limit=2&cursor=352573865332736"
+      "href": "/transactions?order=asc\u0026limit=2\u0026cursor=631231343497216"
     },
     "self": {
-      "href": "/transactions?order=desc&limit=2&cursor="
+      "href": "/transactions?order=desc\u0026limit=2\u0026cursor="
     }
   }
 }
