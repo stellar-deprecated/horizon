@@ -49,8 +49,8 @@ additional attributes and links specific to that operation type.
 | self        | Relative link to the current operation    |
 | succeeds    | Relative link to the list of operations succeeding the current operation. |
 | precedes    | Relative link to the list of operations preceding the current operation. |
+| effects | The effects this operation triggered |
 | transaction | The transaction this operation is part of |
-
 
 
 Each operation type will have a different set of attributes, in addition to the
@@ -65,9 +65,8 @@ Create Account operation represents a new account creation.
 
 | Field           |  Type  | Description       |
 | --------------- | ------ | ----------------- |
-| id     | int64 | Operation ID. |
-| account     | AccountID | A new account that was funded. |
-| funder     | AccountID | Account that funded a new account. |
+| account     | string | A new account that was funded. |
+| funder     | string | Account that funded a new account. |
 | starting_balance | string | Amount the account was funded. |
 
 
@@ -114,8 +113,9 @@ can be either a simple native asset payment or a fiat asset payment.
 | --------------- | ------ | ----------------- |
 | from          | string | Sender of a payment.  |
 | to     | string | Destination of a payment. |
-| asset_type        | string/object | “native” for stellars |
-| amount          | number | Amount sent. |
+| asset_type | string | Asset type (native / alphanum4 / alphanum12) |
+| asset_issuer | string | Asset issuer. |
+| amount          | string | Amount sent. |
 
 #### Links
 
@@ -160,7 +160,7 @@ can be either a simple native asset payment or a fiat asset payment.
 
 ### Path Payment
 
-A payment operation represents a payment from one account to another through a path.  This type of payment starts as one type of asset and ends as another type of asset. There can be other assets that are traded into and out of along the path.
+A path payment operation represents a payment from one account to another through a path.  This type of payment starts as one type of asset and ends as another type of asset. There can be other assets that are traded into and out of along the path.
  
 
 #### Attributes
@@ -169,16 +169,53 @@ A payment operation represents a payment from one account to another through a p
 | --------------- | ------ | ----------------- |
 | from          | string | Sender of a payment.  |
 | to     | string | Destination of a payment. |
-| asset_type        | string/object | “native” for stellars |
-| amount          | number | Amount sent. |
-
-#### Links
-
-TODO
+| asset_code | string | Code of the destination asset. |
+| asset_issuer | string | Destination asset issuer. |
+| asset_type | string | Destination asset type (native / alphanum4 / alphanum12) |
+| amount          | string | Amount received. |
+| send_asset_code | string | Code of the sent asset. |
+| send_asset_issuer | string | Sent asset issuer. |
+| send_asset_type | string | Sent asset type (native / alphanum4 / alphanum12) |
+| source_amount | string | Amount sent. |
 
 #### Example
 
-TODO
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/25769807873/effects/{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=25769807873\u0026order=asc"
+    },
+    "self": {
+      "href": "/operations/25769807873"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=25769807873\u0026order=desc"
+    },
+    "transaction": {
+      "href": "/transactions/25769807872"
+    }
+  },
+  "amount": "10.0",
+  "asset_code": "EUR",
+  "asset_issuer": "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG",
+  "asset_type": "credit_alphanum4",
+  "from": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU",
+  "id": 25769807873,
+  "paging_token": "25769807873",
+  "send_asset_code": "USD",
+  "send_asset_issuer": "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
+  "send_asset_type": "credit_alphanum4",
+  "source_amount": "10.0",
+  "to": "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2",
+  "type": 2,
+  "type_s": "path_payment"
+}
+```
 
 ### Manage Offer
 
@@ -194,31 +231,20 @@ In the event that there are not enough crossing orders to fill the order complet
 a new "Offer" object will be created in the ledger.  As other accounts make
 offers or payments, this offer can potentially be filled.
 
-To update the offer provide existing offer ID in `offerID` field.
-
-To delete the offer change amount of the offer to `0`.
-
 #### Attributes
 
 | Field           |  Type  | Description       |
 | --------------- | ------ | ----------------- |
-| offer_id | int64 | Offer ID. |
+| offer_id | number | Offer ID. |
 | amount     | string | Amount of asset to be sold. |
 | buying_asset_code | string | The code of asset to buy. |
 | buying_asset_issuer | string | The issuer of asset to buy. |
-| buying_asset_type | string | The type of asset to buy. |
+| buying_asset_type | string | Type of asset to buy (native / alphanum4 / alphanum12) |
 | price | string | Price to buy a buying_asset |
 | price_r | Object | n: price numerator, d: price denominator |
 | selling_asset_code | string | The code of asset to sell. |
 | selling_asset_issuer | string | The issuer of asset to sell. |
-| selling_asset_type | string | The type of asset to sell. |
-
-
-#### Links
-
-|           | Example |                Relation               |
-| --------- | ------- | ------------------------------------- |
-| orderbook |         | The orderbook the offer was posted to |
+| selling_asset_type | string | Type of asset to sell (native / alphanum4 / alphanum12) |
 
 #### Example
 
@@ -278,8 +304,8 @@ To delete the offer change amount of the offer to `0`.
 
 Use “Set Options” operation to set following options to your account:
 * Set/clear account flags:
-  * AUTH_REQUIRED_FLAG (0x1) - if set, TrustLines are created with authorized set to "false" requiring the issuer to set it for each TrustLine.
-  * AUTH_REVOCABLE_FLAG (0x2) - if set, the authorized flag in TrustLines can be cleared otherwise, authorization cannot be revoked.
+  * AUTH_REQUIRED_FLAG (0x1) - if set, TrustLines are created with authorized set to `false` requiring the issuer to set it for each TrustLine.
+  * AUTH_REVOCABLE_FLAG (0x2) - if set, the authorized flag in TrustLines can be cleared. Otherwise, authorization cannot be revoked.
 * Set the account’s inflation destination.
 * Add new signers to the account.
 * Set home domain.
@@ -296,6 +322,10 @@ Use “Set Options” operation to set following options to your account:
 | med_threshold | int | The sum weight for the medium threshold. |
 | high_threshold | int | The sum weight for the high threshold. |
 | home_domain | string | The home domain used for reverse federation lookup |
+| set_flags | array | The array of numeric values of flags that has been set in this operation |
+| set_flags_s | array | The array of string values of flags that has been set in this operation |
+| clear_flags | array | The array of numeric values of flags that has been cleared in this operation |
+| clear_flags_s | array | The array of string values of flags that has been cleared in this operation |
 
 
 #### Example
@@ -321,10 +351,17 @@ Use “Set Options” operation to set following options to your account:
     }
   },
   "high_threshold": 3,
+  "home_domain": "stellar.org",
   "id": 696867033714691,
   "low_threshold": 0,
   "med_threshold": 3,
   "paging_token": "696867033714691",
+  "set_flags": [
+    1
+  ],
+  "set_flags_s": [
+    "auth_required_flag"
+  ],
   "type": 5,
   "type_s": "set_options"
 }
@@ -334,15 +371,13 @@ Use “Set Options” operation to set following options to your account:
 
 Use “Change Trust” operation to create/update/delete a trust line from the source account to another. The issuer being trusted and the asset code are in the given Asset object.
 
-To delete a trust line set `limit` parameter to `0`.
-
 #### Attributes
 
 | Field           |  Type  | Description       |
 | --------------- | ------ | ----------------- |
 | asset_code | string | Asset code. |
 | asset_issuer | string | Asset issuer. |
-| asset_type | string | Asset type (native/ alphanum4 / alphanum12) |
+| asset_type | string | Asset type (native / alphanum4 / alphanum12) |
 | trustee | string | Trustee account. |
 | trustor | string | Trustor account. |
 | limit | string | The limit for the asset. |
@@ -391,14 +426,54 @@ Heads up! Unless the issuing account has `AUTH_REVOCABLE_FLAG` set than the "aut
 
 #### Attributes
 
-| Field           |  Type  | Description       |
-| --------------- | ------ | ----------------- |
-|                 |        |                   |
+| Field      |  Type  | Description       |
+| ---------- | ------ | ----------------- |
+| asset_code | string | Asset code. |
+| asset_issuer | string | Asset issuer. |
+| asset_type | string | Asset type (native / alphanum4 / alphanum12) |
+| authorize | bool | `true` when allowing trust, `false` when revoking trust |
+| trustee | string | Trustee account. |
+| trustor | string | Trustor account. |
+
+#### Example
+
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/34359742465/effects/{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=34359742465\u0026order=asc"
+    },
+    "self": {
+      "href": "/operations/34359742465"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=34359742465\u0026order=desc"
+    },
+    "transaction": {
+      "href": "/transactions/34359742464"
+    }
+  },
+  "asset_code": "USD",
+  "asset_issuer": "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
+  "asset_type": "credit_alphanum4",
+  "authorize": true,
+  "id": 34359742465,
+  "paging_token": "34359742465",
+  "trustee": "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
+  "trustor": "GBXGQJWVLWOYHFLVTKWV5FGHA3LNYY2JQKM7OAJAUEQFU6LPCSEFVXON",
+  "type": 7,
+  "type_s": "allow_trust"
+}
+```
 
 <a id="account_merge"></a>
 ### Account Merge
 
-Removes the account and transfers all remaining lumens to the destination account.
+Removes the account and transfers all remaining XLM to the destination account.
 
 #### Attributes
 
@@ -441,11 +516,34 @@ Removes the account and transfers all remaining lumens to the destination accoun
 
 Runs inflation.
 
-#### Attributes
+#### Example
 
-| Field           |  Type  | Description       |
-| --------------- | ------ | ----------------- |
-|                 |        |                   |
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/12884914177/effects/{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=12884914177\u0026order=asc"
+    },
+    "self": {
+      "href": "/operations/12884914177"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=12884914177\u0026order=desc"
+    },
+    "transaction": {
+      "href": "/transactions/12884914176"
+    }
+  },
+  "id": 12884914177,
+  "paging_token": "12884914177",
+  "type": 9,
+  "type_s": "inflation"
+}
+```
 
 ## Endpoints
 
