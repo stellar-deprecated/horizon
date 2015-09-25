@@ -34,6 +34,19 @@ GET /orderbook/trades?selling_asset_type={selling_asset_type}&selling_asset_code
 curl https://horizon-testnet.stellar.org/order_book/trades?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=USD&buying_asset_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4
 ```
 
+### JavaScript Example Request
+
+```js
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+
+server.orderbook(new StellarSdk.Asset("EUR", "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG"), new StellarSdk.Asset("USD", "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"))
+  .trades()
+  .call()
+  .then(function(resp) { console.log(resp); })
+  .catch(function(err) { console.log(err); })
+```
+
 ## Response
 
 The list of trades.
