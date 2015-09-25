@@ -5,7 +5,6 @@ import (
 	"github.com/stellar/horizon/test"
 	"golang.org/x/net/context"
 	"testing"
-	"time"
 )
 
 func TestStreaming(t *testing.T) {
