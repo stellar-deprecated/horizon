@@ -1,7 +1,5 @@
 ---
-id: problems
 title: Problems
-category: Guides
 ---
 
 In the event that an error occurs while processing a request to horizon, an
