@@ -28,6 +28,12 @@ func RegisterError(err error, p P) {
 	errToProblemMap[err] = p
 }
 
+// HasProblem types can be transformed into a problem.
+// Implement it for custom errors.
+type HasProblem interface {
+	Problem() P
+}
+
 // P is a struct that represents an error response to be rendered to a connected
 // client.
 type P struct {
@@ -65,6 +71,8 @@ func Render(ctx context.Context, w http.ResponseWriter, p interface{}) {
 		render(ctx, w, p)
 	case *P:
 		render(ctx, w, *p)
+	case HasProblem:
+		render(ctx, w, p.Problem())
 	case error:
 		renderErr(ctx, w, p)
 	default:
