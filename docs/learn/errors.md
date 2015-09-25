@@ -1,5 +1,7 @@
 ---
-title: Problems
+id: errors
+title: Errors
+category: Guides
 ---
 
 In the event that an error occurs while processing a request to horizon, an
@@ -26,6 +28,6 @@ json document with the following attributes:
 There are a set of errors that can occur in any request to horizon which we
 call **standard errors**.  These errors are:
 
-- [Server Error](../reference/problems/server_error.md)
-- [Rate Limit Exceeded](../reference/problems/rate_limit_exceeded.md)
-- [Forbidden](../reference/problems/forbidden.md)
+- [Server Error](../reference/errors/server_error.md)
+- [Rate Limit Exceeded](../reference/errors/rate_limit_exceeded.md)
+- [Forbidden](../reference/errors/forbidden.md)

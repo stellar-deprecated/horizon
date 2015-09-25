@@ -6,7 +6,7 @@ category: Endpoints
 
 This endpoint represents all [operations](./resources/operation.md) that were included in valid [transactions](./resources/transaction.md) that affected a particular [account](./resources/account.md).
 
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new operations that affect a given account as they happen.
+This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new operations that affect a given account as they happen.
 
 ## Request
 
@@ -102,5 +102,5 @@ This endpoint responds with a list of operations that affected the given account
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).
 - [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

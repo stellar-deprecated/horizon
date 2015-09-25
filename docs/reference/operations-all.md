@@ -5,7 +5,7 @@ category: Endpoints
 ---
 
 This endpoint represents all [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md).
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen as operations are processed in the Stellar network.
+This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen as operations are processed in the Stellar network.
 
 ## Request
 
@@ -131,4 +131,4 @@ This endpoint responds with a list of operations. See [operation resource](./res
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).

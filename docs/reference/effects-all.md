@@ -1,24 +1,23 @@
 ---
-id: effects_for_account
-title: Effects for account
+id: effects_all
+title: All Effects
 category: Endpoints
 ---
 
-This endpoint represents all [effects](./resources/effect.md) that changed a given [account](./resources/account.md). It will return relevant effects from the creation of the account to the current ledger.
+This endpoint represents all [effects](./resources/effect.md).
 
 This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new effects as transactions happen in the Stellar network.
 
 ## Request
 
 ```
-GET /accounts/{account}/effects{?cursor,limit,order}
+GET /effects{?cursor,limit,order}
 ```
 
 ## Arguments
 
 |  name  |  notes  | description | example |
 | ------ | ------- | ----------- | ------- |
-| `account` | required, string | Account address | `GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36` |
 | `?cursor` | optional, default _null_ | A paging token, specifying where to start returning records from. | `12884905984` |
 | `?order`  | optional, string, default `asc` | The order in which to return rows, "asc" or "desc".               | `asc`         |
 | `?limit`  | optional, number, default `10` | Maximum number of records to return. | `200` |
@@ -26,7 +25,7 @@ GET /accounts/{account}/effects{?cursor,limit,order}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36/effects
+curl https://horizon-testnet.stellar.org/effects
 ```
 
 ### JavaScript Example Request
@@ -36,7 +35,6 @@ var StellarSdk = require('stellar-sdk');
 var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
 server.effects()
-  .forAccount("GD6VWBXI6NY3AOOR55RLVQ4MNIDSXE5JSAVXUTF35FRRI72LYPI3WL6Z")
   .call()
   .then(function (effectResults) {
     //page 1
@@ -61,51 +59,51 @@ The list of effects.
       {
         "_links": {
           "operation": {
-            "href": "/operations/214748368897"
+            "href": "/operations/279172878337"
           },
           "precedes": {
-            "href": "/effects?cursor=214748368897-1\u0026order=asc"
+            "href": "/effects?cursor=279172878337-1\u0026order=asc"
           },
           "succeeds": {
-            "href": "/effects?cursor=214748368897-1\u0026order=desc"
+            "href": "/effects?cursor=279172878337-1\u0026order=desc"
           }
         },
-        "account": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
-        "paging_token": "214748368897-1",
-        "starting_balance": "100.0",
+        "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
+        "paging_token": "279172878337-1",
+        "starting_balance": "10000000.0",
         "type": 0,
         "type_s": "account_created"
       },
       {
         "_links": {
           "operation": {
-            "href": "/operations/214748368897"
+            "href": "/operations/279172878337"
           },
           "precedes": {
-            "href": "/effects?cursor=214748368897-3\u0026order=asc"
+            "href": "/effects?cursor=279172878337-2\u0026order=asc"
           },
           "succeeds": {
-            "href": "/effects?cursor=214748368897-3\u0026order=desc"
+            "href": "/effects?cursor=279172878337-2\u0026order=desc"
           }
         },
-        "account": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
-        "paging_token": "214748368897-3",
-        "public_key": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
-        "type": 10,
-        "type_s": "signer_created",
-        "weight": 2
+        "account": "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
+        "amount": "10000000.0",
+        "asset_type": "native",
+        "paging_token": "279172878337-2",
+        "type": 3,
+        "type_s": "account_debited"
       }
     ]
   },
   "_links": {
     "next": {
-      "href": "/accounts/GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK/effects?order=asc\u0026limit=10\u0026cursor=214748368897-3"
+      "href": "/effects?order=asc\u0026limit=2\u0026cursor=279172878337-2"
     },
     "prev": {
-      "href": "/accounts/GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK/effects?order=desc\u0026limit=10\u0026cursor=214748368897-1"
+      "href": "/effects?order=desc\u0026limit=2\u0026cursor=279172878337-1"
     },
     "self": {
-      "href": "/accounts/GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK/effects?order=asc\u0026limit=10\u0026cursor="
+      "href": "/effects?order=asc\u0026limit=2\u0026cursor="
     }
   }
 }

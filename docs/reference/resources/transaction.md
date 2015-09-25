@@ -6,17 +6,17 @@ category: Resources
 
 **Transactions** are the basic unit of change in the Stellar Network.
 
-A transaction is a grouping of [operations][].
+A transaction is a grouping of [operations](./operation.md).
 
-To learn more about the concept of transactions in the Stellar network, take a look at the [Stellar transactions concept guide][concept_transactions].
+To learn more about the concept of transactions in the Stellar network, take a look at the [Stellar transactions concept guide](https://stellar.org/developers/learn/concepts/transaction).
 
 ## Attributes
 
 |    Attribute     |  Type  |                                                                                                                                |
 | ---------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | id               | string | The canonical id of this transaction, suitable for use as the :id parameter for url templates that require a transaction's ID. |
-| paging_token     | string | A [paging token][page_token] suitable for use as the `cursor` parameter to transaction collection resources.                   |
-| hash             | string | A hex-encoded SHA-256 hash of the transaction's [XDR][]-encoded form.                                                              |
+| paging_token     | string | A [paging token](./page.md) suitable for use as the `cursor` parameter to transaction collection resources.                   |
+| hash             | string | A hex-encoded SHA-256 hash of the transaction's [XDR](../../learn/xdr.md)-encoded form.                                                              |
 | ledger           | number | Sequence number of the ledger in which this transaction was applied.       |
 | account          | string |                                                                                                                                |
 | account_sequence | number |                                                                                                                                |
@@ -33,13 +33,13 @@ To learn more about the concept of transactions in the Stellar network, take a l
 
 |                   rel                    |                                           Example                                           |                             Description                          |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| [self][transactions/single]              | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a`            |                                                                  |
-| [account][accounts/single]               | `/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ`                             | The source account for this transaction.                         |
-| [ledger][ledgers/single]                 | `/ledgers/3`                                                                                | The ledger in which this transaction was applied.                |
-| [operations][operations/for_transaction] | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a/operations` |                                                                  |
-| [effects][effects/for_transaction]       | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a/effects`    |                                                                  |
-| [precedes][transactions/all]             | `/transactions?cursor=12884905984&order=asc`                                                | A collection of transactions that occur after this transaction. |
-| [succeeds][transactions/all]             | `/transactions?cursor=12884905984&order=desc`                                               | A collection of transactions that occur before this transaction. |
+| self | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a`|  |
+| account | `/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ` | The source [account](../accounts-single.md) for this transaction. |
+| ledger | `/ledgers/3` | The [ledger](../ledger-single.md) in which this transaction was applied. |
+| operations | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a/operations` | [Operations](../operations-for-transaction.md) included in this transaction. |
+| effects | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a/effects` | [Effects](../effects-for-transaction.md) which resulted by operations in this transaction. |
+| precedes | `/transactions?cursor=12884905984&order=asc` | A collection of transactions that occur after this transaction. |
+| succeeds | `/transactions?cursor=12884905984&order=desc` | A collection of transactions that occur before this transaction. |
 
 ## Example
 
@@ -92,30 +92,12 @@ To learn more about the concept of transactions in the Stellar network, take a l
 
 |  Resource                |    Type    |    Resource URI Template             |
 | ------------------------ | ---------- | ------------------------------------ |
-| [All Transactions][]     | Collection | `/transactions`                      |
-| [Transaction Details][]  | Single     | `/transactions/:id`                  |
-| [Account Transactions][] | Collection | `/accounts/:account_id/transactions` |
-| [Ledger Transactions][]  | Collection | `/ledgers/:ledger_id/transactions`   |
+| [All Transactions](../transactions-all.md)     | Collection | `/transactions` (`GET`) |
+| [Post Transaction](../transactions-create.md)     | Action | `/transactions`  (`POST`) |
+| [Transaction Details](../transactions-single.md)  | Single     | `/transactions/:id` |
+| [Account Transactions](../transactions-for-account.md) | Collection | `/accounts/:account_id/transactions` |
+| [Ledger Transactions](../transactions-for-ledger.md)  | Collection | `/ledgers/:ledger_id/transactions`   |
 
 
 ## Submitting transactions
-To submit a new transaction to Stellar network, it must first be built and signed locally. Then you can submit a hex representation of your transaction’s [XDR][] to the `/transactions` endpoint. Read more about submitting transactions in [Post Transaction] doc.
-
-
-[All Transactions]: ../endpoint/transactions_all.md
-[Transaction Details]: ../endpoint/transactions_single.md
-[Account Transactions]: ../endpoint/transactions_for_account.md
-[Ledger Transactions]: ../endpoint/transactions_for_ledger.md
-[XDR]: ../guide/xdr.md
-
-[page_token]: ../guide/paging.md#tokens
-[transactions/all]: ../endpoint/transactions_all.md
-[transactions/single]: ../endpoint/transactions_single.md
-[transactions/account]: ../endpoint/transactions_for_account.md
-[transactions/ledgers]: ../endpoint/transactions_for_ledger.md
-[ledgers/one]: ../endpoint/ledgers_single.md
-[accounts/one]: ../endpoint/accounts_single.md
-[operations/for_transaction]: ../endpoint/operations_for_transaction.md
-[effects/for_transaction]: ../endpoint/effects_for_transaction.md
-[operations]: ./operation.md
-[concept_transactions]: https://github.com/stellar/docs/tree/master/docs/transaction.md
+To submit a new transaction to Stellar network, it must first be built and signed locally. Then you can submit a hex representation of your transaction’s [XDR](../../learn/xdr.md) to the `/transactions` endpoint. Read more about submitting transactions in [Post Transaction](../transactions-create.md) doc.

@@ -28,10 +28,26 @@ GET /accounts/{account}/offers{?cursor,limit,order}
 curl https://horizon-testnet.stellar.org/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36/offers
 ```
 
+### JavaScript Example Request
+
+```js
+var StellarSdk = require('stellar-sdk');
+var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+
+server.offers("accounts", "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ")
+  .call()
+  .then(function (offerResult) {
+    console.log(offerResult);
+  })
+  .catch(function (err) {
+    console.error(err);
+  })
+```
+
 ## Response
 
 The list of offers.
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).

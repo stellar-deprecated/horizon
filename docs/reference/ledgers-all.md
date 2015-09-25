@@ -5,7 +5,7 @@ category: Endpoints
 ---
 
 This endpoint represents all [ledgers](./resources/ledger.md).
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to get notifications as ledgers are closed by the Stellar network.
+This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to get notifications as ledgers are closed by the Stellar network.
 
 ## Request
 
@@ -127,7 +127,7 @@ This endpoint responds with a list of ledgers.  See [ledger resource](./resource
 
 ## Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).
 
 
 

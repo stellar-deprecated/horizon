@@ -5,7 +5,7 @@ category: Endpoints
 ---
 
 This endpoint represents all [transactions](./resources/transaction.md) that affected a given [account](./resources/account.md).
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new transactions as that affect a given account as they get made in the Stellar network.
+This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new transactions as that affect a given account as they get made in the Stellar network.
 
 ## Request
 
@@ -131,5 +131,5 @@ This endpoint responds with a list of transactions that changed a given account'
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).
 - [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

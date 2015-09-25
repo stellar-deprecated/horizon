@@ -6,19 +6,19 @@ category: Resources
 
 A **ledger** resource contains information about a given ledger. 
 
-To learn more about the concept of ledgers in the Stellar network, take a look at the [Stellar ledger concept guide][concept_ledger].
+To learn more about the concept of ledgers in the Stellar network, take a look at the [Stellar ledger concept guide](https://stellar.org/developers/learn/concepts/ledger).
 
 ## Attributes
 | Attribute         | Type   |                                                                                                                             |
 |-------------------|--------|-----------------------------------------------------------------------------------------------------------------------------|
 | id                | string | The id is a unique identifier for this ledger.                                                                               |
-| paging_token      | string | A [paging token][] suitable for use as the cursor parameter to ledger resources.                                  |
-| hash              | string | A hex-encoded SHA-256 hash of the ledger's [XDR][]-encoded form.                                                                |
+| paging_token      | number | A [paging token](./page.md) suitable for use as a `cursor` parameter.                                                                |
+| hash              | string | A hex-encoded SHA-256 hash of the ledger's [XDR](../../learn/xdr.md)-encoded form.                                                                |
 | prev_hash         | string | The hash of the ledger that chronologically came before this one.                                                            |
 | sequence          | number | Sequence number of this ledger, suitable for use as the as the :id parameter for url templates that require a ledger number. |
 | transaction_count | number | The number of transactions in this ledger.                                                                                   |
 | operation_count   | number | The number of operations in this ledger.                                                                                     |
-| closed_at         | string | An [ISO 8601][] formatted string of when this ledger was closed.                                                             |
+| closed_at         | string | An [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) formatted string of when this ledger was closed.                                                             |
 
 ## Links
 |              | Example                                           | Relation                        | templated |
@@ -64,19 +64,9 @@ To learn more about the concept of ledgers in the Stellar network, take a look a
 ## Endpoints
 | Resource                | Type       | Resource URI Template              |
 |-------------------------|------------|------------------------------------|
-| [All ledgers][]         | Collection | `/ledgers`                         |
-| [Single Ledger][]       | Single     | `/ledgers/:id`                     |
-| [Ledger Transactions][] | Collection | `/ledgers/:ledger_id/transactions` |
-| [Ledger Operations][]   | Collection | `/ledgers/:ledger_id/operations`   |
-| [Ledger Payments][]     | Collection | `/ledgers/:ledger_id/payments`     |
-| [Ledger Effects][]      | Collection | `/ledgers/:ledger_id/effects`      |
-
-[All ledgers]: ../endpoint/ledgers_all.md
-[Single Ledger]: ../endpoint/ledgers_single.md
-[Ledger Transactions]: ../endpoint/ledger_transactions.md
-[Ledger Operations]: ../endpoint/ledgers_operations.md
-[Ledger Payments]: ../endpoint/ledgers_payments.md
-[Ledger Effects]: ../endpoint/ledgers_effects.md
-[ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
-[paging token]: ./page.md
-[concept_ledger]: https://github.com/stellar/docs/tree/master/docs/ledger.md
+| [All ledgers](../ledgers_all.md)         | Collection | `/ledgers`                         |
+| [Single Ledger](../ledgers_single.md)       | Single     | `/ledgers/:id`                     |
+| [Ledger Transactions](../ledger_transactions.md) | Collection | `/ledgers/:ledger_id/transactions` |
+| [Ledger Operations](../ledgers_operations.md)   | Collection | `/ledgers/:ledger_id/operations`   |
+| [Ledger Payments](../ledgers_payments.md)     | Collection | `/ledgers/:ledger_id/payments`     |
+| [Ledger Effects](../ledgers_effects.md)      | Collection | `/ledgers/:ledger_id/effects`      |
