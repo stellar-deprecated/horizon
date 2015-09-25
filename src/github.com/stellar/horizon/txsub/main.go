@@ -19,6 +19,7 @@ type System struct {
 	results           ResultProvider
 	submitter         Submitter
 	networkPassphrase string
+	submissionTimeout time.Duration
 
 	Metrics struct {
 		// SubmissionTimer exposes timing metrics about the rate and latency of
@@ -229,7 +230,7 @@ func (sys *System) Tick(ctx context.Context) {
 		}
 	}
 
-	stillOpen, err := sys.pending.Clean(1 * time.Minute)
+	stillOpen, err := sys.pending.Clean(sys.submissionTimeout)
 	if err != nil {
 		log.WithStack(ctx, err).Error(err)
 	}
@@ -243,5 +244,9 @@ func (sys *System) init(ctx context.Context) {
 		sys.Metrics.SuccessfulSubmissionsMeter = metrics.NewMeter()
 		sys.Metrics.SubmissionTimer = metrics.NewTimer()
 		sys.Metrics.OpenSubmissionsGauge = metrics.NewGauge()
+
+		if sys.submissionTimeout == 0 {
+			sys.submissionTimeout = 1 * time.Minute
+		}
 	})
 }

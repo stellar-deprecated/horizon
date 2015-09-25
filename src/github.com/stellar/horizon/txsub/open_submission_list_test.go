@@ -114,6 +114,15 @@ func TestDefaultSubmissionList(t *testing.T) {
 				_, ok := realList.submissions[hashes[1]]
 				So(ok, ShouldBeTrue)
 			})
+
+			Convey("closes any cleaned listeners", func() {
+				select {
+				case _, stillOpen := <-listeners[0]:
+					So(stillOpen, ShouldBeFalse)
+				default:
+					panic("cleaned listener is still open")
+				}
+			})
 		})
 
 		Convey("Pending() works as expected", func() {

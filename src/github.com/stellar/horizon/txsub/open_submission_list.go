@@ -80,6 +80,9 @@ func (s *submissionList) Clean(maxAge time.Duration) (int, error) {
 	for _, os := range s.submissions {
 		if time.Since(os.SubmittedAt) > maxAge {
 			delete(s.submissions, os.Hash)
+			for _, l := range os.Listeners {
+				close(l)
+			}
 		}
 	}
 

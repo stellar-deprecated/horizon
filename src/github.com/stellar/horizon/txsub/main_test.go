@@ -3,6 +3,7 @@ package txsub
 import (
 	"errors"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/build"
@@ -87,7 +88,6 @@ func TestTxsub(t *testing.T) {
 				_ = system.Submit(ctx, successTx.EnvelopeXDR)
 				pending := system.pending.Pending()
 				So(len(pending), ShouldEqual, 1)
-				t.Logf("passphrase: %s", system.networkPassphrase)
 				So(pending[0], ShouldEqual, successTx.Hash)
 				So(system.Metrics.SuccessfulSubmissionsMeter.Count(), ShouldEqual, 1)
 				So(system.Metrics.FailedSubmissionsMeter.Count(), ShouldEqual, 0)
@@ -115,9 +115,23 @@ func TestTxsub(t *testing.T) {
 				So(len(system.pending.Pending()), ShouldEqual, 0)
 			})
 
-			// TODO:   checks for results, finishing any available
-			// TODO:   times-out and removes old submissions
-			// TODO:   if open transactions, but result provider has no new results, keep transactions in open list
+			Convey("removes old submissions that have timed out", func() {
+				l := make(chan Result, 1)
+				system.submissionTimeout = 100 * time.Millisecond
+				system.pending.Add(successTx.Hash, l)
+				<-time.After(101 * time.Millisecond)
+				system.Tick(ctx)
+
+				So(len(system.pending.Pending()), ShouldEqual, 0)
+
+				select {
+				case _, stillOpen := <-l:
+					So(stillOpen, ShouldBeFalse)
+				default:
+					panic("could not read from listener")
+				}
+
+			})
 		})
 
 	})
