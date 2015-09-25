@@ -1,7 +1,5 @@
 ---
-id: follow_received_payments
 title: Follow Received Payments
-category: Tutorials
 ---
 
 This tutorial shows how easy it is to watch for incoming payments on an [account](../reference/resources/account.md)

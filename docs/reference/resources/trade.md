@@ -7,7 +7,7 @@ A trade occurs when offers are completely or partially fulfilled.  For example, 
 - your offer is completely fulfilled and no longer exists
 - the other offer is partially fulfilled and becomes an offer to sell 6 `foo_bank/EUR` for 2 `baz_exchange/BTC`.  The price of that offer doesn't change, but the amount does.
 
-Trades can also be caused by successful [path payments](https://stellar.org/developers/learn/concepts/exchange/), because path payments involve fulfilling offers. 
+Trades can also be caused by successful [path payments](https://stellar.org/developers/learn/concepts/exchange.html), because path payments involve fulfilling offers.
 
 Payments are one-way in that afterwards, the source account has a smaller balance and the destination account of the payment has a bigger one.  Trades are two-way; both accounts increase and decrease their balances.
 
