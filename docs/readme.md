@@ -4,7 +4,7 @@ title: Introduction
 category: Getting Started
 ---
 
-Horizon is the client facing API server for the Stellar ecosystem.  It acts as the interface between stellar-core and applications that want to access the Stellar network. It allows you to submit transactions to the network, check the status of accounts, subscribe to event streams, etc. See [an overview of the Stellar ecosystem](https://stellar.org/developers/learn/concepts/) for more details.
+Horizon is the client facing API server for the Stellar ecosystem.  It acts as the interface between stellar-core and applications that want to access the Stellar network. It allows you to submit transactions to the network, check the status of accounts, subscribe to event streams, etc. See [an overview of the Stellar ecosystem](https://stellar.org/developers/learn/) for more details.
 
 
 - [Building & Installing](/README.md)
