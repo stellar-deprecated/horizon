@@ -23,15 +23,16 @@ POST /transactions
 
 | name | loc  |  notes   |                                                                                                                                                                                                                 example                                                                                                                                                                                                                  | description |
 | ---- | ---- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `tx` | body | required | 899b2840ed5636c56ddc5f14b23975f79f1ba2388d2694e4c56ecdddc960e5ef<br>0000000a000000000000000100000000ffffffff000000010000000000000000<br>500e14fe9d7dc549e30244da424cfbcabe2166a55237897473d3f7358a086b48<br>00000000000009184e72a000000000000000000000000000000009184e72a000<br>00000001899b28402e992cc5fc6d7e0f888b7afa173a35d3ce87526bc37d8171<br>e2d9ee7f2715d1d4146a9026b13396ab8e7392f947caba1b00d398801b4644ae<br>5238f96f96ec7605 | Hex representation of transaction [XDR][] |
+| `tx` | body | required | `AAAAAO`....`f4yDBA==` | Base64 representation of transaction envelope [XDR][] |
 
 
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/transactions \
-  -X POST \
-  -F "tx=899b2840ed5636c56ddc5f14b23975f79f1ba2388d2694e4c56ecdddc960e5ef0000000a000000000000000100000000ffffffff000000010000000000000000500e14fe9d7dc549e30244da424cfbcabe2166a55237897473d3f7358a086b4800000000000009184e72a000000000000000000000000000000009184e72a00000000001899b28402e992cc5fc6d7e0f888b7afa173a35d3ce87526bc37d8171e2d9ee7f2715d1d4146a9026b13396ab8e7392f947caba1b00d398801b4644ae5238f96f96ec7605"
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"tx": "AAAAAOo1QK/3upA74NLkdq4Io3DQAQZPi4TVhuDnvCYQTKIVAAAACgAAH8AAAAABAAAAAAAAAAAAAAABAAAAAQAAAADqNUCv97qQO+DS5HauCKNw0AEGT4uE1Ybg57wmEEyiFQAAAAEAAAAAZc2EuuEa2W1PAKmaqVquHuzUMHaEiRs//+ODOfgWiz8AAAAAAAAAAAAAA+gAAAAAAAAAARBMohUAAABAPnnZL8uPlS+c/AM02r4EbxnZuXmP6pQHvSGmxdOb0SzyfDB2jUKjDtL+NC7zcMIyw4NjTa9Ebp4lvONEf4yDBA=="}' \
+  https://horizon-testnet.stellar.org/transactions
 ```
 
 ## Response
@@ -64,9 +65,9 @@ The `result` attribute of a response from this endpoint can be one of the follow
 
 ```json
 {
-  "hash": "802da5683737972e5a0a6d8d4960bb43a7be64a1dbc00549eeb31729f94c75f2",
-  "result": "failed",
-  "submission_result": "0000000000000000fffffffb"
+    "hash": "6136e1236bbba250648c511806a33e3adec8597840827e6cb568feae7680c921",
+    "result": "failed",
+    "error":"AAAAAAAAAAr////6AAAAAA=="
 }
 ```
 
