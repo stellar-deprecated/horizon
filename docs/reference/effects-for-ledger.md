@@ -132,5 +132,5 @@ This endpoint responds with a list of effects that occurred in the ledger. See [
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).
 - [not_found](./error/not_found.md): A `not_found` error will be returned if there are no effects for a given ledger.

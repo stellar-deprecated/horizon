@@ -6,7 +6,7 @@ category: Resources
 
 A successful operation will yield zero or more **effects**.  These effects
 represent specific changes that occur in the ledger, but are not necessarily
-directly reflected in the [ledger][concept_ledger] or [history][concept_history], as [transactions][concept_transactions] and [operations][concept_operations] are.
+directly reflected in the [ledger](https://stellar.org/developers/learn/concepts/ledger) or [history](https://stellar.org/developers/learn/concepts/history-system), as [transactions](https://stellar.org/developers/learn/concepts/transactions) and [operations](https://stellar.org/developers/learn/concepts/operations) are.
 
 ## Effect types
 
@@ -113,12 +113,8 @@ Attributes depend on effect type.
 
 |  Resource                |    Type    |    Resource URI Template             |
 | ------------------------ | ---------- | ------------------------------------ |
-| [All Effect][]           | Collection | `/effects`                           |
-| [Operation Effects][]    | Collection | `/operations/:id/effects`            |
-| [Account Effects][]      | Collection | `/accounts/:account_id/effects`      |
-| [Ledger Effects][]       | Collection | `/ledgers/:ledger_id/effects`        |
+| [All Effects](../effects-all.md) | Collection | `/effects`                           |
+| [Operation Effects](../effects-for-operation.md) | Collection | `/operations/:id/effects`            |
+| [Account Effects](../effects-for-account.md) | Collection | `/accounts/:account_id/effects`      |
+| [Ledger Effects](../effects-for-ledger.md) | Collection | `/ledgers/:ledger_id/effects`        |
 
-[concept_ledger][https://github.com/stellar/docs/tree/master/docs/ledger.md]
-[concept_history][https://github.com/stellar/docs/tree/master/docs/history.md]
-[concept_transactions]: https://github.com/stellar/docs/tree/master/docs/transaction.md
-[concept_operations]: https://github.com/stellar/docs/tree/master/docs/operations.md

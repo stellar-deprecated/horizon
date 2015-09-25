@@ -84,7 +84,7 @@ This endpoint responds with the details of a single account for a given address.
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).
 - [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.
 
 

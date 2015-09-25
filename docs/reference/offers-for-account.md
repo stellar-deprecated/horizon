@@ -50,4 +50,4 @@ The list of offers.
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).

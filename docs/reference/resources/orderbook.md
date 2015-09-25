@@ -1,6 +1,6 @@
 # Orderbook
 
-[Orderbooks](http://stellar.org/developers/learn/concepts/exchange/) are collections of offers for each issuer and currency pairs.  Let's say you wanted to exchange EUR issued by a particular bank for BTC issued by a particular exchange.  You would look at the orderbook and see who is buying `foo_bank/EUR` and selling `baz_exchange/BTC` and at what prices.
+[Orderbooks](https://stellar.org/developers/learn/concepts/exchange/) are collections of offers for each issuer and currency pairs.  Let's say you wanted to exchange EUR issued by a particular bank for BTC issued by a particular exchange.  You would look at the orderbook and see who is buying `foo_bank/EUR` and selling `baz_exchange/BTC` and at what prices.
 
 ## Attributes
 | Attribute    | Type             |                                                                                                                        |
@@ -20,7 +20,7 @@ This resource has no links.
 | Resource                 | Type       | Resource URI Template                |
 |--------------------------|------------|--------------------------------------|
 | [Orderbook Details](../orderbook_details.md)       | Single | `/orderbook?{orderbook_params}`       |
-| [Trades for Orderbook]( ../trades_for_orderbook.md)       | Collection | `/orderbook/trades?{orderbook_params}`       |
+| [Trades for Orderbook](../trades_for_orderbook.md)       | Collection | `/orderbook/trades?{orderbook_params}`       |
 
 
 

@@ -4,7 +4,7 @@ title: Not Acceptable
 category: Errors
 ---
 
-When your client only accepts certain formats of data from Horizon and Horizon cannot fulfill that request, Horizon will return a not_acceptable error.  This is analogous to the [HTTP 406 Error][codes].
+When your client only accepts certain formats of data from Horizon and Horizon cannot fulfill that request, Horizon will return a not_acceptable error. This is analogous to the [HTTP 406 Error](https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes).
 
 If you are encountering this error, please check to make sure the criteria for content you’ll accept is correct.
 
@@ -12,7 +12,7 @@ If you are encountering this error, please check to make sure the criteria for c
 ## Attributes
 
 
-As with all errors Horizon returns, `not_acceptable` follows the [Problem Details for HTTP APIs][guide] draft specification guide and thus has the following attributes:
+As with all errors Horizon returns, `not_acceptable` follows the [Problem Details for HTTP APIs](https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00) draft specification guide and thus has the following attributes:
 
 | Attribute | Type   | Description                                                                                                                     |
 | --------- | ----   | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -37,11 +37,5 @@ $ curl -X GET -H "Accept: application/xml" 'https://horizon-testnet.stellar.org/
 
 ## Related
 
-[Not Found][not_found]
-
-[Forbidden][forbidden]
-
-[not_found]: ./not_found.md
-[forbidden]: ./forbidden.md
-[codes]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes
-[guide]: https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00
+[Not Found](./not_found.md)
+[Forbidden](./forbidden.md)

@@ -15,7 +15,7 @@ Payments are one-way in that afterwards, the source account has a smaller balanc
 | Attribute    | Type             |                                                                                                                        |
 |--------------|------------------|------------------------------------------------------------------------------------------------------------------------|
 | ID | string | The ID of this trade. |
-| paging_token | string | A paging token suitable for use as a `cursor` parameter.|
+| paging_token | string | A [paging token](./page.md) suitable for use as a `cursor` parameter.|
 | seller | string | |
 | sold_asset_type | string | |
 | sold_asset_code | string | |

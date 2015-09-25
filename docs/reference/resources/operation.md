@@ -4,11 +4,11 @@ title: Operation
 category: Resources
 ---
 
-[Operations](https://github.com/stellar/docs/blob/master/concepts/operations.md) are objects that represent a desired change to the ledger: payments,
+[Operations](https://stellar.org/developers/learn/concepts/operations) are objects that represent a desired change to the ledger: payments,
 offers to exchange currency, changes made to account options, etc.  Operations
-are submitted to the Stellar network grouped in a [Transaction](./resources/transaction.md).
+are submitted to the Stellar network grouped in a [Transaction](./transaction.md).
 
-To learn more about the concept of operations in the Stellar network, take a look at the [Stellar operations concept guide](https://github.com/stellar/docs/blob/master/concepts/operations.md).
+To learn more about the concept of operations in the Stellar network, take a look at the [Stellar operations concept guide](https://stellar.org/developers/learn/concepts/operations).
 
 ## Operation Types
 
@@ -38,7 +38,7 @@ additional attributes and links specific to that operation type.
 |               |  Type  |                                                                                                                            |
 | ------------- | ------ | -------------------------------------------------------------------------------------------------------------------------- |
 | id            | number | The canonical id of this operation, suitable for use as the :id parameter for url templates that require an operation's ID. |
-| paging_token  | any    |                                                                                                                            |
+| paging_token  | any    | A [paging token](./page.md) suitable for use as a `cursor` parameter. |
 | type          | number | Specifies the type of operation, See "Types" section below for reference.                                                  |
 | type_s        | string | A string representation of the type of operation.                                                                           |
 

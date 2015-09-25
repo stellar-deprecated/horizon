@@ -6,7 +6,7 @@ category: Endpoints
 
 This endpoint responds with a collection of [Payment operations](./resources/operation.md) where the given [account](./resources/account.md) was either the sender or receiver.
 
-This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new payments to or from an account as they get made in the Stellar network.
+This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new payments to or from an account as they get made in the Stellar network.
 
 ## Request
 
@@ -105,4 +105,4 @@ This endpoint responds with a [page](./resources/page.md) of [payment operations
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).

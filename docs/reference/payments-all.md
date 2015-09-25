@@ -4,7 +4,7 @@ title: All Payments
 category: Endpoints
 ---
 
-This endpoint represents all payment [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md). This endpoint can also be used in [streaming](../guide/responses.md#streaming) mode so it is possible to use it to listen for new payments as they get made in the Stellar network.
+This endpoint represents all payment [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md). This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new payments as they get made in the Stellar network.
 
 ## Request
 
@@ -130,4 +130,4 @@ This endpoint responds with a list of payments. See [operation resource](./resou
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).

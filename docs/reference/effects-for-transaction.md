@@ -130,5 +130,5 @@ This endpoint responds with a list of effects on the ledger as a result of a giv
 
 ## Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).
 - [not_found](./errors/not_found.md): A `not_found` error will be returned if there are no effects for transaction whose hash matches the `hash` argument.

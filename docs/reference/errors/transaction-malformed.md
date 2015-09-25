@@ -4,17 +4,17 @@ title: Transaction Malformed
 category: Errors
 ---
 
-When you submit a malformed transaction to Horizon, Horizon will return a `transaction_malformed` error.  There are many ways in which a transaction is malformed, including
+When you submit a malformed transaction to Horizon, Horizon will return a `transaction_malformed` error. There are many ways in which a transaction is malformed, including
 * you submitted an empty string
-* your hex-encoded string is invalid
-* your [XDR](../../guide/xdr.md) structure is invalid
-* you have leftover bytes in your [XDR](../../guide/xdr.md) structure
+* your base64-encoded string is invalid
+* your [XDR](../../learn/xdr.md) structure is invalid
+* you have leftover bytes in your [XDR](../../learn/xdr.md) structure
 
-If you are encountering this error, please check the contents of the transaction you are submitting.  This error is similar to the [Bad Request][bad_request] error response and, therefore, the [HTTP 400 Error][codes].
+If you are encountering this error, please check the contents of the transaction you are submitting. This error is similar to the [Bad Request](./bad_request.md) error response and, therefore, the [HTTP 400 Error](https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes).
 
 ## Attributes
 
-As with all errors Horizon returns, `transaction_malformed` follows the [Problem Details for HTTP APIs][guide] draft specification guide and thus has the following attributes:
+As with all errors Horizon returns, `transaction_malformed` follows the [Problem Details for HTTP APIs](https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00) draft specification guide and thus has the following attributes:
 
 | Attribute | Type   | Description                                                                                                                     |
 | --------- | ----   | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -27,9 +27,4 @@ As with all errors Horizon returns, `transaction_malformed` follows the [Problem
 
 ## Related
 
-[Bad Request][bad_request]
-
-[bad_request]: ./bad_request.md
-[codes]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes
-[guide]: https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00
-[XDR]: ../guide/xdr.md
+[Bad Request](./bad_request.md)

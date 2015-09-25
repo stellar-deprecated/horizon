@@ -46,7 +46,7 @@ submission of the provided transaction to stellar-core.
 | ------------------- | ------ | ------------------------------------------------------------- |
 | `hash`              | string | A hex-encoded hash of the submitted transaction.              |
 | `result`            | string | Distilled summary of the result.  See "Result" section below. |
-| `submission_result` | string | A base64 encoded `TransactionResult` [XDR](../guide/xdr.md) object.                 |
+| `submission_result` | string | A base64 encoded `TransactionResult` [XDR](../learn/xdr.md) object.                 |
 
 ### Result
 
@@ -73,5 +73,5 @@ The `result` attribute of a response from this endpoint can be one of the follow
 
 ## Possible Errors
 
-- The [standard errors](../guide/errors.md#Standard_Errors).
+- The [standard errors](../learn/errors.md#Standard_Errors).
 

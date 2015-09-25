@@ -4,13 +4,13 @@ title: Not Implemented
 category: Errors
 ---
 
-If your [request method][methods] is not supported by Horizon, Horizon will return a `not_implemented` error.  This is analogous to a [HTTP 501 Error][codes].
+If your [request method](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) is not supported by Horizon, Horizon will return a `not_implemented` error. This is analogous to a [HTTP 501 Error](https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes).
 
 If you are encountering this error, Horizon does not have the functionality you are requesting yet.
 
 ## Attributes
 
-As with all errors Horizon returns, `not_implemented` follows the [Problem Details for HTTP APIs][guide] draft specification guide and thus has the following attributes:
+As with all errors Horizon returns, `not_implemented` follows the [Problem Details for HTTP APIs](https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00) draft specification guide and thus has the following attributes:
 
 | Attribute | Type   | Description                                                                                                                     |
 | --------- | ----   | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,10 +36,4 @@ $ curl -X GET 'https://horizon-testnet.stellar.org/ledgers/:200/effects'
 
 ## Related
 
-[Server Error][server_error]
-
-
-[methods]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
-[codes]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes
-[guide]: https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00
-[server_error]: ./server_error.md
+[Server Error](./server_error.md)

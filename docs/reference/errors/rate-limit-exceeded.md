@@ -4,14 +4,14 @@ title: Rate Limit Exceeded
 category: Errors
 ---
 
-When a single user makes too many requests to Horizon in a one hour time frame, Horizon returns a `rate_limit_exceeded` error.  By default, Horizon allows 3600 requests per hour -- an average of one request per second.
+When a single user makes too many requests to Horizon in a one hour time frame, Horizon returns a `rate_limit_exceeded` error. By default, Horizon allows 3600 requests per hour -- an average of one request per second.
 
-If you are encountering this error, please reduce your request speed.  Here are some strategies for doing so:
+If you are encountering this error, please reduce your request speed. Here are some strategies for doing so:
 * For collection endpoints, try specifying larger page sizes.
 * Try streaming responses to watch for new data instead of pulling data every time.
 * Cache immutable data, such as transaction details, locally
 
-See the [Rate Limiting Guide](../../guide/rate-limiting.md) for more info.
+See the [Rate Limiting Guide](../../learn/rate-limiting.md) for more info.
 
 ## Attributes
 
@@ -28,7 +28,7 @@ As with all errors Horizon returns, `rate_limit_exceeded` follows the [Problem D
 Examples
 ```json
 {
-  "type":     "https://www.stellar.org/docs/horizon/problems/rate_limit_exceeded",
+  "type":     "https://stellar.org/developers/horizon/reference/errors/rate-limit-exceeded",
   "title":    "Rate Limit Exceeded",
   "status":   429,
   "details":  "...",
