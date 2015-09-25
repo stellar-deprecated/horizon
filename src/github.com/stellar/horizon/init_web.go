@@ -110,6 +110,8 @@ func initWebActions(app *App) {
 	r.Get("/order_book", &OrderBookShowAction{})
 	r.Get("/order_book/trades", &TradeIndexAction{})
 
+	r.Post("/transactions", &TransactionCreateAction{})
+
 	// horizon doesn't implement everything ruby-horizon did,
 	// so we reverse proxy if we can
 	if app.config.RubyHorizonUrl != "" {
@@ -120,11 +122,9 @@ func initWebActions(app *App) {
 		}
 
 		rp := httputil.NewSingleHostReverseProxy(u)
-		r.Post("/transactions", rp)
 		r.Post("/friendbot", rp)
 		r.Get("/friendbot", rp)
 	} else {
-		r.Post("/transactions", &NotImplementedAction{})
 		r.Post("/friendbot", &NotImplementedAction{})
 		r.Get("/friendbot", &NotImplementedAction{})
 	}

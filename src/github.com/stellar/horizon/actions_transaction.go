@@ -5,6 +5,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/txsub"
 )
 
 // This file contains the actions:
@@ -113,4 +114,16 @@ func (action *TransactionShowAction) JSON() {
 	}
 
 	hal.Render(action.W, NewTransactionResource(action.Record))
+}
+
+// TransactionCreateAction submits a transaction to the stellar-core network
+// on behalf of the requesting client.
+type TransactionCreateAction struct {
+	Action
+	Result txsub.Result
+}
+
+// JSON format action handler
+func (action *TransactionCreateAction) JSON() {
+	hal.Render(action.W, "hello")
 }

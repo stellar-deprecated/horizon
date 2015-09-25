@@ -8,7 +8,7 @@ import (
 // RootResource is the initial map of links into the api.
 type RootResource struct {
 	halgo.Links
-	HorizonVersion string
+	HorizonVersion     string
 	StellarCoreVersion string
 }
 
@@ -18,7 +18,7 @@ type RootAction struct {
 
 func (action *RootAction) JSON() {
 	var response = RootResource{
-		HorizonVersion: action.App.horizonVersion,
+		HorizonVersion:     action.App.horizonVersion,
 		StellarCoreVersion: action.App.coreVersion,
 		Links: halgo.Links{}.
 			Self("/").

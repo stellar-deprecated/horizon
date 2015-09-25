@@ -109,6 +109,10 @@ type Result struct {
 	// The base64-encoded TransactionResult for the transaction this result
 	// corresponds to
 	ResultXDR string
+
+	// The base64-encoded TransactionMeta for the transaction this result
+	// corresponds to
+	ResultMetaXDR string
 }
 
 // SubmissionResult gets returned in response to a call to Submitter.Submit.
