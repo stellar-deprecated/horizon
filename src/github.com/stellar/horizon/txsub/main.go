@@ -14,12 +14,13 @@ import (
 // Its methods tie together the various pieces used to reliably submit transactions
 // to a stellar-core instance.
 type System struct {
-	sync.Once
-	pending           OpenSubmissionList
-	results           ResultProvider
-	submitter         Submitter
-	networkPassphrase string
-	submissionTimeout time.Duration
+	initializer sync.Once
+
+	Pending           OpenSubmissionList
+	Results           ResultProvider
+	Submitter         Submitter
+	NetworkPassphrase string
+	SubmissionTimeout time.Duration
 
 	Metrics struct {
 		// SubmissionTimer exposes timing metrics about the rate and latency of
@@ -171,14 +172,14 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	result = response
 
 	// calculate hash of transaction
-	info, err := extractEnvelopeInfo(ctx, env, sys.networkPassphrase)
+	info, err := extractEnvelopeInfo(ctx, env, sys.NetworkPassphrase)
 	if err != nil {
 		response <- Result{Err: err}
 		return
 	}
 
 	// check the configured result provider for an existing result
-	r, found := sys.results.ResultByHash(info.Hash)
+	r, found := sys.Results.ResultByHash(info.Hash)
 
 	if found {
 		response <- r
@@ -186,13 +187,13 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	}
 
 	// submit to stellar-core
-	sr := sys.submitter.Submit(env)
+	sr := sys.Submitter.Submit(env)
 	sys.Metrics.SubmissionTimer.Update(sr.Duration)
 
 	// if received or duplicate, add to the open submissions list
 	if sr.Err == nil {
 		sys.Metrics.SuccessfulSubmissionsMeter.Mark(1)
-		sys.pending.Add(info.Hash, response)
+		sys.Pending.Add(info.Hash, response)
 		return
 	}
 
@@ -210,7 +211,7 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 		return
 	}
 
-	r, found = sys.results.ResultByAddressAndSequence(info.SourceAddress, info.Sequence)
+	r, found = sys.Results.ResultByAddressAndSequence(info.SourceAddress, info.Sequence)
 
 	// If the found result is the same hash, use it as the result
 	if found && r.Hash == info.Hash {
@@ -226,15 +227,15 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 // Ticker triggers the system to update itself with any new data available.
 func (sys *System) Tick(ctx context.Context) {
 	sys.init(ctx)
-	for _, hash := range sys.pending.Pending() {
-		r, ok := sys.results.ResultByHash(hash)
+	for _, hash := range sys.Pending.Pending() {
+		r, ok := sys.Results.ResultByHash(hash)
 
 		if ok {
-			sys.pending.Finish(r)
+			sys.Pending.Finish(r)
 		}
 	}
 
-	stillOpen, err := sys.pending.Clean(sys.submissionTimeout)
+	stillOpen, err := sys.Pending.Clean(sys.SubmissionTimeout)
 	if err != nil {
 		log.WithStack(ctx, err).Error(err)
 	}
@@ -243,14 +244,14 @@ func (sys *System) Tick(ctx context.Context) {
 }
 
 func (sys *System) init(ctx context.Context) {
-	sys.Do(func() {
+	sys.initializer.Do(func() {
 		sys.Metrics.FailedSubmissionsMeter = metrics.NewMeter()
 		sys.Metrics.SuccessfulSubmissionsMeter = metrics.NewMeter()
 		sys.Metrics.SubmissionTimer = metrics.NewTimer()
 		sys.Metrics.OpenSubmissionsGauge = metrics.NewGauge()
 
-		if sys.submissionTimeout == 0 {
-			sys.submissionTimeout = 1 * time.Minute
+		if sys.SubmissionTimeout == 0 {
+			sys.SubmissionTimeout = 1 * time.Minute
 		}
 	})
 }

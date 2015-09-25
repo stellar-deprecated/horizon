@@ -17,10 +17,10 @@ func TestTxsub(t *testing.T) {
 		results := &MockResultProvider{}
 
 		system := &System{
-			pending:           NewDefaultSubmissionList(),
-			submitter:         submitter,
-			results:           results,
-			networkPassphrase: build.TestNetwork.Passphrase,
+			Pending:           NewDefaultSubmissionList(),
+			Submitter:         submitter,
+			Results:           results,
+			NetworkPassphrase: build.TestNetwork.Passphrase,
 		}
 
 		successTx := Result{
@@ -86,7 +86,7 @@ func TestTxsub(t *testing.T) {
 
 			Convey("if no result found and no error submitting, add to open transaction list", func() {
 				_ = system.Submit(ctx, successTx.EnvelopeXDR)
-				pending := system.pending.Pending()
+				pending := system.Pending.Pending()
 				So(len(pending), ShouldEqual, 1)
 				So(pending[0], ShouldEqual, successTx.Hash)
 				So(system.Metrics.SuccessfulSubmissionsMeter.Count(), ShouldEqual, 1)
@@ -103,26 +103,26 @@ func TestTxsub(t *testing.T) {
 
 			Convey("finishes any available transactions", func() {
 				l := make(chan Result, 1)
-				system.pending.Add(successTx.Hash, l)
+				system.Pending.Add(successTx.Hash, l)
 				system.Tick(ctx)
 				So(len(l), ShouldEqual, 0)
-				So(len(system.pending.Pending()), ShouldEqual, 1)
+				So(len(system.Pending.Pending()), ShouldEqual, 1)
 
 				results.ResultForHash = &successTx
 				system.Tick(ctx)
 
 				So(len(l), ShouldEqual, 1)
-				So(len(system.pending.Pending()), ShouldEqual, 0)
+				So(len(system.Pending.Pending()), ShouldEqual, 0)
 			})
 
 			Convey("removes old submissions that have timed out", func() {
 				l := make(chan Result, 1)
-				system.submissionTimeout = 100 * time.Millisecond
-				system.pending.Add(successTx.Hash, l)
+				system.SubmissionTimeout = 100 * time.Millisecond
+				system.Pending.Add(successTx.Hash, l)
 				<-time.After(101 * time.Millisecond)
 				system.Tick(ctx)
 
-				So(len(system.pending.Pending()), ShouldEqual, 0)
+				So(len(system.Pending.Pending()), ShouldEqual, 0)
 
 				select {
 				case _, stillOpen := <-l:
