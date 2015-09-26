@@ -9,7 +9,7 @@ Horizon is the [client facing API](/docs) server for the Stellar ecosystem.  It 
 
 ## Building
 
-[gb](getgb.io) is used for building horizon.
+[gb](http://getgb.io) is used for building horizon.
 
 Given you have a running golang installation, you can install this with:
 
