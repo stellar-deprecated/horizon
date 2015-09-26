@@ -42,5 +42,5 @@ redis-server
 then, run the tests like so:
 
 ```bash
-bash script/run_tests.bash
+bash scripts/run_tests.bash
 ```
