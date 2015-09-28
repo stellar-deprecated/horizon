@@ -69,6 +69,8 @@ func ShouldBeProblem(a interface{}, options ...interface{}) string {
 	body := a.(*bytes.Buffer)
 	expected := options[0].(problem.P)
 
+	problem.Inflate(test.Context(), &expected)
+
 	var actual problem.P
 	err := json.Unmarshal(body.Bytes(), &actual)
 
