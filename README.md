@@ -4,12 +4,12 @@ It is not ready yet for production.
 # Horizon
 [![Build Status](https://travis-ci.org/stellar/horizon.svg?branch=master)](https://travis-ci.org/stellar/horizon)
 
-Horizon is the [client facing API](/docs) server for the Stellar ecosystem.  It acts as the interface between stellar-core and applications that want to access the Stellar network. It allows you to submit transactions to the network, check the status of accounts, subscribe to event streams, etc. See [an overview of the Stellar ecosystem](https://github.com/stellar/docs/blob/master/concepts/ecosystem.md) for more details.
+Horizon is the [client facing API](/docs) server for the Stellar ecosystem.  It acts as the interface between stellar-core and applications that want to access the Stellar network. It allows you to submit transactions to the network, check the status of accounts, subscribe to event streams, etc. See [an overview of the Stellar ecosystem](https://stellar.org/developer/learn/) for more details.
 
 
 ## Building
 
-[gb](getgb.io) is used for building horizon.
+[gb](http://getgb.io) is used for building horizon.
 
 Given you have a running golang installation, you can install this with:
 
@@ -42,5 +42,5 @@ redis-server
 then, run the tests like so:
 
 ```bash
-bash script/run_tests.bash
+bash scripts/run_tests.bash
 ```
