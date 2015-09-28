@@ -1,7 +1,5 @@
 ---
-id: responses
-title: Response Format
-category: Guides
+title: Horizon Response Format
 ---
 
 Rather than using a fully custom way of representing the resources we expose in

@@ -1,7 +1,5 @@
 ---
-id: errors
-title: Errors
-category: Guides
+title: Horizon Errors
 ---
 
 In the event that an error occurs while processing a request to horizon, an
