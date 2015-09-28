@@ -22,4 +22,4 @@ As with all errors Horizon returns, `bad_request` follows the [Problem Details f
 
 ## Related
 
-[Transaction Malformed](./transaction_malformed.md)
+- [Malformed Transaction](./transaction-malformed.md)
