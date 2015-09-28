@@ -10,7 +10,7 @@ type TransactionByHashQuery struct {
 func (q TransactionByHashQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := TransactionRecordSelect.
 		Limit(1).
-		Where("transaction_hash = ?", q.Hash)
+		Where("ht.transaction_hash = ?", q.Hash)
 
 	return q.SqlQuery.Select(ctx, sql, dest)
 }

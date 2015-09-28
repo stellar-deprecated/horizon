@@ -12,6 +12,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/txsub"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
 	"golang.org/x/net/context"
@@ -36,6 +37,7 @@ type App struct {
 	coreVersion       string
 	horizonVersion    string
 	networkPassphrase string
+	submitter         *txsub.System
 }
 
 func SetVersion(v string) {

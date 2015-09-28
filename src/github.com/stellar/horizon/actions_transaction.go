@@ -4,8 +4,8 @@ import (
 	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
-	"github.com/stellar/horizon/txsub"
 )
 
 // This file contains the actions:
@@ -120,10 +120,24 @@ func (action *TransactionShowAction) JSON() {
 // on behalf of the requesting client.
 type TransactionCreateAction struct {
 	Action
-	Result txsub.Result
 }
 
 // JSON format action handler
 func (action *TransactionCreateAction) JSON() {
-	hal.Render(action.W, "hello")
+
+	l := action.App.submitter.Submit(action.Ctx, action.GetString("tx"))
+
+	select {
+	case result := <-l:
+		resource := &ResultResource{result}
+
+		if resource.IsSuccess() {
+			hal.Render(action.W, resource.Success())
+		} else {
+			problem.Render(action.Ctx, action.W, resource.Error())
+		}
+	case <-action.Ctx.Done():
+		return
+	}
+
 }
