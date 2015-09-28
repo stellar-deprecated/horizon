@@ -24,13 +24,7 @@ func (rp *ResultProvider) ResultByHash(hash string) txsub.Result {
 
 	err := Get(rp.Ctx, hq, &hr)
 	if err == nil {
-		return txsub.Result{
-			Hash:           hr.TransactionHash,
-			LedgerSequence: hr.LedgerSequence,
-			EnvelopeXDR:    hr.TxEnvelope.String,
-			ResultXDR:      hr.TxResult.String,
-			ResultMetaXDR:  hr.TxMeta.String,
-		}
+		txResultFromTransactionRecord(hr)
 	}
 
 	if err != txsub.ErrNoResults {
@@ -43,5 +37,34 @@ func (rp *ResultProvider) ResultByHash(hash string) txsub.Result {
 }
 
 func (rp *ResultProvider) ResultByAddressAndSequence(addr string, seq uint64) txsub.Result {
+	var hr TransactionRecord
+
+	hq := TransactionByAddressAndSequence{
+		SqlQuery: SqlQuery{rp.History},
+		Address:  addr,
+		Sequence: seq,
+	}
+
+	err := Get(rp.Ctx, hq, &hr)
+	if err == nil {
+		txResultFromTransactionRecord(hr)
+	}
+
+	if err != txsub.ErrNoResults {
+		return txsub.Result{Err: err}
+	}
+
+	//TODO: check stellar-core for results as well
+
 	return txsub.Result{Err: txsub.ErrNoResults}
+}
+
+func txResultFromTransactionRecord(hr TransactionRecord) txsub.Result {
+	return txsub.Result{
+		Hash:           hr.TransactionHash,
+		LedgerSequence: hr.LedgerSequence,
+		EnvelopeXDR:    hr.TxEnvelope.String,
+		ResultXDR:      hr.TxResult.String,
+		ResultMetaXDR:  hr.TxMeta.String,
+	}
 }
