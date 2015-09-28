@@ -53,7 +53,9 @@ func (sub *submitter) Submit(env string) (result SubmissionResult) {
 	}
 
 	u.Path = "/tx"
-	u.Query().Set("blob", env)
+	q := u.Query()
+	q.Add("blob", env)
+	u.RawQuery = q.Encode()
 
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {

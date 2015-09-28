@@ -12,7 +12,7 @@ func TestDefaultSubmitter(t *testing.T) {
 	Convey("submitter (The default Submitter implementation)", t, func() {
 
 		Convey("submits to the configured stellar-core instance correctly", func() {
-			server := test.StaticMockServer(`{
+			server := test.NewStaticMockServer(`{
 				"status": "PENDING",
 				"error": null
 				}`)
@@ -22,10 +22,11 @@ func TestDefaultSubmitter(t *testing.T) {
 			sr := s.Submit("hello")
 			So(sr.Err, ShouldBeNil)
 			So(sr.Duration, ShouldBeGreaterThan, 0)
+			So(server.LastRequest.URL.Query().Get("blob"), ShouldEqual, "hello")
 		})
 
 		Convey("succeeds when the stellar-core responds with DUPLICATE status", func() {
-			server := test.StaticMockServer(`{
+			server := test.NewStaticMockServer(`{
 				"status": "DUPLICATE",
 				"error": null
 				}`)
@@ -55,7 +56,7 @@ func TestDefaultSubmitter(t *testing.T) {
 		})
 
 		Convey("errors when the stellar-core returns an unparseable response", func() {
-			server := test.StaticMockServer(`{`)
+			server := test.NewStaticMockServer(`{`)
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
@@ -64,7 +65,7 @@ func TestDefaultSubmitter(t *testing.T) {
 		})
 
 		Convey("errors when the stellar-core returns an exception response", func() {
-			server := test.StaticMockServer(`{"exception": "Invalid XDR"}`)
+			server := test.NewStaticMockServer(`{"exception": "Invalid XDR"}`)
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
@@ -74,7 +75,7 @@ func TestDefaultSubmitter(t *testing.T) {
 		})
 
 		Convey("errors when the stellar-core returns an unrecognized status", func() {
-			server := test.StaticMockServer(`{"status": "NOTREAL"}`)
+			server := test.NewStaticMockServer(`{"status": "NOTREAL"}`)
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
@@ -84,7 +85,7 @@ func TestDefaultSubmitter(t *testing.T) {
 		})
 
 		Convey("errors when the stellar-core returns an error response", func() {
-			server := test.StaticMockServer(`{"status": "ERROR", "error": "1234"}`)
+			server := test.NewStaticMockServer(`{"status": "ERROR", "error": "1234"}`)
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
