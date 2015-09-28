@@ -1,6 +1,7 @@
 package txsub
 
 import (
+	"errors"
 	"fmt"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-stellar-base/xdr"
@@ -8,6 +9,10 @@ import (
 	"golang.org/x/net/context"
 	"sync"
 	"time"
+)
+
+var (
+	ErrNoResults = errors.New("No result found")
 )
 
 // System represents a completely configured transaction submission system.
@@ -48,10 +53,10 @@ type System struct {
 // of each transaction in the open submission list at each tick (i.e. ledger close)
 type ResultProvider interface {
 	// Look up a result by transaction hash
-	ResultByHash(string) (Result, bool)
+	ResultByHash(string) Result
 
 	// Look up a result by address and sequence number
-	ResultByAddressAndSequence(string, uint64) (Result, bool)
+	ResultByAddressAndSequence(string, uint64) Result
 }
 
 // Listener represents some client who is interested in retrieving the result
@@ -164,6 +169,16 @@ func (fte *FailedTransactionError) Result() (result xdr.TransactionResult, err e
 	return
 }
 
+// MalformedTransactionError represent an error that occurred because
+// a TransactionEnvelope could not be decoded from the provided data.
+type MalformedTransactionError struct {
+	EnvelopeXDR string
+}
+
+func (err *MalformedTransactionError) Error() string {
+	return "tx malformed"
+}
+
 // Submit submits the provided base64 encoded transaction envelope to the
 // network using this submission system.
 func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result) {
@@ -174,14 +189,14 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	// calculate hash of transaction
 	info, err := extractEnvelopeInfo(ctx, env, sys.NetworkPassphrase)
 	if err != nil {
-		response <- Result{Err: err}
+		response <- Result{Err: err, EnvelopeXDR: env}
 		return
 	}
 
 	// check the configured result provider for an existing result
-	r, found := sys.Results.ResultByHash(info.Hash)
+	r := sys.Results.ResultByHash(info.Hash)
 
-	if found {
+	if r.Err != ErrNoResults {
 		response <- r
 		return
 	}
@@ -202,25 +217,25 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	// any error other than "txBAD_SEQ" is a failure
 	isBad, err := sr.IsBadSeq()
 	if err != nil {
-		response <- Result{Err: err}
+		response <- Result{Err: err, EnvelopeXDR: env}
 		return
 	}
 
 	if !isBad {
-		response <- Result{Err: sr.Err}
+		response <- Result{Err: sr.Err, EnvelopeXDR: env}
 		return
 	}
 
-	r, found = sys.Results.ResultByAddressAndSequence(info.SourceAddress, info.Sequence)
+	r = sys.Results.ResultByAddressAndSequence(info.SourceAddress, info.Sequence)
 
 	// If the found result is the same hash, use it as the result
-	if found && r.Hash == info.Hash {
+	if r.Err == nil && r.Hash == info.Hash {
 		response <- r
 		return
 	}
 
 	// finally, return the bad_seq error if the hash is different
-	response <- Result{Err: sr.Err}
+	response <- Result{Err: sr.Err, EnvelopeXDR: env}
 	return
 }
 
@@ -228,9 +243,9 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 func (sys *System) Tick(ctx context.Context) {
 	sys.init(ctx)
 	for _, hash := range sys.Pending.Pending() {
-		r, ok := sys.Results.ResultByHash(hash)
+		r := sys.Results.ResultByHash(hash)
 
-		if ok {
+		if r.Err == nil {
 			sys.Pending.Finish(r)
 		}
 	}

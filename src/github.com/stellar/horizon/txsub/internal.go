@@ -19,6 +19,7 @@ func extractEnvelopeInfo(ctx context.Context, env string, passphrase string) (re
 	err = xdr.SafeUnmarshalBase64(env, &tx)
 
 	if err != nil {
+		err = &MalformedTransactionError{env}
 		return
 	}
 

@@ -152,20 +152,20 @@ type MockResultProvider struct {
 	ResultForAddressAndSequence *Result
 }
 
-func (results *MockResultProvider) ResultByHash(hash string) (Result, bool) {
+func (results *MockResultProvider) ResultByHash(hash string) Result {
 	if results.ResultForHash == nil {
-		return Result{}, false
+		return Result{Err: ErrNoResults}
 	}
 
 	r := *results.ResultForHash
-	return r, true
+	return r
 }
 
-func (results *MockResultProvider) ResultByAddressAndSequence(address string, sequence uint64) (Result, bool) {
+func (results *MockResultProvider) ResultByAddressAndSequence(address string, sequence uint64) Result {
 	if results.ResultForAddressAndSequence == nil {
-		return Result{}, false
+		return Result{Err: ErrNoResults}
 	}
 
 	r := *results.ResultForAddressAndSequence
-	return r, true
+	return r
 }
