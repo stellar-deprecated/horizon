@@ -52,8 +52,10 @@ func (p *P) Error() string {
 // Inflate expands a problem with contextal information.
 // At present it adds the request's id as the problem's Instance, if available.
 func Inflate(ctx context.Context, p *P) {
-	//TODO: inflate type into full url
 	//TODO: add requesting url to extra info
+
+	//TODO: make this prefix configurable
+	p.Type = "https://stellar.org/horizon-errors/" + p.Type
 
 	p.Instance = requestid.FromContext(ctx)
 }
