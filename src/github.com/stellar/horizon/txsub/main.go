@@ -242,11 +242,19 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 // Ticker triggers the system to update itself with any new data available.
 func (sys *System) Tick(ctx context.Context) {
 	sys.init(ctx)
+
+	log.Debugln(ctx, "ticking txsub system")
 	for _, hash := range sys.Pending.Pending() {
 		r := sys.Results.ResultByHash(hash)
 
 		if r.Err == nil {
+			log.WithField(ctx, "hash", hash).Debug("finishing open submission")
 			sys.Pending.Finish(r)
+			continue
+		}
+
+		if r.Err != ErrNoResults {
+			log.WithStack(ctx, r.Err).Error(r.Err)
 		}
 	}
 

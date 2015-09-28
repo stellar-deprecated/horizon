@@ -24,10 +24,10 @@ func (rp *ResultProvider) ResultByHash(hash string) txsub.Result {
 
 	err := Get(rp.Ctx, hq, &hr)
 	if err == nil {
-		txResultFromTransactionRecord(hr)
+		return txResultFromTransactionRecord(hr)
 	}
 
-	if err != txsub.ErrNoResults {
+	if err != ErrNoResults {
 		return txsub.Result{Err: err}
 	}
 
@@ -47,10 +47,10 @@ func (rp *ResultProvider) ResultByAddressAndSequence(addr string, seq uint64) tx
 
 	err := Get(rp.Ctx, hq, &hr)
 	if err == nil {
-		txResultFromTransactionRecord(hr)
+		return txResultFromTransactionRecord(hr)
 	}
 
-	if err != txsub.ErrNoResults {
+	if err != ErrNoResults {
 		return txsub.Result{Err: err}
 	}
 
