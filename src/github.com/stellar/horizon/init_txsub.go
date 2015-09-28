@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/txsub"
 	"net/http"
+	"time"
 )
 
 func initSubmissionSystem(app *App) {
@@ -17,6 +18,14 @@ func initSubmissionSystem(app *App) {
 		},
 		NetworkPassphrase: app.networkPassphrase,
 	}
+
+	//TODO: bundle this with the ledger close pump system
+	go func() {
+		for {
+			<-time.After(1 * time.Second)
+			app.submitter.Tick(app.ctx)
+		}
+	}()
 }
 
 func init() {
