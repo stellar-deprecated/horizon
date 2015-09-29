@@ -1,7 +1,10 @@
 package db
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/base64"
+	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 )
@@ -60,11 +63,48 @@ func txResultFromHistory(tx TransactionRecord) txsub.Result {
 }
 
 func txResultFromCore(tx CoreTransactionRecord) txsub.Result {
+	//TODO: decode the result xdr, extract TransactionResult
+	// re-encode result to xdr
+
+	var trp xdr.TransactionResultPair
+	err := xdr.SafeUnmarshalBase64(tx.ResultXDR, &trp)
+
+	if err != nil {
+		return txsub.Result{Err: err}
+	}
+
+	tr := trp.Result
+
+	// re-encode result to base64
+	var raw bytes.Buffer
+	_, err = xdr.Marshal(&raw, tr)
+
+	if err != nil {
+		return txsub.Result{Err: err}
+	}
+
+	trx := base64.StdEncoding.EncodeToString(raw.Bytes())
+
+	// if result is success, send a normal resposne
+	if tr.Result.Code == xdr.TransactionResultCodeTxSuccess {
+		return txsub.Result{
+			Hash:           tx.TransactionHash,
+			LedgerSequence: tx.LedgerSequence,
+			EnvelopeXDR:    tx.EnvelopeXDR,
+			ResultXDR:      trx,
+			ResultMetaXDR:  tx.ResultMetaXDR,
+		}
+	}
+
+	// if failed, produce a FailedTransactionError
 	return txsub.Result{
+		Err: &txsub.FailedTransactionError{
+			ResultXDR: trx,
+		},
 		Hash:           tx.TransactionHash,
 		LedgerSequence: tx.LedgerSequence,
 		EnvelopeXDR:    tx.EnvelopeXDR,
-		ResultXDR:      tx.ResultXDR,
+		ResultXDR:      trx,
 		ResultMetaXDR:  tx.ResultMetaXDR,
 	}
 }

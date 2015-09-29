@@ -26,6 +26,7 @@ func (res *ResultResource) Error() error {
 			},
 		}
 	case *txsub.MalformedTransactionError:
+		// TODO: Fill detail
 		return &problem.P{
 			Type:   "transaction_malformed",
 			Title:  "Transaction Malformed",
