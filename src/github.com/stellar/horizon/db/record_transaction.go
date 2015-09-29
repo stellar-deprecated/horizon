@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	sq "github.com/lann/squirrel"
 	"time"
 )
@@ -14,21 +13,21 @@ var TransactionRecordSelect sq.SelectBuilder = sq.
 
 type TransactionRecord struct {
 	HistoryRecord
-	TransactionHash     string         `db:"transaction_hash"`
-	LedgerSequence      int32          `db:"ledger_sequence"`
-	LedgerCloseTime     time.Time      `db:"ledger_close_time"`
-	ApplicationOrder    int32          `db:"application_order"`
-	Account             string         `db:"account"`
-	AccountSequence     int64          `db:"account_sequence"`
-	MaxFee              int32          `db:"max_fee"`
-	FeePaid             int32          `db:"fee_paid"`
-	OperationCount      int32          `db:"operation_count"`
-	TransactionStatusId int32          `db:"transaction_status_id"`
-	TxEnvelope          sql.NullString `db:"tx_envelope"`
-	TxResult            sql.NullString `db:"tx_result"`
-	TxMeta              sql.NullString `db:"tx_meta"`
-	CreatedAt           time.Time      `db:"created_at"`
-	UpdatedAt           time.Time      `db:"updated_at"`
+	TransactionHash  string    `db:"transaction_hash"`
+	LedgerSequence   int32     `db:"ledger_sequence"`
+	LedgerCloseTime  time.Time `db:"ledger_close_time"`
+	ApplicationOrder int32     `db:"application_order"`
+	Account          string    `db:"account"`
+	AccountSequence  int64     `db:"account_sequence"`
+	MaxFee           int32     `db:"max_fee"`
+	FeePaid          int32     `db:"fee_paid"`
+	OperationCount   int32     `db:"operation_count"`
+	TxEnvelope       string    `db:"tx_envelope"`
+	TxResult         string    `db:"tx_result"`
+	TxMeta           string    `db:"tx_meta"`
+	TxFeeMeta        string    `db:"tx_fee_meta"`
+	CreatedAt        time.Time `db:"created_at"`
+	UpdatedAt        time.Time `db:"updated_at"`
 }
 
 func (r TransactionRecord) TableName() string {

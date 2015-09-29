@@ -56,9 +56,9 @@ func txResultFromHistory(tx TransactionRecord) txsub.Result {
 	return txsub.Result{
 		Hash:           tx.TransactionHash,
 		LedgerSequence: tx.LedgerSequence,
-		EnvelopeXDR:    tx.TxEnvelope.String,
-		ResultXDR:      tx.TxResult.String,
-		ResultMetaXDR:  tx.TxMeta.String,
+		EnvelopeXDR:    tx.TxEnvelope,
+		ResultXDR:      tx.TxResult,
+		ResultMetaXDR:  tx.TxMeta,
 	}
 }
 
