@@ -251,6 +251,14 @@ func (sys *System) Tick(ctx context.Context) {
 			continue
 		}
 
+		_, ok := r.Err.(*FailedTransactionError)
+
+		if ok {
+			log.WithField(ctx, "hash", hash).Debug("finishing open submission")
+			sys.Pending.Finish(ctx, r)
+			continue
+		}
+
 		if r.Err != ErrNoResults {
 			log.WithStack(ctx, r.Err).Error(r.Err)
 		}
