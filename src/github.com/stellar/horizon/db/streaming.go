@@ -21,8 +21,8 @@ const (
 // if a new ledger has been imported (by ruby-horizon as of 2015-04-30, but
 // should eventually end up being in this project).  If a new ledger is seen
 // the the channel returned by this function emits
-func NewLedgerClosePump(ctx context.Context, db *sql.DB) <-chan time.Time {
-	result := make(chan time.Time)
+func NewLedgerClosePump(ctx context.Context, db *sql.DB) <-chan struct{} {
+	result := make(chan struct{})
 
 	go func() {
 		var lastSeenLedger int32
@@ -42,7 +42,7 @@ func NewLedgerClosePump(ctx context.Context, db *sql.DB) <-chan time.Time {
 					log.Debugf(ctx, "saw new ledger: %d, prev: %d", latestLedger, lastSeenLedger)
 
 					select {
-					case result <- time.Now():
+					case result <- struct{}{}:
 						lastSeenLedger = latestLedger
 					default:
 						log.Debug(ctx, "ledger pump channel is blocked.  waiting...")

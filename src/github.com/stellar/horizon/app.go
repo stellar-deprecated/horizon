@@ -11,6 +11,7 @@ import (
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/pump"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/txsub"
 	"github.com/zenazn/goji/bind"
@@ -38,6 +39,7 @@ type App struct {
 	horizonVersion    string
 	networkPassphrase string
 	submitter         *txsub.System
+	pump              *pump.Pump
 }
 
 func SetVersion(v string) {
@@ -82,11 +84,7 @@ func (a *App) Serve() {
 		log.Info(a.ctx, "stopped")
 	})
 
-	if a.config.Autopump {
-		sse.SetPump(a.ctx, sse.AutoPump)
-	} else {
-		sse.SetPump(a.ctx, db.NewLedgerClosePump(a.ctx, a.historyDb))
-	}
+	sse.SetPump(a.ctx, a.pump.Subscribe())
 
 	err := graceful.Serve(listener, http.DefaultServeMux)
 

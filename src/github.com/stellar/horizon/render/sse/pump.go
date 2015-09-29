@@ -2,18 +2,12 @@ package sse
 
 import (
 	"sync"
-	"time"
 
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
 )
 
-// AutoPump triggers every second. Added when --auto-pump is enabled,
-// this is useful if you're not running the ledger importer but want to test
-// the streaming response system.
-var AutoPump = time.NewTicker(1 * time.Second).C
-
-var pump <-chan time.Time
+var pump <-chan struct{}
 var lock sync.Mutex
 var ctx context.Context
 var nextTick chan struct{}
@@ -21,7 +15,7 @@ var nextTick chan struct{}
 // SetPump established the pump that will be used to drive streaming responses.
 // Everytime the provided channel sends any open connections will be triggered
 // to run their queries again and delivery any new results to clients.
-func SetPump(c context.Context, p <-chan time.Time) {
+func SetPump(c context.Context, p <-chan struct{}) {
 	if p == nil {
 		panic("cannot set a null pump")
 	}
@@ -52,8 +46,8 @@ func Pumped() <-chan struct{} {
 func run() {
 	for {
 		select {
-		case at, more := <-pump:
-			log.WithField(ctx, "time", at).Debug("sse pump")
+		case _, more := <-pump:
+			log.Debug(ctx, "sse pump")
 
 			prev := nextTick
 			nextTick = make(chan struct{})

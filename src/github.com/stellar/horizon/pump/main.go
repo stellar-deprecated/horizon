@@ -1,20 +1,38 @@
 package pump
 
+import (
+	"time"
+)
+
 type Pump struct {
-	trigger chan struct{}
+	trigger <-chan struct{}
 	outputs map[chan struct{}]bool
 	adds    chan chan struct{}
 	removes chan chan struct{}
 }
 
-func NewPump(trigger chan struct{}) *Pump {
+func NewPump(trigger <-chan struct{}) *Pump {
 	result := &Pump{
 		trigger: trigger,
 		outputs: map[chan struct{}]bool{},
-		adds:    make(chan chan struct{}),
-		removes: make(chan chan struct{}),
+		adds:    make(chan chan struct{}, 10),
+		removes: make(chan chan struct{}, 10),
 	}
 	go result.run()
+	return result
+}
+
+func Tick(d time.Duration) chan struct{} {
+	result := make(chan struct{})
+	tick := time.Tick(d)
+
+	go func() {
+		for {
+			<-tick
+			result <- struct{}{}
+		}
+	}()
+
 	return result
 }
 
