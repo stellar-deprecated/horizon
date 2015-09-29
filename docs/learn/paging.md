@@ -1,7 +1,5 @@
 ---
-id: paging
-title: Paging
-category: Guides
+title: Horizon Paging
 ---
 
 The Stellar network contains a lot of data and it would be infeasible to return it all at once. The paging system allows

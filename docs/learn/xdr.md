@@ -1,7 +1,5 @@
 ---
-id: xdr
 title: XDR
-category: Guides
 ---
 
 **XDR**, also known as _External Data Representation_, is used extensively in
@@ -17,7 +15,7 @@ and present the values as JSON attributes.  That said, we also expose the XDR
 to you so you can get access to the raw, canonical data.
 
 In general, Horizon will encode the XDR structures in base64 so that they can be 
-transmited within a json body.  You should decode the base64 string
+transmitted within a json body.  You should decode the base64 string
 into a byte stream, then decode the XDR into an in-memory data structure.
 
 ## .X files

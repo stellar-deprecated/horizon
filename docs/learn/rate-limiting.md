@@ -1,7 +1,5 @@
 ---
-id: rate_limiting
-title: Rate Limiting
-category: Guides
+title: Horizon Rate Limiting
 ---
 
 In order to provide service stability, horizon limits the number of requests a
