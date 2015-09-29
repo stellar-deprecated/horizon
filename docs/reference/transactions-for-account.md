@@ -67,7 +67,7 @@ server.transactions()
 This endpoint responds with a list of transactions that changed a given account's state. See [transaction resource](./resources/transaction.md) for reference.
 
 ### Example Response
-```
+```json
 {
   "_embedded": {
     "records": [
