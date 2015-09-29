@@ -63,9 +63,7 @@ func txResultFromHistory(tx TransactionRecord) txsub.Result {
 }
 
 func txResultFromCore(tx CoreTransactionRecord) txsub.Result {
-	//TODO: decode the result xdr, extract TransactionResult
-	// re-encode result to xdr
-
+	//decode the result xdr, extract TransactionResult
 	var trp xdr.TransactionResultPair
 	err := xdr.SafeUnmarshalBase64(tx.ResultXDR, &trp)
 
