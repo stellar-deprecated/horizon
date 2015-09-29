@@ -8,9 +8,12 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/rcrowley/go-metrics"
+	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/pump"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/txsub"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/graceful"
 	"golang.org/x/net/context"
@@ -22,18 +25,21 @@ var appContextKey = 0
 var version = ""
 
 type App struct {
-	config         Config
-	metrics        metrics.Registry
-	web            *Web
-	historyDb      *sql.DB
-	coreDb         *sql.DB
-	ctx            context.Context
-	cancel         func()
-	redis          *redis.Pool
-	log            *logrus.Entry
-	logMetrics     *log.Metrics
-	coreVersion    string
-	horizonVersion string
+	config            Config
+	metrics           metrics.Registry
+	web               *Web
+	historyDb         *sql.DB
+	coreDb            *sql.DB
+	ctx               context.Context
+	cancel            func()
+	redis             *redis.Pool
+	log               *logrus.Entry
+	logMetrics        *log.Metrics
+	coreVersion       string
+	horizonVersion    string
+	networkPassphrase string
+	submitter         *txsub.System
+	pump              *pump.Pump
 }
 
 func SetVersion(v string) {
@@ -51,6 +57,7 @@ func NewApp(config Config) (*App, error) {
 
 	result := &App{config: config}
 	result.horizonVersion = version
+	result.networkPassphrase = build.DefaultNetwork.Passphrase
 	appInit.Run(result)
 
 	return result, nil
@@ -77,11 +84,7 @@ func (a *App) Serve() {
 		log.Info(a.ctx, "stopped")
 	})
 
-	if a.config.Autopump {
-		sse.SetPump(a.ctx, sse.AutoPump)
-	} else {
-		sse.SetPump(a.ctx, db.NewLedgerClosePump(a.ctx, a.historyDb))
-	}
+	sse.SetPump(a.ctx, a.pump.Subscribe())
 
 	err := graceful.Serve(listener, http.DefaultServeMux)
 

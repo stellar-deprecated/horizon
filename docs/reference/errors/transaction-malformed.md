@@ -24,6 +24,12 @@ As with all errors Horizon returns, `transaction_malformed` follows the [Problem
 | Detail    | String | A more detailed description of the error.                                                                                       |
 | Instance  | String | A token that uniquely identifies this request. Allows server administrators to correlate a client report with server log files. |
 
+In addition, the following additional data is provided in the `extras` field of the error:
+
+| Attribute      | Type   | Description                                        |
+|----------------|--------|----------------------------------------------------|
+| `envelope_xdr` | String | The submitted data that was malformed in some way. |
+
 
 ## Related
 

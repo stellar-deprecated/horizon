@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
 )
 
@@ -113,4 +114,30 @@ func (action *TransactionShowAction) JSON() {
 	}
 
 	hal.Render(action.W, NewTransactionResource(action.Record))
+}
+
+// TransactionCreateAction submits a transaction to the stellar-core network
+// on behalf of the requesting client.
+type TransactionCreateAction struct {
+	Action
+}
+
+// JSON format action handler
+func (action *TransactionCreateAction) JSON() {
+
+	l := action.App.submitter.Submit(action.Ctx, action.GetString("tx"))
+
+	select {
+	case result := <-l:
+		resource := &ResultResource{result}
+
+		if resource.IsSuccess() {
+			hal.Render(action.W, resource.Success())
+		} else {
+			problem.Render(action.Ctx, action.W, resource.Error())
+		}
+	case <-action.Ctx.Done():
+		return
+	}
+
 }

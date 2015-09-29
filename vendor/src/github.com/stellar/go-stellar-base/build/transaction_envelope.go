@@ -12,7 +12,7 @@ import (
 // MutateTransactionEnvelope operation.  types may implement this interface to
 // specify how they modify an xdr.TransactionEnvelope object
 type TransactionEnvelopeMutator interface {
-	MutateTransactionEnvelope(*xdr.TransactionEnvelope) error
+	MutateTransactionEnvelope(*TransactionEnvelopeBuilder) error
 }
 
 // TransactionEnvelopeBuilder helps you build a TransactionEnvelope
@@ -25,7 +25,7 @@ type TransactionEnvelopeBuilder struct {
 // envelope
 func (b *TransactionEnvelopeBuilder) Mutate(muts ...TransactionEnvelopeMutator) {
 	for _, m := range muts {
-		err := m.MutateTransactionEnvelope(&b.E)
+		err := m.MutateTransactionEnvelope(b)
 		if err != nil {
 			b.Err = err
 			return
@@ -68,9 +68,15 @@ func (b TransactionEnvelopeBuilder) Base64() (string, error) {
 	return base64.StdEncoding.EncodeToString(bs), err
 }
 
+// ------------------------------------------------------------
+//
+//   Mutator implementations
+//
+// ------------------------------------------------------------
+
 // MutateTransactionEnvelope adds a signature to the provided envelope
-func (m Sign) MutateTransactionEnvelope(txe *xdr.TransactionEnvelope) error {
-	tb := TransactionBuilder{TX: txe.Tx}
+func (m Sign) MutateTransactionEnvelope(txe *TransactionEnvelopeBuilder) error {
+	tb := TransactionBuilder{TX: txe.E.Tx}
 	hash, err := tb.Hash()
 
 	if err != nil {
@@ -88,17 +94,17 @@ func (m Sign) MutateTransactionEnvelope(txe *xdr.TransactionEnvelope) error {
 		Signature: xdr.Signature(sig[:]),
 	}
 
-	txe.Signatures = append(txe.Signatures, ds)
+	txe.E.Signatures = append(txe.E.Signatures, ds)
 	return nil
 }
 
 // MutateTransactionEnvelope for TransactionBuilder causes the underylying
 // transaction to be set as the provided envelope's Tx field
-func (m TransactionBuilder) MutateTransactionEnvelope(txe *xdr.TransactionEnvelope) error {
+func (m TransactionBuilder) MutateTransactionEnvelope(txe *TransactionEnvelopeBuilder) error {
 	if m.Err != nil {
 		return m.Err
 	}
 
-	txe.Tx = m.TX
+	txe.E.Tx = m.TX
 	return nil
 }

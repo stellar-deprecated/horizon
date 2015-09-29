@@ -28,6 +28,12 @@ func RegisterError(err error, p P) {
 	errToProblemMap[err] = p
 }
 
+// HasProblem types can be transformed into a problem.
+// Implement it for custom errors.
+type HasProblem interface {
+	Problem() P
+}
+
 // P is a struct that represents an error response to be rendered to a connected
 // client.
 type P struct {
@@ -46,8 +52,10 @@ func (p *P) Error() string {
 // Inflate expands a problem with contextal information.
 // At present it adds the request's id as the problem's Instance, if available.
 func Inflate(ctx context.Context, p *P) {
-	//TODO: inflate type into full url
 	//TODO: add requesting url to extra info
+
+	//TODO: make this prefix configurable
+	p.Type = "https://stellar.org/horizon-errors/" + p.Type
 
 	p.Instance = requestid.FromContext(ctx)
 }
@@ -65,6 +73,8 @@ func Render(ctx context.Context, w http.ResponseWriter, p interface{}) {
 		render(ctx, w, p)
 	case *P:
 		render(ctx, w, *p)
+	case HasProblem:
+		render(ctx, w, p.Problem())
 	case error:
 		renderErr(ctx, w, p)
 	default:
