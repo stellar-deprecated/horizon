@@ -3,6 +3,7 @@ package txsub
 import (
 	"encoding/json"
 	"github.com/go-errors/errors"
+	"golang.org/x/net/context"
 	"net/http"
 	"net/url"
 	"time"
@@ -41,7 +42,7 @@ type submitter struct {
 
 // Submit sends the provided envelope to stellar-core and parses the response into
 // a SubmissionResult
-func (sub *submitter) Submit(env string) (result SubmissionResult) {
+func (sub *submitter) Submit(ctx context.Context, env string) (result SubmissionResult) {
 	start := time.Now()
 	defer func() { result.Duration = time.Since(start) }()
 

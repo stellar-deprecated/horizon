@@ -2,11 +2,13 @@ package txsub
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/test"
 	"testing"
 	"time"
 )
 
 func TestDefaultSubmissionList(t *testing.T) {
+	ctx := test.Context()
 
 	Convey("submissionList (The default OpenSubmissionList implementation)", t, func() {
 		list := NewDefaultSubmissionList()
@@ -23,7 +25,7 @@ func TestDefaultSubmissionList(t *testing.T) {
 
 		Convey("Add()", func() {
 			Convey("adds an entry to the submission list when a new hash is used", func() {
-				list.Add(hashes[0], listeners[0])
+				list.Add(ctx, hashes[0], listeners[0])
 				sub := realList.submissions[hashes[0]]
 				So(sub.Hash, ShouldEqual, hashes[0])
 				So(sub.SubmittedAt, ShouldHappenWithin, 1*time.Second, time.Now())
@@ -34,11 +36,11 @@ func TestDefaultSubmissionList(t *testing.T) {
 			})
 
 			Convey("adds an listener to an existing entry when a hash is used with a new listener", func() {
-				list.Add(hashes[0], listeners[0])
+				list.Add(ctx, hashes[0], listeners[0])
 				sub := realList.submissions[hashes[0]]
 				st := sub.SubmittedAt
 				<-time.After(20 * time.Millisecond)
-				list.Add(hashes[0], listeners[1])
+				list.Add(ctx, hashes[0], listeners[1])
 
 				// increases the size of the listener
 				So(len(sub.Listeners), ShouldEqual, 2)
@@ -47,22 +49,22 @@ func TestDefaultSubmissionList(t *testing.T) {
 			})
 
 			Convey("panics when the listener is not buffered", func() {
-				So(func() { list.Add(hashes[0], make(Listener)) }, ShouldPanic)
+				So(func() { list.Add(ctx, hashes[0], make(Listener)) }, ShouldPanic)
 			})
 
 			Convey("errors when the provided hash is not 64-bytes", func() {
-				err := list.Add("123", listeners[0])
+				err := list.Add(ctx, "123", listeners[0])
 				So(err, ShouldNotBeNil)
 			})
 		})
 
 		Convey("Finish()", func() {
-			list.Add(hashes[0], listeners[0])
-			list.Add(hashes[0], listeners[1])
+			list.Add(ctx, hashes[0], listeners[0])
+			list.Add(ctx, hashes[0], listeners[1])
 			r := Result{
 				Hash: hashes[0],
 			}
-			list.Finish(r)
+			list.Finish(ctx, r)
 
 			Convey("writes to every listener", func() {
 				r1, ok1 := <-listeners[0]
@@ -90,17 +92,17 @@ func TestDefaultSubmissionList(t *testing.T) {
 			})
 
 			Convey("works when the noone is waiting for the result", func() {
-				err := list.Finish(r)
+				err := list.Finish(ctx, r)
 				So(err, ShouldBeNil)
 			})
 
 		})
 
 		Convey("Clean()", func() {
-			list.Add(hashes[0], listeners[0])
+			list.Add(ctx, hashes[0], listeners[0])
 			<-time.After(200 * time.Millisecond)
-			list.Add(hashes[1], listeners[1])
-			left, err := list.Clean(200 * time.Millisecond)
+			list.Add(ctx, hashes[1], listeners[1])
+			left, err := list.Clean(ctx, 200*time.Millisecond)
 
 			So(err, ShouldBeNil)
 			So(left, ShouldEqual, 1)
@@ -126,11 +128,11 @@ func TestDefaultSubmissionList(t *testing.T) {
 		})
 
 		Convey("Pending() works as expected", func() {
-			So(len(list.Pending()), ShouldEqual, 0)
-			list.Add(hashes[0], listeners[0])
-			So(len(list.Pending()), ShouldEqual, 1)
-			list.Add(hashes[1], listeners[1])
-			So(len(list.Pending()), ShouldEqual, 2)
+			So(len(list.Pending(ctx)), ShouldEqual, 0)
+			list.Add(ctx, hashes[0], listeners[0])
+			So(len(list.Pending(ctx)), ShouldEqual, 1)
+			list.Add(ctx, hashes[1], listeners[1])
+			So(len(list.Pending(ctx)), ShouldEqual, 2)
 		})
 	})
 }

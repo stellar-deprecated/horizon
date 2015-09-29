@@ -2,6 +2,7 @@ package txsub
 
 import (
 	"errors"
+	"golang.org/x/net/context"
 	"testing"
 	"time"
 
@@ -86,7 +87,7 @@ func TestTxsub(t *testing.T) {
 
 			Convey("if no result found and no error submitting, add to open transaction list", func() {
 				_ = system.Submit(ctx, successTx.EnvelopeXDR)
-				pending := system.Pending.Pending()
+				pending := system.Pending.Pending(ctx)
 				So(len(pending), ShouldEqual, 1)
 				So(pending[0], ShouldEqual, successTx.Hash)
 				So(system.Metrics.SuccessfulSubmissionsMeter.Count(), ShouldEqual, 1)
@@ -103,26 +104,26 @@ func TestTxsub(t *testing.T) {
 
 			Convey("finishes any available transactions", func() {
 				l := make(chan Result, 1)
-				system.Pending.Add(successTx.Hash, l)
+				system.Pending.Add(ctx, successTx.Hash, l)
 				system.Tick(ctx)
 				So(len(l), ShouldEqual, 0)
-				So(len(system.Pending.Pending()), ShouldEqual, 1)
+				So(len(system.Pending.Pending(ctx)), ShouldEqual, 1)
 
 				results.ResultForHash = &successTx
 				system.Tick(ctx)
 
 				So(len(l), ShouldEqual, 1)
-				So(len(system.Pending.Pending()), ShouldEqual, 0)
+				So(len(system.Pending.Pending(ctx)), ShouldEqual, 0)
 			})
 
 			Convey("removes old submissions that have timed out", func() {
 				l := make(chan Result, 1)
 				system.SubmissionTimeout = 100 * time.Millisecond
-				system.Pending.Add(successTx.Hash, l)
+				system.Pending.Add(ctx, successTx.Hash, l)
 				<-time.After(101 * time.Millisecond)
 				system.Tick(ctx)
 
-				So(len(system.Pending.Pending()), ShouldEqual, 0)
+				So(len(system.Pending.Pending(ctx)), ShouldEqual, 0)
 
 				select {
 				case _, stillOpen := <-l:
@@ -142,7 +143,7 @@ type MockSubmitter struct {
 	WasSubmittedTo bool
 }
 
-func (sub *MockSubmitter) Submit(env string) SubmissionResult {
+func (sub *MockSubmitter) Submit(ctx context.Context, env string) SubmissionResult {
 	sub.WasSubmittedTo = true
 	return sub.R
 }
@@ -152,7 +153,7 @@ type MockResultProvider struct {
 	ResultForAddressAndSequence *Result
 }
 
-func (results *MockResultProvider) ResultByHash(hash string) Result {
+func (results *MockResultProvider) ResultByHash(ctx context.Context, hash string) Result {
 	if results.ResultForHash == nil {
 		return Result{Err: ErrNoResults}
 	}
@@ -161,7 +162,7 @@ func (results *MockResultProvider) ResultByHash(hash string) Result {
 	return r
 }
 
-func (results *MockResultProvider) ResultByAddressAndSequence(address string, sequence uint64) Result {
+func (results *MockResultProvider) ResultByAddressAndSequence(ctx context.Context, address string, sequence uint64) Result {
 	if results.ResultForAddressAndSequence == nil {
 		return Result{Err: ErrNoResults}
 	}

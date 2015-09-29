@@ -8,6 +8,7 @@ import (
 )
 
 func TestDefaultSubmitter(t *testing.T) {
+	ctx := test.Context()
 
 	Convey("submitter (The default Submitter implementation)", t, func() {
 
@@ -19,7 +20,7 @@ func TestDefaultSubmitter(t *testing.T) {
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldBeNil)
 			So(sr.Duration, ShouldBeGreaterThan, 0)
 			So(server.LastRequest.URL.Query().Get("blob"), ShouldEqual, "hello")
@@ -33,25 +34,25 @@ func TestDefaultSubmitter(t *testing.T) {
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldBeNil)
 		})
 
 		Convey("errors when the stellar-core url is empty", func() {
 			s := NewDefaultSubmitter(http.DefaultClient, "")
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldNotBeNil)
 		})
 
 		Convey("errors when the stellar-core url is not parseable", func() {
 			s := NewDefaultSubmitter(http.DefaultClient, "http://Not a url")
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldNotBeNil)
 		})
 
 		Convey("errors when the stellar-core url is not reachable", func() {
 			s := NewDefaultSubmitter(http.DefaultClient, "http://127.0.0.1:65535")
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldNotBeNil)
 		})
 
@@ -60,7 +61,7 @@ func TestDefaultSubmitter(t *testing.T) {
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldNotBeNil)
 		})
 
@@ -69,7 +70,7 @@ func TestDefaultSubmitter(t *testing.T) {
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldNotBeNil)
 			So(sr.Err.Error(), ShouldContainSubstring, "Invalid XDR")
 		})
@@ -79,7 +80,7 @@ func TestDefaultSubmitter(t *testing.T) {
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldNotBeNil)
 			So(sr.Err.Error(), ShouldContainSubstring, "NOTREAL")
 		})
@@ -89,7 +90,7 @@ func TestDefaultSubmitter(t *testing.T) {
 			defer server.Close()
 
 			s := NewDefaultSubmitter(http.DefaultClient, server.URL)
-			sr := s.Submit("hello")
+			sr := s.Submit(ctx, "hello")
 			So(sr.Err, ShouldHaveSameTypeAs, &FailedTransactionError{})
 			ferr := sr.Err.(*FailedTransactionError)
 			So(ferr.ResultXDR, ShouldEqual, "1234")

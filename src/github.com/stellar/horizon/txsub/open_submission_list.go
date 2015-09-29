@@ -2,6 +2,7 @@ package txsub
 
 import (
 	"github.com/go-errors/errors"
+	"golang.org/x/net/context"
 	"sync"
 	"time"
 )
@@ -27,7 +28,7 @@ type submissionList struct {
 	submissions map[string]*openSubmission
 }
 
-func (s *submissionList) Add(hash string, l Listener) error {
+func (s *submissionList) Add(ctx context.Context, hash string, l Listener) error {
 	s.Lock()
 	defer s.Unlock()
 
@@ -55,7 +56,7 @@ func (s *submissionList) Add(hash string, l Listener) error {
 	return nil
 }
 
-func (s *submissionList) Finish(r Result) error {
+func (s *submissionList) Finish(ctx context.Context, r Result) error {
 	s.Lock()
 	defer s.Unlock()
 
@@ -73,7 +74,7 @@ func (s *submissionList) Finish(r Result) error {
 	return nil
 }
 
-func (s *submissionList) Clean(maxAge time.Duration) (int, error) {
+func (s *submissionList) Clean(ctx context.Context, maxAge time.Duration) (int, error) {
 	s.Lock()
 	defer s.Unlock()
 
@@ -89,7 +90,7 @@ func (s *submissionList) Clean(maxAge time.Duration) (int, error) {
 	return len(s.submissions), nil
 }
 
-func (s *submissionList) Pending() []string {
+func (s *submissionList) Pending(ctx context.Context) []string {
 	s.Lock()
 	defer s.Unlock()
 	results := make([]string, 0, len(s.submissions))

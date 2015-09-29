@@ -53,10 +53,10 @@ type System struct {
 // of each transaction in the open submission list at each tick (i.e. ledger close)
 type ResultProvider interface {
 	// Look up a result by transaction hash
-	ResultByHash(string) Result
+	ResultByHash(context.Context, string) Result
 
 	// Look up a result by address and sequence number
-	ResultByAddressAndSequence(string, uint64) Result
+	ResultByAddressAndSequence(context.Context, string, uint64) Result
 }
 
 // Listener represents some client who is interested in retrieving the result
@@ -74,25 +74,25 @@ type Listener chan<- Result
 type OpenSubmissionList interface {
 	// Add registers the provided listener as interested in being notified when a
 	// result is available for the provided transaction hash.
-	Add(string, Listener) error
+	Add(context.Context, string, Listener) error
 
 	// Finish forwards the provided result on to any listeners and cleans up any
 	// resources associated with the transaction that this result is for
-	Finish(Result) error
+	Finish(context.Context, Result) error
 
 	// Clean removes any open submissions over the provided age.
-	Clean(time.Duration) (int, error)
+	Clean(context.Context, time.Duration) (int, error)
 
 	// Pending return a list of transaction hashes that have at least one
 	// listener registered to them in this list.
-	Pending() []string
+	Pending(context.Context) []string
 }
 
 // Submitter represents the low-level "submit a transaction to stellar-core"
 // provider.
 type Submitter interface {
 	// Submit sends the provided transaction envelope to stellar-core
-	Submit(string) SubmissionResult
+	Submit(context.Context, string) SubmissionResult
 }
 
 // Result represents the response from a ResultProvider.  Given no
@@ -194,7 +194,7 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	}
 
 	// check the configured result provider for an existing result
-	r := sys.Results.ResultByHash(info.Hash)
+	r := sys.Results.ResultByHash(ctx, info.Hash)
 
 	if r.Err != ErrNoResults {
 		response <- r
@@ -202,13 +202,13 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	}
 
 	// submit to stellar-core
-	sr := sys.Submitter.Submit(env)
+	sr := sys.Submitter.Submit(ctx, env)
 	sys.Metrics.SubmissionTimer.Update(sr.Duration)
 
 	// if received or duplicate, add to the open submissions list
 	if sr.Err == nil {
 		sys.Metrics.SuccessfulSubmissionsMeter.Mark(1)
-		sys.Pending.Add(info.Hash, response)
+		sys.Pending.Add(ctx, info.Hash, response)
 		return
 	}
 
@@ -226,7 +226,7 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 		return
 	}
 
-	r = sys.Results.ResultByAddressAndSequence(info.SourceAddress, info.Sequence)
+	r = sys.Results.ResultByAddressAndSequence(ctx, info.SourceAddress, info.Sequence)
 
 	// If the found result is the same hash, use it as the result
 	if r.Err == nil && r.Hash == info.Hash {
@@ -244,12 +244,12 @@ func (sys *System) Tick(ctx context.Context) {
 	sys.init(ctx)
 
 	log.Debugln(ctx, "ticking txsub system")
-	for _, hash := range sys.Pending.Pending() {
-		r := sys.Results.ResultByHash(hash)
+	for _, hash := range sys.Pending.Pending(ctx) {
+		r := sys.Results.ResultByHash(ctx, hash)
 
 		if r.Err == nil {
 			log.WithField(ctx, "hash", hash).Debug("finishing open submission")
-			sys.Pending.Finish(r)
+			sys.Pending.Finish(ctx, r)
 			continue
 		}
 
@@ -258,7 +258,7 @@ func (sys *System) Tick(ctx context.Context) {
 		}
 	}
 
-	stillOpen, err := sys.Pending.Clean(sys.SubmissionTimeout)
+	stillOpen, err := sys.Pending.Clean(ctx, sys.SubmissionTimeout)
 	if err != nil {
 		log.WithStack(ctx, err).Error(err)
 	}

@@ -7,12 +7,11 @@ import (
 )
 
 type ResultProvider struct {
-	Ctx     context.Context
 	Core    *sql.DB
 	History *sql.DB
 }
 
-func (rp *ResultProvider) ResultByHash(hash string) txsub.Result {
+func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.Result {
 	var (
 		hr TransactionRecord
 	)
@@ -22,7 +21,7 @@ func (rp *ResultProvider) ResultByHash(hash string) txsub.Result {
 		Hash:     hash,
 	}
 
-	err := Get(rp.Ctx, hq, &hr)
+	err := Get(ctx, hq, &hr)
 	if err == nil {
 		return txResultFromTransactionRecord(hr)
 	}
@@ -36,7 +35,7 @@ func (rp *ResultProvider) ResultByHash(hash string) txsub.Result {
 	return txsub.Result{Err: txsub.ErrNoResults}
 }
 
-func (rp *ResultProvider) ResultByAddressAndSequence(addr string, seq uint64) txsub.Result {
+func (rp *ResultProvider) ResultByAddressAndSequence(ctx context.Context, addr string, seq uint64) txsub.Result {
 	var hr TransactionRecord
 
 	hq := TransactionByAddressAndSequence{
@@ -45,7 +44,7 @@ func (rp *ResultProvider) ResultByAddressAndSequence(addr string, seq uint64) tx
 		Sequence: seq,
 	}
 
-	err := Get(rp.Ctx, hq, &hr)
+	err := Get(ctx, hq, &hr)
 	if err == nil {
 		return txResultFromTransactionRecord(hr)
 	}
