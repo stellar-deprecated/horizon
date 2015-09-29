@@ -56,7 +56,7 @@ additional attributes and links specific to that operation type.
 Each operation type will have a different set of attributes, in addition to the
 common attributes listed above.
 
-
+<a id="create-account"></a>
 ### Create Account
 
 Create Account operation represents a new account creation.
@@ -101,7 +101,7 @@ Create Account operation represents a new account creation.
 }
 ```
 
-
+<a id="payment"></a>
 ### Payment
 
 A payment operation represents a payment from one account to another.  This payment
@@ -157,7 +157,7 @@ can be either a simple native asset payment or a fiat asset payment.
 }
 ```
 
-
+<a id="path-payment"></a>
 ### Path Payment
 
 A path payment operation represents a payment from one account to another through a path.  This type of payment starts as one type of asset and ends as another type of asset. There can be other assets that are traded into and out of along the path.
@@ -217,6 +217,7 @@ A path payment operation represents a payment from one account to another throug
 }
 ```
 
+<a id="manage-offer"></a>
 ### Manage Offer
 
 A "Manage Offer" operation can create, update or delete an
@@ -288,18 +289,57 @@ offers or payments, this offer can potentially be filled.
 }
 ```
 
+<a id="create-passive-offer"></a>
 ### Create Passive Offer
 
 “Create Passive Offer” operation creates an offer that won't consume a counter offer that exactly matches this offer. This is useful for offers just used as 1:1 exchanges for path payments. Use Manage Offer to manage this offer after using this operation to create it.
 
 #### Attributes
 
-| Field           |  Type  | Description       |
-| --------------- | ------ | ----------------- |
-|                 |        |                   |
+As in [Manage Offer](#manage-offer) operation.
+
+#### Example
+
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/1127729562914817/effects{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=1127729562914817\u0026order=asc"
+    },
+    "self": {
+      "href": "/operations/1127729562914817"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=1127729562914817\u0026order=desc"
+    },
+    "transaction": {
+      "href": "/transactions/1127729562914816"
+    }
+  },
+  "amount": "11.27827",
+  "buying_asset_code": "USD",
+  "buying_asset_issuer": "GDS5JW5E6DRSSN5XK4LW7E6VUMFKKE2HU5WCOVFTO7P2RP7OXVCBLJ3Y",
+  "buying_asset_type": "credit_alphanum4",
+  "id": 1127729562914817,
+  "offer_id": 9,
+  "paging_token": "1127729562914817",
+  "price": "1.0",
+  "price_r": {
+    "d": 1,
+    "n": 1
+  },
+  "selling_asset_type": "native",
+  "type": 4,
+  "type_s": "create_passive_offer"
+}
+```
 
 
-<a id="set_options"></a>
+<a id="set-options"></a>
 ### Set Options
 
 Use “Set Options” operation to set following options to your account:
@@ -367,6 +407,7 @@ Use “Set Options” operation to set following options to your account:
 }
 ```
 
+<a id="change-trust"></a>
 ### Change Trust
 
 Use “Change Trust” operation to create/update/delete a trust line from the source account to another. The issuer being trusted and the asset code are in the given Asset object.
@@ -417,7 +458,7 @@ Use “Change Trust” operation to create/update/delete a trust line from the s
 }
 ```
 
-<a id="allow_trust"></a>
+<a id="allow-trust"></a>
 ### Allow Trust
 
 Updates the "authorized" flag of an existing trust line this is called by the issuer of the asset.
@@ -470,7 +511,7 @@ Heads up! Unless the issuing account has `AUTH_REVOCABLE_FLAG` set than the "aut
 }
 ```
 
-<a id="account_merge"></a>
+<a id="account-merge"></a>
 ### Account Merge
 
 Removes the account and transfers all remaining XLM to the destination account.
