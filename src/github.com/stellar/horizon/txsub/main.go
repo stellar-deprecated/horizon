@@ -54,9 +54,6 @@ type System struct {
 type ResultProvider interface {
 	// Look up a result by transaction hash
 	ResultByHash(context.Context, string) Result
-
-	// Look up a result by address and sequence number
-	ResultByAddressAndSequence(context.Context, string, uint64) Result
 }
 
 // Listener represents some client who is interested in retrieving the result
@@ -226,16 +223,17 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 		return
 	}
 
-	r = sys.Results.ResultByAddressAndSequence(ctx, info.SourceAddress, info.Sequence)
+	// If error is txBAD_SEQ, check for the result again
+	r = sys.Results.ResultByHash(ctx, info.Hash)
 
-	// If the found result is the same hash, use it as the result
-	if r.Err == nil && r.Hash == info.Hash {
+	if r.Err == nil {
+		// If the found use it as the result
 		response <- r
-		return
+	} else {
+		// finally, return the bad_seq error if no result was found on 2nd attempt
+		response <- Result{Err: sr.Err, EnvelopeXDR: env}
 	}
 
-	// finally, return the bad_seq error if the hash is different
-	response <- Result{Err: sr.Err, EnvelopeXDR: env}
 	return
 }
 

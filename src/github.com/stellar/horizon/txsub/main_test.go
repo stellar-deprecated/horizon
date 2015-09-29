@@ -24,6 +24,7 @@ func TestTxsub(t *testing.T) {
 			NetworkPassphrase: build.TestNetwork.Passphrase,
 		}
 
+		noResults := Result{Err: ErrNoResults}
 		successTx := Result{
 			Hash:           "c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74",
 			LedgerSequence: 2,
@@ -37,7 +38,7 @@ func TestTxsub(t *testing.T) {
 
 		Convey("Submit", func() {
 			Convey("returns the result provided by the ResultProvider", func() {
-				results.ResultForHash = &successTx
+				results.Results = []Result{successTx}
 				r := <-system.Submit(ctx, successTx.EnvelopeXDR)
 
 				So(r.Err, ShouldBeNil)
@@ -58,22 +59,12 @@ func TestTxsub(t *testing.T) {
 
 			Convey("if the error is bad_seq and the result at the transaction's sequence number is for the same hash, return result", func() {
 				submitter.R = badSeq
-				results.ResultForAddressAndSequence = &successTx
+				results.Results = []Result{noResults, successTx}
 
 				r := <-system.Submit(ctx, successTx.EnvelopeXDR)
 
 				So(r.Err, ShouldBeNil)
 				So(r.Hash, ShouldEqual, successTx.Hash)
-				So(submitter.WasSubmittedTo, ShouldBeTrue)
-			})
-
-			Convey("if the error is bad_seq and the result isn't for the same hash, return error", func() {
-				submitter.R = badSeq
-				results.ResultForAddressAndSequence = &successTx
-				results.ResultForAddressAndSequence.Hash = "some_other_hash"
-				r := <-system.Submit(ctx, successTx.EnvelopeXDR)
-
-				So(r.Err, ShouldNotBeNil)
 				So(submitter.WasSubmittedTo, ShouldBeTrue)
 			})
 
@@ -109,7 +100,7 @@ func TestTxsub(t *testing.T) {
 				So(len(l), ShouldEqual, 0)
 				So(len(system.Pending.Pending(ctx)), ShouldEqual, 1)
 
-				results.ResultForHash = &successTx
+				results.Results = []Result{successTx}
 				system.Tick(ctx)
 
 				So(len(l), ShouldEqual, 1)
@@ -149,24 +140,16 @@ func (sub *MockSubmitter) Submit(ctx context.Context, env string) SubmissionResu
 }
 
 type MockResultProvider struct {
-	ResultForHash               *Result
-	ResultForAddressAndSequence *Result
+	Results []Result
 }
 
-func (results *MockResultProvider) ResultByHash(ctx context.Context, hash string) Result {
-	if results.ResultForHash == nil {
-		return Result{Err: ErrNoResults}
+func (results *MockResultProvider) ResultByHash(ctx context.Context, hash string) (r Result) {
+	if len(results.Results) > 0 {
+		r = results.Results[0]
+		results.Results = results.Results[1:]
+	} else {
+		r = Result{Err: ErrNoResults}
 	}
 
-	r := *results.ResultForHash
-	return r
-}
-
-func (results *MockResultProvider) ResultByAddressAndSequence(ctx context.Context, address string, sequence uint64) Result {
-	if results.ResultForAddressAndSequence == nil {
-		return Result{Err: ErrNoResults}
-	}
-
-	r := *results.ResultForAddressAndSequence
-	return r
+	return
 }

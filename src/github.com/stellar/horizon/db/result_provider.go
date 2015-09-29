@@ -45,29 +45,7 @@ func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.R
 		return txsub.Result{Err: err}
 	}
 
-	return txsub.Result{Err: txsub.ErrNoResults}
-}
-
-func (rp *ResultProvider) ResultByAddressAndSequence(ctx context.Context, addr string, seq uint64) txsub.Result {
-	var hr TransactionRecord
-
-	hq := TransactionByAddressAndSequence{
-		SqlQuery: SqlQuery{rp.History},
-		Address:  addr,
-		Sequence: seq,
-	}
-
-	err := Get(ctx, hq, &hr)
-	if err == nil {
-		return txResultFromHistory(hr)
-	}
-
-	if err != ErrNoResults {
-		return txsub.Result{Err: err}
-	}
-
-	//TODO: check stellar-core for results as well
-
+	// if no result was found in either db, return ErrNoResults
 	return txsub.Result{Err: txsub.ErrNoResults}
 }
 
