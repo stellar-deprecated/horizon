@@ -3,7 +3,7 @@ title: Follow Received Payments
 ---
 
 This tutorial shows how easy it is to use Horizon to watch for incoming payments on an [account](../../reference/resources/account.md)
-using JavaScript and `EventSource`.  We will eschew using [js-stellar-sdk](https://github.com/stellar/js-stellar-sdk), the
+using JavaScript and `EventSource`.  We will eschew using [`js-stellar-sdk`](https://github.com/stellar/js-stellar-sdk), the
 high-level helper library, to show that it is possible for you to perform this
 task on your own, with whatever programming language you would like to use.
 
@@ -125,7 +125,7 @@ data: {"_links":{"effects":{"href":"/operations/713226564145153/effects/{?cursor
        "type_s":"create_account"}
 ```
 
-Every time you receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions [/transactions](../reference/transactions-all.md) and operations [/operations](../reference/operations-all.md).
+Every time you receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions [/transactions](../../reference/transactions-all.md) and operations [/operations](../../reference/operations-all.md).
 
 ## Following payments using `EventStream`
 
@@ -146,8 +146,8 @@ es.onerror = function(error) {
 Now, run our script: `node stream_payments.js`. You should see following output:
 ```bash
 New payment:
-{ _links: 
-   { effects: 
+{ _links:
+   { effects:
       { href: '/operations/713226564145153/effects/{?cursor,limit,order}',
         templated: true },
      precedes: { href: '/operations?cursor=713226564145153&order=asc' },
@@ -206,4 +206,3 @@ curl -H "Content-Type: application/json" -X POST -d '{"tx":"AAAAAH6Sq76F4cHVMWvG
 ```
 
 You should see a new payment in a window running `stream_payments.js` script.
-

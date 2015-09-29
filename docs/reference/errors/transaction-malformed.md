@@ -33,4 +33,4 @@ In addition, the following additional data is provided in the `extras` field of 
 
 ## Related
 
-[Bad Request](./bad_request.md)
+[Bad Request](./bad-request.md)
