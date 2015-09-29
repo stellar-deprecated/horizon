@@ -213,6 +213,50 @@ func (u NodeId) GetEd25519() (result Uint256, ok bool) {
 	return PublicKey(u).GetEd25519()
 }
 
+// Curve25519Secret is an XDR Struct defines as:
+//
+//   struct Curve25519Secret
+//    {
+//            opaque key[32];
+//    };
+//
+type Curve25519Secret struct {
+	Key [32]byte
+}
+
+// Curve25519Public is an XDR Struct defines as:
+//
+//   struct Curve25519Public
+//    {
+//            opaque key[32];
+//    };
+//
+type Curve25519Public struct {
+	Key [32]byte
+}
+
+// HmacSha256Key is an XDR Struct defines as:
+//
+//   struct HmacSha256Key
+//    {
+//            opaque key[32];
+//    };
+//
+type HmacSha256Key struct {
+	Key [32]byte
+}
+
+// HmacSha256Mac is an XDR Struct defines as:
+//
+//   struct HmacSha256Mac
+//    {
+//            opaque mac[32];
+//    };
+//
+type HmacSha256Mac struct {
+	Mac [32]byte
+}
+
 // AccountId is an XDR Typedef defines as:
 //
 //   typedef PublicKey AccountID;
@@ -560,12 +604,15 @@ type Signer struct {
 //   enum AccountFlags
 //    { // masks for each flag
 //
-//        // if set, TrustLines are created with authorized set to "false"
-//        // requiring the issuer to set it for each TrustLine
+//        // Flags set on issuer accounts
+//        // TrustLines are created with authorized set to "false" requiring
+//        // the issuer to set it for each TrustLine
 //        AUTH_REQUIRED_FLAG = 0x1,
-//        // if set, the authorized flag in TrustLines can be cleared
+//        // If set, the authorized flag in TrustLines can be cleared
 //        // otherwise, authorization cannot be revoked
-//        AUTH_REVOCABLE_FLAG = 0x2
+//        AUTH_REVOCABLE_FLAG = 0x2,
+//        // Once set, causes all AUTH_* flags to be read-only
+//        AUTH_IMMUTABLE_FLAG = 0x4
 //    };
 //
 type AccountFlags int32
@@ -573,11 +620,13 @@ type AccountFlags int32
 const (
 	AccountFlagsAuthRequiredFlag  AccountFlags = 1
 	AccountFlagsAuthRevocableFlag              = 2
+	AccountFlagsAuthImmutableFlag              = 4
 )
 
 var accountFlagsMap = map[int32]string{
 	1: "AccountFlagsAuthRequiredFlag",
 	2: "AccountFlagsAuthRevocableFlag",
+	4: "AccountFlagsAuthImmutableFlag",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -1097,19 +1146,22 @@ type LedgerEntry struct {
 //   enum EnvelopeType
 //    {
 //        ENVELOPE_TYPE_SCP = 1,
-//        ENVELOPE_TYPE_TX = 2
+//        ENVELOPE_TYPE_TX = 2,
+//        ENVELOPE_TYPE_AUTH = 3
 //    };
 //
 type EnvelopeType int32
 
 const (
-	EnvelopeTypeEnvelopeTypeScp EnvelopeType = 1
-	EnvelopeTypeEnvelopeTypeTx               = 2
+	EnvelopeTypeEnvelopeTypeScp  EnvelopeType = 1
+	EnvelopeTypeEnvelopeTypeTx                = 2
+	EnvelopeTypeEnvelopeTypeAuth              = 3
 )
 
 var envelopeTypeMap = map[int32]string{
 	1: "EnvelopeTypeEnvelopeTypeScp",
 	2: "EnvelopeTypeEnvelopeTypeTx",
+	3: "EnvelopeTypeEnvelopeTypeAuth",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -1129,7 +1181,7 @@ func (e EnvelopeType) String() string {
 //
 //   struct DecoratedSignature
 //    {
-//        SignatureHint hint;  // first 4 bytes of the public key, used as a hint
+//        SignatureHint hint;  // last 4 bytes of the public key, used as a hint
 //        Signature signature; // actual signature
 //    };
 //
@@ -2344,7 +2396,8 @@ func NewCreateAccountResult(code CreateAccountResultCode, value interface{}) (re
 //        PAYMENT_NO_DESTINATION = -5,     // destination account does not exist
 //        PAYMENT_NO_TRUST = -6,       // destination missing a trust line for asset
 //        PAYMENT_NOT_AUTHORIZED = -7, // destination not authorized to hold asset
-//        PAYMENT_LINE_FULL = -8       // destination would go above their limit
+//        PAYMENT_LINE_FULL = -8,      // destination would go above their limit
+//        PAYMENT_NO_ISSUER = -9       // missing issuer on asset
 //    };
 //
 type PaymentResultCode int32
@@ -2359,6 +2412,7 @@ const (
 	PaymentResultCodePaymentNoTrust                            = -6
 	PaymentResultCodePaymentNotAuthorized                      = -7
 	PaymentResultCodePaymentLineFull                           = -8
+	PaymentResultCodePaymentNoIssuer                           = -9
 )
 
 var paymentResultCodeMap = map[int32]string{
@@ -2371,6 +2425,7 @@ var paymentResultCodeMap = map[int32]string{
 	-6: "PaymentResultCodePaymentNoTrust",
 	-7: "PaymentResultCodePaymentNotAuthorized",
 	-8: "PaymentResultCodePaymentLineFull",
+	-9: "PaymentResultCodePaymentNoIssuer",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -2445,9 +2500,10 @@ func NewPaymentResult(code PaymentResultCode, value interface{}) (result Payment
 //        PATH_PAYMENT_NO_TRUST = -6,           // dest missing a trust line for asset
 //        PATH_PAYMENT_NOT_AUTHORIZED = -7,     // dest not authorized to hold asset
 //        PATH_PAYMENT_LINE_FULL = -8,          // dest would go above their limit
-//        PATH_PAYMENT_TOO_FEW_OFFERS = -9,     // not enough offers to satisfy path
-//        PATH_PAYMENT_OFFER_CROSS_SELF = -10,  // would cross one of its own offers
-//        PATH_PAYMENT_OVER_SENDMAX = -11       // could not satisfy sendmax
+//        PATH_PAYMENT_NO_ISSUER = -9,          // missing issuer on one asset
+//        PATH_PAYMENT_TOO_FEW_OFFERS = -10,    // not enough offers to satisfy path
+//        PATH_PAYMENT_OFFER_CROSS_SELF = -11,  // would cross one of its own offers
+//        PATH_PAYMENT_OVER_SENDMAX = -12       // could not satisfy sendmax
 //    };
 //
 type PathPaymentResultCode int32
@@ -2462,9 +2518,10 @@ const (
 	PathPaymentResultCodePathPaymentNoTrust                                = -6
 	PathPaymentResultCodePathPaymentNotAuthorized                          = -7
 	PathPaymentResultCodePathPaymentLineFull                               = -8
-	PathPaymentResultCodePathPaymentTooFewOffers                           = -9
-	PathPaymentResultCodePathPaymentOfferCrossSelf                         = -10
-	PathPaymentResultCodePathPaymentOverSendmax                            = -11
+	PathPaymentResultCodePathPaymentNoIssuer                               = -9
+	PathPaymentResultCodePathPaymentTooFewOffers                           = -10
+	PathPaymentResultCodePathPaymentOfferCrossSelf                         = -11
+	PathPaymentResultCodePathPaymentOverSendmax                            = -12
 )
 
 var pathPaymentResultCodeMap = map[int32]string{
@@ -2477,9 +2534,10 @@ var pathPaymentResultCodeMap = map[int32]string{
 	-6:  "PathPaymentResultCodePathPaymentNoTrust",
 	-7:  "PathPaymentResultCodePathPaymentNotAuthorized",
 	-8:  "PathPaymentResultCodePathPaymentLineFull",
-	-9:  "PathPaymentResultCodePathPaymentTooFewOffers",
-	-10: "PathPaymentResultCodePathPaymentOfferCrossSelf",
-	-11: "PathPaymentResultCodePathPaymentOverSendmax",
+	-9:  "PathPaymentResultCodePathPaymentNoIssuer",
+	-10: "PathPaymentResultCodePathPaymentTooFewOffers",
+	-11: "PathPaymentResultCodePathPaymentOfferCrossSelf",
+	-12: "PathPaymentResultCodePathPaymentOverSendmax",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -2533,13 +2591,16 @@ type PathPaymentResultSuccess struct {
 //            ClaimOfferAtom offers<>;
 //            SimplePaymentResult last;
 //        } success;
+//    case PATH_PAYMENT_NO_ISSUER:
+//        Asset noIssuer; // the asset that caused the error
 //    default:
 //        void;
 //    };
 //
 type PathPaymentResult struct {
-	Code    PathPaymentResultCode
-	Success *PathPaymentResultSuccess
+	Code     PathPaymentResultCode
+	Success  *PathPaymentResultSuccess
+	NoIssuer *Asset
 }
 
 // SwitchFieldName returns the field name in which this union's
@@ -2554,6 +2615,8 @@ func (u PathPaymentResult) ArmForSwitch(sw int32) (string, bool) {
 	switch PathPaymentResultCode(sw) {
 	case PathPaymentResultCodePathPaymentSuccess:
 		return "Success", true
+	case PathPaymentResultCodePathPaymentNoIssuer:
+		return "NoIssuer", true
 	default:
 		return "", true
 	}
@@ -2570,6 +2633,13 @@ func NewPathPaymentResult(code PathPaymentResultCode, value interface{}) (result
 			return
 		}
 		result.Success = &tv
+	case PathPaymentResultCodePathPaymentNoIssuer:
+		tv, ok := value.(Asset)
+		if !ok {
+			err = fmt.Errorf("invalid value, must be Asset")
+			return
+		}
+		result.NoIssuer = &tv
 	default:
 		// void
 	}
@@ -2601,6 +2671,31 @@ func (u PathPaymentResult) GetSuccess() (result PathPaymentResultSuccess, ok boo
 	return
 }
 
+// MustNoIssuer retrieves the NoIssuer value from the union,
+// panicing if the value is not set.
+func (u PathPaymentResult) MustNoIssuer() Asset {
+	val, ok := u.GetNoIssuer()
+
+	if !ok {
+		panic("arm NoIssuer is not set")
+	}
+
+	return val
+}
+
+// GetNoIssuer retrieves the NoIssuer value from the union,
+// returning ok if the union's switch indicated the value is valid.
+func (u PathPaymentResult) GetNoIssuer() (result Asset, ok bool) {
+	armName, _ := u.ArmForSwitch(int32(u.Code))
+
+	if armName == "NoIssuer" {
+		result = *u.NoIssuer
+		ok = true
+	}
+
+	return
+}
+
 // ManageOfferResultCode is an XDR Enum defines as:
 //
 //   enum ManageOfferResultCode
@@ -2614,15 +2709,16 @@ func (u PathPaymentResult) GetSuccess() (result PathPaymentResultSuccess, ok boo
 //        MANAGE_OFFER_BUY_NO_TRUST = -3,  // no trust line for what we're buying
 //        MANAGE_OFFER_SELL_NOT_AUTHORIZED = -4, // not authorized to sell
 //        MANAGE_OFFER_BUY_NOT_AUTHORIZED = -5,  // not authorized to buy
-//        MANAGE_OFFER_LINE_FULL = -6,   // can't receive more of what it's buying
-//        MANAGE_OFFER_UNDERFUNDED = -7, // doesn't hold what it's trying to sell
-//        MANAGE_OFFER_CROSS_SELF = -8,  // would cross an offer from the same user
+//        MANAGE_OFFER_LINE_FULL = -6,      // can't receive more of what it's buying
+//        MANAGE_OFFER_UNDERFUNDED = -7,    // doesn't hold what it's trying to sell
+//        MANAGE_OFFER_CROSS_SELF = -8,     // would cross an offer from the same user
+//        MANAGE_OFFER_SELL_NO_ISSUER = -9, // no issuer for what we're selling
+//        MANAGE_OFFER_BUY_NO_ISSUER = -10, // no issuer for what we're buying
 //
 //        // update errors
-//        MANAGE_OFFER_NOT_FOUND = -9, // offerID does not match an existing offer
-//        MANAGE_OFFER_MISMATCH = -10, // currencies don't match offer
+//        MANAGE_OFFER_NOT_FOUND = -11, // offerID does not match an existing offer
 //
-//        MANAGE_OFFER_LOW_RESERVE = -11 // not enough funds to create a new Offer
+//        MANAGE_OFFER_LOW_RESERVE = -12 // not enough funds to create a new Offer
 //    };
 //
 type ManageOfferResultCode int32
@@ -2637,9 +2733,10 @@ const (
 	ManageOfferResultCodeManageOfferLineFull                                = -6
 	ManageOfferResultCodeManageOfferUnderfunded                             = -7
 	ManageOfferResultCodeManageOfferCrossSelf                               = -8
-	ManageOfferResultCodeManageOfferNotFound                                = -9
-	ManageOfferResultCodeManageOfferMismatch                                = -10
-	ManageOfferResultCodeManageOfferLowReserve                              = -11
+	ManageOfferResultCodeManageOfferSellNoIssuer                            = -9
+	ManageOfferResultCodeManageOfferBuyNoIssuer                             = -10
+	ManageOfferResultCodeManageOfferNotFound                                = -11
+	ManageOfferResultCodeManageOfferLowReserve                              = -12
 )
 
 var manageOfferResultCodeMap = map[int32]string{
@@ -2652,9 +2749,10 @@ var manageOfferResultCodeMap = map[int32]string{
 	-6:  "ManageOfferResultCodeManageOfferLineFull",
 	-7:  "ManageOfferResultCodeManageOfferUnderfunded",
 	-8:  "ManageOfferResultCodeManageOfferCrossSelf",
-	-9:  "ManageOfferResultCodeManageOfferNotFound",
-	-10: "ManageOfferResultCodeManageOfferMismatch",
-	-11: "ManageOfferResultCodeManageOfferLowReserve",
+	-9:  "ManageOfferResultCodeManageOfferSellNoIssuer",
+	-10: "ManageOfferResultCodeManageOfferBuyNoIssuer",
+	-11: "ManageOfferResultCodeManageOfferNotFound",
+	-12: "ManageOfferResultCodeManageOfferLowReserve",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -2901,7 +2999,8 @@ func (u ManageOfferResult) GetSuccess() (result ManageOfferSuccessResult, ok boo
 //        SET_OPTIONS_CANT_CHANGE = -5,            // can no longer change this option
 //        SET_OPTIONS_UNKNOWN_FLAG = -6,           // can't set an unknown flag
 //        SET_OPTIONS_THRESHOLD_OUT_OF_RANGE = -7, // bad value for weight/threshold
-//        SET_OPTIONS_BAD_SIGNER = -8              // signer cannot be masterkey
+//        SET_OPTIONS_BAD_SIGNER = -8,             // signer cannot be masterkey
+//        SET_OPTIONS_INVALID_HOME_DOMAIN = -9     // malformed home domain
 //    };
 //
 type SetOptionsResultCode int32
@@ -2916,6 +3015,7 @@ const (
 	SetOptionsResultCodeSetOptionsUnknownFlag                              = -6
 	SetOptionsResultCodeSetOptionsThresholdOutOfRange                      = -7
 	SetOptionsResultCodeSetOptionsBadSigner                                = -8
+	SetOptionsResultCodeSetOptionsInvalidHomeDomain                        = -9
 )
 
 var setOptionsResultCodeMap = map[int32]string{
@@ -2928,6 +3028,7 @@ var setOptionsResultCodeMap = map[int32]string{
 	-6: "SetOptionsResultCodeSetOptionsUnknownFlag",
 	-7: "SetOptionsResultCodeSetOptionsThresholdOutOfRange",
 	-8: "SetOptionsResultCodeSetOptionsBadSigner",
+	-9: "SetOptionsResultCodeSetOptionsInvalidHomeDomain",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -2996,6 +3097,7 @@ func NewSetOptionsResult(code SetOptionsResultCode, value interface{}) (result S
 //        CHANGE_TRUST_MALFORMED = -1,     // bad input
 //        CHANGE_TRUST_NO_ISSUER = -2,     // could not find issuer
 //        CHANGE_TRUST_INVALID_LIMIT = -3, // cannot drop limit below balance
+//                                         // cannot create with a limit of 0
 //        CHANGE_TRUST_LOW_RESERVE = -4 // not enough funds to create a new trust line
 //    };
 //
@@ -3168,28 +3270,28 @@ func NewAllowTrustResult(code AllowTrustResultCode, value interface{}) (result A
 //        // codes considered as "success" for the operation
 //        ACCOUNT_MERGE_SUCCESS = 0,
 //        // codes considered as "failure" for the operation
-//        ACCOUNT_MERGE_MALFORMED = -1,  // can't merge onto itself
-//        ACCOUNT_MERGE_NO_ACCOUNT = -2, // destination does not exist
-//        ACCOUNT_MERGE_HAS_CREDIT = -3, // account has active trust lines
-//        ACCOUNT_MERGE_CREDIT_HELD = -4 // an issuer cannot be merged if used
+//        ACCOUNT_MERGE_MALFORMED = -1,      // can't merge onto itself
+//        ACCOUNT_MERGE_NO_ACCOUNT = -2,     // destination does not exist
+//        ACCOUNT_MERGE_IMMUTABLE_SET = -3,  // source account has AUTH_IMMUTABLE set
+//        ACCOUNT_MERGE_HAS_SUB_ENTRIES = -4 // account has trust lines/offers
 //    };
 //
 type AccountMergeResultCode int32
 
 const (
-	AccountMergeResultCodeAccountMergeSuccess    AccountMergeResultCode = 0
-	AccountMergeResultCodeAccountMergeMalformed                         = -1
-	AccountMergeResultCodeAccountMergeNoAccount                         = -2
-	AccountMergeResultCodeAccountMergeHasCredit                         = -3
-	AccountMergeResultCodeAccountMergeCreditHeld                        = -4
+	AccountMergeResultCodeAccountMergeSuccess       AccountMergeResultCode = 0
+	AccountMergeResultCodeAccountMergeMalformed                            = -1
+	AccountMergeResultCodeAccountMergeNoAccount                            = -2
+	AccountMergeResultCodeAccountMergeImmutableSet                         = -3
+	AccountMergeResultCodeAccountMergeHasSubEntries                        = -4
 )
 
 var accountMergeResultCodeMap = map[int32]string{
 	0:  "AccountMergeResultCodeAccountMergeSuccess",
 	-1: "AccountMergeResultCodeAccountMergeMalformed",
 	-2: "AccountMergeResultCodeAccountMergeNoAccount",
-	-3: "AccountMergeResultCodeAccountMergeHasCredit",
-	-4: "AccountMergeResultCodeAccountMergeCreditHeld",
+	-3: "AccountMergeResultCodeAccountMergeImmutableSet",
+	-4: "AccountMergeResultCodeAccountMergeHasSubEntries",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -4211,7 +4313,8 @@ func NewStellarValueExt(v int32, value interface{}) (result StellarValueExt, err
 //        // this is a vector of encoded 'LedgerUpgrade' so that nodes can drop
 //        // unknown steps during consensus if needed.
 //        // see notes below on 'LedgerUpgrade' for more detail
-//        UpgradeType upgrades<4>;
+//        // max size is dictated by number of upgrade types (+ room for future)
+//        UpgradeType upgrades<6>;
 //
 //        // reserved for future use
 //        union switch (int v)
@@ -4279,7 +4382,8 @@ func NewLedgerHeaderExt(v int32, value interface{}) (result LedgerHeaderExt, err
 //
 //        uint32 ledgerSeq; // sequence number of this ledger
 //
-//        int64 totalCoins; // total number of stroops in existence
+//        int64 totalCoins; // total number of stroops in existence.
+//                          // 10,000,000 stroops in 1 XLM
 //
 //        int64 feePool;       // fees burned since last inflation run
 //        uint32 inflationSeq; // inflation sequence number
@@ -4288,6 +4392,8 @@ func NewLedgerHeaderExt(v int32, value interface{}) (result LedgerHeaderExt, err
 //
 //        uint32 baseFee;     // base fee per operation in stroops
 //        uint32 baseReserve; // account base reserve in stroops
+//
+//        uint32 maxTxSetSize; // maximum size a transaction set can be
 //
 //        Hash skipList[4]; // hashes of ledgers in the past. allows you to jump back
 //                          // in time without walking the chain back ledger by ledger
@@ -4317,6 +4423,7 @@ type LedgerHeader struct {
 	IdPool             Uint64
 	BaseFee            Uint32
 	BaseReserve        Uint32
+	MaxTxSetSize       Uint32
 	SkipList           [4]Hash
 	Ext                LedgerHeaderExt
 }
@@ -4326,19 +4433,22 @@ type LedgerHeader struct {
 //   enum LedgerUpgradeType
 //    {
 //        LEDGER_UPGRADE_VERSION = 1,
-//        LEDGER_UPGRADE_BASE_FEE = 2
+//        LEDGER_UPGRADE_BASE_FEE = 2,
+//        LEDGER_UPGRADE_MAX_TX_SET_SIZE = 3
 //    };
 //
 type LedgerUpgradeType int32
 
 const (
-	LedgerUpgradeTypeLedgerUpgradeVersion LedgerUpgradeType = 1
-	LedgerUpgradeTypeLedgerUpgradeBaseFee                   = 2
+	LedgerUpgradeTypeLedgerUpgradeVersion      LedgerUpgradeType = 1
+	LedgerUpgradeTypeLedgerUpgradeBaseFee                        = 2
+	LedgerUpgradeTypeLedgerUpgradeMaxTxSetSize                   = 3
 )
 
 var ledgerUpgradeTypeMap = map[int32]string{
 	1: "LedgerUpgradeTypeLedgerUpgradeVersion",
 	2: "LedgerUpgradeTypeLedgerUpgradeBaseFee",
+	3: "LedgerUpgradeTypeLedgerUpgradeMaxTxSetSize",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -4362,12 +4472,15 @@ func (e LedgerUpgradeType) String() string {
 //        uint32 newLedgerVersion; // update ledgerVersion
 //    case LEDGER_UPGRADE_BASE_FEE:
 //        uint32 newBaseFee; // update baseFee
+//    case LEDGER_UPGRADE_MAX_TX_SET_SIZE:
+//        uint32 newMaxTxSetSize; // update maxTxSetSize
 //    };
 //
 type LedgerUpgrade struct {
 	Type             LedgerUpgradeType
 	NewLedgerVersion *Uint32
 	NewBaseFee       *Uint32
+	NewMaxTxSetSize  *Uint32
 }
 
 // SwitchFieldName returns the field name in which this union's
@@ -4384,6 +4497,8 @@ func (u LedgerUpgrade) ArmForSwitch(sw int32) (string, bool) {
 		return "NewLedgerVersion", true
 	case LedgerUpgradeTypeLedgerUpgradeBaseFee:
 		return "NewBaseFee", true
+	case LedgerUpgradeTypeLedgerUpgradeMaxTxSetSize:
+		return "NewMaxTxSetSize", true
 	}
 	return "-", false
 }
@@ -4406,6 +4521,13 @@ func NewLedgerUpgrade(aType LedgerUpgradeType, value interface{}) (result Ledger
 			return
 		}
 		result.NewBaseFee = &tv
+	case LedgerUpgradeTypeLedgerUpgradeMaxTxSetSize:
+		tv, ok := value.(Uint32)
+		if !ok {
+			err = fmt.Errorf("invalid value, must be Uint32")
+			return
+		}
+		result.NewMaxTxSetSize = &tv
 	}
 	return
 }
@@ -4454,6 +4576,31 @@ func (u LedgerUpgrade) GetNewBaseFee() (result Uint32, ok bool) {
 
 	if armName == "NewBaseFee" {
 		result = *u.NewBaseFee
+		ok = true
+	}
+
+	return
+}
+
+// MustNewMaxTxSetSize retrieves the NewMaxTxSetSize value from the union,
+// panicing if the value is not set.
+func (u LedgerUpgrade) MustNewMaxTxSetSize() Uint32 {
+	val, ok := u.GetNewMaxTxSetSize()
+
+	if !ok {
+		panic("arm NewMaxTxSetSize is not set")
+	}
+
+	return val
+}
+
+// GetNewMaxTxSetSize retrieves the NewMaxTxSetSize value from the union,
+// returning ok if the union's switch indicated the value is valid.
+func (u LedgerUpgrade) GetNewMaxTxSetSize() (result Uint32, ok bool) {
+	armName, _ := u.ArmForSwitch(int32(u.Type))
+
+	if armName == "NewMaxTxSetSize" {
+		result = *u.NewMaxTxSetSize
 		ok = true
 	}
 
@@ -5212,34 +5359,17 @@ type OperationMeta struct {
 	Changes LedgerEntryChanges
 }
 
-// TransactionMetaV0 is an XDR NestedStruct defines as:
-//
-//   struct
-//        {
-//            LedgerEntryChanges changes;
-//            OperationMeta operations<>;
-//        }
-//
-type TransactionMetaV0 struct {
-	Changes    LedgerEntryChanges
-	Operations []OperationMeta
-}
-
 // TransactionMeta is an XDR Union defines as:
 //
 //   union TransactionMeta switch (int v)
 //    {
 //    case 0:
-//        struct
-//        {
-//            LedgerEntryChanges changes;
-//            OperationMeta operations<>;
-//        } v0;
+//        OperationMeta operations<>;
 //    };
 //
 type TransactionMeta struct {
-	V  int32
-	V0 *TransactionMetaV0
+	V          int32
+	Operations *[]OperationMeta
 }
 
 // SwitchFieldName returns the field name in which this union's
@@ -5253,7 +5383,7 @@ func (u TransactionMeta) SwitchFieldName() string {
 func (u TransactionMeta) ArmForSwitch(sw int32) (string, bool) {
 	switch int32(sw) {
 	case 0:
-		return "V0", true
+		return "Operations", true
 	}
 	return "-", false
 }
@@ -5263,52 +5393,109 @@ func NewTransactionMeta(v int32, value interface{}) (result TransactionMeta, err
 	result.V = v
 	switch int32(v) {
 	case 0:
-		tv, ok := value.(TransactionMetaV0)
+		tv, ok := value.([]OperationMeta)
 		if !ok {
-			err = fmt.Errorf("invalid value, must be TransactionMetaV0")
+			err = fmt.Errorf("invalid value, must be []OperationMeta")
 			return
 		}
-		result.V0 = &tv
+		result.Operations = &tv
 	}
 	return
 }
 
-// MustV0 retrieves the V0 value from the union,
+// MustOperations retrieves the Operations value from the union,
 // panicing if the value is not set.
-func (u TransactionMeta) MustV0() TransactionMetaV0 {
-	val, ok := u.GetV0()
+func (u TransactionMeta) MustOperations() []OperationMeta {
+	val, ok := u.GetOperations()
 
 	if !ok {
-		panic("arm V0 is not set")
+		panic("arm Operations is not set")
 	}
 
 	return val
 }
 
-// GetV0 retrieves the V0 value from the union,
+// GetOperations retrieves the Operations value from the union,
 // returning ok if the union's switch indicated the value is valid.
-func (u TransactionMeta) GetV0() (result TransactionMetaV0, ok bool) {
+func (u TransactionMeta) GetOperations() (result []OperationMeta, ok bool) {
 	armName, _ := u.ArmForSwitch(int32(u.V))
 
-	if armName == "V0" {
-		result = *u.V0
+	if armName == "Operations" {
+		result = *u.Operations
 		ok = true
 	}
 
 	return
 }
 
+// ErrorCode is an XDR Enum defines as:
+//
+//   enum ErrorCode
+//    {
+//        ERR_MISC = 0, // Unspecific error
+//        ERR_DATA = 1, // Malformed data
+//        ERR_CONF = 2, // Misconfiguration error
+//        ERR_AUTH = 3, // Authentication failure
+//        ERR_LOAD = 4  // System overloaded
+//    };
+//
+type ErrorCode int32
+
+const (
+	ErrorCodeErrMisc ErrorCode = 0
+	ErrorCodeErrData           = 1
+	ErrorCodeErrConf           = 2
+	ErrorCodeErrAuth           = 3
+	ErrorCodeErrLoad           = 4
+)
+
+var errorCodeMap = map[int32]string{
+	0: "ErrorCodeErrMisc",
+	1: "ErrorCodeErrData",
+	2: "ErrorCodeErrConf",
+	3: "ErrorCodeErrAuth",
+	4: "ErrorCodeErrLoad",
+}
+
+// ValidEnum validates a proposed value for this enum.  Implements
+// the Enum interface for ErrorCode
+func (e ErrorCode) ValidEnum(v int32) bool {
+	_, ok := errorCodeMap[v]
+	return ok
+}
+
+// String returns the name of `e`
+func (e ErrorCode) String() string {
+	name, _ := errorCodeMap[int32(e)]
+	return name
+}
+
 // Error is an XDR Struct defines as:
 //
 //   struct Error
 //    {
-//        int code;
+//        ErrorCode code;
 //        string msg<100>;
 //    };
 //
 type Error struct {
-	Code int32
+	Code ErrorCode
 	Msg  string
+}
+
+// AuthCert is an XDR Struct defines as:
+//
+//   struct AuthCert
+//    {
+//        Curve25519Public pubkey;
+//        uint64 expiration;
+//        Signature sig;
+//    };
+//
+type AuthCert struct {
+	Pubkey     Curve25519Public
+	Expiration Uint64
+	Sig        Signature
 }
 
 // Hello is an XDR Struct defines as:
@@ -5321,6 +5508,8 @@ type Error struct {
 //        string versionStr<100>;
 //        int listeningPort;
 //        NodeID peerID;
+//        AuthCert cert;
+//        uint256 nonce;
 //    };
 //
 type Hello struct {
@@ -5330,19 +5519,179 @@ type Hello struct {
 	VersionStr     string
 	ListeningPort  int32
 	PeerId         NodeId
+	Cert           AuthCert
+	Nonce          Uint256
+}
+
+// Auth is an XDR Struct defines as:
+//
+//   struct Auth
+//    {
+//        // Empty message, just to confirm
+//        // establishment of MAC keys.
+//        int unused;
+//    };
+//
+type Auth struct {
+	Unused int32
+}
+
+// IpAddrType is an XDR Enum defines as:
+//
+//   enum IPAddrType
+//    {
+//        IPv4 = 0,
+//        IPv6 = 1
+//    };
+//
+type IpAddrType int32
+
+const (
+	IpAddrTypeIPv4 IpAddrType = 0
+	IpAddrTypeIPv6            = 1
+)
+
+var ipAddrTypeMap = map[int32]string{
+	0: "IpAddrTypeIPv4",
+	1: "IpAddrTypeIPv6",
+}
+
+// ValidEnum validates a proposed value for this enum.  Implements
+// the Enum interface for IpAddrType
+func (e IpAddrType) ValidEnum(v int32) bool {
+	_, ok := ipAddrTypeMap[v]
+	return ok
+}
+
+// String returns the name of `e`
+func (e IpAddrType) String() string {
+	name, _ := ipAddrTypeMap[int32(e)]
+	return name
+}
+
+// PeerAddressIp is an XDR NestedUnion defines as:
+//
+//   union switch (IPAddrType type)
+//        {
+//        case IPv4:
+//            opaque ipv4[4];
+//        case IPv6:
+//            opaque ipv6[16];
+//        }
+//
+type PeerAddressIp struct {
+	Type IpAddrType
+	Ipv4 *[4]byte
+	Ipv6 *[16]byte
+}
+
+// SwitchFieldName returns the field name in which this union's
+// discriminant is stored
+func (u PeerAddressIp) SwitchFieldName() string {
+	return "Type"
+}
+
+// ArmForSwitch returns which field name should be used for storing
+// the value for an instance of PeerAddressIp
+func (u PeerAddressIp) ArmForSwitch(sw int32) (string, bool) {
+	switch IpAddrType(sw) {
+	case IpAddrTypeIPv4:
+		return "Ipv4", true
+	case IpAddrTypeIPv6:
+		return "Ipv6", true
+	}
+	return "-", false
+}
+
+// NewPeerAddressIp creates a new  PeerAddressIp.
+func NewPeerAddressIp(aType IpAddrType, value interface{}) (result PeerAddressIp, err error) {
+	result.Type = aType
+	switch IpAddrType(aType) {
+	case IpAddrTypeIPv4:
+		tv, ok := value.([4]byte)
+		if !ok {
+			err = fmt.Errorf("invalid value, must be [4]byte")
+			return
+		}
+		result.Ipv4 = &tv
+	case IpAddrTypeIPv6:
+		tv, ok := value.([16]byte)
+		if !ok {
+			err = fmt.Errorf("invalid value, must be [16]byte")
+			return
+		}
+		result.Ipv6 = &tv
+	}
+	return
+}
+
+// MustIpv4 retrieves the Ipv4 value from the union,
+// panicing if the value is not set.
+func (u PeerAddressIp) MustIpv4() [4]byte {
+	val, ok := u.GetIpv4()
+
+	if !ok {
+		panic("arm Ipv4 is not set")
+	}
+
+	return val
+}
+
+// GetIpv4 retrieves the Ipv4 value from the union,
+// returning ok if the union's switch indicated the value is valid.
+func (u PeerAddressIp) GetIpv4() (result [4]byte, ok bool) {
+	armName, _ := u.ArmForSwitch(int32(u.Type))
+
+	if armName == "Ipv4" {
+		result = *u.Ipv4
+		ok = true
+	}
+
+	return
+}
+
+// MustIpv6 retrieves the Ipv6 value from the union,
+// panicing if the value is not set.
+func (u PeerAddressIp) MustIpv6() [16]byte {
+	val, ok := u.GetIpv6()
+
+	if !ok {
+		panic("arm Ipv6 is not set")
+	}
+
+	return val
+}
+
+// GetIpv6 retrieves the Ipv6 value from the union,
+// returning ok if the union's switch indicated the value is valid.
+func (u PeerAddressIp) GetIpv6() (result [16]byte, ok bool) {
+	armName, _ := u.ArmForSwitch(int32(u.Type))
+
+	if armName == "Ipv6" {
+		result = *u.Ipv6
+		ok = true
+	}
+
+	return
 }
 
 // PeerAddress is an XDR Struct defines as:
 //
 //   struct PeerAddress
 //    {
-//        opaque ip[4];
+//        union switch (IPAddrType type)
+//        {
+//        case IPv4:
+//            opaque ipv4[4];
+//        case IPv6:
+//            opaque ipv6[16];
+//        } ip;
 //        uint32 port;
 //        uint32 numFailures;
 //    };
 //
 type PeerAddress struct {
-	Ip          [4]byte
+	Ip          PeerAddressIp
 	Port        Uint32
 	NumFailures Uint32
 }
@@ -5353,20 +5702,21 @@ type PeerAddress struct {
 //    {
 //        ERROR_MSG = 0,
 //        HELLO = 1,
-//        DONT_HAVE = 2,
+//        AUTH = 2,
+//        DONT_HAVE = 3,
 //
-//        GET_PEERS = 3, // gets a list of peers this guy knows about
-//        PEERS = 4,
+//        GET_PEERS = 4, // gets a list of peers this guy knows about
+//        PEERS = 5,
 //
-//        GET_TX_SET = 5, // gets a particular txset by hash
-//        TX_SET = 6,
+//        GET_TX_SET = 6, // gets a particular txset by hash
+//        TX_SET = 7,
 //
-//        TRANSACTION = 7, // pass on a tx you have heard about
+//        TRANSACTION = 8, // pass on a tx you have heard about
 //
 //        // SCP
-//        GET_SCP_QUORUMSET = 8,
-//        SCP_QUORUMSET = 9,
-//        SCP_MESSAGE = 10
+//        GET_SCP_QUORUMSET = 9,
+//        SCP_QUORUMSET = 10,
+//        SCP_MESSAGE = 11
 //    };
 //
 type MessageType int32
@@ -5374,29 +5724,31 @@ type MessageType int32
 const (
 	MessageTypeErrorMsg        MessageType = 0
 	MessageTypeHello                       = 1
-	MessageTypeDontHave                    = 2
-	MessageTypeGetPeers                    = 3
-	MessageTypePeers                       = 4
-	MessageTypeGetTxSet                    = 5
-	MessageTypeTxSet                       = 6
-	MessageTypeTransaction                 = 7
-	MessageTypeGetScpQuorumset             = 8
-	MessageTypeScpQuorumset                = 9
-	MessageTypeScpMessage                  = 10
+	MessageTypeAuth                        = 2
+	MessageTypeDontHave                    = 3
+	MessageTypeGetPeers                    = 4
+	MessageTypePeers                       = 5
+	MessageTypeGetTxSet                    = 6
+	MessageTypeTxSet                       = 7
+	MessageTypeTransaction                 = 8
+	MessageTypeGetScpQuorumset             = 9
+	MessageTypeScpQuorumset                = 10
+	MessageTypeScpMessage                  = 11
 )
 
 var messageTypeMap = map[int32]string{
 	0:  "MessageTypeErrorMsg",
 	1:  "MessageTypeHello",
-	2:  "MessageTypeDontHave",
-	3:  "MessageTypeGetPeers",
-	4:  "MessageTypePeers",
-	5:  "MessageTypeGetTxSet",
-	6:  "MessageTypeTxSet",
-	7:  "MessageTypeTransaction",
-	8:  "MessageTypeGetScpQuorumset",
-	9:  "MessageTypeScpQuorumset",
-	10: "MessageTypeScpMessage",
+	2:  "MessageTypeAuth",
+	3:  "MessageTypeDontHave",
+	4:  "MessageTypeGetPeers",
+	5:  "MessageTypePeers",
+	6:  "MessageTypeGetTxSet",
+	7:  "MessageTypeTxSet",
+	8:  "MessageTypeTransaction",
+	9:  "MessageTypeGetScpQuorumset",
+	10: "MessageTypeScpQuorumset",
+	11: "MessageTypeScpMessage",
 }
 
 // ValidEnum validates a proposed value for this enum.  Implements
@@ -5433,6 +5785,8 @@ type DontHave struct {
 //        Error error;
 //    case HELLO:
 //        Hello hello;
+//    case AUTH:
+//        Auth auth;
 //    case DONT_HAVE:
 //        DontHave dontHave;
 //    case GET_PEERS:
@@ -5461,6 +5815,7 @@ type StellarMessage struct {
 	Type        MessageType
 	Error       *Error
 	Hello       *Hello
+	Auth        *Auth
 	DontHave    *DontHave
 	Peers       *[]PeerAddress
 	TxSetHash   *Uint256
@@ -5485,6 +5840,8 @@ func (u StellarMessage) ArmForSwitch(sw int32) (string, bool) {
 		return "Error", true
 	case MessageTypeHello:
 		return "Hello", true
+	case MessageTypeAuth:
+		return "Auth", true
 	case MessageTypeDontHave:
 		return "DontHave", true
 	case MessageTypeGetPeers:
@@ -5525,6 +5882,13 @@ func NewStellarMessage(aType MessageType, value interface{}) (result StellarMess
 			return
 		}
 		result.Hello = &tv
+	case MessageTypeAuth:
+		tv, ok := value.(Auth)
+		if !ok {
+			err = fmt.Errorf("invalid value, must be Auth")
+			return
+		}
+		result.Auth = &tv
 	case MessageTypeDontHave:
 		tv, ok := value.(DontHave)
 		if !ok {
@@ -5631,6 +5995,31 @@ func (u StellarMessage) GetHello() (result Hello, ok bool) {
 
 	if armName == "Hello" {
 		result = *u.Hello
+		ok = true
+	}
+
+	return
+}
+
+// MustAuth retrieves the Auth value from the union,
+// panicing if the value is not set.
+func (u StellarMessage) MustAuth() Auth {
+	val, ok := u.GetAuth()
+
+	if !ok {
+		panic("arm Auth is not set")
+	}
+
+	return val
+}
+
+// GetAuth retrieves the Auth value from the union,
+// returning ok if the union's switch indicated the value is valid.
+func (u StellarMessage) GetAuth() (result Auth, ok bool) {
+	armName, _ := u.ArmForSwitch(int32(u.Type))
+
+	if armName == "Auth" {
+		result = *u.Auth
 		ok = true
 	}
 
@@ -5835,6 +6224,21 @@ func (u StellarMessage) GetEnvelope() (result ScpEnvelope, ok bool) {
 	}
 
 	return
+}
+
+// AuthenticatedMessage is an XDR Struct defines as:
+//
+//   struct AuthenticatedMessage
+//    {
+//       uint64 sequence;
+//       StellarMessage message;
+//       HmacSha256Mac mac;
+//    };
+//
+type AuthenticatedMessage struct {
+	Sequence Uint64
+	Message  StellarMessage
+	Mac      HmacSha256Mac
 }
 
 // Value is an XDR Typedef defines as:

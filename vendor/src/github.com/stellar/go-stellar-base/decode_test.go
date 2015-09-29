@@ -138,10 +138,9 @@ func TestDecode(t *testing.T) {
 		_, err := xdr.Unmarshal(b64r, &m)
 
 		So(err, ShouldBeNil)
-		tm := m.MustV0()
-		So(len(tm.Changes), ShouldEqual, 1)
-		So(len(tm.Operations), ShouldEqual, 1)
-		So(len(tm.Operations[0].Changes), ShouldEqual, 2)
+		op := m.MustOperations()
+		So(len(op), ShouldEqual, 1)
+		So(len(op[0].Changes), ShouldEqual, 1)
 	})
 
 	Convey("Roundtrip TransactionEnvelope", t, func() {
