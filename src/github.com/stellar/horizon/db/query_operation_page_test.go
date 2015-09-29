@@ -97,7 +97,7 @@ func TestOperationPageQuery(t *testing.T) {
 
 		Convey("restricts to transaction properly", func() {
 			q := makeQuery("", "asc", 0)
-			q.TransactionHash = "c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74"
+			q.TransactionHash = "2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d"
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 1)

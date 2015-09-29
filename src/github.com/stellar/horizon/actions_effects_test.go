@@ -50,7 +50,7 @@ func TestEffectActions(t *testing.T) {
 		})
 
 		Convey("GET /transactions/:tx_id/effects", func() {
-			w := rh.Get("/transactions/c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74/effects", test.RequestHelperNoop)
+			w := rh.Get("/transactions/2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d/effects", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 3)
 		})

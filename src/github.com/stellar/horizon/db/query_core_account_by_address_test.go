@@ -25,7 +25,7 @@ func TestCoreAccountByAddressQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(account.Accountid, ShouldEqual, address)
-			So(account.Balance, ShouldEqual, 99999996999999970)
+			So(account.Balance, ShouldEqual, 999999996999999700)
 		})
 
 		Convey("Missing record behavior", func() {

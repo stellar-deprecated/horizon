@@ -51,11 +51,11 @@ func TestOperationActions(t *testing.T) {
 		})
 
 		Convey("GET /transactions/:tx_id/operations", func() {
-			w := rh.Get("/transactions/c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74/operations", test.RequestHelperNoop)
+			w := rh.Get("/transactions/2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d/operations", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 
-			w = rh.Get("/transactions/f70627f6d076a346902bdeaa0d55d8403dfcbdfad1c79d58baf54031a5c477ce/operations", test.RequestHelperNoop)
+			w = rh.Get("/transactions/164a5064eba64f2cdbadb856bf3448485fc626247ada3ed39cddf0f6902133b6/operations", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 		})
