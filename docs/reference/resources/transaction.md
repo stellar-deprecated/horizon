@@ -35,7 +35,7 @@ To learn more about the concept of transactions in the Stellar network, take a l
 | ---------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | self | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a`|  |
 | account | `/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ` | The source [account](../accounts-single.md) for this transaction. |
-| ledger | `/ledgers/3` | The [ledger](../ledger-single.md) in which this transaction was applied. |
+| ledger | `/ledgers/3` | The [ledger](../ledgers-single.md) in which this transaction was applied. |
 | operations | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a/operations` | [Operations](../operations-for-transaction.md) included in this transaction. |
 | effects | `/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a/effects` | [Effects](../effects-for-transaction.md) which resulted by operations in this transaction. |
 | precedes | `/transactions?cursor=12884905984&order=asc` | A collection of transactions that occur after this transaction. |

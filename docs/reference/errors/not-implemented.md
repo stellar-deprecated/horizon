@@ -36,4 +36,4 @@ $ curl -X GET 'https://horizon-testnet.stellar.org/ledgers/:200/effects'
 
 ## Related
 
-[Server Error](./server_error.md)
+[Server Error](./server-error.md)

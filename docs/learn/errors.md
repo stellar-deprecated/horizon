@@ -26,6 +26,6 @@ json document with the following attributes:
 There are a set of errors that can occur in any request to horizon which we
 call **standard errors**.  These errors are:
 
-- [Server Error](../reference/errors/server_error.md)
-- [Rate Limit Exceeded](../reference/errors/rate_limit_exceeded.md)
+- [Server Error](../reference/errors/server-error.md)
+- [Rate Limit Exceeded](../reference/errors/rate-limit-exceeded.md)
 - [Forbidden](../reference/errors/forbidden.md)

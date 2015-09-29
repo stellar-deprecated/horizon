@@ -100,4 +100,4 @@ This endpoint responds with a list of operations in a given ledger.  See [operat
 ## Possible Errors
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not_found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.
+- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.

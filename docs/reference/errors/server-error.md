@@ -37,6 +37,4 @@ As with all errors Horizon returns, `server_error` follows the [Problem Details 
 
 ## Related
 
-[Not Implemented](./not_implemented.md)
-
-
+[Not Implemented](./not-implemented.md)

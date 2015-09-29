@@ -131,5 +131,5 @@ This endpoint responds with a list of effects on the ledger as a result of a giv
 ## Possible Errors
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not_found.md): A `not_found` errors will be returned if there are no effects for operation whose ID matches the `id` argument.
+- [not_found](./errors/not-found.md): A `not_found` errors will be returned if there are no effects for operation whose ID matches the `id` argument.
 

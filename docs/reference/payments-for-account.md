@@ -53,52 +53,49 @@ This endpoint responds with a [page](./resources/page.md) of [payment operations
 ### Example Response
 
 ```json
-
-{
-  "_embedded": {
-    "records": [
-      {
-        "_links": {
-          "self": {
-            "href": "/operations/12884905984"
-          },
-          "transaction": {
-            "href": "/transaction/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a"
-          },
-          "precedes": {
-            "href": "/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments?cursor=12884905984&order=asc{?limit}",
-            "templated": true
-          },
-          "succeeds": {
-            "href": "/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments?cursor=12884905984&order=desc{?limit}",
-            "templated": true
-          }
+{"_embedded": {
+  "records": [
+    {
+      "_links": {
+        "self": {
+          "href": "/operations/12884905984"
         },
-        "id": 12884905984,
-        "paging_token": "12884905984",
-        "type": 0,
-        "type_s": "payment",
-        "sender": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
-        "receiver": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU",
-        "asset": {
-          "code": "XLM"
+        "transaction": {
+          "href": "/transaction/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a"
         },
-        "amount": 1000000000,
-        "amount_f": 100.00
-      }
-    ]
-  },
-  "_links": {
-    "next": {
-      "href": "/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments?cursor=12884905984&order=asc{?limit}",
-      "templated": true
-    },
-    "self": {
-      "href": "/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments"
+        "precedes": {
+          "href": "/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments?cursor=12884905984&order=asc{?limit}",
+          "templated": true
+        },
+        "succeeds": {
+          "href": "/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments?cursor=12884905984&order=desc{?limit}",
+          "templated": true
+        }
+      },
+      "id": 12884905984,
+      "paging_token": "12884905984",
+      "type": 0,
+      "type_s": "payment",
+      "sender": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
+      "receiver": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU",
+      "asset": {
+        "code": "XLM"
+      },
+      "amount": 1000000000,
+      "amount_f": 100.00
     }
+  ]
+},
+"_links": {
+  "next": {
+    "href": "/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments?cursor=12884905984&order=asc{?limit}",
+    "templated": true
+  },
+  "self": {
+    "href": "/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments"
   }
 }
-
+}
 ```
 
 

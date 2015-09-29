@@ -30,6 +30,4 @@ Horizon only returns offers that belong to a particular account.  When it does, 
 
 | Resource                 | Type       | Resource URI Template                |
 |--------------------------|------------|--------------------------------------|
-| [Account Offers](../offers_for_account.md)       | Collection | `/accounts/:account_id/offers`       |
-
-
+| [Account Offers](../offers-for-account.md)       | Collection | `/accounts/:account_id/offers`       |

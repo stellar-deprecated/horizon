@@ -24,5 +24,5 @@ As with all errors Horizon returns, `forbidden` follows the [Problem Details for
 
 ## Related
 
-[Not Found](./not_found.md)
-[Not Acceptable](./not_acceptable.md)
+[Not Found](./not-found.md)
+[Not Acceptable](./not-acceptable.md)

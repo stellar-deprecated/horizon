@@ -39,4 +39,4 @@ Payments are one-way in that afterwards, the source account has a smaller balanc
 
 | Resource                 | Type       | Resource URI Template                |
 |--------------------------|------------|--------------------------------------|
-| [Trades for Orderbook](../trades_for_orderbook.md)       | Collection | `/orderbook/trades?{orderbook_params}`       |
+| [Trades for Orderbook](../trades-for-orderbook.md)       | Collection | `/orderbook/trades?{orderbook_params}`       |

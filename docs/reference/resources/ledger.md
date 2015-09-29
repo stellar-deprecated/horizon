@@ -4,7 +4,7 @@ title: Ledger
 category: Resources
 ---
 
-A **ledger** resource contains information about a given ledger. 
+A **ledger** resource contains information about a given ledger.
 
 To learn more about the concept of ledgers in the Stellar network, take a look at the [Stellar ledger concept guide](https://stellar.org/developers/learn/concepts/ledger.html).
 
@@ -64,9 +64,9 @@ To learn more about the concept of ledgers in the Stellar network, take a look a
 ## Endpoints
 | Resource                | Type       | Resource URI Template              |
 |-------------------------|------------|------------------------------------|
-| [All ledgers](../ledgers_all.md)         | Collection | `/ledgers`                         |
-| [Single Ledger](../ledgers_single.md)       | Single     | `/ledgers/:id`                     |
-| [Ledger Transactions](../ledger_transactions.md) | Collection | `/ledgers/:ledger_id/transactions` |
-| [Ledger Operations](../ledgers_operations.md)   | Collection | `/ledgers/:ledger_id/operations`   |
-| [Ledger Payments](../ledgers_payments.md)     | Collection | `/ledgers/:ledger_id/payments`     |
-| [Ledger Effects](../ledgers_effects.md)      | Collection | `/ledgers/:ledger_id/effects`      |
+| [All ledgers](../ledgers-all.md)         | Collection | `/ledgers`                         |
+| [Single Ledger](../ledgers-single.md)       | Single     | `/ledgers/:id`                     |
+| [Ledger Transactions](../ledger-transactions.md) | Collection | `/ledgers/:ledger_id/transactions` |
+| [Ledger Operations](../ledgers-operations.md)   | Collection | `/ledgers/:ledger_id/operations`   |
+| [Ledger Payments](../ledgers-payments.md)     | Collection | `/ledgers/:ledger_id/payments`     |
+| [Ledger Effects](../ledgers-effects.md)      | Collection | `/ledgers/:ledger_id/effects`      |

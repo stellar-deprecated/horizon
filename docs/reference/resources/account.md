@@ -70,10 +70,10 @@ When horizon returns information about an account it uses the following format:
 
 | Resource                 | Type       | Resource URI Template                |
 |--------------------------|------------|--------------------------------------|
-| [All Accounts](../accounts_all.md)         | Collection | `/accounts`                          |
-| [Account Details](../accounts_single.md)      | Single     | `/accounts/:id`                      |
-| [Account Transactions](../transactions_for_account.md) | Collection | `/accounts/:account_id/transactions` |
-| [Account Operations](../operations_for_account.md)   | Collection | `/accounts/:account_id/operations`   |
-| [Account Payments](../payments_for_account.md)     | Collection | `/accounts/:account_id/payments`     |
-| [Account Effects](../effects_for_account.md)      | Collection | `/accounts/:account_id/effects`      |
-| [Account Offers](../offers_for_account.md)       | Collection | `/accounts/:account_id/offers`       |
+| [All Accounts](../accounts-all.md)         | Collection | `/accounts`                          |
+| [Account Details](../accounts-single.md)      | Single     | `/accounts/:id`                      |
+| [Account Transactions](../transactions-for-account.md) | Collection | `/accounts/:account_id/transactions` |
+| [Account Operations](../operations-for-account.md)   | Collection | `/accounts/:account_id/operations`   |
+| [Account Payments](../payments-for-account.md)     | Collection | `/accounts/:account_id/payments`     |
+| [Account Effects](../effects-for-account.md)      | Collection | `/accounts/:account_id/effects`      |
+| [Account Offers](../offers-for-account.md)       | Collection | `/accounts/:account_id/offers`       |
