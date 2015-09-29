@@ -62,7 +62,7 @@ func TestSigning(t *testing.T) {
 }
 
 func TestGeneration(t *testing.T) {
-	Convey("Given a base58 encoded stellar seed", t, func() {
+	Convey("Given a strkey encoded stellar seed", t, func() {
 		seed := "SDOTALIMPAM2IV65IOZA7KZL7XWZI5BODFXTRVLIHLQZQCKK57PH5F3H"
 		address := "GA3FR7TVTDJAY6TN4MUX7BF4KK6SUHWIYDY7NRNUDTA4OVY3IMY7B6H5"
 
@@ -80,5 +80,24 @@ func TestGeneration(t *testing.T) {
 				So(priv.Seed(), ShouldResemble, seed)
 			})
 		})
+	})
+}
+
+func TestHints(t *testing.T) {
+	Convey("Hint returns the last 4 bytes of the public key", t, func() {
+		seed := "SDOTALIMPAM2IV65IOZA7KZL7XWZI5BODFXTRVLIHLQZQCKK57PH5F3H"
+		pub, priv, err := GenerateKeyFromSeed(seed)
+		So(err, ShouldBeNil)
+
+		So(len(pub.Hint()), ShouldEqual, 4)
+		t.Log(priv.Hint())
+		So(pub.Hint(), ShouldResemble, priv.Hint())
+
+		data := pub.KeyData()
+		var expected [4]byte
+		copy(expected[:], data[len(data)-4:])
+
+		So(pub.Hint(), ShouldResemble, expected)
+
 	})
 }

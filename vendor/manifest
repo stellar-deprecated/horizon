@@ -238,7 +238,7 @@
 		{
 			"importpath": "github.com/stellar/go-stellar-base",
 			"repository": "https://github.com/stellar/go-stellar-base",
-			"revision": "90121ef72633730afef207720c9e404160f6185c",
+			"revision": "d504c444b72db4091f6bc238bf62002f90eeff2c",
 			"branch": "master"
 		},
 		{

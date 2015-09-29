@@ -93,7 +93,7 @@ func (privateKey *PrivateKey) Sign(message []byte) Signature {
 // PublicKey returns the raw ed25519 public key for this PrivateKey
 func (privateKey *PrivateKey) PublicKey() PublicKey {
 	var pub [ed25519.PublicKeySize]byte
-	copy(privateKey.keyData[32:], pub[:])
+	copy(pub[:], privateKey.keyData[32:])
 	return PublicKey{pub}
 }
 
@@ -130,11 +130,11 @@ func (privateKey *PrivateKey) KeyData() [ed25519.PrivateKeySize]byte {
 }
 
 func (publicKey *PublicKey) Hint() (r [4]byte) {
-	copy(r[:], publicKey.keyData[0:4])
+	copy(r[:], publicKey.keyData[28:])
 	return
 }
 
-func (privateKey *PrivateKey) Hint() (r [4]byte) {
-	copy(r[:], privateKey.keyData[0:4])
-	return
+func (privateKey *PrivateKey) Hint() [4]byte {
+	pub := privateKey.PublicKey()
+	return pub.Hint()
 }

@@ -21,8 +21,8 @@ namespace :xdr do
   task :download do
     require 'octokit'
     require 'base64'
-    FileUtils.rm_rf "xdr/"
     FileUtils.mkdir_p "xdr"
+    FileUtils.rm_rf "xdr/*.x"
 
     client = Octokit::Client.new(:netrc => true)
 
@@ -48,5 +48,6 @@ namespace :xdr do
       language:   :go
     )
     compilation.compile
+    system("gofmt -w xdr/xdr_generated.go")
   end
 end
