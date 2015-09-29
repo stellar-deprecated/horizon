@@ -2,8 +2,8 @@
 title: Follow Received Payments
 ---
 
-This tutorial shows how easy it is to use Horizon to watch for incoming payments on an [account](../reference/resources/account.md)
-using JavaScript and `EventSource`.  We will eschew using [`stellar-sdk`](https://github.com/stellar/stellar-sdk), the
+This tutorial shows how easy it is to use Horizon to watch for incoming payments on an [account](../../reference/resources/account.md)
+using JavaScript and `EventSource`.  We will eschew using [js-stellar-sdk](https://github.com/stellar/js-stellar-sdk), the
 high-level helper library, to show that it is possible for you to perform this
 task on your own, with whatever programming language you would like to use.
 
@@ -105,13 +105,24 @@ $ curl -H 'Accept: text/event-stream' https://horizon-testnet.stellar.org/accoun
 
 As a result you will see something like:
 
-```
+```bash
 retry: 1000
 event: open
 data: "hello"
 
 id: 713226564145153
-data: {"_links":{"effects":{"href":"/operations/713226564145153/effects/{?cursor,limit,order}","templated":true},"precedes":{"href":"/operations?cursor=713226564145153\u0026order=asc"},"self":{"href":"/operations/713226564145153"},"succeeds":{"href":"/operations?cursor=713226564145153\u0026order=desc"},"transactions":{"href":"/transactions/713226564145152"}},"account":"GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3","funder":"GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K","id":713226564145153,"paging_token":"713226564145153","starting_balance":1e+09,"type":0,"type_s":"create_account"}
+data: {"_links":{"effects":{"href":"/operations/713226564145153/effects/{?cursor,limit,order}","templated":true},
+       "precedes":{"href":"/operations?cursor=713226564145153\u0026order=asc"},
+       "self":{"href":"/operations/713226564145153"},
+       "succeeds":{"href":"/operations?cursor=713226564145153\u0026order=desc"},
+       "transactions":{"href":"/transactions/713226564145152"}},
+       "account":"GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3",
+       "funder":"GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
+       "id":713226564145153,
+       "paging_token":"713226564145153",
+       "starting_balance":1e+09,
+       "type":0,
+       "type_s":"create_account"}
 ```
 
 Every time you receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions [/transactions](../reference/transactions-all.md) and operations [/operations](../reference/operations-all.md).
@@ -133,7 +144,7 @@ es.onerror = function(error) {
 }
 ```
 Now, run our script: `node stream_payments.js`. You should see following output:
-```
+```bash
 New payment:
 { _links: 
    { effects: 
