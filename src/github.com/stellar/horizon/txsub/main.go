@@ -182,7 +182,7 @@ func (err *MalformedTransactionError) Error() string {
 // Submit submits the provided base64 encoded transaction envelope to the
 // network using this submission system.
 func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result) {
-	sys.init(ctx)
+	sys.Init(ctx)
 	response := make(chan Result, 1)
 	result = response
 
@@ -241,7 +241,7 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 
 // Ticker triggers the system to update itself with any new data available.
 func (sys *System) Tick(ctx context.Context) {
-	sys.init(ctx)
+	sys.Init(ctx)
 
 	log.Debugln(ctx, "ticking txsub system")
 	for _, hash := range sys.Pending.Pending(ctx) {
@@ -266,7 +266,7 @@ func (sys *System) Tick(ctx context.Context) {
 	sys.Metrics.OpenSubmissionsGauge.Update(int64(stillOpen))
 }
 
-func (sys *System) init(ctx context.Context) {
+func (sys *System) Init(ctx context.Context) {
 	sys.initializer.Do(func() {
 		sys.Metrics.FailedSubmissionsMeter = metrics.NewMeter()
 		sys.Metrics.SuccessfulSubmissionsMeter = metrics.NewMeter()
