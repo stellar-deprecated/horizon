@@ -35,5 +35,5 @@ $ curl -X GET 'https://horizon-testnet.stellar.org/accounts/accountthatdoesntexi
 
 ## Related
 
-[Not Acceptable](./forbidden.md)
-[Forbidden](./not_acceptable.md)
+[Not Acceptable](./not-acceptable.md)
+[Forbidden](./forbidden.md)
