@@ -1,7 +1,5 @@
 ---
-id: ledger
 title: Ledger
-category: Resources
 ---
 
 A **ledger** resource contains information about a given ledger.
@@ -66,7 +64,7 @@ To learn more about the concept of ledgers in the Stellar network, take a look a
 |-------------------------|------------|------------------------------------|
 | [All ledgers](../ledgers-all.md)         | Collection | `/ledgers`                         |
 | [Single Ledger](../ledgers-single.md)       | Single     | `/ledgers/:id`                     |
-| [Ledger Transactions](../ledger-transactions.md) | Collection | `/ledgers/:ledger_id/transactions` |
-| [Ledger Operations](../ledgers-operations.md)   | Collection | `/ledgers/:ledger_id/operations`   |
-| [Ledger Payments](../ledgers-payments.md)     | Collection | `/ledgers/:ledger_id/payments`     |
-| [Ledger Effects](../ledgers-effects.md)      | Collection | `/ledgers/:ledger_id/effects`      |
+| [Ledger Transactions](../transactions-for-ledger.md) | Collection | `/ledgers/:ledger_id/transactions` |
+| [Ledger Operations](../operations-for-ledger.md)   | Collection | `/ledgers/:ledger_id/operations`   |
+| [Ledger Payments](../payments-for-ledger.md)     | Collection | `/ledgers/:ledger_id/payments`     |
+| [Ledger Effects](../effects-for-ledger.md)      | Collection | `/ledgers/:ledger_id/effects`      |
