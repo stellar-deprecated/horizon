@@ -5,8 +5,8 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/horizon/test"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/test"
 )
 
 func TestOrderBookSummaryQuery(t *testing.T) {
@@ -14,7 +14,7 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 	Convey("OrderBookSummaryQuery", t, func() {
 		test.LoadScenario("order_books")
 
-		q := OrderBookSummaryQuery{
+		q := &OrderBookSummaryQuery{
 			SqlQuery:      SqlQuery{core},
 			SellingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,
 			SellingCode:   "USD",
@@ -29,27 +29,27 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 			asks := result.Asks()
 			bids := result.Bids()
 
-			So(asks[0].Amount, ShouldEqual, 10)
+			So(asks[0].Amount, ShouldEqual, 100000000)
 			So(asks[0].Pricen, ShouldEqual, 15)
 			So(asks[0].Priced, ShouldEqual, 1)
 
-			So(asks[1].Amount, ShouldEqual, 100)
+			So(asks[1].Amount, ShouldEqual, 1000000000)
 			So(asks[1].Pricen, ShouldEqual, 20)
 			So(asks[1].Priced, ShouldEqual, 1)
 
-			So(asks[2].Amount, ShouldEqual, 1000)
+			So(asks[2].Amount, ShouldEqual, 10000000000)
 			So(asks[2].Pricen, ShouldEqual, 50)
 			So(asks[2].Priced, ShouldEqual, 1)
 
-			So(bids[0].Amount, ShouldEqual, 1)
+			So(bids[0].Amount, ShouldEqual, 10000000)
 			So(bids[0].Pricen, ShouldEqual, 10)
 			So(bids[0].Priced, ShouldEqual, 1)
 
-			So(bids[1].Amount, ShouldEqual, 11)
+			So(bids[1].Amount, ShouldEqual, 110000000)
 			So(bids[1].Pricen, ShouldEqual, 9)
 			So(bids[1].Priced, ShouldEqual, 1)
 
-			So(bids[2].Amount, ShouldEqual, 200)
+			So(bids[2].Amount, ShouldEqual, 2000000000)
 			So(bids[2].Pricen, ShouldEqual, 5)
 			So(bids[2].Priced, ShouldEqual, 1)
 		})
