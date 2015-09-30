@@ -97,7 +97,7 @@ terminal.
 
 ## Following payments using `curl`
 
-To follow new payments connected to your account you simply need to send `Accept: text/event-stream` header to the [/payments](../reference/payments-all.md) endpoint.
+To follow new payments connected to your account you simply need to send `Accept: text/event-stream` header to the [/payments](../../reference/payments-all.md) endpoint.
 
 ```bash
 $ curl -H 'Accept: text/event-stream' https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3/payments
