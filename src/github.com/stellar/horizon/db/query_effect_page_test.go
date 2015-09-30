@@ -183,5 +183,20 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 			So(dets["bought_asset_code"], ShouldEqual, "USD")
 			So(dets["bought_asset_issuer"], ShouldEqual, "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
 		})
+
+		Convey("regression: does not crash when using a native asset", func() {
+			q := EffectPageQuery{
+				SqlQuery:  SqlQuery{history},
+				PageQuery: MustPageQuery("", "asc", 0),
+				Filter: &EffectOrderBookFilter{
+					SellingType:  xdr.AssetTypeAssetTypeNative,
+					BuyingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,
+					BuyingCode:   "USD",
+					BuyingIssuer: "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
+				},
+			}
+
+			MustSelect(ctx, q, &records)
+		})
 	})
 }

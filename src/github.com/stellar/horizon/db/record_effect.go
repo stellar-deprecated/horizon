@@ -192,8 +192,8 @@ func (f *EffectOrderBookFilter) Apply(ctx context.Context, in sq.SelectBuilder) 
 	if f.SellingType == xdr.AssetTypeAssetTypeNative {
 		sql = sql.Where(`
 				(heff.details->>'sold_asset_type' = ? 
-		AND heff.details->>'sold_asset_code' IS NULL 
-		AND heff.details->>'sold_asset_issuer' IS NULL)`,
+		AND heff.details ?? 'sold_asset_code' = false
+		AND heff.details ?? 'sold_asset_issuer' = false)`,
 			sellingType,
 		)
 	} else {
@@ -210,8 +210,8 @@ func (f *EffectOrderBookFilter) Apply(ctx context.Context, in sq.SelectBuilder) 
 	if f.BuyingType == xdr.AssetTypeAssetTypeNative {
 		sql = sql.Where(`
 				(heff.details->>'bought_asset_type' = ? 
-		AND heff.details->>'bought_asset_code' IS NULL 
-		AND heff.details->>'bought_asset_issuer' IS NULL)`,
+		AND heff.details ?? 'bought_asset_code' = false 
+		AND heff.details ?? 'bought_asset_issuer' = false)`,
 			buyingType,
 		)
 	} else {
