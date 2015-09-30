@@ -31,7 +31,7 @@ type AssetResource struct {
 
 // NewOrderBookSummaryResource converts the provided query and summary into a json object
 // that can be displayed to the end user.
-func NewOrderBookSummaryResource(query db.OrderBookSummaryQuery, summary db.OrderBookSummaryRecord) (result OrderBookSummaryResource, err error) {
+func NewOrderBookSummaryResource(query *db.OrderBookSummaryQuery, summary db.OrderBookSummaryRecord) (result OrderBookSummaryResource, err error) {
 	bt, err := assets.String(query.SellingType)
 	if err != nil {
 		return

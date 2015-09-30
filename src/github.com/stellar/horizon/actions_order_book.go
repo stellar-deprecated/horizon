@@ -8,7 +8,7 @@ import (
 // OrderBookShowAction renders a account summary found by its address.
 type OrderBookShowAction struct {
 	Action
-	Query    db.OrderBookSummaryQuery
+	Query    *db.OrderBookSummaryQuery
 	Record   db.OrderBookSummaryRecord
 	Resource OrderBookSummaryResource
 }
@@ -17,7 +17,7 @@ type OrderBookShowAction struct {
 func (action *OrderBookShowAction) LoadQuery() {
 	params := action.GetOrderBook()
 
-	action.Query = db.OrderBookSummaryQuery{
+	action.Query = &db.OrderBookSummaryQuery{
 		SqlQuery:      action.App.CoreQuery(),
 		SellingType:   params.SellingType,
 		SellingIssuer: params.SellingIssuer,

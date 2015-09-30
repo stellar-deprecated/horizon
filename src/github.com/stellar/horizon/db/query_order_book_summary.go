@@ -1,8 +1,12 @@
 package db
 
 import (
+	"bytes"
+	"fmt"
+	"github.com/go-errors/errors"
 	"github.com/stellar/go-stellar-base/xdr"
 	"golang.org/x/net/context"
+	"text/template"
 )
 
 // OrderBookSummaryPageSize is the default limit of price levels returned per "side" of an order book
@@ -26,18 +30,19 @@ FROM
 
 	FROM  offers co
 
-	WHERE co.sellingassettype = $1
-	AND   co.sellingassetcode = $2
-	AND   co.sellingissuer    = $3
-	AND   co.buyingassettype  = $4
-	AND   co.buyingassetcode  = $5
-	AND   co.buyingissuer     = $6
+	WHERE 1=1
+	AND   {{ .Filter "co.sellingassettype" .SellingType }}
+	AND   {{ .Filter "co.sellingassetcode" .SellingCode}}
+	AND   {{ .Filter "co.sellingissuer"    .SellingIssuer}}
+	AND   {{ .Filter "co.buyingassettype"  .BuyingType }}
+	AND   {{ .Filter "co.buyingassetcode"  .BuyingCode}}
+	AND   {{ .Filter "co.buyingissuer"     .BuyingIssuer}}
 
 	GROUP BY
 		co.pricen,
 		co.priced,
 		co.price
-	LIMIT $7 
+	LIMIT $1 
 
 ) UNION (
 	-- This query returns the "bids" portion, inverting the where clauses
@@ -51,22 +56,25 @@ FROM
 
 	FROM offers co
 
-	WHERE co.sellingassettype = $4
-	AND   co.sellingassetcode = $5
-	AND   co.sellingissuer    = $6
-	AND   co.buyingassettype  = $1
-	AND   co.buyingassetcode  = $2
-	AND   co.buyingissuer     = $3
-
+	WHERE 1=1
+	AND   {{ .Filter "co.sellingassettype" .BuyingType }}
+	AND   {{ .Filter "co.sellingassetcode" .BuyingCode}}
+	AND   {{ .Filter "co.sellingissuer"    .BuyingIssuer}}
+	AND   {{ .Filter "co.buyingassettype"  .SellingType }}
+	AND   {{ .Filter "co.buyingassetcode"  .SellingCode}}
+	AND   {{ .Filter "co.buyingissuer"     .SellingIssuer}}
+	
 	GROUP BY
 		co.pricen,
 		co.priced,
 		co.price
-	LIMIT $7
+	LIMIT $1
 )) summary
 
 ORDER BY type, pricef
 `
+
+var OrderBookSummaryTemplate *template.Template
 
 // OrderBookSummaryQuery is a query from which you should be able to drive a
 // order book summary client interface (bid/ask spread, prices and volume, etc).
@@ -78,12 +86,14 @@ type OrderBookSummaryQuery struct {
 	BuyingType    xdr.AssetType
 	BuyingCode    string
 	BuyingIssuer  string
+
+	args []interface{}
 }
 
 // Invert returns a new query in which the bids/asks have swapped places.
-func (q OrderBookSummaryQuery) Invert() OrderBookSummaryQuery {
+func (q *OrderBookSummaryQuery) Invert() *OrderBookSummaryQuery {
 
-	return OrderBookSummaryQuery{
+	return &OrderBookSummaryQuery{
 		SqlQuery:      q.SqlQuery,
 		SellingType:   q.BuyingType,
 		SellingCode:   q.BuyingCode,
@@ -95,16 +105,46 @@ func (q OrderBookSummaryQuery) Invert() OrderBookSummaryQuery {
 }
 
 // Select executes the query, populating the provided OrderBookSummaryRecord with data.
-func (q OrderBookSummaryQuery) Select(ctx context.Context, dest interface{}) error {
-	args := []interface{}{
-		q.SellingType,
-		q.SellingCode,
-		q.SellingIssuer,
-		q.BuyingType,
-		q.BuyingCode,
-		q.BuyingIssuer,
-		OrderBookSummaryPageSize,
+func (q *OrderBookSummaryQuery) Select(ctx context.Context, dest interface{}) error {
+	var sql bytes.Buffer
+
+	// append the limit first to the arguments, so we can use
+	// a fixed placeholder (in this case $1)
+	q.pushArg(OrderBookSummaryPageSize)
+
+	err := OrderBookSummaryTemplate.Execute(&sql, q)
+	if err != nil {
+		return errors.Wrap(err, 1)
 	}
 
-	return q.SqlQuery.SelectRaw(ctx, OrderBookSummarySQL, args, dest)
+	err = q.SqlQuery.SelectRaw(ctx, sql.String(), q.args, dest)
+	if err != nil {
+		return errors.Wrap(err, 1)
+	}
+
+	return nil
+}
+
+// Filter helps manage positional parameters and "IS NULL" checks for this query.
+// An empty string will be converted into a null comparison.
+func (q *OrderBookSummaryQuery) Filter(col string, v interface{}) string {
+	str, ok := v.(string)
+
+	if ok && str == "" {
+		return fmt.Sprintf("%s IS NULL", col)
+	}
+
+	n := q.pushArg(v)
+	return fmt.Sprintf("%s = $%d", col, n)
+}
+
+// pushArg appends the provided value to this queries argument list and returns
+// the placeholder position to use in a sql snippet
+func (q *OrderBookSummaryQuery) pushArg(v interface{}) int {
+	q.args = append(q.args, v)
+	return len(q.args)
+}
+
+func init() {
+	OrderBookSummaryTemplate = template.Must(template.New("sql").Parse(OrderBookSummarySQL))
 }

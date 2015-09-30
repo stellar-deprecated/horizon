@@ -47,7 +47,7 @@ func (res *ResultResource) IsSuccess() bool {
 
 func (res *ResultResource) Success() interface{} {
 	return struct {
-		Links  halgo.Links
+		halgo.Links
 		Hash   string `json:"hash"`
 		Ledger int32  `json:"ledger"`
 		Env    string `json:"envelope_xdr"`
