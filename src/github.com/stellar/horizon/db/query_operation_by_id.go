@@ -8,7 +8,7 @@ type OperationByIdQuery struct {
 }
 
 func (q OperationByIdQuery) Select(ctx context.Context, dest interface{}) error {
-	sql := OperationRecordSelect.Where("id = ?", q.Id).Limit(1)
+	sql := OperationRecordSelect.Where("hop.id = ?", q.Id).Limit(1)
 
 	return q.SqlQuery.Select(ctx, sql, dest)
 }
