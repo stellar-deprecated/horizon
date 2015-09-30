@@ -37,5 +37,6 @@ $ curl -X GET -H "Accept: application/xml" 'https://horizon-testnet.stellar.org/
 
 ## Related
 
-[Not Found](./not_found.md)
+[Not Found](./not-found.md)
+
 [Forbidden](./forbidden.md)
