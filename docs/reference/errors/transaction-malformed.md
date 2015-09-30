@@ -10,7 +10,7 @@ When you submit a malformed transaction to Horizon, Horizon will return a `trans
 * your [XDR](../../learn/xdr.md) structure is invalid
 * you have leftover bytes in your [XDR](../../learn/xdr.md) structure
 
-If you are encountering this error, please check the contents of the transaction you are submitting. This error is similar to the [Bad Request](./bad_request.md) error response and, therefore, the [HTTP 400 Error](https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes).
+If you are encountering this error, please check the contents of the transaction you are submitting. This error is similar to the [Bad Request](./bad-request.md) error response and, therefore, the [HTTP 400 Error](https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes).
 
 ## Attributes
 
