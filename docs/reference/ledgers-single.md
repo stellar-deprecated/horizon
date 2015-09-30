@@ -80,7 +80,7 @@ This endpoint responds with a single Ledger.  See [ledger resource](./resources/
 ## Errors
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./error/not-found.md): A `not_found` error will be returned if there is no ledger whose ID matches the `id` argument.
+- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no ledger whose ID matches the `id` argument.
 
 
 
