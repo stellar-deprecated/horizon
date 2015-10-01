@@ -38,15 +38,16 @@ func initStellarCoreInfo(app *App) {
 		return
 	}
 
-	var serverInfo map[string]string
+	var serverInfo map[string]interface{}
 	err = json.Unmarshal(*responseJson["info"], &serverInfo)
 	if err != nil {
 		fail(err)
 		return
 	}
 
-	app.coreVersion = serverInfo["build"]
-	app.networkPassphrase = serverInfo["network"]
+	// TODO: make resilient to changes in stellar-core's info output
+	app.coreVersion = serverInfo["build"].(string)
+	app.networkPassphrase = serverInfo["network"].(string)
 
 	return
 }
