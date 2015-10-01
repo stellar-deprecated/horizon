@@ -8,8 +8,8 @@ import (
 // RootResource is the initial map of links into the api.
 type RootResource struct {
 	halgo.Links
-	HorizonVersion     string
-	StellarCoreVersion string
+	HorizonVersion     string `json:"horizon_version"`
+	StellarCoreVersion string `json:"core_version"`
 }
 
 type RootAction struct {
