@@ -1,6 +1,6 @@
 ---
 id: transaction_failed
-title: Transaction Failed 
+title: Transaction Failed
 category: Errors
 ---
 
