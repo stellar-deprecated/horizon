@@ -1,7 +1,5 @@
 ---
-id: payments_for_transaction
 title: Payments for transaction
-category: Endpoints
 ---
 
 This endpoint represents all payment [operations](./resources/operation.md) that are part of a given [transaction](./resources/transaction.md).

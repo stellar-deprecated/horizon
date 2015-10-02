@@ -1,7 +1,5 @@
 ---
-id: effects_for_transaction
 title: Effects for transaction
-category: Endpoints
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that occurred as a result of a given [transaction](./resources/transaction.md).

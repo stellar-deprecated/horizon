@@ -1,12 +1,10 @@
 ---
-id: account
 title: Account
-category: Resources
 ---
 
 In the Stellar network, users interact using **accounts** which can be controlled by a corresponding keypair that can authorize transactions. One can create a new account with the [Create Account](./operation.md#create-account) operation.
 
-To learn more about the concept of accounts in the Stellar network, take a look at the [Stellar account concept guide](https://stellar.org/developers/learn/concepts/accounts.html).
+To learn more about the concept of accounts in the Stellar network, take a look at the [Stellar account concept guide](https://www.stellar.org/developers/learn/concepts/accounts.html).
 
 When horizon returns information about an account it uses the following format:
 

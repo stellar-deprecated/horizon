@@ -1,7 +1,5 @@
 ---
-id: offer
 title: Offer
-category: Resources
 ---
 
 Accounts on the Stellar network can make [offers](http://stellar.org/developers/learn/concepts/exchange.html) to buy or sell assets.  Users can create offers with the [Manage Offer](http://stellar.org/developers/learn/concepts/list-of-operations.html) operation.

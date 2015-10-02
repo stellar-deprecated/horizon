@@ -1,7 +1,5 @@
 ---
-id: effects_for_ledger
 title: Effects for ledger
-category: Endpoints
 ---
 
 Effects are the specific ways that the ledger was changed by any operation.

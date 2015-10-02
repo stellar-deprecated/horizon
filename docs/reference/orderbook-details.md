@@ -1,10 +1,8 @@
 ---
-id: trades_for_orderbook
-title: Trades for Orderbook
-category: Endpoints
+title: Orderbook Details
 ---
 
-People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  These offers are summarized by the assets being bought and sold in [orderbooks](./resources/orderbook.md).  
+People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  These offers are summarized by the assets being bought and sold in [orderbooks](./resources/orderbook.md).
 
 Horizon will return, for each orderbook, a summary of the orderbook and the bids and asks associated with that orderbook.
 

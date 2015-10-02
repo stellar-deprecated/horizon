@@ -1,7 +1,5 @@
 ---
-id: transactions_single
 title: Transaction Details
-category: Endpoints
 ---
 
 The transaction details endpoint provides information on a single [transaction](./resources/transaction.md). The transaction hash provided in the `hash` argument specifies which transaction to load.

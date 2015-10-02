@@ -1,14 +1,12 @@
 ---
-id: transaction
 title: Transaction
-category: Resources
 ---
 
 **Transactions** are the basic unit of change in the Stellar Network.
 
 A transaction is a grouping of [operations](./operation.md).
 
-To learn more about the concept of transactions in the Stellar network, take a look at the [Stellar transactions concept guide](https://stellar.org/developers/learn/concepts/transaction.html).
+To learn more about the concept of transactions in the Stellar network, take a look at the [Stellar transactions concept guide](https://www.stellar.org/developers/learn/concepts/transactions.html).
 
 ## Attributes
 

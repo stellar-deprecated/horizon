@@ -1,7 +1,5 @@
 ---
-id: ledgers_single
 title: Ledger Details
-category: Endpoints
 ---
 
 The ledger details endpoint provides information on a single [ledger](./resources/ledger.md).

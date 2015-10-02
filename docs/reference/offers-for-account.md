@@ -1,7 +1,5 @@
 ---
-id: offers_for_account
 title: Offers for account
-category: Endpoints
 ---
 
 People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  This endpoint represents all the offers a particular account makes.

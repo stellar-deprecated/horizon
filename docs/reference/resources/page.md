@@ -1,7 +1,5 @@
 ---
-id: page
 title: Page
-category: Resources
 ---
 
 Pages represent a subset of a larger collection of objects.

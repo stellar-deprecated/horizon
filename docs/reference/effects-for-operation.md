@@ -1,7 +1,5 @@
 ---
-id: effects_for_operation
 title: Effects for operation
-category: Endpoints
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that occurred as a result of a given [operation](./resources/operation.md).

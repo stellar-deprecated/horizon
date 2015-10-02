@@ -1,12 +1,10 @@
 ---
-id: effect
 title: Effect
-category: Resources
 ---
 
 A successful operation will yield zero or more **effects**.  These effects
 represent specific changes that occur in the ledger, but are not necessarily
-directly reflected in the [ledger](https://stellar.org/developers/learn/concepts/ledger.html) or [history](https://stellar.org/developers/learn/concepts/history-system.html), as [transactions](https://stellar.org/developers/learn/concepts/transactions.html) and [operations](https://stellar.org/developers/learn/concepts/operations.html) are.
+directly reflected in the [ledger](https://www.stellar.org/developers/learn/concepts/ledger.html) or [history](https://github.com/stellar/stellar-core/blob/master/docs/history.md), as [transactions](https://www.stellar.org/developers/learn/concepts/transactions.html) and [operations](https://www.stellar.org/developers/learn/concepts/operations.html) are.
 
 ## Effect types
 

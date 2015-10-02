@@ -1,7 +1,5 @@
 ---
-id: not_found
 title: Not Found
-category: Errors
 ---
 
 When Horizon can't find whatever you are requesting, it will return a `not_found` error. This is similar to a ["404 Not Found"](https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes) error response in HTTP.

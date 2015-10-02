@@ -1,7 +1,5 @@
 ---
-id: operations_for_ledger
 title: Operations for ledger
-category: Endpoints
 ---
 
 This endpoint returns all [operations](./resources/operation.md) that occurred in a given [ledger](./resources/ledger.md).

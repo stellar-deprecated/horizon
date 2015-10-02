@@ -1,7 +1,5 @@
 ---
-id: transactions_for_ledger
 title: Transactions for ledger
-category: Endpoints
 ---
 
 This endpoint represents all [transactions](./resources/transaction.md) in a given [ledger](./resources/ledger.md).

@@ -1,7 +1,5 @@
 ---
-id: operations_single
 title: Operation Details
-category: Endpoints
 ---
 
 The operation details endpoint provides information on a single [operation](./resources/operation.md). The operation ID provided in the `id` argument specifies which operation to load.

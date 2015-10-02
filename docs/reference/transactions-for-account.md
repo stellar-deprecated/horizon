@@ -1,7 +1,5 @@
 ---
-id: transactions_for_account
 title: Transactions for account
-category: Endpoints
 ---
 
 This endpoint represents all [transactions](./resources/transaction.md) that affected a given [account](./resources/account.md).

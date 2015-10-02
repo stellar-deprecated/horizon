@@ -1,7 +1,5 @@
 ---
-id: bad_request
 title: Bad Request
-category: Errors
 ---
 
 If Horizon cannot understand a request due to invalid syntax, it will return a `bad_request` error. This is analogous to the [HTTP 400 Error](https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes).

@@ -1,7 +1,5 @@
 ---
-id: transaction_malformed
 title: Transaction Malformed
-category: Errors
 ---
 
 When you submit a malformed transaction to Horizon, Horizon will return a `transaction_malformed` error. There are many ways in which a transaction is malformed, including

@@ -1,7 +1,5 @@
 ---
-id: transactions_create
 title: Post Transaction
-category: Endpoints
 ---
 
 Posts a new [transaction](./resources/transaction.md) to the Stellar Network.
@@ -10,7 +8,7 @@ responsibility of your client library.
 
 Transaction submission and the subsequent validation and inclusion into the
 Stellar Network's ledger is a [complicated and asynchronous
-process](https://stellar.org/developers/learn/concepts/transactions.html#life-cycle).
+process](https://www.stellar.org/developers/learn/concepts/transactions.html#life-cycle).
 To reduce the complexity, horizon manages these asynchronous processes for the
 client and will wait to hear results from the Stellar Network before returning
 an HTTP response to a client.

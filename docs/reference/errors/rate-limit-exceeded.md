@@ -1,7 +1,5 @@
 ---
-id: rate_limit_exceeded
 title: Rate Limit Exceeded
-category: Errors
 ---
 
 When a single user makes too many requests to Horizon in a one hour time frame, Horizon returns a `rate_limit_exceeded` error. By default, Horizon allows 3600 requests per hour -- an average of one request per second.

@@ -1,7 +1,5 @@
 ---
-id: effects_all
 title: All Effects
-category: Endpoints
 ---
 
 This endpoint represents all [effects](./resources/effect.md).

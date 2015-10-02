@@ -1,7 +1,5 @@
 ---
-id: payments_for_account
 title: Payments for account
-category: Endpoints
 ---
 
 This endpoint responds with a collection of [Payment operations](./resources/operation.md) where the given [account](./resources/account.md) was either the sender or receiver.

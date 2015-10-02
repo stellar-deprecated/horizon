@@ -1,14 +1,12 @@
 ---
-id: operation
 title: Operation
-category: Resources
 ---
 
-[Operations](https://stellar.org/developers/learn/concepts/operations.html) are objects that represent a desired change to the ledger: payments,
+[Operations](https://www.stellar.org/developers/learn/concepts/operations.html) are objects that represent a desired change to the ledger: payments,
 offers to exchange currency, changes made to account options, etc.  Operations
 are submitted to the Stellar network grouped in a [Transaction](./transaction.md).
 
-To learn more about the concept of operations in the Stellar network, take a look at the [Stellar operations concept guide](https://stellar.org/developers/learn/concepts/operations.html).
+To learn more about the concept of operations in the Stellar network, take a look at the [Stellar operations concept guide](https://www.stellar.org/developers/learn/concepts/operations.html).
 
 ## Operation Types
 
@@ -161,7 +159,7 @@ can be either a simple native asset payment or a fiat asset payment.
 ### Path Payment
 
 A path payment operation represents a payment from one account to another through a path.  This type of payment starts as one type of asset and ends as another type of asset. There can be other assets that are traded into and out of along the path.
- 
+
 
 #### Attributes
 

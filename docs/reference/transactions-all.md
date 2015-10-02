@@ -1,7 +1,5 @@
 ---
-id: transactions_all
 title: All Transactions
-category: Endpoints
 ---
 
 This endpoint represents all validated [transactions](./resources/transaction.md).
