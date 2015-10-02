@@ -4,7 +4,7 @@ title: Ledger
 
 A **ledger** resource contains information about a given ledger.
 
-To learn more about the concept of ledgers in the Stellar network, take a look at the [Stellar ledger concept guide](https://stellar.org/developers/learn/concepts/ledger.html).
+To learn more about the concept of ledgers in the Stellar network, take a look at the [Stellar ledger concept guide](https://www.stellar.org/developers/learn/concepts/ledger.html).
 
 ## Attributes
 | Attribute         | Type   |                                                                                                                             |
