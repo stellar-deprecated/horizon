@@ -1,7 +1,5 @@
 ---
-id: not_acceptable
 title: Not Acceptable
-category: Errors
 ---
 
 When your client only accepts certain formats of data from Horizon and Horizon cannot fulfill that request, Horizon will return a not_acceptable error. This is analogous to the [HTTP 406 Error](https://developer.mozilla.org/en-US/docs/Web/HTTP/Response_codes).

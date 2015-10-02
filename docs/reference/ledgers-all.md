@@ -1,7 +1,5 @@
 ---
-id: ledgers_all
 title: All Ledgers
-category: Endpoints
 ---
 
 This endpoint represents all [ledgers](./resources/ledger.md).

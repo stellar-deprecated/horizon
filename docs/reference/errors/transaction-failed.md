@@ -1,7 +1,5 @@
 ---
-id: transaction_failed
 title: Transaction Failed
-category: Errors
 ---
 
 This error occurs when a client submits a transaction that was well-formed but was not included into the ledger due to some other failure. For example, a transaction may fail if:

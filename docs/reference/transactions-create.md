@@ -1,7 +1,5 @@
 ---
-id: transactions_create
 title: Post Transaction
-category: Endpoints
 ---
 
 Posts a new [transaction](./resources/transaction.md) to the Stellar Network.

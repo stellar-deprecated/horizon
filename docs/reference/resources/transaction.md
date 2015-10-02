@@ -1,7 +1,5 @@
 ---
-id: transaction
 title: Transaction
-category: Resources
 ---
 
 **Transactions** are the basic unit of change in the Stellar Network.

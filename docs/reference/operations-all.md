@@ -1,7 +1,5 @@
 ---
-id: operations_all
 title: All Operations
-category: Endpoints
 ---
 
 This endpoint represents all [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md).

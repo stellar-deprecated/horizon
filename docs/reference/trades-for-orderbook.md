@@ -1,7 +1,5 @@
 ---
-id: trades_for_orderbook
 title: Trades for Orderbook
-category: Endpoints
 ---
 
 People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  These offers are summarized by the assets being bought and sold in [orderbooks](./resources/orderbook.md).  When an offer is fully or partially fulfilled, a [trade](./resources/trade.md) happens.

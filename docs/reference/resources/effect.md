@@ -1,7 +1,5 @@
 ---
-id: effect
 title: Effect
-category: Resources
 ---
 
 A successful operation will yield zero or more **effects**.  These effects

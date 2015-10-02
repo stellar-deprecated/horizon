@@ -1,7 +1,5 @@
 ---
-id: accounts_all
 title: All Accounts
-category: Endpoints
 ---
 
 The all accounts endpoint returns a collection of all the [accounts](./resources/account.md) that have ever existed. Results

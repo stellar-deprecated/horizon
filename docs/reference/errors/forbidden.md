@@ -1,7 +1,5 @@
 ---
-id: forbidden
 title: Forbidden
-category: Errors
 ---
 
 If you request data from Horizon you are not authorized to see, Horizon will return a `forbidden` error response. This is analogous to a [HTTP 403

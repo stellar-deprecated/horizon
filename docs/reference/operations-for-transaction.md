@@ -1,7 +1,5 @@
 ---
-id: operations_for_transaction
 title: Operations for transaction
-category: Endpoints
 ---
 
 This endpoint represents all [operations](./resources/operation.md) that are part of a given [transaction](./resources/transaction.md).

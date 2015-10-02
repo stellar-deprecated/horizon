@@ -1,7 +1,5 @@
 ---
-id: account
 title: Account
-category: Resources
 ---
 
 In the Stellar network, users interact using **accounts** which can be controlled by a corresponding keypair that can authorize transactions. One can create a new account with the [Create Account](./operation.md#create-account) operation.

@@ -1,7 +1,5 @@
 ---
-id: accounts_single
 title: Account Details
-category: Endpoints
 ---
 
 Returns information and links relating to a single [account](./resources/account.md).

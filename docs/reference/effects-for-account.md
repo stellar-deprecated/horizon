@@ -1,7 +1,5 @@
 ---
-id: effects_for_account
 title: Effects for account
-category: Endpoints
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that changed a given [account](./resources/account.md). It will return relevant effects from the creation of the account to the current ledger.
