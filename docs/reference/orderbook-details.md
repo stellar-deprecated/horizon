@@ -1,6 +1,6 @@
 ---
 id: trades_for_orderbook
-title: Trades for Orderbook
+title: Orderbook Details
 category: Endpoints
 ---
 
