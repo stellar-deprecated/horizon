@@ -1,5 +1,5 @@
 ---
-title: Horizon Paging
+title: Paging
 ---
 
 The Stellar network contains a lot of data and it would be infeasible to return it all at once. The paging system allows

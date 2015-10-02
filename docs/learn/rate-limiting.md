@@ -1,5 +1,5 @@
 ---
-title: Horizon Rate Limiting
+title: Rate Limiting
 ---
 
 In order to provide service stability, Horizon limits the number of requests a

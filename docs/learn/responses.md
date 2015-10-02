@@ -1,5 +1,5 @@
 ---
-title: Horizon Response Format
+title: Response Format
 ---
 
 Rather than using a fully custom way of representing the resources we expose in
