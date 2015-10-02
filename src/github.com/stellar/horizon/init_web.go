@@ -111,6 +111,7 @@ func initWebActions(app *App) {
 	r.Get("/order_book/trades", &TradeIndexAction{})
 
 	r.Post("/transactions", &TransactionCreateAction{})
+	r.Get("/paths", &PathIndexAction{})
 
 	// horizon doesn't implement everything ruby-horizon did,
 	// so we reverse proxy if we can
