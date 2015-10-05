@@ -1,5 +1,5 @@
 ---
-title: Payments for ledger
+title: Payments for Ledger
 ---
 
 This endpoint represents all payment [operations](./resources/operation.md) that are part of a valid [transactions](./resources/transaction.md) in a given [ledger](./resources/ledger.md).
