@@ -1,5 +1,5 @@
 ---
-title: Operations for ledger
+title: Operations for Ledger
 ---
 
 This endpoint returns all [operations](./resources/operation.md) that occurred in a given [ledger](./resources/ledger.md).
