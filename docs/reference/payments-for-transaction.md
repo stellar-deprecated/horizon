@@ -1,5 +1,5 @@
 ---
-title: Payments for transaction
+title: Payments for Transaction
 ---
 
 This endpoint represents all payment [operations](./resources/operation.md) that are part of a given [transaction](./resources/transaction.md).
