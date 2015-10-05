@@ -1,5 +1,5 @@
 ---
-title: Effects for account
+title: Effects for Account
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that changed a given [account](./resources/account.md). It will return relevant effects from the creation of the account to the current ledger.
