@@ -1,5 +1,5 @@
 ---
-title: Effects for ledger
+title: Effects for Ledger
 ---
 
 Effects are the specific ways that the ledger was changed by any operation.
