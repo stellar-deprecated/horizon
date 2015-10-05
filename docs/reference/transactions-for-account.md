@@ -1,5 +1,5 @@
 ---
-title: Transactions for account
+title: Transactions for Account
 ---
 
 This endpoint represents all [transactions](./resources/transaction.md) that affected a given [account](./resources/account.md).
