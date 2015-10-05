@@ -1,5 +1,5 @@
 ---
-title: Offers for account
+title: Offers for Account
 ---
 
 People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  This endpoint represents all the offers a particular account makes.
