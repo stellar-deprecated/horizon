@@ -1,5 +1,5 @@
 ---
-title: Transactions for ledger
+title: Transactions for Ledger
 ---
 
 This endpoint represents all [transactions](./resources/transaction.md) in a given [ledger](./resources/ledger.md).
