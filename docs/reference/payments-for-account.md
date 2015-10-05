@@ -1,5 +1,5 @@
 ---
-title: Payments for account
+title: Payments for Account
 ---
 
 This endpoint responds with a collection of [Payment operations](./resources/operation.md) where the given [account](./resources/account.md) was either the sender or receiver.
