@@ -1,5 +1,5 @@
 ---
-title: Effects for transaction
+title: Effects for Transaction
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that occurred as a result of a given [transaction](./resources/transaction.md).
