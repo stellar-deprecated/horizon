@@ -4,6 +4,7 @@ title: All Ledgers
 
 This endpoint represents all [ledgers](./resources/ledger.md).
 This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to get notifications as ledgers are closed by the Stellar network.
+If called in streaming mode Horizon will start at the earliest known ledger unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream ledgers created since your request time.
 
 ## Request
 
@@ -120,6 +121,38 @@ This endpoint responds with a list of ledgers.  See [ledger resource](./resource
       "href": "/ledgers?order=asc&limit=2&cursor="
     }
   }
+}
+```
+
+### Example Streaming Event
+
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/ledgers/69859/effects/{?cursor,limit,order}",
+      "templated": true
+    },
+    "operations": {
+      "href": "/ledgers/69859/operations/{?cursor,limit,order}",
+      "templated": true
+    },
+    "self": {
+      "href": "/ledgers/69859"
+    },
+    "transactions": {
+      "href": "/ledgers/69859/transactions/{?cursor,limit,order}",
+      "templated": true
+    }
+  },
+  "id": "4db1e4f145e9ee75162040d26284795e0697e2e84084624e7c6c723ebbf80118",
+  "paging_token": "300042120331264",
+  "hash": "4db1e4f145e9ee75162040d26284795e0697e2e84084624e7c6c723ebbf80118",
+  "prev_hash": "4b0b8bace3b2438b2404776ce57643966855487ba6384724a3c664c7aa4cd9e4",
+  "sequence": 69859,
+  "transaction_count": 0,
+  "operation_count": 0,
+  "closed_at": "2015-07-20T15:51:52Z"
 }
 ```
 

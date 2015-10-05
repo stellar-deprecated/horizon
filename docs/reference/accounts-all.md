@@ -6,7 +6,7 @@ The all accounts endpoint returns a collection of all the [accounts](./resources
 are ordered by account creation time. An address may show up multiple times if they were [merged](./resources/operation.md#Account_Merge) and then [created](./resources/operation.md#Create_Account) again.
 
 This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new accounts as they get made in the Stellar network.
-If called in streaming mode Horizon will start at the earliest known account unless a cursor is set. In that case it will start from the cursor.
+If called in streaming mode Horizon will start at the earliest known account unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream accounts created since your request time.
 
 ## Request
 
@@ -126,6 +126,44 @@ See [accounts](./resources/account.md) for reference.
       "href": "/accounts?order=asc&limit=10&cursor="
     }
   }
+}
+```
+
+### Example Streaming Event
+
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36/effects/{?cursor,limit,order}",
+      "templated": true
+    },
+    "offers": {
+      "href": "/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36/offers/{?cursor,limit,order}",
+      "templated": true
+    },
+    "operations": {
+      "href": "/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36/operations/{?cursor,limit,order}",
+      "templated": true
+    },
+    "self": {
+      "href": "/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36"
+    },
+    "transactions": {
+      "href": "/accounts/GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36/transactions/{?cursor,limit,order}",
+      "templated": true
+    }
+  },
+  "id": "GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36",
+  "paging_token": "66035122180096",
+  "address": "GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36",
+  "sequence": 66035122176002,
+  "balances": [
+    {
+      "asset_type": "native",
+      "balance": 999999980
+    }
+  ]
 }
 ```
 

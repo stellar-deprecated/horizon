@@ -5,6 +5,7 @@ title: Operations for account
 This endpoint represents all [operations](./resources/operation.md) that were included in valid [transactions](./resources/transaction.md) that affected a particular [account](./resources/account.md).
 
 This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new operations that affect a given account as they happen.
+If called in streaming mode Horizon will start at the earliest known operation unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream operations created since your request time.
 
 ## Request
 
@@ -94,6 +95,38 @@ This endpoint responds with a list of operations that affected the given account
       "href": "/accounts/GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB/operations?order=asc&limit=10&cursor="
     }
   }
+}
+```
+
+### Example Streaming Event
+
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/77309415424/effects/{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=77309415424&order=asc"
+    },
+    "self": {
+      "href": "/operations/77309415424"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=77309415424&order=desc"
+    },
+    "transactions": {
+      "href": "/transactions/77309415424"
+    }
+  },
+  "account": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO",
+  "funder": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
+  "id": 77309415424,
+  "paging_token": "77309415424",
+  "starting_balance": 1e+14,
+  "type": 0,
+  "type_s": "create_account"
 }
 ```
 

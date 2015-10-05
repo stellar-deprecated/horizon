@@ -5,6 +5,7 @@ title: Payments for account
 This endpoint responds with a collection of [Payment operations](./resources/operation.md) where the given [account](./resources/account.md) was either the sender or receiver.
 
 This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new payments to or from an account as they get made in the Stellar network.
+If called in streaming mode Horizon will start at the earliest known payment unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream payments created since your request time.
 
 ## Request
 
@@ -96,6 +97,37 @@ This endpoint responds with a [page](./resources/page.md) of [payment operations
 }
 ```
 
+### Example Streaming Event
+
+```json
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/77309415424/effects/{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=77309415424&order=asc"
+    },
+    "self": {
+      "href": "/operations/77309415424"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=77309415424&order=desc"
+    },
+    "transactions": {
+      "href": "/transactions/77309415424"
+    }
+  },
+  "account": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO",
+  "funder": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
+  "id": 77309415424,
+  "paging_token": "77309415424",
+  "starting_balance": 1e+14,
+  "type": 0,
+  "type_s": "create_account"
+}
+```
 
 
 ## Possible Errors

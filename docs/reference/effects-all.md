@@ -5,6 +5,7 @@ title: All Effects
 This endpoint represents all [effects](./resources/effect.md).
 
 This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new effects as transactions happen in the Stellar network.
+If called in streaming mode Horizon will start at the earliest known effect unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream effects created since your request time.
 
 ## Request
 
