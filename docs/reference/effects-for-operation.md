@@ -1,5 +1,5 @@
 ---
-title: Effects for operation
+title: Effects for Operation
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that occurred as a result of a given [operation](./resources/operation.md).
