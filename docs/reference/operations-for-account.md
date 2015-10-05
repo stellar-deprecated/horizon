@@ -1,5 +1,5 @@
 ---
-title: Operations for account
+title: Operations for Account
 ---
 
 This endpoint represents all [operations](./resources/operation.md) that were included in valid [transactions](./resources/transaction.md) that affected a particular [account](./resources/account.md).
