@@ -1,5 +1,5 @@
 ---
-title: Operations for transaction
+title: Operations for Transaction
 ---
 
 This endpoint represents all [operations](./resources/operation.md) that are part of a given [transaction](./resources/transaction.md).
