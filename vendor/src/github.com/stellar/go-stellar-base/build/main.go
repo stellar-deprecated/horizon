@@ -43,7 +43,7 @@ type SourceAccount struct {
 // NativeAmount is a mutator that configures a payment to be using native
 // currency and have the amount provided.
 type NativeAmount struct {
-	Amount int64
+	Amount string
 }
 
 // Sequence is a mutator that sets the sequence number on a transaction

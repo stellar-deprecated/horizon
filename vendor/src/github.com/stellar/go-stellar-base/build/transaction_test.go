@@ -14,7 +14,7 @@ func TestTransactionMutators(t *testing.T) {
 
 		Convey("Defaults works", func() {
 			b.Mutate(Defaults{})
-			So(b.TX.Fee, ShouldEqual, 10)
+			So(b.TX.Fee, ShouldEqual, 100)
 			So(b.TX.Memo.Type, ShouldResemble, xdr.MemoTypeMemoNone)
 		})
 

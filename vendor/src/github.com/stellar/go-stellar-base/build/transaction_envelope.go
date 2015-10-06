@@ -17,13 +17,27 @@ type TransactionEnvelopeMutator interface {
 
 // TransactionEnvelopeBuilder helps you build a TransactionEnvelope
 type TransactionEnvelopeBuilder struct {
-	E   xdr.TransactionEnvelope
+	E   *xdr.TransactionEnvelope
 	Err error
+
+	child *TransactionBuilder
+}
+
+func (b *TransactionEnvelopeBuilder) Init() {
+	if b.E == nil {
+		b.E = &xdr.TransactionEnvelope{}
+	}
+
+	if b.child == nil {
+		b.child = &TransactionBuilder{TX: &b.E.Tx}
+	}
 }
 
 // Mutate applies the provided TransactionEnvelopeMutators to this builder's
 // envelope
 func (b *TransactionEnvelopeBuilder) Mutate(muts ...TransactionEnvelopeMutator) {
+	b.Init()
+
 	for _, m := range muts {
 		err := m.MutateTransactionEnvelope(b)
 		if err != nil {
@@ -36,18 +50,18 @@ func (b *TransactionEnvelopeBuilder) Mutate(muts ...TransactionEnvelopeMutator) 
 // MutateTX runs Mutate on the underlying transaction using the provided
 // mutators.
 func (b *TransactionEnvelopeBuilder) MutateTX(muts ...TransactionMutator) {
+	b.Init()
+
 	if b.Err != nil {
 		return
 	}
 
-	txb := TransactionBuilder{TX: b.E.Tx}
-	txb.Mutate(muts...)
-	b.E.Tx = txb.TX
-	b.Err = txb.Err
+	b.child.Mutate(muts...)
+	b.Err = b.child.Err
 }
 
 // Bytes encodes the builder's underlying envelope to XDR
-func (b TransactionEnvelopeBuilder) Bytes() ([]byte, error) {
+func (b *TransactionEnvelopeBuilder) Bytes() ([]byte, error) {
 	if b.Err != nil {
 		return nil, b.Err
 	}
@@ -63,7 +77,7 @@ func (b TransactionEnvelopeBuilder) Bytes() ([]byte, error) {
 
 // Base64 returns a string which is the xdr-then-base64-encoded form
 // of the builder's underlying transaction envelope
-func (b TransactionEnvelopeBuilder) Base64() (string, error) {
+func (b *TransactionEnvelopeBuilder) Base64() (string, error) {
 	bs, err := b.Bytes()
 	return base64.StdEncoding.EncodeToString(bs), err
 }
@@ -76,8 +90,7 @@ func (b TransactionEnvelopeBuilder) Base64() (string, error) {
 
 // MutateTransactionEnvelope adds a signature to the provided envelope
 func (m Sign) MutateTransactionEnvelope(txe *TransactionEnvelopeBuilder) error {
-	tb := TransactionBuilder{TX: txe.E.Tx}
-	hash, err := tb.Hash()
+	hash, err := txe.child.Hash()
 
 	if err != nil {
 		return err
@@ -100,11 +113,14 @@ func (m Sign) MutateTransactionEnvelope(txe *TransactionEnvelopeBuilder) error {
 
 // MutateTransactionEnvelope for TransactionBuilder causes the underylying
 // transaction to be set as the provided envelope's Tx field
-func (m TransactionBuilder) MutateTransactionEnvelope(txe *TransactionEnvelopeBuilder) error {
+func (m *TransactionBuilder) MutateTransactionEnvelope(txe *TransactionEnvelopeBuilder) error {
 	if m.Err != nil {
 		return m.Err
 	}
 
-	txe.E.Tx = m.TX
+	txe.E.Tx = *m.TX
+	newChild := *m
+	txe.child = &newChild
+	m.TX = &txe.E.Tx
 	return nil
 }

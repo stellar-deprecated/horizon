@@ -6,11 +6,14 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base"
+	"github.com/stellar/go-stellar-base/xdr"
 )
 
 func TestTransactionEnvelopeMutators(t *testing.T) {
 	Convey("TransactionEnvelope Mutators:", t, func() {
-		b := TransactionEnvelopeBuilder{}
+		b := TransactionEnvelopeBuilder{
+			E: &xdr.TransactionEnvelope{},
+		}
 
 		Convey("TransactionBuilder sets the TX of the envelope", func() {
 			tx := Transaction(Sequence{10})
@@ -20,7 +23,7 @@ func TestTransactionEnvelopeMutators(t *testing.T) {
 		})
 
 		Convey("TransactionBuilder propagates its error upwards", func() {
-			tx := TransactionBuilder{Err: errors.New("busted in some fashion")}
+			tx := &TransactionBuilder{Err: errors.New("busted in some fashion")}
 			b.Mutate(tx)
 			So(b.Err, ShouldNotBeNil)
 		})

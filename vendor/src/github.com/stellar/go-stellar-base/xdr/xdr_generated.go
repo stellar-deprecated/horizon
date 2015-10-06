@@ -325,8 +325,8 @@ type AssetType int32
 
 const (
 	AssetTypeAssetTypeNative           AssetType = 0
-	AssetTypeAssetTypeCreditAlphanum4            = 1
-	AssetTypeAssetTypeCreditAlphanum12           = 2
+	AssetTypeAssetTypeCreditAlphanum4  AssetType = 1
+	AssetTypeAssetTypeCreditAlphanum12 AssetType = 2
 )
 
 var assetTypeMap = map[int32]string{
@@ -525,9 +525,9 @@ type ThresholdIndexes int32
 
 const (
 	ThresholdIndexesThresholdMasterWeight ThresholdIndexes = 0
-	ThresholdIndexesThresholdLow                           = 1
-	ThresholdIndexesThresholdMed                           = 2
-	ThresholdIndexesThresholdHigh                          = 3
+	ThresholdIndexesThresholdLow          ThresholdIndexes = 1
+	ThresholdIndexesThresholdMed          ThresholdIndexes = 2
+	ThresholdIndexesThresholdHigh         ThresholdIndexes = 3
 )
 
 var thresholdIndexesMap = map[int32]string{
@@ -563,8 +563,8 @@ type LedgerEntryType int32
 
 const (
 	LedgerEntryTypeAccount   LedgerEntryType = 0
-	LedgerEntryTypeTrustline                 = 1
-	LedgerEntryTypeOffer                     = 2
+	LedgerEntryTypeTrustline LedgerEntryType = 1
+	LedgerEntryTypeOffer     LedgerEntryType = 2
 )
 
 var ledgerEntryTypeMap = map[int32]string{
@@ -619,8 +619,8 @@ type AccountFlags int32
 
 const (
 	AccountFlagsAuthRequiredFlag  AccountFlags = 1
-	AccountFlagsAuthRevocableFlag              = 2
-	AccountFlagsAuthImmutableFlag              = 4
+	AccountFlagsAuthRevocableFlag AccountFlags = 2
+	AccountFlagsAuthImmutableFlag AccountFlags = 4
 )
 
 var accountFlagsMap = map[int32]string{
@@ -1154,8 +1154,8 @@ type EnvelopeType int32
 
 const (
 	EnvelopeTypeEnvelopeTypeScp  EnvelopeType = 1
-	EnvelopeTypeEnvelopeTypeTx                = 2
-	EnvelopeTypeEnvelopeTypeAuth              = 3
+	EnvelopeTypeEnvelopeTypeTx   EnvelopeType = 2
+	EnvelopeTypeEnvelopeTypeAuth EnvelopeType = 3
 )
 
 var envelopeTypeMap = map[int32]string{
@@ -1210,15 +1210,15 @@ type OperationType int32
 
 const (
 	OperationTypeCreateAccount      OperationType = 0
-	OperationTypePayment                          = 1
-	OperationTypePathPayment                      = 2
-	OperationTypeManageOffer                      = 3
-	OperationTypeCreatePassiveOffer               = 4
-	OperationTypeSetOptions                       = 5
-	OperationTypeChangeTrust                      = 6
-	OperationTypeAllowTrust                       = 7
-	OperationTypeAccountMerge                     = 8
-	OperationTypeInflation                        = 9
+	OperationTypePayment            OperationType = 1
+	OperationTypePathPayment        OperationType = 2
+	OperationTypeManageOffer        OperationType = 3
+	OperationTypeCreatePassiveOffer OperationType = 4
+	OperationTypeSetOptions         OperationType = 5
+	OperationTypeChangeTrust        OperationType = 6
+	OperationTypeAllowTrust         OperationType = 7
+	OperationTypeAccountMerge       OperationType = 8
+	OperationTypeInflation          OperationType = 9
 )
 
 var operationTypeMap = map[int32]string{
@@ -1950,10 +1950,10 @@ type MemoType int32
 
 const (
 	MemoTypeMemoNone   MemoType = 0
-	MemoTypeMemoText            = 1
-	MemoTypeMemoId              = 2
-	MemoTypeMemoHash            = 3
-	MemoTypeMemoReturn          = 4
+	MemoTypeMemoText   MemoType = 1
+	MemoTypeMemoId     MemoType = 2
+	MemoTypeMemoHash   MemoType = 3
+	MemoTypeMemoReturn MemoType = 4
 )
 
 var memoTypeMap = map[int32]string{
@@ -2311,10 +2311,10 @@ type CreateAccountResultCode int32
 
 const (
 	CreateAccountResultCodeCreateAccountSuccess      CreateAccountResultCode = 0
-	CreateAccountResultCodeCreateAccountMalformed                            = -1
-	CreateAccountResultCodeCreateAccountUnderfunded                          = -2
-	CreateAccountResultCodeCreateAccountLowReserve                           = -3
-	CreateAccountResultCodeCreateAccountAlreadyExist                         = -4
+	CreateAccountResultCodeCreateAccountMalformed    CreateAccountResultCode = -1
+	CreateAccountResultCodeCreateAccountUnderfunded  CreateAccountResultCode = -2
+	CreateAccountResultCodeCreateAccountLowReserve   CreateAccountResultCode = -3
+	CreateAccountResultCodeCreateAccountAlreadyExist CreateAccountResultCode = -4
 )
 
 var createAccountResultCodeMap = map[int32]string{
@@ -2404,15 +2404,15 @@ type PaymentResultCode int32
 
 const (
 	PaymentResultCodePaymentSuccess          PaymentResultCode = 0
-	PaymentResultCodePaymentMalformed                          = -1
-	PaymentResultCodePaymentUnderfunded                        = -2
-	PaymentResultCodePaymentSrcNoTrust                         = -3
-	PaymentResultCodePaymentSrcNotAuthorized                   = -4
-	PaymentResultCodePaymentNoDestination                      = -5
-	PaymentResultCodePaymentNoTrust                            = -6
-	PaymentResultCodePaymentNotAuthorized                      = -7
-	PaymentResultCodePaymentLineFull                           = -8
-	PaymentResultCodePaymentNoIssuer                           = -9
+	PaymentResultCodePaymentMalformed        PaymentResultCode = -1
+	PaymentResultCodePaymentUnderfunded      PaymentResultCode = -2
+	PaymentResultCodePaymentSrcNoTrust       PaymentResultCode = -3
+	PaymentResultCodePaymentSrcNotAuthorized PaymentResultCode = -4
+	PaymentResultCodePaymentNoDestination    PaymentResultCode = -5
+	PaymentResultCodePaymentNoTrust          PaymentResultCode = -6
+	PaymentResultCodePaymentNotAuthorized    PaymentResultCode = -7
+	PaymentResultCodePaymentLineFull         PaymentResultCode = -8
+	PaymentResultCodePaymentNoIssuer         PaymentResultCode = -9
 )
 
 var paymentResultCodeMap = map[int32]string{
@@ -2510,18 +2510,18 @@ type PathPaymentResultCode int32
 
 const (
 	PathPaymentResultCodePathPaymentSuccess          PathPaymentResultCode = 0
-	PathPaymentResultCodePathPaymentMalformed                              = -1
-	PathPaymentResultCodePathPaymentUnderfunded                            = -2
-	PathPaymentResultCodePathPaymentSrcNoTrust                             = -3
-	PathPaymentResultCodePathPaymentSrcNotAuthorized                       = -4
-	PathPaymentResultCodePathPaymentNoDestination                          = -5
-	PathPaymentResultCodePathPaymentNoTrust                                = -6
-	PathPaymentResultCodePathPaymentNotAuthorized                          = -7
-	PathPaymentResultCodePathPaymentLineFull                               = -8
-	PathPaymentResultCodePathPaymentNoIssuer                               = -9
-	PathPaymentResultCodePathPaymentTooFewOffers                           = -10
-	PathPaymentResultCodePathPaymentOfferCrossSelf                         = -11
-	PathPaymentResultCodePathPaymentOverSendmax                            = -12
+	PathPaymentResultCodePathPaymentMalformed        PathPaymentResultCode = -1
+	PathPaymentResultCodePathPaymentUnderfunded      PathPaymentResultCode = -2
+	PathPaymentResultCodePathPaymentSrcNoTrust       PathPaymentResultCode = -3
+	PathPaymentResultCodePathPaymentSrcNotAuthorized PathPaymentResultCode = -4
+	PathPaymentResultCodePathPaymentNoDestination    PathPaymentResultCode = -5
+	PathPaymentResultCodePathPaymentNoTrust          PathPaymentResultCode = -6
+	PathPaymentResultCodePathPaymentNotAuthorized    PathPaymentResultCode = -7
+	PathPaymentResultCodePathPaymentLineFull         PathPaymentResultCode = -8
+	PathPaymentResultCodePathPaymentNoIssuer         PathPaymentResultCode = -9
+	PathPaymentResultCodePathPaymentTooFewOffers     PathPaymentResultCode = -10
+	PathPaymentResultCodePathPaymentOfferCrossSelf   PathPaymentResultCode = -11
+	PathPaymentResultCodePathPaymentOverSendmax      PathPaymentResultCode = -12
 )
 
 var pathPaymentResultCodeMap = map[int32]string{
@@ -2725,18 +2725,18 @@ type ManageOfferResultCode int32
 
 const (
 	ManageOfferResultCodeManageOfferSuccess           ManageOfferResultCode = 0
-	ManageOfferResultCodeManageOfferMalformed                               = -1
-	ManageOfferResultCodeManageOfferSellNoTrust                             = -2
-	ManageOfferResultCodeManageOfferBuyNoTrust                              = -3
-	ManageOfferResultCodeManageOfferSellNotAuthorized                       = -4
-	ManageOfferResultCodeManageOfferBuyNotAuthorized                        = -5
-	ManageOfferResultCodeManageOfferLineFull                                = -6
-	ManageOfferResultCodeManageOfferUnderfunded                             = -7
-	ManageOfferResultCodeManageOfferCrossSelf                               = -8
-	ManageOfferResultCodeManageOfferSellNoIssuer                            = -9
-	ManageOfferResultCodeManageOfferBuyNoIssuer                             = -10
-	ManageOfferResultCodeManageOfferNotFound                                = -11
-	ManageOfferResultCodeManageOfferLowReserve                              = -12
+	ManageOfferResultCodeManageOfferMalformed         ManageOfferResultCode = -1
+	ManageOfferResultCodeManageOfferSellNoTrust       ManageOfferResultCode = -2
+	ManageOfferResultCodeManageOfferBuyNoTrust        ManageOfferResultCode = -3
+	ManageOfferResultCodeManageOfferSellNotAuthorized ManageOfferResultCode = -4
+	ManageOfferResultCodeManageOfferBuyNotAuthorized  ManageOfferResultCode = -5
+	ManageOfferResultCodeManageOfferLineFull          ManageOfferResultCode = -6
+	ManageOfferResultCodeManageOfferUnderfunded       ManageOfferResultCode = -7
+	ManageOfferResultCodeManageOfferCrossSelf         ManageOfferResultCode = -8
+	ManageOfferResultCodeManageOfferSellNoIssuer      ManageOfferResultCode = -9
+	ManageOfferResultCodeManageOfferBuyNoIssuer       ManageOfferResultCode = -10
+	ManageOfferResultCodeManageOfferNotFound          ManageOfferResultCode = -11
+	ManageOfferResultCodeManageOfferLowReserve        ManageOfferResultCode = -12
 )
 
 var manageOfferResultCodeMap = map[int32]string{
@@ -2781,8 +2781,8 @@ type ManageOfferEffect int32
 
 const (
 	ManageOfferEffectManageOfferCreated ManageOfferEffect = 0
-	ManageOfferEffectManageOfferUpdated                   = 1
-	ManageOfferEffectManageOfferDeleted                   = 2
+	ManageOfferEffectManageOfferUpdated ManageOfferEffect = 1
+	ManageOfferEffectManageOfferDeleted ManageOfferEffect = 2
 )
 
 var manageOfferEffectMap = map[int32]string{
@@ -3007,15 +3007,15 @@ type SetOptionsResultCode int32
 
 const (
 	SetOptionsResultCodeSetOptionsSuccess             SetOptionsResultCode = 0
-	SetOptionsResultCodeSetOptionsLowReserve                               = -1
-	SetOptionsResultCodeSetOptionsTooManySigners                           = -2
-	SetOptionsResultCodeSetOptionsBadFlags                                 = -3
-	SetOptionsResultCodeSetOptionsInvalidInflation                         = -4
-	SetOptionsResultCodeSetOptionsCantChange                               = -5
-	SetOptionsResultCodeSetOptionsUnknownFlag                              = -6
-	SetOptionsResultCodeSetOptionsThresholdOutOfRange                      = -7
-	SetOptionsResultCodeSetOptionsBadSigner                                = -8
-	SetOptionsResultCodeSetOptionsInvalidHomeDomain                        = -9
+	SetOptionsResultCodeSetOptionsLowReserve          SetOptionsResultCode = -1
+	SetOptionsResultCodeSetOptionsTooManySigners      SetOptionsResultCode = -2
+	SetOptionsResultCodeSetOptionsBadFlags            SetOptionsResultCode = -3
+	SetOptionsResultCodeSetOptionsInvalidInflation    SetOptionsResultCode = -4
+	SetOptionsResultCodeSetOptionsCantChange          SetOptionsResultCode = -5
+	SetOptionsResultCodeSetOptionsUnknownFlag         SetOptionsResultCode = -6
+	SetOptionsResultCodeSetOptionsThresholdOutOfRange SetOptionsResultCode = -7
+	SetOptionsResultCodeSetOptionsBadSigner           SetOptionsResultCode = -8
+	SetOptionsResultCodeSetOptionsInvalidHomeDomain   SetOptionsResultCode = -9
 )
 
 var setOptionsResultCodeMap = map[int32]string{
@@ -3105,10 +3105,10 @@ type ChangeTrustResultCode int32
 
 const (
 	ChangeTrustResultCodeChangeTrustSuccess      ChangeTrustResultCode = 0
-	ChangeTrustResultCodeChangeTrustMalformed                          = -1
-	ChangeTrustResultCodeChangeTrustNoIssuer                           = -2
-	ChangeTrustResultCodeChangeTrustInvalidLimit                       = -3
-	ChangeTrustResultCodeChangeTrustLowReserve                         = -4
+	ChangeTrustResultCodeChangeTrustMalformed    ChangeTrustResultCode = -1
+	ChangeTrustResultCodeChangeTrustNoIssuer     ChangeTrustResultCode = -2
+	ChangeTrustResultCodeChangeTrustInvalidLimit ChangeTrustResultCode = -3
+	ChangeTrustResultCodeChangeTrustLowReserve   ChangeTrustResultCode = -4
 )
 
 var changeTrustResultCodeMap = map[int32]string{
@@ -3193,10 +3193,10 @@ type AllowTrustResultCode int32
 
 const (
 	AllowTrustResultCodeAllowTrustSuccess          AllowTrustResultCode = 0
-	AllowTrustResultCodeAllowTrustMalformed                             = -1
-	AllowTrustResultCodeAllowTrustNoTrustLine                           = -2
-	AllowTrustResultCodeAllowTrustTrustNotRequired                      = -3
-	AllowTrustResultCodeAllowTrustCantRevoke                            = -4
+	AllowTrustResultCodeAllowTrustMalformed        AllowTrustResultCode = -1
+	AllowTrustResultCodeAllowTrustNoTrustLine      AllowTrustResultCode = -2
+	AllowTrustResultCodeAllowTrustTrustNotRequired AllowTrustResultCode = -3
+	AllowTrustResultCodeAllowTrustCantRevoke       AllowTrustResultCode = -4
 )
 
 var allowTrustResultCodeMap = map[int32]string{
@@ -3280,10 +3280,10 @@ type AccountMergeResultCode int32
 
 const (
 	AccountMergeResultCodeAccountMergeSuccess       AccountMergeResultCode = 0
-	AccountMergeResultCodeAccountMergeMalformed                            = -1
-	AccountMergeResultCodeAccountMergeNoAccount                            = -2
-	AccountMergeResultCodeAccountMergeImmutableSet                         = -3
-	AccountMergeResultCodeAccountMergeHasSubEntries                        = -4
+	AccountMergeResultCodeAccountMergeMalformed     AccountMergeResultCode = -1
+	AccountMergeResultCodeAccountMergeNoAccount     AccountMergeResultCode = -2
+	AccountMergeResultCodeAccountMergeImmutableSet  AccountMergeResultCode = -3
+	AccountMergeResultCodeAccountMergeHasSubEntries AccountMergeResultCode = -4
 )
 
 var accountMergeResultCodeMap = map[int32]string{
@@ -3395,7 +3395,7 @@ type InflationResultCode int32
 
 const (
 	InflationResultCodeInflationSuccess InflationResultCode = 0
-	InflationResultCodeInflationNotTime                     = -1
+	InflationResultCodeInflationNotTime InflationResultCode = -1
 )
 
 var inflationResultCodeMap = map[int32]string{
@@ -3517,8 +3517,8 @@ type OperationResultCode int32
 
 const (
 	OperationResultCodeOpInner     OperationResultCode = 0
-	OperationResultCodeOpBadAuth                       = -1
-	OperationResultCodeOpNoAccount                     = -2
+	OperationResultCodeOpBadAuth   OperationResultCode = -1
+	OperationResultCodeOpNoAccount OperationResultCode = -2
 )
 
 var operationResultCodeMap = map[int32]string{
@@ -4064,17 +4064,17 @@ type TransactionResultCode int32
 
 const (
 	TransactionResultCodeTxSuccess             TransactionResultCode = 0
-	TransactionResultCodeTxFailed                                    = -1
-	TransactionResultCodeTxTooEarly                                  = -2
-	TransactionResultCodeTxTooLate                                   = -3
-	TransactionResultCodeTxMissingOperation                          = -4
-	TransactionResultCodeTxBadSeq                                    = -5
-	TransactionResultCodeTxBadAuth                                   = -6
-	TransactionResultCodeTxInsufficientBalance                       = -7
-	TransactionResultCodeTxNoAccount                                 = -8
-	TransactionResultCodeTxInsufficientFee                           = -9
-	TransactionResultCodeTxBadAuthExtra                              = -10
-	TransactionResultCodeTxInternalError                             = -11
+	TransactionResultCodeTxFailed              TransactionResultCode = -1
+	TransactionResultCodeTxTooEarly            TransactionResultCode = -2
+	TransactionResultCodeTxTooLate             TransactionResultCode = -3
+	TransactionResultCodeTxMissingOperation    TransactionResultCode = -4
+	TransactionResultCodeTxBadSeq              TransactionResultCode = -5
+	TransactionResultCodeTxBadAuth             TransactionResultCode = -6
+	TransactionResultCodeTxInsufficientBalance TransactionResultCode = -7
+	TransactionResultCodeTxNoAccount           TransactionResultCode = -8
+	TransactionResultCodeTxInsufficientFee     TransactionResultCode = -9
+	TransactionResultCodeTxBadAuthExtra        TransactionResultCode = -10
+	TransactionResultCodeTxInternalError       TransactionResultCode = -11
 )
 
 var transactionResultCodeMap = map[int32]string{
@@ -4441,8 +4441,8 @@ type LedgerUpgradeType int32
 
 const (
 	LedgerUpgradeTypeLedgerUpgradeVersion      LedgerUpgradeType = 1
-	LedgerUpgradeTypeLedgerUpgradeBaseFee                        = 2
-	LedgerUpgradeTypeLedgerUpgradeMaxTxSetSize                   = 3
+	LedgerUpgradeTypeLedgerUpgradeBaseFee      LedgerUpgradeType = 2
+	LedgerUpgradeTypeLedgerUpgradeMaxTxSetSize LedgerUpgradeType = 3
 )
 
 var ledgerUpgradeTypeMap = map[int32]string{
@@ -4812,7 +4812,7 @@ type BucketEntryType int32
 
 const (
 	BucketEntryTypeLiveentry BucketEntryType = 0
-	BucketEntryTypeDeadentry                 = 1
+	BucketEntryTypeDeadentry BucketEntryType = 1
 )
 
 var bucketEntryTypeMap = map[int32]string{
@@ -5176,8 +5176,8 @@ type LedgerEntryChangeType int32
 
 const (
 	LedgerEntryChangeTypeLedgerEntryCreated LedgerEntryChangeType = 0
-	LedgerEntryChangeTypeLedgerEntryUpdated                       = 1
-	LedgerEntryChangeTypeLedgerEntryRemoved                       = 2
+	LedgerEntryChangeTypeLedgerEntryUpdated LedgerEntryChangeType = 1
+	LedgerEntryChangeTypeLedgerEntryRemoved LedgerEntryChangeType = 2
 )
 
 var ledgerEntryChangeTypeMap = map[int32]string{
@@ -5443,10 +5443,10 @@ type ErrorCode int32
 
 const (
 	ErrorCodeErrMisc ErrorCode = 0
-	ErrorCodeErrData           = 1
-	ErrorCodeErrConf           = 2
-	ErrorCodeErrAuth           = 3
-	ErrorCodeErrLoad           = 4
+	ErrorCodeErrData ErrorCode = 1
+	ErrorCodeErrConf ErrorCode = 2
+	ErrorCodeErrAuth ErrorCode = 3
+	ErrorCodeErrLoad ErrorCode = 4
 )
 
 var errorCodeMap = map[int32]string{
@@ -5548,7 +5548,7 @@ type IpAddrType int32
 
 const (
 	IpAddrTypeIPv4 IpAddrType = 0
-	IpAddrTypeIPv6            = 1
+	IpAddrTypeIPv6 IpAddrType = 1
 )
 
 var ipAddrTypeMap = map[int32]string{
@@ -5723,17 +5723,17 @@ type MessageType int32
 
 const (
 	MessageTypeErrorMsg        MessageType = 0
-	MessageTypeHello                       = 1
-	MessageTypeAuth                        = 2
-	MessageTypeDontHave                    = 3
-	MessageTypeGetPeers                    = 4
-	MessageTypePeers                       = 5
-	MessageTypeGetTxSet                    = 6
-	MessageTypeTxSet                       = 7
-	MessageTypeTransaction                 = 8
-	MessageTypeGetScpQuorumset             = 9
-	MessageTypeScpQuorumset                = 10
-	MessageTypeScpMessage                  = 11
+	MessageTypeHello           MessageType = 1
+	MessageTypeAuth            MessageType = 2
+	MessageTypeDontHave        MessageType = 3
+	MessageTypeGetPeers        MessageType = 4
+	MessageTypePeers           MessageType = 5
+	MessageTypeGetTxSet        MessageType = 6
+	MessageTypeTxSet           MessageType = 7
+	MessageTypeTransaction     MessageType = 8
+	MessageTypeGetScpQuorumset MessageType = 9
+	MessageTypeScpQuorumset    MessageType = 10
+	MessageTypeScpMessage      MessageType = 11
 )
 
 var messageTypeMap = map[int32]string{
@@ -6274,9 +6274,9 @@ type ScpStatementType int32
 
 const (
 	ScpStatementTypeScpStPrepare     ScpStatementType = 0
-	ScpStatementTypeScpStConfirm                      = 1
-	ScpStatementTypeScpStExternalize                  = 2
-	ScpStatementTypeScpStNominate                     = 3
+	ScpStatementTypeScpStConfirm     ScpStatementType = 1
+	ScpStatementTypeScpStExternalize ScpStatementType = 2
+	ScpStatementTypeScpStNominate    ScpStatementType = 3
 )
 
 var scpStatementTypeMap = map[int32]string{

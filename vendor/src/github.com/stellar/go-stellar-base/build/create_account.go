@@ -2,6 +2,7 @@ package build
 
 import (
 	"github.com/stellar/go-stellar-base"
+	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
@@ -54,7 +55,7 @@ func (m Destination) MutateCreateAccount(o *xdr.CreateAccountOp) error {
 
 // MutateCreateAccount for NativeAmount sets the CreateAccountOp's
 // StartingBalance field
-func (m NativeAmount) MutateCreateAccount(o *xdr.CreateAccountOp) error {
-	o.StartingBalance = xdr.Int64(m.Amount)
-	return nil
+func (m NativeAmount) MutateCreateAccount(o *xdr.CreateAccountOp) (err error) {
+	o.StartingBalance, err = amount.Parse(m.Amount)
+	return
 }
