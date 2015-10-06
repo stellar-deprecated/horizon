@@ -3,6 +3,7 @@ package horizon
 import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/render/sse"
 )
 
 // OrderBookShowAction renders a account summary found by its address.
@@ -47,4 +48,21 @@ func (action *OrderBookShowAction) JSON() {
 	action.Do(func() {
 		hal.Render(action.W, action.Resource)
 	})
+}
+
+// SSE is a method for actions.SSE
+func (action *OrderBookShowAction) SSE(stream sse.Stream) {
+	action.Do(action.LoadQuery, action.LoadRecord, action.LoadResource)
+	if action.Err != nil {
+		stream.Err(action.Err)
+		return
+	}
+
+	stream.Send(sse.Event{
+		Data: action.Resource,
+	})
+
+	if stream.SentCount() >= 10 {
+		stream.Done()
+	}
 }
