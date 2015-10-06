@@ -11,9 +11,28 @@ type ResultResource struct {
 	txsub.Result
 }
 
+type ResultCodesResource struct {
+	TransactionCode string   `json:"transaction"`
+	OperationCodes  []string `json:"operations,omitempty"`
+}
+
 func (res *ResultResource) Error() error {
+	var ierr error
+
 	switch err := res.Err.(type) {
 	case *txsub.FailedTransactionError:
+		rcr := ResultCodesResource{}
+
+		rcr.TransactionCode, ierr = err.TransactionResultCode()
+		if ierr != nil {
+			return ierr
+		}
+
+		rcr.OperationCodes, ierr = err.OperationResultCodes()
+		if ierr != nil {
+			return ierr
+		}
+
 		// TODO: Fill detail
 		return &problem.P{
 			Type:   "transaction_failed",
@@ -23,6 +42,7 @@ func (res *ResultResource) Error() error {
 			Extras: map[string]interface{}{
 				"envelope_xdr": res.EnvelopeXDR,
 				"result_xdr":   err.ResultXDR,
+				"result_codes": rcr,
 			},
 		}
 	case *txsub.MalformedTransactionError:

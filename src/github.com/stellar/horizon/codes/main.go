@@ -31,7 +31,7 @@ func String(code interface{}) (string, error) {
 		case xdr.TransactionResultCodeTxInsufficientBalance:
 			return "tx_insufficient_balance", nil
 		case xdr.TransactionResultCodeTxNoAccount:
-			return "tx_no_account", nil
+			return "tx_no_source_account", nil
 		case xdr.TransactionResultCodeTxInsufficientFee:
 			return "tx_insufficient_fee", nil
 		case xdr.TransactionResultCodeTxBadAuthExtra:
@@ -46,7 +46,7 @@ func String(code interface{}) (string, error) {
 		case xdr.OperationResultCodeOpBadAuth:
 			return "op_bad_auth", nil
 		case xdr.OperationResultCodeOpNoAccount:
-			return "op_no_account", nil
+			return "op_no_source_account", nil
 		}
 	case xdr.CreateAccountResultCode:
 		switch code {
@@ -214,4 +214,38 @@ func String(code interface{}) (string, error) {
 	}
 
 	return "", errors.New(ErrUnknownCode)
+}
+
+func ForOperationResult(opr xdr.OperationResult) (string, error) {
+	if opr.Code != xdr.OperationResultCodeOpInner {
+		return String(opr.Code)
+	}
+
+	ir := opr.MustTr()
+	var ic interface{}
+
+	switch ir.Type {
+	case xdr.OperationTypeCreateAccount:
+		ic = ir.MustCreateAccountResult().Code
+	case xdr.OperationTypePayment:
+		ic = ir.MustPaymentResult().Code
+	case xdr.OperationTypePathPayment:
+		ic = ir.MustPathPaymentResult().Code
+	case xdr.OperationTypeManageOffer:
+		ic = ir.MustManageOfferResult().Code
+	case xdr.OperationTypeCreatePassiveOffer:
+		ic = ir.MustCreatePassiveOfferResult().Code
+	case xdr.OperationTypeSetOptions:
+		ic = ir.MustSetOptionsResult().Code
+	case xdr.OperationTypeChangeTrust:
+		ic = ir.MustChangeTrustResult().Code
+	case xdr.OperationTypeAllowTrust:
+		ic = ir.MustAllowTrustResult().Code
+	case xdr.OperationTypeAccountMerge:
+		ic = ir.MustAccountMergeResult().Code
+	case xdr.OperationTypeInflation:
+		ic = ir.MustInflationResult().Code
+	}
+
+	return String(ic)
 }
