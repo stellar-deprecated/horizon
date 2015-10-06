@@ -114,3 +114,20 @@ func (action *AccountShowAction) JSON() {
 
 	hal.Render(action.W, NewAccountResource(action.Record))
 }
+
+// SSE is a method for actions.SSE
+func (action *AccountShowAction) SSE(stream sse.Stream) {
+	action.LoadRecord()
+	if action.Err != nil {
+		stream.Err(action.Err)
+		return
+	}
+
+	stream.Send(sse.Event{
+		Data: NewAccountResource(action.Record),
+	})
+
+	if stream.SentCount() >= 10 {
+		stream.Done()
+	}
+}
