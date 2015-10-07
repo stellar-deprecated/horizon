@@ -47,6 +47,9 @@ func NewLedgerClosePump(ctx context.Context, db *sql.DB) <-chan struct{} {
 					default:
 						log.Debug(ctx, "ledger pump channel is blocked.  waiting...")
 					}
+				} else if latestLedger < lastSeenLedger {
+					log.Warn(ctx, "latest ledger went backwards! reseting ledger pump")
+					lastSeenLedger = 0
 				}
 
 			case <-ctx.Done():
