@@ -23,7 +23,7 @@ func extractEnvelopeInfo(ctx context.Context, env string, passphrase string) (re
 		return
 	}
 
-	txb := build.TransactionBuilder{TX: tx.Tx}
+	txb := build.TransactionBuilder{TX: &tx.Tx}
 	txb.Mutate(build.Network{passphrase})
 
 	result.Hash, err = txb.HashHex()

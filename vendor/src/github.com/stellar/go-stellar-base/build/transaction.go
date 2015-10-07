@@ -11,10 +11,11 @@ import (
 
 // Transaction groups the creation of a new TransactionBuilder with a call
 // to Mutate.
-func Transaction(muts ...TransactionMutator) (result TransactionBuilder) {
+func Transaction(muts ...TransactionMutator) (result *TransactionBuilder) {
+	result = &TransactionBuilder{}
 	result.Mutate(Defaults{})
 	for _, m := range muts {
-		m.MutateTransaction(&result)
+		m.MutateTransaction(result)
 	}
 	return
 }
@@ -28,13 +29,17 @@ type TransactionMutator interface {
 
 // TransactionBuilder represents a Transaction that is being constructed.
 type TransactionBuilder struct {
-	TX        xdr.Transaction
+	TX        *xdr.Transaction
 	NetworkID [32]byte
 	Err       error
 }
 
 // Mutate applies the provided TransactionMutators to this builder's transaction
 func (b *TransactionBuilder) Mutate(muts ...TransactionMutator) {
+	if b.TX == nil {
+		b.TX = &xdr.Transaction{}
+	}
+
 	for _, m := range muts {
 		err := m.MutateTransaction(b)
 		if err != nil {
@@ -80,7 +85,7 @@ func (b *TransactionBuilder) HashHex() (string, error) {
 // transaction as the basis and with signatures of that transaction from the
 // provided Signers.
 func (b *TransactionBuilder) Sign(signers ...stellarbase.Signer) (result TransactionEnvelopeBuilder) {
-	result.Mutate(*b)
+	result.Mutate(b)
 
 	for _, s := range signers {
 		result.Mutate(Sign{s})
@@ -95,10 +100,9 @@ func (b *TransactionBuilder) Sign(signers ...stellarbase.Signer) (result Transac
 //
 // ------------------------------------------------------------
 
-// MutateTransaction for SourceAccount sets the transaction's SourceAccount
-// to the pubilic key for the address provided
+// MutateTransaction for Defaults sets reasonable defaults on the transaction being built
 func (m Defaults) MutateTransaction(o *TransactionBuilder) error {
-	o.TX.Fee = 10
+	o.TX.Fee = 100
 	memo, err := xdr.NewMemo(xdr.MemoTypeMemoNone, nil)
 	o.TX.Memo = memo
 	o.NetworkID = DefaultNetwork.ID()

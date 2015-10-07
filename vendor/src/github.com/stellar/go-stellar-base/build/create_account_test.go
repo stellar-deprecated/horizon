@@ -43,9 +43,9 @@ func TestCreateAccountMutators(t *testing.T) {
 		})
 
 		Convey("NativeAmount sets starting balance correctly", func() {
-			b.Mutate(NativeAmount{101})
+			b.Mutate(NativeAmount{"101"})
 			So(b.Err, ShouldBeNil)
-			So(b.CA.StartingBalance, ShouldEqual, 101)
+			So(b.CA.StartingBalance, ShouldEqual, 1010000000)
 		})
 	})
 }

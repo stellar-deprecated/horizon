@@ -2,6 +2,7 @@ package build
 
 import (
 	"github.com/stellar/go-stellar-base"
+	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
@@ -52,9 +53,12 @@ func (m Destination) MutatePayment(o *xdr.PaymentOp) error {
 
 // MutatePayment for NativeAmount sets the PaymentOp's currency field to
 // native and sets its amount to the provided integer
-func (m NativeAmount) MutatePayment(o *xdr.PaymentOp) error {
-	asset, err := xdr.NewAsset(xdr.AssetTypeAssetTypeNative, nil)
-	o.Asset = asset
-	o.Amount = xdr.Int64(m.Amount)
-	return err
+func (m NativeAmount) MutatePayment(o *xdr.PaymentOp) (err error) {
+	o.Asset, err = xdr.NewAsset(xdr.AssetTypeAssetTypeNative, nil)
+	if err != nil {
+		return
+	}
+
+	o.Amount, err = amount.Parse(m.Amount)
+	return
 }
