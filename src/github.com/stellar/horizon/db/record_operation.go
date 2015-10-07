@@ -9,7 +9,13 @@ import (
 )
 
 var OperationRecordSelect sq.SelectBuilder = sq.
-	Select("hop.*, ht.transaction_hash").
+	Select(
+	"hop.id, " +
+		"hop.transaction_id, " +
+		"hop.application_order, " +
+		"hop.type, " +
+		"hop.details, " +
+		"ht.transaction_hash").
 	From("history_operations hop").
 	LeftJoin("history_transactions ht ON ht.id = hop.transaction_id")
 
