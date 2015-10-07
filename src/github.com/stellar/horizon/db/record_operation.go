@@ -15,6 +15,7 @@ var OperationRecordSelect sq.SelectBuilder = sq.
 		"hop.application_order, " +
 		"hop.type, " +
 		"hop.details, " +
+		"hop.source_account, " +
 		"ht.transaction_hash").
 	From("history_operations hop").
 	LeftJoin("history_transactions ht ON ht.id = hop.transaction_id")
@@ -26,6 +27,7 @@ type OperationRecord struct {
 	ApplicationOrder int32             `db:"application_order"`
 	Type             xdr.OperationType `db:"type"`
 	DetailsString    sql.NullString    `db:"details"`
+	SourceAccount    string            `db:"source_account"`
 }
 
 func (r OperationRecord) Details() (result map[string]interface{}, err error) {
