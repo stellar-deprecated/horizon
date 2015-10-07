@@ -31,8 +31,7 @@ func (action *EffectIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *EffectIndexAction) SSE(stream sse.Stream) {
-	action.LoadRecords()
-
+	action.Do(action.LoadQuery, action.LoadRecords)
 	if action.Err != nil {
 		stream.Err(action.Err)
 		return

@@ -19,6 +19,13 @@ func TestEffectActions(t *testing.T) {
 			w := rh.Get("/effects?limit=20", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 11)
+
+			// test streaming, regression for https://github.com/stellar/horizon/issues/147
+			// TODO: fix goji so that HttpResponseRecorder writers are counted considered flushable
+			// w = rh.Get("/effects?limit=2", test.RequestHelperStreaming)
+			// t.Log(w.Body.String())
+			// So(w.Code, ShouldEqual, 200)
+
 		})
 
 		Convey("GET /ledgers/:ledger_id/effects", func() {

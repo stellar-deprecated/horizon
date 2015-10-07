@@ -30,6 +30,10 @@ func RequestHelperXFF(xff string) func(r *http.Request) {
 	}
 }
 
+func RequestHelperStreaming(r *http.Request) {
+	r.Header.Set("Accept", "text/event-stream")
+}
+
 func NewRequestHelper(router *web.Mux) RequestHelper {
 	return &requestHelper{router}
 }
