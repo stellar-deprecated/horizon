@@ -112,6 +112,7 @@ can be either a simple native asset payment or a fiat asset payment.
 | from          | string | Sender of a payment.  |
 | to     | string | Destination of a payment. |
 | asset_type | string | Asset type (native / alphanum4 / alphanum12) |
+| asset_code | string | Code of the destination asset. |
 | asset_issuer | string | Asset issuer. |
 | amount          | string | Amount sent. |
 
