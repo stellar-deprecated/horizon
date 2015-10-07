@@ -35,7 +35,11 @@ func (q SqlQuery) SelectRaw(ctx context.Context, query string, args []interface{
 	log.WithField(ctx, "sql", query).Info("query sql")
 	log.WithField(ctx, "args", args).Debug("query args")
 
-	return db.Select(dest, query, args...)
+	err := db.Select(dest, query, args...)
+	if err != nil {
+		err = errors.Wrap(err, 1)
+	}
+	return err
 }
 
 // Get gets a single row returned by the provided sql builder into the provided dest.
@@ -57,5 +61,9 @@ func (q SqlQuery) GetRaw(ctx context.Context, query string, args []interface{}, 
 	log.WithField(ctx, "sql", query).Info("query sql")
 	log.WithField(ctx, "args", args).Debug("query args")
 
-	return db.Get(dest, query, args...)
+	err := db.Get(dest, query, args...)
+	if err != nil {
+		err = errors.Wrap(err, 1)
+	}
+	return err
 }
