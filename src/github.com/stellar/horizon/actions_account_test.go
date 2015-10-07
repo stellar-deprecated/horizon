@@ -35,7 +35,7 @@ func TestAccountActions(t *testing.T) {
 		Convey("GET /accounts", func() {
 			w := rh.Get("/accounts", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 3)
+			So(w.Body, ShouldBePageOf, 4)
 
 			w = rh.Get("/accounts?limit=1", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)

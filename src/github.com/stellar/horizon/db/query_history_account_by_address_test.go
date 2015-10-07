@@ -22,7 +22,7 @@ func TestHistoryAccountByAddressQuery(t *testing.T) {
 			}
 			err := Get(ctx, q, &account)
 			So(err, ShouldBeNil)
-			So(account.Id, ShouldEqual, 0)
+			So(account.Id, ShouldEqual, 1)
 			So(account.Address, ShouldEqual, address)
 		})
 

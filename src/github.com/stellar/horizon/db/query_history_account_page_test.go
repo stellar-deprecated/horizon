@@ -49,7 +49,7 @@ func TestHistoryPageQuery(t *testing.T) {
 
 			// returns all rows if limit is higher
 			MustSelect(ctx, makeQuery("", "asc", 10), &records)
-			So(len(records), ShouldEqual, 3)
+			So(len(records), ShouldEqual, 4)
 		})
 
 		Convey("cursor works properly", func() {
@@ -57,7 +57,7 @@ func TestHistoryPageQuery(t *testing.T) {
 
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 8589938689)
+			So(record.Id, ShouldEqual, 1)
 
 			// highest id if ordered descending and no cursor
 			MustGet(ctx, makeQuery("", "desc", 0), &record)
