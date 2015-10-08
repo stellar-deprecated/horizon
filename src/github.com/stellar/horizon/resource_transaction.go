@@ -1,7 +1,9 @@
 package horizon
 
 import (
+	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jagregory/halgo"
@@ -13,26 +15,36 @@ import (
 // TransactionResource is the display form of a transaction.
 type TransactionResource struct {
 	halgo.Links
-	ID               string    `json:"id"`
-	PagingToken      string    `json:"paging_token"`
-	Hash             string    `json:"hash"`
-	Ledger           int32     `json:"ledger"`
-	LedgerCloseTime  time.Time `json:"created_at"`
-	Account          string    `json:"source_account"`
-	AccountSequence  int64     `json:"source_account_sequence"`
-	MaxFee           int32     `json:"max_fee"`
-	FeePaid          int32     `json:"fee_paid"`
-	OperationCount   int32     `json:"operation_count"`
-	ResultCode       int32     `json:"result_code"`
-	ResultCodeString string    `json:"result_code_s"`
-	EnvelopeXdr      string    `json:"envelope_xdr"`
-	ResultXdr        string    `json:"result_xdr"`
-	ResultMetaXdr    string    `json:"result_meta_xdr"`
+	ID              string    `json:"id"`
+	PagingToken     string    `json:"paging_token"`
+	Hash            string    `json:"hash"`
+	Ledger          int32     `json:"ledger"`
+	LedgerCloseTime time.Time `json:"created_at"`
+	Account         string    `json:"source_account"`
+	AccountSequence int64     `json:"source_account_sequence"`
+	MaxFee          int32     `json:"max_fee"`
+	FeePaid         int32     `json:"fee_paid"`
+	OperationCount  int32     `json:"operation_count"`
+	EnvelopeXdr     string    `json:"envelope_xdr"`
+	ResultXdr       string    `json:"result_xdr"`
+	ResultMetaXdr   string    `json:"result_meta_xdr"`
+	MemoType        string    `json:"memo_type"`
+	Memo            string    `json:"memo,omitempty"`
+	Signatures      []string  `json:"signatures"`
+	ValidAfter      string    `json:"valid_after,omitempty"`
+	ValidBefore     string    `json:"valid_before,omitempty"`
 }
 
 // NewTransactionResource returns a new resource from a TransactionRecord
 func NewTransactionResource(tx db.TransactionRecord) TransactionResource {
 	self := fmt.Sprintf("/transactions/%s", tx.TransactionHash)
+	timeString := func(in sql.NullInt64) string {
+		if !in.Valid {
+			return ""
+		}
+
+		return time.Unix(in.Int64, 0).UTC().Format(time.RFC3339)
+	}
 
 	return TransactionResource{
 		Links: halgo.Links{}.
@@ -43,21 +55,24 @@ func NewTransactionResource(tx db.TransactionRecord) TransactionResource {
 			Link("effects", "%s/effects%s", self, hal.StandardPagingOptions).
 			Link("precedes", "/transactions?cursor=%s&order=asc", tx.PagingToken()).
 			Link("succeeds", "/transactions?cursor=%s&order=desc", tx.PagingToken()),
-		ID:               tx.TransactionHash,
-		PagingToken:      tx.PagingToken(),
-		Hash:             tx.TransactionHash,
-		Ledger:           tx.LedgerSequence,
-		LedgerCloseTime:  tx.LedgerCloseTime,
-		Account:          tx.Account,
-		AccountSequence:  tx.AccountSequence,
-		MaxFee:           tx.MaxFee,
-		FeePaid:          tx.FeePaid,
-		OperationCount:   tx.OperationCount,
-		ResultCode:       0, //NOTE: if at some point a history_transaction row records the result code, use it
-		ResultCodeString: "tx_success",
-		EnvelopeXdr:      tx.TxEnvelope,
-		ResultXdr:        tx.TxResult,
-		ResultMetaXdr:    tx.TxMeta,
+		ID:              tx.TransactionHash,
+		PagingToken:     tx.PagingToken(),
+		Hash:            tx.TransactionHash,
+		Ledger:          tx.LedgerSequence,
+		LedgerCloseTime: tx.LedgerCloseTime,
+		Account:         tx.Account,
+		AccountSequence: tx.AccountSequence,
+		MaxFee:          tx.MaxFee,
+		FeePaid:         tx.FeePaid,
+		OperationCount:  tx.OperationCount,
+		EnvelopeXdr:     tx.TxEnvelope,
+		ResultXdr:       tx.TxResult,
+		ResultMetaXdr:   tx.TxMeta,
+		MemoType:        tx.MemoType,
+		Memo:            tx.Memo.String,
+		Signatures:      strings.Split(tx.SignatureString, ","),
+		ValidBefore:     timeString(tx.ValidBefore),
+		ValidAfter:      timeString(tx.ValidAfter),
 	}
 }
 

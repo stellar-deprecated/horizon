@@ -49,6 +49,7 @@ func NewOperationResource(op db.OperationRecord) (OperationResource, error) {
 		Link("succeeds", "/operations?cursor=%s&order=desc", op.PagingToken()).
 		Items
 	result["id"] = op.Id
+	result["source_account"] = op.SourceAccount
 	result["paging_token"] = op.PagingToken()
 	result["type"] = op.Type
 
