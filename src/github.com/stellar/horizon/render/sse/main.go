@@ -82,6 +82,7 @@ func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func WritePreamble(ctx context.Context, w http.ResponseWriter) bool {
+
 	_, flushable := w.(http.Flusher)
 
 	if !flushable {

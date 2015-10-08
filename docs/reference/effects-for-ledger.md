@@ -71,8 +71,8 @@ This endpoint responds with a list of effects that occurred in the ledger. See [
         "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
         "paging_token": "141733924865-1",
         "starting_balance": "10000000.0",
-        "type": 0,
-        "type_s": "account_created"
+        "type_i": 0,
+        "type": "account_created"
       },
       {
         "_links": {
@@ -90,8 +90,8 @@ This endpoint responds with a list of effects that occurred in the ledger. See [
         "amount": "10000000.0",
         "asset_type": "native",
         "paging_token": "141733924865-2",
-        "type": 3,
-        "type_s": "account_debited"
+        "type_i": 3,
+        "type": "account_debited"
       },
       {
         "_links": {
@@ -108,8 +108,8 @@ This endpoint responds with a list of effects that occurred in the ledger. See [
         "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
         "paging_token": "141733924865-3",
         "public_key": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
-        "type": 10,
-        "type_s": "signer_created",
+        "type_i": 10,
+        "type": "signer_created",
         "weight": 2
       }
     ]

@@ -121,8 +121,8 @@ data: {"_links":{"effects":{"href":"/operations/713226564145153/effects/{?cursor
        "id":713226564145153,
        "paging_token":"713226564145153",
        "starting_balance":1e+09,
-       "type":0,
-       "type_s":"create_account"}
+       "type_i":0,
+       "type":"create_account"}
 ```
 
 Every time you receive a new payment you will get a new row of data. Payments is not the only endpoint that supports streaming. You can also stream transactions [/transactions](../../reference/transactions-all.md) and operations [/operations](../../reference/operations-all.md).
@@ -159,8 +159,8 @@ New payment:
   id: 713226564145153,
   paging_token: '713226564145153',
   starting_balance: 1000000000,
-  type: 0,
-  type_s: 'create_account' }
+  type_i: 0,
+  type: 'create_account' }
 ```
 
 ## Testing it out

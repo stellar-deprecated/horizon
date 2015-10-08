@@ -12,18 +12,18 @@ To learn more about the concept of operations in the Stellar network, take a loo
 
 There are 10 different operation types:
 
-|     type_s           | type | description |
-| -------------------- | ---- |-------------|
-| [CREATE_ACCOUNT](#create-account)       |    0 | Creates a new account in Stellar network.
-| [PAYMENT](#payment)              |    1 | Sends a simple payment between two accounts in Stellar network.
-| [PATH_PAYMENT](#path-payment)         |    2 | Sends a path payment between two accounts in the Stellar network.
-| [MANAGE_OFFER](#manage-offer)         |    3 | Creates, updates or deletes an offer in the Stellar network.
-| [CREATE_PASSIVE_OFFER](#create-passive-offer) |    4 | Creates an offer that won't consume a counter offer that exactly matches this offer.
-| [SET_OPTIONS](#set-options)          |    5 | Sets account options (inflation destination, adding signers, etc.)
-| [CHANGE_TRUST](#change-trust)         |    6 | Creates, updates or deletes a trust line.
-| [ALLOW_TRUST](#allow-trust)          |    7 | Updates the "authorized" flag of an existing trust line this is called by the issuer of the related asset.
-| [ACCOUNT_MERGE](#account-merge)        |    8 | Deletes account and transfers remaining balance to destination account.
-| [INFLATION](#inflation)            |    9 | Runs inflation.
+| type                                          | type | description                                                                                                |
+|-----------------------------------------------|------|------------------------------------------------------------------------------------------------------------|
+| [CREATE_ACCOUNT](#create-account)             | 0    | Creates a new account in Stellar network.
+| [PAYMENT](#payment)                           | 1    | Sends a simple payment between two accounts in Stellar network.
+| [PATH_PAYMENT](#path-payment)                 | 2    | Sends a path payment between two accounts in the Stellar network.
+| [MANAGE_OFFER](#manage-offer)                 | 3    | Creates, updates or deletes an offer in the Stellar network.
+| [CREATE_PASSIVE_OFFER](#create-passive-offer) | 4    | Creates an offer that won't consume a counter offer that exactly matches this offer.
+| [SET_OPTIONS](#set-options)                   | 5    | Sets account options (inflation destination, adding signers, etc.)
+| [CHANGE_TRUST](#change-trust)                 | 6    | Creates, updates or deletes a trust line.
+| [ALLOW_TRUST](#allow-trust)                   | 7    | Updates the "authorized" flag of an existing trust line this is called by the issuer of the related asset.
+| [ACCOUNT_MERGE](#account-merge)               | 8    | Deletes account and transfers remaining balance to destination account.
+| [INFLATION](#inflation)                       | 9    | Runs inflation.
 
 
 Every operation type shares a set of common attributes and links, some operations also contain
@@ -33,12 +33,12 @@ additional attributes and links specific to that operation type.
 
 ## Common Attributes
 
-|               |  Type  |                                                                                                                            |
-| ------------- | ------ | -------------------------------------------------------------------------------------------------------------------------- |
-| id            | number | The canonical id of this operation, suitable for use as the :id parameter for url templates that require an operation's ID. |
-| paging_token  | any    | A [paging token](./page.md) suitable for use as a `cursor` parameter. |
-| type          | number | Specifies the type of operation, See "Types" section below for reference.                                                  |
-| type_s        | string | A string representation of the type of operation.                                                                           |
+|              | Type   |                                                                                                                             |
+|--------------|--------|-----------------------------------------------------------------------------------------------------------------------------|
+| id           | number | The canonical id of this operation, suitable for use as the :id parameter for url templates that require an operation's ID. |
+| paging_token | any    | A [paging token](./page.md) suitable for use as a `cursor` parameter.                                                       |
+| type         | string | A string representation of the type of operation.                                                                           |
+| type_i       | number | Specifies the type of operation, See "Types" section below for reference.                                                   |
 
 ## Common Links
 
@@ -94,8 +94,8 @@ Create Account operation represents a new account creation.
   "id": 402494270214144,
   "paging_token": "402494270214144",
   "starting_balance": "10000.0",
-  "type": 0,
-  "type_s": "create_account"
+  "type_i": 0,
+  "type": "create_account"
 }
 ```
 
@@ -151,8 +151,8 @@ can be either a simple native asset payment or a fiat asset payment.
   "id": 58402965295104,
   "paging_token": "58402965295104",
   "to": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
-  "type": 1,
-  "type_s": "payment"
+  "type_i": 1,
+  "type": "payment"
 }
 ```
 
@@ -211,8 +211,8 @@ A path payment operation represents a payment from one account to another throug
   "send_asset_type": "credit_alphanum4",
   "source_amount": "10.0",
   "to": "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2",
-  "type": 2,
-  "type_s": "path_payment"
+  "type_i": 2,
+  "type": "path_payment"
 }
 ```
 
@@ -283,8 +283,8 @@ offers or payments, this offer can potentially be filled.
   "selling_asset_code": "YEN",
   "selling_asset_issuer": "GDVXG2FMFFSUMMMBIUEMWPZAIU2FNCH7QNGJMWRXRD6K5FZK5KJS4DDR",
   "selling_asset_type": "credit_alphanum4",
-  "type": 3,
-  "type_s": "manage_offer"
+  "type_i": 3,
+  "type": "manage_offer"
 }
 ```
 
@@ -332,8 +332,8 @@ As in [Manage Offer](#manage-offer) operation.
     "n": 1
   },
   "selling_asset_type": "native",
-  "type": 4,
-  "type_s": "create_passive_offer"
+  "type_i": 4,
+  "type": "create_passive_offer"
 }
 ```
 
@@ -401,8 +401,8 @@ Use “Set Options” operation to set following options to your account:
   "set_flags_s": [
     "auth_required_flag"
   ],
-  "type": 5,
-  "type_s": "set_options"
+  "type_i": 5,
+  "type": "set_options"
 }
 ```
 
@@ -452,8 +452,8 @@ Use “Change Trust” operation to create/update/delete a trust line from the s
   "paging_token": "574731048718337",
   "trustee": "GAC2ZUXVI5266NMMGDPBMXHH4BTZKJ7MMTGXRZGX2R5YLMFRYLJ7U5EA",
   "trustor": "GDVXG2FMFFSUMMMBIUEMWPZAIU2FNCH7QNGJMWRXRD6K5FZK5KJS4DDR",
-  "type": 6,
-  "type_s": "change_trust"
+  "type_i": 6,
+  "type": "change_trust"
 }
 ```
 
@@ -505,8 +505,8 @@ Heads up! Unless the issuing account has `AUTH_REVOCABLE_FLAG` set than the "aut
   "paging_token": "34359742465",
   "trustee": "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
   "trustor": "GBXGQJWVLWOYHFLVTKWV5FGHA3LNYY2JQKM7OAJAUEQFU6LPCSEFVXON",
-  "type": 7,
-  "type_s": "allow_trust"
+  "type_i": 7,
+  "type": "allow_trust"
 }
 ```
 
@@ -546,8 +546,8 @@ Removes the account and transfers all remaining XLM to the destination account.
   "id": 799357838299137,
   "into": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
   "paging_token": "799357838299137",
-  "type": 8,
-  "type_s": "account_merge"
+  "type_i": 8,
+  "type": "account_merge"
 }
 ```
 
@@ -580,8 +580,8 @@ Runs inflation.
   },
   "id": 12884914177,
   "paging_token": "12884914177",
-  "type": 9,
-  "type_s": "inflation"
+  "type_i": 9,
+  "type": "inflation"
 }
 ```
 

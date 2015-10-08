@@ -72,8 +72,8 @@ The list of effects.
         "account": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
         "paging_token": "214748368897-1",
         "starting_balance": "100.0",
-        "type": 0,
-        "type_s": "account_created"
+        "type_i": 0,
+        "type": "account_created"
       },
       {
         "_links": {
@@ -90,8 +90,8 @@ The list of effects.
         "account": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
         "paging_token": "214748368897-3",
         "public_key": "GC6NFQDTVH2YMVZSXJIVLCRHLFAOVOT32JMDFZJZ34QFSSVT7M5G2XFK",
-        "type": 10,
-        "type_s": "signer_created",
+        "type_i": 10,
+        "type": "signer_created",
         "weight": 2
       }
     ]

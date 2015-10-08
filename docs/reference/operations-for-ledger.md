@@ -76,8 +76,8 @@ This endpoint responds with a list of operations in a given ledger.  See [operat
         "id": 77309415424,
         "paging_token": "77309415424",
         "starting_balance": 1e+14,
-        "type": 0,
-        "type_s": "create_account"
+        "type_i": 0,
+        "type": "create_account"
       }
     ]
   },

@@ -51,14 +51,14 @@ func NewOperationResource(op db.OperationRecord) (OperationResource, error) {
 	result["id"] = op.Id
 	result["source_account"] = op.SourceAccount
 	result["paging_token"] = op.PagingToken()
-	result["type"] = op.Type
+	result["type_i"] = op.Type
 
 	ts, ok := operationResourceTypeNames[op.Type]
 
 	if ok {
-		result["type_s"] = ts
+		result["type"] = ts
 	} else {
-		result["type_s"] = "unknown"
+		result["type"] = "unknown"
 	}
 
 	return result, nil

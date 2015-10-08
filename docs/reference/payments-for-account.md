@@ -73,8 +73,8 @@ This endpoint responds with a [page](./resources/page.md) of [payment operations
       },
       "id": 12884905984,
       "paging_token": "12884905984",
-      "type": 0,
-      "type_s": "payment",
+      "type_i": 0,
+      "type": "payment",
       "sender": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
       "receiver": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU",
       "asset": {
@@ -124,8 +124,8 @@ This endpoint responds with a [page](./resources/page.md) of [payment operations
   "id": 77309415424,
   "paging_token": "77309415424",
   "starting_balance": 1e+14,
-  "type": 0,
-  "type_s": "create_account"
+  "type_i": 0,
+  "type": "create_account"
 }
 ```
 

@@ -76,8 +76,8 @@ This endpoint responds with a list of operations that are part of a given transa
         "id": 352573865332736,
         "paging_token": "352573865332736",
         "starting_balance": 1e+09,
-        "type": 0,
-        "type_s": "create_account"
+        "type_i": 0,
+        "type": "create_account"
       }
     ]
   },
