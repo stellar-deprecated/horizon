@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-errors/errors"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
@@ -69,7 +68,7 @@ func (base *Base) GetInt64(name string) int64 {
 	asI64, err := strconv.ParseInt(asStr, 10, 64)
 
 	if err != nil {
-		base.Err = errors.Wrap(err, 1)
+		base.SetInvalidField(name, err)
 		return 0
 	}
 
@@ -97,7 +96,7 @@ func (base *Base) GetInt32(name string) int32 {
 	asI64, err := strconv.ParseInt(asStr, 10, 32)
 
 	if err != nil {
-		base.Err = errors.Wrap(err, 1)
+		base.SetInvalidField(name, err)
 		return 0
 	}
 
@@ -151,7 +150,7 @@ func (base *Base) GetAssetType(name string) xdr.AssetType {
 	}
 
 	if err != nil {
-		base.Err = err
+		base.SetInvalidField(name, err)
 	}
 
 	return r
@@ -211,6 +210,17 @@ InvalidOrderBook:
 	}
 
 	return
+}
+
+
+func (base *Base) SetInvalidField(name string, reason error) {
+	br := problem.BadRequest
+
+	br.Extras = map[string]interface{}{}
+	br.Extras["invalid_field"] = name
+	br.Extras["reason"] = reason.Error()
+
+	base.Err = &br
 }
 
 // Path returns the current action's path, as determined by the http.Request of
