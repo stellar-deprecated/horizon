@@ -75,8 +75,8 @@ This endpoint responds with a list of payments operations that are part of a giv
         "id": 46428596473856,
         "paging_token": "46428596473856",
         "starting_balance": 1e+09,
-        "type": 0,
-        "type_s": "create_account"
+        "type_i": 0,
+        "type": "create_account"
       }
     ]
   },

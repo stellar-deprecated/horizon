@@ -70,8 +70,8 @@ The list of effects.
         "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
         "paging_token": "279172878337-1",
         "starting_balance": "10000000.0",
-        "type": 0,
-        "type_s": "account_created"
+        "type_i": 0,
+        "type": "account_created"
       },
       {
         "_links": {
@@ -89,8 +89,8 @@ The list of effects.
         "amount": "10000000.0",
         "asset_type": "native",
         "paging_token": "279172878337-2",
-        "type": 3,
-        "type_s": "account_debited"
+        "type_i": 3,
+        "type": "account_debited"
       }
     ]
   },

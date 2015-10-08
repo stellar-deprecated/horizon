@@ -50,16 +50,16 @@ func NewEffectResource(op db.EffectRecord) (EffectResource, error) {
 		Link("operation", "/operations/%d", op.HistoryOperationID).
 		Items
 	result["paging_token"] = op.PagingToken()
-	result["type"] = op.Type
+	result["type_i"] = op.Type
 	result["account"] = op.Account
 
 	ts, ok := effectResourceTypeNames[op.Type]
 
 	if ok {
-		result["type_s"] = ts
+		result["type"] = ts
 	} else {
 		//TODO: log a warning when we encounter this... it implies our code is out of date
-		result["type_s"] = "unknown"
+		result["type"] = "unknown"
 	}
 
 	return result, nil

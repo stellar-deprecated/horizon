@@ -88,8 +88,8 @@ Attributes depend on effect type.
         "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
         "paging_token": "141733924865-1",
         "starting_balance": "10000000.0",
-        "type": 0,
-        "type_s": "account_created"
+        "type_i": 0,
+        "type": "account_created"
       }
     ]
   },

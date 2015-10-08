@@ -58,8 +58,8 @@ A page provides a couple of links to ease in iteration.
         },
         "id": 12884905984,
         "paging_token": "12884905984",
-        "type": 0,
-        "type_s": "payment",
+        "type_i": 0,
+        "type": "payment",
         "sender": "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
         "receiver": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU",
         "asset": {
