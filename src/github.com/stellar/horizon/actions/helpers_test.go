@@ -22,16 +22,20 @@ func TestHelpers(t *testing.T) {
 			Ctx: test.Context(),
 			GojiCtx: web.C{
 				URLParams: map[string]string{
-					"blank":       "",
-					"zero":        "0",
-					"two":         "2",
-					"32min":       fmt.Sprint(math.MinInt32),
-					"32max":       fmt.Sprint(math.MaxInt32),
-					"64min":       fmt.Sprint(math.MinInt64),
-					"64max":       fmt.Sprint(math.MaxInt64),
-					"native_type": "native",
-					"4_type":      "credit_alphanum4",
-					"12_type":     "credit_alphanum12",
+					"blank":             "",
+					"zero":              "0",
+					"two":               "2",
+					"32min":             fmt.Sprint(math.MinInt32),
+					"32max":             fmt.Sprint(math.MaxInt32),
+					"64min":             fmt.Sprint(math.MinInt64),
+					"64max":             fmt.Sprint(math.MaxInt64),
+					"native_asset_type": "native",
+					"4_asset_type":      "credit_alphanum4",
+					"4_asset_code":      "USD",
+					"4_asset_issuer":    "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
+					"12_asset_type":     "credit_alphanum12",
+					"12_asset_code":     "USD",
+					"12_asset_issuer":   "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
 				},
 				Env: map[interface{}]interface{}{},
 			},
@@ -108,14 +112,37 @@ func TestHelpers(t *testing.T) {
 			So(order, ShouldEqual, "")
 		})
 
+		Convey("GetAccountID", func() {
+			_ = action.GetAccountID("4_asset_issuer")
+			So(action.Err, ShouldBeNil)
+		})
+
+		Convey("GetAsset", func() {
+			ts := action.GetAsset("native_")
+			So(action.Err, ShouldBeNil)
+			So(ts.Type, ShouldEqual, xdr.AssetTypeAssetTypeNative)
+
+			ts = action.GetAsset("4_")
+			So(action.Err, ShouldBeNil)
+			So(ts.Type, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum4)
+
+			ts = action.GetAsset("12_")
+			So(action.Err, ShouldBeNil)
+			So(ts.Type, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum12)
+
+			So(action.Err, ShouldBeNil)
+			action.GetAsset("cursor")
+			So(action.Err, ShouldNotBeNil)
+		})
+
 		Convey("GetAssetType", func() {
-			t := action.GetAssetType("native_type")
+			t := action.GetAssetType("native_asset_type")
 			So(t, ShouldEqual, xdr.AssetTypeAssetTypeNative)
 
-			t = action.GetAssetType("4_type")
+			t = action.GetAssetType("4_asset_type")
 			So(t, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum4)
 
-			t = action.GetAssetType("12_type")
+			t = action.GetAssetType("12_asset_type")
 			So(t, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum12)
 
 			So(action.Err, ShouldBeNil)

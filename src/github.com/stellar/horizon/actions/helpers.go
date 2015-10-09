@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/stellar/go-stellar-base/strkey"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
@@ -137,6 +138,30 @@ func (base *Base) GetPageQuery() db.PageQuery {
 	return r
 }
 
+func (base *Base) GetAccountID(name string) (result xdr.AccountId) {
+	raw, err := strkey.Decode(strkey.VersionByteAccountID, base.GetString(name))
+
+	if base.Err != nil {
+		return
+	}
+
+	if err != nil {
+		base.SetInvalidField(name, err)
+		return
+	}
+
+	var key xdr.Uint256
+	copy(key[:], raw)
+
+	result, err = xdr.NewAccountId(xdr.CryptoKeyTypeKeyTypeEd25519, key)
+	if err != nil {
+		base.SetInvalidField(name, err)
+		return
+	}
+
+	return
+}
+
 // GetAssetType is a helper that returns a xdr.AssetType by reading a string
 func (base *Base) GetAssetType(name string) xdr.AssetType {
 	if base.Err != nil {
@@ -212,6 +237,48 @@ InvalidOrderBook:
 	return
 }
 
+// GetAsset
+func (base *Base) GetAsset(prefix string) (result xdr.Asset) {
+	if base.Err != nil {
+		return
+	}
+	var value interface{}
+
+	t := base.GetAssetType(prefix + "asset_type")
+
+	switch t {
+	case xdr.AssetTypeAssetTypeCreditAlphanum4:
+		a := xdr.AssetAlphaNum4{}
+		a.Issuer = base.GetAccountID(prefix + "asset_issuer")
+
+		c := base.GetString(prefix + "asset_code")
+		if len(c) > len(a.AssetCode) {
+			base.SetInvalidField(prefix+"asset_code", nil)
+			return
+		}
+
+		copy(a.AssetCode[:len(c)], []byte(c))
+		value = a
+	case xdr.AssetTypeAssetTypeCreditAlphanum12:
+		a := xdr.AssetAlphaNum12{}
+		a.Issuer = base.GetAccountID(prefix + "asset_issuer")
+
+		c := base.GetString(prefix + "asset_code")
+		if len(c) > len(a.AssetCode) {
+			base.SetInvalidField(prefix+"asset_code", nil)
+			return
+		}
+
+		copy(a.AssetCode[:len(c)], []byte(c))
+		value = a
+	}
+
+	result, err := xdr.NewAsset(t, value)
+	if err != nil {
+		panic(err)
+	}
+	return
+}
 
 func (base *Base) SetInvalidField(name string, reason error) {
 	br := problem.BadRequest
