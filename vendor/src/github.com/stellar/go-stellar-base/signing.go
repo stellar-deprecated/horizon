@@ -2,7 +2,9 @@ package stellarbase
 
 import (
 	"bytes"
+	"crypto/rand"
 	"errors"
+	"io"
 
 	"github.com/agl/ed25519"
 	"github.com/stellar/go-stellar-base/strkey"
@@ -55,6 +57,16 @@ func NewRawSeed(data []byte) (RawSeed, error) {
 
 	copy(result[:], data[:])
 	return result, nil
+}
+
+func GenerateRandomKey() (publicKey PublicKey, privateKey PrivateKey, err error) {
+	var rawSeed RawSeed
+	_, err = io.ReadFull(rand.Reader, rawSeed[:])
+	if err != nil {
+		return PublicKey{}, PrivateKey{}, err
+	}
+
+	return GenerateKeyFromRawSeed(rawSeed)
 }
 
 func GenerateKeyFromRawSeed(rawSeed RawSeed) (publicKey PublicKey, privateKey PrivateKey, err error) {
