@@ -138,6 +138,22 @@ func (base *Base) GetPageQuery() db.PageQuery {
 	return r
 }
 
+func (base *Base) GetAddress(name string) (result string) {
+	if base.Err != nil {
+		return
+	}
+
+	result = base.GetString(name)
+
+	_, err := strkey.Decode(strkey.VersionByteAccountID, result)
+
+	if err != nil {
+		base.SetInvalidField(name, err)
+	}
+
+	return result
+}
+
 func (base *Base) GetAccountID(name string) (result xdr.AccountId) {
 	raw, err := strkey.Decode(strkey.VersionByteAccountID, base.GetString(name))
 
