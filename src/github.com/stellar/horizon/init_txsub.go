@@ -20,8 +20,7 @@ func initSubmissionSystem(app *App) {
 	go func() {
 		ticks := app.pump.Subscribe()
 
-		for {
-			<-ticks
+		for _ = range ticks {
 			app.submitter.Tick(app.ctx)
 		}
 	}()
