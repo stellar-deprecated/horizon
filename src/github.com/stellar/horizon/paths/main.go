@@ -7,7 +7,7 @@ import (
 type Query struct {
 	DestinationAddress string
 	DestinationAsset   xdr.Asset
-	DestinationAmount  string
+	DestinationAmount  xdr.Int64
 	SourceAssets       []xdr.Asset
 }
 
@@ -15,6 +15,10 @@ type Path interface {
 	Path() []xdr.Asset
 	Source() xdr.Asset
 	Destination() xdr.Asset
+
+	// Cost returns an amount (which may be estimated), delimited in the Source assets
+	// that is suitable for use as the `sendMax` field for a `PathPaymentOp` struct.
+	Cost(amount xdr.Int64) xdr.Int64
 }
 
 type Finder interface {
@@ -53,6 +57,7 @@ type DummyPath struct {
 	path        []xdr.Asset
 }
 
-func (d DummyPath) Source() xdr.Asset      { return d.source }
-func (d DummyPath) Destination() xdr.Asset { return d.destination }
-func (d DummyPath) Path() []xdr.Asset      { return d.path }
+func (d DummyPath) Source() xdr.Asset               { return d.source }
+func (d DummyPath) Destination() xdr.Asset          { return d.destination }
+func (d DummyPath) Path() []xdr.Asset               { return d.path }
+func (d DummyPath) Cost(amount xdr.Int64) xdr.Int64 { return amount }

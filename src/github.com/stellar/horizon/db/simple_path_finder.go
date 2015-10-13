@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/go-errors/errors"
-	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
@@ -35,8 +34,7 @@ func (f *SimplePathFinder) Find(q paths.Query) (result []paths.Path, err error) 
 		return
 	}
 
-	var minDepth xdr.Int64
-	minDepth, err = amount.Parse(q.DestinationAmount)
+	minDepth := q.DestinationAmount
 
 	next := []*pathNode{&pathNode{q.DestinationAsset, nil}}
 
@@ -91,7 +89,8 @@ func (f *SimplePathFinder) Find(q paths.Query) (result []paths.Path, err error) 
 
 type pathNode struct {
 	Asset xdr.Asset
-	Tail  *pathNode
+
+	Tail *pathNode
 }
 
 func (p *pathNode) String() string {
@@ -135,6 +134,10 @@ func (p *pathNode) Path() []xdr.Asset {
 	// return the flattened slice without the first and last elements
 	// which are the source and the destination assets
 	return path[1 : len(path)-1]
+}
+
+func (p *pathNode) Cost(amount xdr.Int64) xdr.Int64 {
+	return amount
 }
 
 func (p *pathNode) Depth() int {

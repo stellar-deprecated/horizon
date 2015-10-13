@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/jagregory/halgo"
+	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/render/hal"
@@ -27,8 +28,9 @@ func (action *PathIndexAction) JSON() {
 }
 
 func (action *PathIndexAction) LoadQuery() {
+	action.Query.DestinationAmount,
+		action.Err = amount.Parse(action.GetString("destination_amount"))
 	action.Query.DestinationAddress = action.GetAddress("destination_account")
-	action.Query.DestinationAmount = action.GetString("destination_amount")
 	action.Query.DestinationAsset = action.GetAsset("destination_")
 
 	q := db.AssetsForAddressQuery{
@@ -82,7 +84,8 @@ type PathAssetResource struct {
 func (pr *PathResource) Populate(q paths.Query, p paths.Path) error {
 	var err error
 
-	pr.DestinationAmount = q.DestinationAmount
+	pr.DestinationAmount = amount.String(q.DestinationAmount)
+	pr.SourceAmount = amount.String(p.Cost(q.DestinationAmount))
 
 	err = p.Source().Extract(
 		&pr.SourceAssetType,
