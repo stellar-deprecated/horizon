@@ -53,7 +53,7 @@ func (action *PathIndexAction) LoadResources() {
 
 	for i, p := range action.Records {
 		r := &PathResource{}
-		action.Err = r.Populate(p)
+		action.Err = r.Populate(action.Query, p)
 		if action.Err != nil {
 			return
 		}
@@ -79,8 +79,10 @@ type PathAssetResource struct {
 	Issuer string `json:"asset_issuer,omitempty"`
 }
 
-func (pr *PathResource) Populate(p paths.Path) error {
+func (pr *PathResource) Populate(q paths.Query, p paths.Path) error {
 	var err error
+
+	pr.DestinationAmount = q.DestinationAmount
 
 	err = p.Source().Extract(
 		&pr.SourceAssetType,
@@ -101,6 +103,7 @@ func (pr *PathResource) Populate(p paths.Path) error {
 	}
 
 	path := p.Path()
+
 	pr.Path = make([]PathAssetResource, len(path))
 
 	for i, a := range path {
