@@ -1,11 +1,11 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/paths"
+	"github.com/stellar/horizon/db"
 )
 
 func initPathFinding(app *App) {
-	app.paths = &paths.DummyFinder{}
+	app.paths = &db.SimplePathFinder{app.CoreQuery(), app.ctx}
 }
 
 func init() {
