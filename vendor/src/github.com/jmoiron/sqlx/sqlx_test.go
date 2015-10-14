@@ -58,6 +58,10 @@ func ConnectAll() {
 	TestMysql = mydsn != "skip"
 	TestSqlite = sqdsn != "skip"
 
+	if !strings.Contains(mydsn, "parseTime=true") {
+		mydsn += "?parseTime=true"
+	}
+
 	if TestPostgres {
 		pgdb, err = Connect("postgres", pgdsn)
 		if err != nil {
@@ -132,12 +136,20 @@ CREATE TABLE nullperson (
     last_name text NULL,
     email text NULL
 );
+
+CREATE TABLE employees (
+	name text,
+	id integer,
+	boss_id integer
+);
+
 `,
 	drop: `
 drop table person;
 drop table place;
 drop table capplace;
 drop table nullperson;
+drop table employees;
 `,
 }
 
@@ -242,6 +254,9 @@ func loadDefaultFixture(db *DB, t *testing.T) {
 	} else {
 		tx.MustExec(tx.Rebind("INSERT INTO capplace (\"COUNTRY\", \"TELCODE\") VALUES (?, ?)"), "Sarf Efrica", "27")
 	}
+	tx.MustExec(tx.Rebind("INSERT INTO employees (name, id) VALUES (?, ?)"), "Peter", "4444")
+	tx.MustExec(tx.Rebind("INSERT INTO employees (name, id, boss_id) VALUES (?, ?, ?)"), "Joe", "1", "4444")
+	tx.MustExec(tx.Rebind("INSERT INTO employees (name, id, boss_id) VALUES (?, ?, ?)"), "Martin", "2", "4444")
 	tx.Commit()
 }
 
@@ -401,6 +416,82 @@ func TestEmbeddedStructs(t *testing.T) {
 		// in order to allow for more flexibility in destination structs
 		if err != nil {
 			t.Errorf("Was not expecting an error on embed conflicts.")
+		}
+	})
+}
+
+func TestJoinQuery(t *testing.T) {
+	type Employee struct {
+		Name string
+		Id   int64
+		// BossId is an id into the employee table
+		BossId sql.NullInt64 `db:"boss_id"`
+	}
+	type Boss Employee
+
+	RunWithSchema(defaultSchema, t, func(db *DB, t *testing.T) {
+		loadDefaultFixture(db, t)
+
+		var employees []struct {
+			Employee
+			Boss `db:"boss"`
+		}
+
+		err := db.Select(
+			&employees,
+			`SELECT employees.*, boss.id "boss.id", boss.name "boss.name" FROM employees
+			  JOIN employees AS boss ON employees.boss_id = boss.id`)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		for _, em := range employees {
+			if len(em.Employee.Name) == 0 {
+				t.Errorf("Expected non zero lengthed name.")
+			}
+			if em.Employee.BossId.Int64 != em.Boss.Id {
+				t.Errorf("Expected boss ids to match")
+			}
+		}
+	})
+}
+
+func TestJoinQueryNamedPointerStructs(t *testing.T) {
+	type Employee struct {
+		Name string
+		Id   int64
+		// BossId is an id into the employee table
+		BossId sql.NullInt64 `db:"boss_id"`
+	}
+	type Boss Employee
+
+	RunWithSchema(defaultSchema, t, func(db *DB, t *testing.T) {
+		loadDefaultFixture(db, t)
+
+		var employees []struct {
+			Emp1  *Employee `db:"emp1"`
+			Emp2  *Employee `db:"emp2"`
+			*Boss `db:"boss"`
+		}
+
+		err := db.Select(
+			&employees,
+			`SELECT emp.name "emp1.name", emp.id "emp1.id", emp.boss_id "emp1.boss_id",
+			 emp.name "emp2.name", emp.id "emp2.id", emp.boss_id "emp2.boss_id",
+			 boss.id "boss.id", boss.name "boss.name" FROM employees AS emp
+			  JOIN employees AS boss ON emp.boss_id = boss.id
+			  `)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		for _, em := range employees {
+			if len(em.Emp1.Name) == 0 || len(em.Emp2.Name) == 0 {
+				t.Errorf("Expected non zero lengthed name.")
+			}
+			if em.Emp1.BossId.Int64 != em.Boss.Id || em.Emp2.BossId.Int64 != em.Boss.Id {
+				t.Errorf("Expected boss ids to match")
+			}
 		}
 	})
 }
@@ -1224,7 +1315,7 @@ func TestIn(t *testing.T) {
 			t.Error(err)
 		}
 		if len(a) != test.c {
-			t.Errorf("Expected %d args, but got %d (%+v)", len(a), test.c, a)
+			t.Errorf("Expected %d args, but got %d (%+v)", test.c, len(a), a)
 		}
 		if strings.Count(q, "?") != test.c {
 			t.Errorf("Expected %d bindVars, got %d", test.c, strings.Count(q, "?"))
@@ -1453,6 +1544,14 @@ func BenchmarkBindMap(b *testing.B) {
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		bindMap(DOLLAR, q1, am)
+	}
+}
+
+func BenchmarkIn(b *testing.B) {
+	q := `SELECT * FROM foo WHERE x = ? AND v in (?) AND y = ?`
+
+	for i := 0; i < b.N; i++ {
+		_, _, _ = In(q, []interface{}{"foo", []int{0, 5, 7, 2, 9}, "bar"}...)
 	}
 }
 
