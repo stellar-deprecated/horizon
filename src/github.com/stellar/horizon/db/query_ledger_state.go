@@ -5,6 +5,13 @@ import (
 	"golang.org/x/net/context"
 )
 
+// LedgerState represents the latest known ledgers for both
+// horizon and stellar-core.
+type LedgerState struct {
+	HorizonSequence     int32
+	StellarCoreSequence int32
+}
+
 // LedgerStateQuery retrieves the latest ledgers for stellar-core and horizon.
 type LedgerStateQuery struct {
 	Horizon SqlQuery

@@ -3,7 +3,6 @@ package horizon
 import (
 	"github.com/jagregory/halgo"
 	"github.com/rcrowley/go-metrics"
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 )
 
@@ -17,7 +16,7 @@ type MetricsAction struct {
 
 // JSON is a method for actions.JSON
 func (action *MetricsAction) JSON() {
-	db.UpdateLedgerState(action.Ctx, action.App.HistoryQuery(), action.App.CoreQuery())
+	action.App.UpdateMetrics(action.Ctx)
 	action.LoadSnapshot()
 	action.Snapshot["_links"] = map[string]interface{}{
 		"self": halgo.Link{Href: "/metrics"},

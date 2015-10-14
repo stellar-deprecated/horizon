@@ -5,7 +5,6 @@ package test
 
 import (
 	"bytes"
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,6 +13,7 @@ import (
 	"os/exec"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/jmoiron/sqlx"
 	glog "github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
 )
@@ -51,8 +51,8 @@ func StellarCoreDatabaseUrl() string {
 }
 
 // OpenDatabase opens a database, panicing if it cannot
-func OpenDatabase(dsn string) *sql.DB {
-	db, err := sql.Open("postgres", dsn)
+func OpenDatabase(dsn string) *sqlx.DB {
+	db, err := sqlx.Open("postgres", dsn)
 
 	if err != nil {
 		log.Panic(err)

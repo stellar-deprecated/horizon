@@ -1,11 +1,11 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"reflect"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/stellar/horizon/test"
 	"golang.org/x/net/context"
 )
@@ -14,9 +14,9 @@ import (
 // ShouldBeOrdered assertion
 type OrderComparator func(idx int, l interface{}, r interface{}) string
 
-func OpenTestDatabase() *sql.DB {
+func OpenTestDatabase() *sqlx.DB {
 
-	result, err := sql.Open("postgres", test.DatabaseUrl())
+	result, err := sqlx.Open("postgres", test.DatabaseUrl())
 
 	if err != nil {
 		log.Panic(err)
@@ -24,9 +24,9 @@ func OpenTestDatabase() *sql.DB {
 	return result
 }
 
-func OpenStellarCoreTestDatabase() *sql.DB {
+func OpenStellarCoreTestDatabase() *sqlx.DB {
 
-	result, err := sql.Open("postgres", test.StellarCoreDatabaseUrl())
+	result, err := sqlx.Open("postgres", test.StellarCoreDatabaseUrl())
 
 	if err != nil {
 		log.Panic(err)

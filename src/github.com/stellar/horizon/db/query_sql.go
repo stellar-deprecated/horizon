@@ -1,8 +1,6 @@
 package db
 
 import (
-	"database/sql"
-
 	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
 	sq "github.com/lann/squirrel"
@@ -13,7 +11,7 @@ import (
 // SqlQuery helps facilitate queries against a postgresql database. See Select and Get for
 // the main methods used by collaborators.
 type SqlQuery struct {
-	DB *sql.DB
+	DB *sqlx.DB
 }
 
 // Select selects multiple rows returned by the provided sql builder into the provided dest.
@@ -31,11 +29,10 @@ func (q SqlQuery) Select(ctx context.Context, sql sq.SelectBuilder, dest interfa
 
 // SelectRaw runs the provided postgres query and args against this sqlquery's db.
 func (q SqlQuery) SelectRaw(ctx context.Context, query string, args []interface{}, dest interface{}) error {
-	db := sqlx.NewDb(q.DB, "postgres")
 	log.WithField(ctx, "sql", query).Info("query sql")
 	log.WithField(ctx, "args", args).Debug("query args")
 
-	err := db.Select(dest, query, args...)
+	err := q.DB.Select(dest, query, args...)
 	if err != nil {
 		err = errors.Wrap(err, 1)
 	}
@@ -57,11 +54,10 @@ func (q SqlQuery) Get(ctx context.Context, sql sq.SelectBuilder, dest interface{
 
 // GetRaw runs the provided postgres query and args against this sqlquery's db.
 func (q SqlQuery) GetRaw(ctx context.Context, query string, args []interface{}, dest interface{}) error {
-	db := sqlx.NewDb(q.DB, "postgres")
 	log.WithField(ctx, "sql", query).Info("query sql")
 	log.WithField(ctx, "args", args).Debug("query args")
 
-	err := db.Get(dest, query, args...)
+	err := q.DB.Get(dest, query, args...)
 	if err != nil {
 		err = errors.Wrap(err, 1)
 	}
