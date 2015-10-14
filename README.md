@@ -6,6 +6,9 @@ It is not ready yet for production.
 
 Horizon is the [client facing API](/docs) server for the Stellar ecosystem.  It acts as the interface between stellar-core and applications that want to access the Stellar network. It allows you to submit transactions to the network, check the status of accounts, subscribe to event streams, etc. See [an overview of the Stellar ecosystem](https://stellar.org/developer/learn/) for more details.
 
+## Dependencies
+
+Horizon requires go 1.5 or higher to build. See (https://golang.org/doc/install) for installation instructions.
 
 ## Building
 
