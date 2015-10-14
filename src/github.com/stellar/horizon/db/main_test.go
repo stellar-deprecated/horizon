@@ -1,20 +1,20 @@
 package db
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"os"
 	"testing"
 
+	"github.com/jmoiron/sqlx"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/test"
 	"golang.org/x/net/context"
 )
 
 var ctx context.Context
-var core *sql.DB
-var history *sql.DB
+var core *sqlx.DB
+var history *sqlx.DB
 
 func TestMain(m *testing.M) {
 	ctx = test.Context()

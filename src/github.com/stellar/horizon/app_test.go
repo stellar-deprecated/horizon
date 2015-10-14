@@ -129,6 +129,19 @@ func TestApp(t *testing.T) {
 		So(w.Code, ShouldEqual, 200)
 
 	})
+
+	Convey("app.UpdateMetrics", t, func() {
+		test.LoadScenario("base")
+		app := NewTestApp()
+		defer app.Close()
+		So(app.horizonLedgerGauge.Value(), ShouldEqual, 0)
+		So(app.stellarCoreLedgerGauge.Value(), ShouldEqual, 0)
+
+		app.UpdateMetrics(test.Context())
+
+		So(app.horizonLedgerGauge.Value(), ShouldEqual, 3)
+		So(app.stellarCoreLedgerGauge.Value(), ShouldEqual, 3)
+	})
 }
 
 func shouldHaveASentryHook(actual interface{}, options ...interface{}) string {

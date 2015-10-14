@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/rcrowley/go-metrics"
-	"github.com/stellar/horizon/db"
 )
 
 func initMetrics(app *App) {
@@ -12,8 +11,14 @@ func initMetrics(app *App) {
 }
 
 func initDbMetrics(app *App) {
-	app.metrics.Register("history.latest_ledger", db.HorizonLedgerGauge())
-	app.metrics.Register("stellar_core.latest_ledger", db.StellarCoreLedgerGauge())
+	app.horizonLedgerGauge = metrics.NewGauge()
+	app.stellarCoreLedgerGauge = metrics.NewGauge()
+	app.horizonConnGauge = metrics.NewGauge()
+	app.stellarCoreConnGauge = metrics.NewGauge()
+	app.metrics.Register("history.latest_ledger", app.horizonLedgerGauge)
+	app.metrics.Register("stellar_core.latest_ledger", app.stellarCoreLedgerGauge)
+	app.metrics.Register("history.open_connections", app.horizonConnGauge)
+	app.metrics.Register("stellar_core.open_connections", app.stellarCoreConnGauge)
 }
 
 func initLogMetrics(app *App) {

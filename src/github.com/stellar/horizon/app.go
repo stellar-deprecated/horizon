@@ -26,7 +26,6 @@ var version = ""
 
 type App struct {
 	config            Config
-	metrics           metrics.Registry
 	web               *Web
 	historyDb         *sqlx.DB
 	coreDb            *sqlx.DB
@@ -40,6 +39,13 @@ type App struct {
 	networkPassphrase string
 	submitter         *txsub.System
 	pump              *pump.Pump
+
+	// metrics
+	metrics                metrics.Registry
+	horizonLedgerGauge     metrics.Gauge
+	stellarCoreLedgerGauge metrics.Gauge
+	horizonConnGauge       metrics.Gauge
+	stellarCoreConnGauge   metrics.Gauge
 }
 
 func SetVersion(v string) {
@@ -120,4 +126,26 @@ func (a *App) HistoryQuery() db.SqlQuery {
 // to specify the query should run against the connected stellar core database
 func (a *App) CoreQuery() db.SqlQuery {
 	return db.SqlQuery{DB: a.coreDb}
+}
+
+// UpdateMetrics triggers a refresh of several metrics gauges, such as open
+// db connections and ledger state
+func (a *App) UpdateMetrics(ctx context.Context) {
+
+	var ls db.LedgerState
+	q := db.LedgerStateQuery{a.HistoryQuery(), a.CoreQuery()}
+	err := db.Get(ctx, q, &ls)
+
+	if err != nil {
+		log.WithStack(ctx, err).
+			WithField("err", err.Error()).
+			Error("failed to load ledger state")
+		return
+	}
+
+	a.horizonLedgerGauge.Update(int64(ls.HorizonSequence))
+	a.stellarCoreLedgerGauge.Update(int64(ls.StellarCoreSequence))
+
+	a.horizonConnGauge.Update(int64(a.historyDb.Stats().OpenConnections))
+	a.stellarCoreConnGauge.Update(int64(a.coreDb.Stats().OpenConnections))
 }
