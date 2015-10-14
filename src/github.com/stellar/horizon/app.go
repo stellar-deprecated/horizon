@@ -1,12 +1,12 @@
 package horizon
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
+	"github.com/jmoiron/sqlx"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
@@ -28,8 +28,8 @@ type App struct {
 	config            Config
 	metrics           metrics.Registry
 	web               *Web
-	historyDb         *sql.DB
-	coreDb            *sql.DB
+	historyDb         *sqlx.DB
+	coreDb            *sqlx.DB
 	ctx               context.Context
 	cancel            func()
 	redis             *redis.Pool

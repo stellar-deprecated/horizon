@@ -1,11 +1,10 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/stellar/horizon/log"
-
 	"golang.org/x/net/context"
 )
 
@@ -21,7 +20,7 @@ const (
 // if a new ledger has been imported (by ruby-horizon as of 2015-04-30, but
 // should eventually end up being in this project).  If a new ledger is seen
 // the the channel returned by this function emits
-func NewLedgerClosePump(ctx context.Context, db *sql.DB) <-chan struct{} {
+func NewLedgerClosePump(ctx context.Context, db *sqlx.DB) <-chan struct{} {
 	result := make(chan struct{})
 
 	go func() {

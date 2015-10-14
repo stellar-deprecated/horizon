@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	stderr "errors"
 	"fmt"
 	"reflect"
@@ -9,6 +8,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/go-errors/errors"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // allow postgres sql connections
 )
 
@@ -55,13 +55,8 @@ func (r HistoryRecord) PagingToken() string {
 
 // Open the postgres database at the provided url and performing an initial
 // ping to ensure we can connect to it.
-func Open(url string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", url)
-	if err != nil {
-		return db, errors.Wrap(err, 1)
-	}
-
-	err = db.Ping()
+func Open(url string) (*sqlx.DB, error) {
+	db, err := sqlx.Connect("postgres", url)
 	if err != nil {
 		return db, errors.Wrap(err, 1)
 	}

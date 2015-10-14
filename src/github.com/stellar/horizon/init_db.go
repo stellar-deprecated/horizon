@@ -10,6 +10,8 @@ func initHistoryDb(app *App) {
 	if err != nil {
 		app.log.Panic(app.ctx, err)
 	}
+	historyDb.SetMaxIdleConns(4)
+	historyDb.SetMaxOpenConns(12)
 	app.historyDb = historyDb
 }
 
@@ -19,6 +21,9 @@ func initCoreDb(app *App) {
 	if err != nil {
 		app.log.Panic(app.ctx, err)
 	}
+
+	coreDb.SetMaxIdleConns(4)
+	coreDb.SetMaxOpenConns(12)
 	app.coreDb = coreDb
 }
 

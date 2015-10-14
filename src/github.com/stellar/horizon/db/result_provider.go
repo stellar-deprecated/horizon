@@ -2,16 +2,16 @@ package db
 
 import (
 	"bytes"
-	"database/sql"
 	"encoding/base64"
+	"github.com/jmoiron/sqlx"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 )
 
 type ResultProvider struct {
-	Core    *sql.DB
-	History *sql.DB
+	Core    *sqlx.DB
+	History *sqlx.DB
 }
 
 func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.Result {
