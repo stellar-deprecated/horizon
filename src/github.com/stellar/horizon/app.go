@@ -3,6 +3,7 @@ package horizon
 import (
 	"fmt"
 	"net/http"
+	"runtime"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
@@ -46,6 +47,7 @@ type App struct {
 	stellarCoreLedgerGauge metrics.Gauge
 	horizonConnGauge       metrics.Gauge
 	stellarCoreConnGauge   metrics.Gauge
+	goroutineGauge         metrics.Gauge
 }
 
 func SetVersion(v string) {
@@ -131,6 +133,8 @@ func (a *App) CoreQuery() db.SqlQuery {
 // UpdateMetrics triggers a refresh of several metrics gauges, such as open
 // db connections and ledger state
 func (a *App) UpdateMetrics(ctx context.Context) {
+
+	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
 
 	var ls db.LedgerState
 	q := db.LedgerStateQuery{a.HistoryQuery(), a.CoreQuery()}

@@ -15,10 +15,12 @@ func initDbMetrics(app *App) {
 	app.stellarCoreLedgerGauge = metrics.NewGauge()
 	app.horizonConnGauge = metrics.NewGauge()
 	app.stellarCoreConnGauge = metrics.NewGauge()
+	app.goroutineGauge = metrics.NewGauge()
 	app.metrics.Register("history.latest_ledger", app.horizonLedgerGauge)
 	app.metrics.Register("stellar_core.latest_ledger", app.stellarCoreLedgerGauge)
 	app.metrics.Register("history.open_connections", app.horizonConnGauge)
 	app.metrics.Register("stellar_core.open_connections", app.stellarCoreConnGauge)
+	app.metrics.Register("goroutines", app.goroutineGauge)
 }
 
 func initLogMetrics(app *App) {
