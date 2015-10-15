@@ -7,16 +7,20 @@ import (
 
 // Integrates `http.CloseNotifier` with `context.Context`, returning a context
 // that will be canceled when the http connection underlying `w` is closed.
-func CancelWhenClosed(parent context.Context, w http.ResponseWriter) context.Context {
+func CancelWhenClosed(parent context.Context, w http.ResponseWriter) (context.Context, func()) {
 	ctx, cancel := context.WithCancel(parent)
 
 	close := w.(http.CloseNotifier).CloseNotify()
 
 	// listen for the connection to close, trigger cancelation
 	go func() {
-		<-close
-		cancel()
+		select {
+		case <-close:
+			cancel()
+		case <-ctx.Done():
+			return
+		}
 	}()
 
-	return ctx
+	return ctx, cancel
 }
