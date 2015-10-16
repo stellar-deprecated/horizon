@@ -28,8 +28,7 @@ func (action *PathIndexAction) JSON() {
 }
 
 func (action *PathIndexAction) LoadQuery() {
-	action.Query.DestinationAmount,
-		action.Err = amount.Parse(action.GetString("destination_amount"))
+	action.Query.DestinationAmount = action.GetAmount("destination_amount")
 	action.Query.DestinationAddress = action.GetAddress("destination_account")
 	action.Query.DestinationAsset = action.GetAsset("destination_")
 

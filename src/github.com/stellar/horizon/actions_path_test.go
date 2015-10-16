@@ -17,6 +17,7 @@ func TestPathActions(t *testing.T) {
 		Convey("(no query args): GET /paths", func() {
 			w := rh.Get("/paths", test.RequestHelperNoop)
 
+			t.Log(w.Body.String())
 			So(w.Code, ShouldEqual, 400)
 		})
 
@@ -32,7 +33,7 @@ func TestPathActions(t *testing.T) {
 			So(w.Code, ShouldEqual, 200)
 			t.Log(qs)
 			t.Log(w.Body.String())
-			So(w.Body, ShouldBePageOf, 3)
+			So(w.Body, ShouldBePageOf, 4)
 		})
 	})
 }

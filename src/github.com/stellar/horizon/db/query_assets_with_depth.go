@@ -37,24 +37,20 @@ func (q AssetsWithDepthQuery) Select(ctx context.Context, dest interface{}) erro
 	sql := sq.Select(
 		"buyingassettype AS type",
 		"coalesce(buyingassetcode, '') AS code",
-		"coalesce(buyingissuer, '') AS issuer",
-		"SUM(amount) AS maxdepth").
+		"coalesce(buyingissuer, '') AS issuer").
 		From("offers").
 		Where(sq.Eq{"sellingassettype": t}).
 		GroupBy("buyingassettype", "buyingassetcode", "buyingissuer").
 		Having(sq.Expr("SUM(amount) >= ?", q.NeededDepth))
 
-	if t == xdr.AssetTypeAssetTypeNative {
-		sql = sql.Where(sq.Eq{"sellingassetcode": nil, "sellingissuer": nil})
-	} else {
+	if t != xdr.AssetTypeAssetTypeNative {
 		sql = sql.Where(sq.Eq{"sellingassetcode": c, "sellingissuer": i})
 	}
 
 	var rows []struct {
-		Type     int32
-		Code     string
-		Issuer   string
-		Maxdepth int64
+		Type   int32
+		Code   string
+		Issuer string
 	}
 
 	err = q.SqlQuery.Select(ctx, sql, &rows)

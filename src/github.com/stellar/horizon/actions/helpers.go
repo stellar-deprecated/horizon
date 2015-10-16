@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/strkey"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
@@ -170,6 +171,18 @@ func (base *Base) GetAccountID(name string) (result xdr.AccountId) {
 	copy(key[:], raw)
 
 	result, err = xdr.NewAccountId(xdr.CryptoKeyTypeKeyTypeEd25519, key)
+	if err != nil {
+		base.SetInvalidField(name, err)
+		return
+	}
+
+	return
+}
+
+func (base *Base) GetAmount(name string) (result xdr.Int64) {
+	var err error
+	result, err = amount.Parse(base.GetString("destination_amount"))
+
 	if err != nil {
 		base.SetInvalidField(name, err)
 		return
