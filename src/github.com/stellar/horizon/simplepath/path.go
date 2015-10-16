@@ -61,6 +61,19 @@ func (p *pathNode) Path() []xdr.Asset {
 }
 
 func (p *pathNode) Cost(amount xdr.Int64) xdr.Int64 {
+	if p.Tail == nil {
+		return amount
+	}
+
+	result := amount
+	cur := p
+
+	for cur.Tail != nil {
+		ob := cur.OrderBook()
+		result = ob.Cost(cur.Asset, result)
+		cur = cur.Tail
+	}
+
 	return amount
 }
 
@@ -88,4 +101,15 @@ func (p *pathNode) Flatten() (result []xdr.Asset) {
 	}
 
 	return
+}
+
+func (p *pathNode) OrderBook() *OrderBook {
+	if p.Tail == nil {
+		return nil
+	}
+
+	return &OrderBook{
+		Selling: p.Tail.Asset,
+		Buying:  p.Asset,
+	}
 }
