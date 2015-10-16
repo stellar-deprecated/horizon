@@ -28,3 +28,12 @@ func (results *MockResultProvider) ResultByHash(ctx context.Context, hash string
 
 	return
 }
+
+type MockSequenceProvider struct {
+	Results map[string]uint64
+	Err     error
+}
+
+func (results *MockSequenceProvider) Get(ctx context.Context, addresses []string) (map[string]uint64, error) {
+	return results.Results, results.Err
+}

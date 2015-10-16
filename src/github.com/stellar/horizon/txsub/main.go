@@ -16,6 +16,13 @@ type ResultProvider interface {
 	ResultByHash(context.Context, string) Result
 }
 
+// SequenceProvider represents an abstract store that can lookup the current
+// sequence number of an account.  It is used by the SequenceLock to
+type SequenceProvider interface {
+	// Look up a sequence by address
+	Get(ctx context.Context, addresses []string) (map[string]uint64, error)
+}
+
 // Listener represents some client who is interested in retrieving the result
 // of a specific transaction.
 type Listener chan<- Result
