@@ -1,4 +1,4 @@
-package txsub
+package sequence
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
@@ -7,38 +7,33 @@ import (
 	"time"
 )
 
-func TestSequenceQueue(t *testing.T) {
+func TestQueue(t *testing.T) {
 	ctx := test.Context()
 	_ = ctx
-	Convey("SequenceQueue", t, func() {
-		queue := NewSequenceQueue()
+	Convey("Queue", t, func() {
+		queue := NewQueue()
 
 		Convey("Push adds the provided channel on to the priority queue", func() {
 			So(queue.Size(), ShouldEqual, 0)
 
-			queue.Push(nil, 2)
+			queue.Push(2)
 			So(queue.Size(), ShouldEqual, 1)
 			_, s := queue.head()
 			So(s, ShouldEqual, 2)
 
-			queue.Push(nil, 1)
+			queue.Push(1)
 			So(queue.Size(), ShouldEqual, 2)
 			_, s = queue.head()
 			So(s, ShouldEqual, 1)
 		})
 
 		Convey("Update removes sequences that are submittable or in the past", func() {
-			results := []chan error{
-				make(chan error, 1),
-				make(chan error, 1),
-				make(chan error, 1),
-				make(chan error, 1),
+			results := []<-chan error{
+				queue.Push(1),
+				queue.Push(2),
+				queue.Push(3),
+				queue.Push(4),
 			}
-
-			queue.Push(results[0], 1)
-			queue.Push(results[1], 2)
-			queue.Push(results[2], 3)
-			queue.Push(results[3], 4)
 
 			queue.Update(2)
 
@@ -60,8 +55,7 @@ func TestSequenceQueue(t *testing.T) {
 
 		Convey("Update clears the queue if the head has not been released within the time limit", func() {
 			queue.timeout = 1 * time.Millisecond
-			result := make(chan error, 1)
-			queue.Push(result, 2)
+			result := queue.Push(2)
 			<-time.After(10 * time.Millisecond)
 			queue.Update(0)
 
