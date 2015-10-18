@@ -3,6 +3,7 @@ package txsub
 import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/txsub/sequence"
 	"golang.org/x/net/context"
 	"sync"
 	"time"
@@ -16,7 +17,9 @@ type System struct {
 
 	Pending           OpenSubmissionList
 	Results           ResultProvider
+	Sequences         SequenceProvider
 	Submitter         Submitter
+	SubmissionQueue   *sequence.Manager
 	NetworkPassphrase string
 	SubmissionTimeout time.Duration
 
@@ -49,7 +52,7 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	// calculate hash of transaction
 	info, err := extractEnvelopeInfo(ctx, env, sys.NetworkPassphrase)
 	if err != nil {
-		response <- Result{Err: err, EnvelopeXDR: env}
+		sys.finish(response, Result{Err: err, EnvelopeXDR: env})
 		return
 	}
 
@@ -57,10 +60,87 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	r := sys.Results.ResultByHash(ctx, info.Hash)
 
 	if r.Err != ErrNoResults {
-		response <- r
+		sys.finish(response, r)
 		return
 	}
 
+	curSeq, err := sys.Sequences.Get(ctx, []string{info.SourceAddress})
+	if err != nil {
+		sys.finish(response, Result{Err: err, EnvelopeXDR: env})
+		return
+	}
+
+	// If account's sequence cannot be found, abort with tx_NO_ACCOUNT
+	// error code
+	if _, ok := curSeq[info.SourceAddress]; !ok {
+		sys.finish(response, Result{Err: ErrNoAccount, EnvelopeXDR: env})
+		return
+	}
+
+	// queue the submission and get the channel that will emit when
+	// submission is valid
+	seq := sys.SubmissionQueue.Push(info.SourceAddress, info.Sequence)
+
+	// update the submission queue with the source accounts current sequence value
+	// which will cause the channel returned by Push() to emit if possible.
+	sys.SubmissionQueue.Update(curSeq)
+
+	select {
+	case err := <-seq:
+		if err == sequence.ErrBadSequence {
+			// convert the internal only ErrBadSequence into the FailedTransactionError
+			err = ErrBadSequence
+		}
+
+		if err != nil {
+			sys.finish(response, Result{Err: err, EnvelopeXDR: env})
+			return
+		}
+
+		sr := sys.submitOnce(ctx, env)
+
+		// if submission succeeded
+		if sr.Err == nil {
+			// add transactions to open list
+			sys.Pending.Add(ctx, info.Hash, response)
+			// update the submission queue, allowing the next submission to proceed
+			sys.SubmissionQueue.Update(map[string]uint64{info.SourceAddress: info.Sequence})
+			return
+		}
+
+		// any error other than "txBAD_SEQ" is a failure
+		isBad, err := sr.IsBadSeq()
+		if err != nil {
+			sys.finish(response, Result{Err: err, EnvelopeXDR: env})
+			return
+		}
+
+		if !isBad {
+			sys.finish(response, Result{Err: sr.Err, EnvelopeXDR: env})
+			return
+		}
+
+		// If error is txBAD_SEQ, check for the result again
+		r = sys.Results.ResultByHash(ctx, info.Hash)
+
+		if r.Err == nil {
+			// If the found use it as the result
+			sys.finish(response, r)
+		} else {
+			// finally, return the bad_seq error if no result was found on 2nd attempt
+			sys.finish(response, Result{Err: sr.Err, EnvelopeXDR: env})
+		}
+
+	case <-ctx.Done():
+		sys.finish(response, Result{Err: ErrCanceled, EnvelopeXDR: env})
+	}
+
+	return
+}
+
+// Submit submits the provided base64 encoded transaction envelope to the
+// network using this submission system.
+func (sys *System) submitOnce(ctx context.Context, env string) SubmissionResult {
 	// submit to stellar-core
 	sr := sys.Submitter.Submit(ctx, env)
 	sys.Metrics.SubmissionTimer.Update(sr.Duration)
@@ -68,36 +148,11 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 	// if received or duplicate, add to the open submissions list
 	if sr.Err == nil {
 		sys.Metrics.SuccessfulSubmissionsMeter.Mark(1)
-		sys.Pending.Add(ctx, info.Hash, response)
-		return
-	}
-
-	sys.Metrics.FailedSubmissionsMeter.Mark(1)
-
-	// any error other than "txBAD_SEQ" is a failure
-	isBad, err := sr.IsBadSeq()
-	if err != nil {
-		response <- Result{Err: err, EnvelopeXDR: env}
-		return
-	}
-
-	if !isBad {
-		response <- Result{Err: sr.Err, EnvelopeXDR: env}
-		return
-	}
-
-	// If error is txBAD_SEQ, check for the result again
-	r = sys.Results.ResultByHash(ctx, info.Hash)
-
-	if r.Err == nil {
-		// If the found use it as the result
-		response <- r
 	} else {
-		// finally, return the bad_seq error if no result was found on 2nd attempt
-		response <- Result{Err: sr.Err, EnvelopeXDR: env}
+		sys.Metrics.FailedSubmissionsMeter.Mark(1)
 	}
 
-	return
+	return sr
 }
 
 // Ticker triggers the system to update itself with any new data available.
@@ -131,8 +186,9 @@ func (sys *System) Tick(ctx context.Context) {
 	if err != nil {
 		log.WithStack(ctx, err).Error(err)
 	}
+	stillBuffered := sys.SubmissionQueue.Size()
 
-	sys.Metrics.OpenSubmissionsGauge.Update(int64(stillOpen))
+	sys.Metrics.OpenSubmissionsGauge.Update(int64(stillOpen + stillBuffered))
 }
 
 func (sys *System) Init(ctx context.Context) {
@@ -146,4 +202,9 @@ func (sys *System) Init(ctx context.Context) {
 			sys.SubmissionTimeout = 1 * time.Minute
 		}
 	})
+}
+
+func (sys *System) finish(response chan<- Result, r Result) {
+	response <- r
+	close(response)
 }

@@ -64,12 +64,11 @@ func (q *Queue) Update(sequence uint64) {
 	wasChanged := false
 
 	for {
-		ch, hseq := q.head()
-
 		if q.Size() == 0 {
 			break
 		}
 
+		ch, hseq := q.head()
 		// if the next queued transaction has a sequence higher than the account's
 		// current sequence, stop removing entries
 		if hseq > q.nextSequence {

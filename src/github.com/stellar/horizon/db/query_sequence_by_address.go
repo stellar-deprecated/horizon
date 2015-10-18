@@ -13,6 +13,7 @@ type SequenceByAddressQuery struct {
 func (q SequenceByAddressQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := sq.
 		Select("seqnum as sequence", "accountid as address").
+		From("accounts").
 		Where(sq.Eq{"accountid": q.Addresses})
 
 	return q.SqlQuery.Select(ctx, sql, dest)
