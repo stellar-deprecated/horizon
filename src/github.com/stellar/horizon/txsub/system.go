@@ -159,7 +159,21 @@ func (sys *System) submitOnce(ctx context.Context, env string) SubmissionResult 
 func (sys *System) Tick(ctx context.Context) {
 	sys.Init(ctx)
 
-	log.Debugln(ctx, "ticking txsub system")
+	log.
+		WithField(ctx, "queued", sys.SubmissionQueue.String()).
+		Debugln("ticking txsub system")
+
+	addys := sys.SubmissionQueue.Addresses()
+	if len(addys) > 0 {
+		curSeq, err := sys.Sequences.Get(ctx, addys)
+		if err != nil {
+			log.WithStack(ctx, err).Error(err)
+		} else {
+			log.Debugln(ctx, curSeq)
+			sys.SubmissionQueue.Update(curSeq)
+		}
+	}
+
 	for _, hash := range sys.Pending.Pending(ctx) {
 		r := sys.Results.ResultByHash(ctx, hash)
 

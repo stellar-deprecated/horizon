@@ -1,6 +1,8 @@
 package sequence
 
 import (
+	"fmt"
+	"strings"
 	"sync"
 )
 
@@ -23,12 +25,36 @@ func NewManager() *Manager {
 	}
 }
 
+func (m *Manager) String() string {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+	var addys []string
+
+	for addy, q := range m.queues {
+		addys = append(addys, fmt.Sprintf("%5s:%d", addy, q.nextSequence))
+	}
+
+	return "[ " + strings.Join(addys, ",") + " ]"
+}
+
 // Size returns the count of submissions buffered within
 // this manager.
 func (m *Manager) Size() int {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 	return m.size()
+}
+
+func (m *Manager) Addresses() []string {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+	addys := make([]string, 0, len(m.queues))
+
+	for addy, _ := range m.queues {
+		addys = append(addys, addy)
+	}
+
+	return addys
 }
 
 // Push registers an intent to submit a transaction for the provided address at
