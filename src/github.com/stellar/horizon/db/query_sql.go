@@ -63,3 +63,26 @@ func (q SqlQuery) GetRaw(ctx context.Context, query string, args []interface{}, 
 	}
 	return err
 }
+
+func (q SqlQuery) Query(ctx context.Context, sql sq.SelectBuilder) (*sqlx.Rows, error) {
+	sql = sql.PlaceholderFormat(sq.Dollar)
+	query, args, err := sql.ToSql()
+
+	if err != nil {
+		return nil, errors.Wrap(err, 1)
+	}
+
+	return q.QueryRaw(ctx, query, args)
+}
+
+// QueryRaw runs the provided query and returns a *sqlx.Rows value to iterate through the response
+func (q SqlQuery) QueryRaw(ctx context.Context, query string, args []interface{}) (*sqlx.Rows, error) {
+	log.WithField(ctx, "sql", query).Info("query sql")
+	log.WithField(ctx, "args", args).Debug("query args")
+
+	rows, err := q.DB.Queryx(query, args...)
+	if err != nil {
+		err = errors.Wrap(err, 1)
+	}
+	return rows, err
+}
