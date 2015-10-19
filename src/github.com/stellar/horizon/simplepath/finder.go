@@ -35,7 +35,13 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 
 	minDepth := q.DestinationAmount
 
-	next := []*pathNode{&pathNode{q.DestinationAsset, nil}}
+	next := []*pathNode{
+		&pathNode{
+			Asset: q.DestinationAsset,
+			Tail:  nil,
+			DB:    f.SqlQuery,
+		},
+	}
 
 	// build a map of asset's string representation to check if a given node
 	// is one of the targets for our search.  Unfortunately, xdr.Asset is not suitable
@@ -54,6 +60,10 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 
 		if _, found := targets[id]; found {
 			result = append(result, cur)
+			// stop searching if we've found 4 paths
+			if len(result) >= 4 {
+				return
+			}
 			continue
 		}
 
@@ -78,7 +88,11 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 		}
 
 		for _, a := range connected {
-			next = append(next, &pathNode{a, cur})
+			next = append(next, &pathNode{
+				Asset: a,
+				Tail:  cur,
+				DB:    f.SqlQuery,
+			})
 		}
 	}
 

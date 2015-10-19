@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/paths"
 )
 
@@ -12,6 +13,7 @@ import (
 type pathNode struct {
 	Asset xdr.Asset
 	Tail  *pathNode
+	DB    db.SqlQuery
 }
 
 // check interface compatibility
@@ -35,7 +37,7 @@ func (p *pathNode) String() string {
 	return out.String()
 }
 
-func (p *pathNode) Source() xdr.Asset {
+func (p *pathNode) Destination() xdr.Asset {
 	cur := p
 	for cur.Tail != nil {
 		cur = cur.Tail
@@ -43,7 +45,7 @@ func (p *pathNode) Source() xdr.Asset {
 	return cur.Asset
 }
 
-func (p *pathNode) Destination() xdr.Asset {
+func (p *pathNode) Source() xdr.Asset {
 	// the destination for path is the head of the linked list
 	return p.Asset
 }
@@ -60,21 +62,25 @@ func (p *pathNode) Path() []xdr.Asset {
 	return path[1 : len(path)-1]
 }
 
-func (p *pathNode) Cost(amount xdr.Int64) xdr.Int64 {
+func (p *pathNode) Cost(amount xdr.Int64) (result xdr.Int64, err error) {
+	result = amount
+
 	if p.Tail == nil {
-		return amount
+		return
 	}
 
-	result := amount
 	cur := p
 
 	for cur.Tail != nil {
 		ob := cur.OrderBook()
-		result = ob.Cost(cur.Asset, result)
+		result, err = ob.Cost(cur.Asset, result)
+		if err != nil {
+			return
+		}
 		cur = cur.Tail
 	}
 
-	return amount
+	return
 }
 
 func (p *pathNode) Depth() int {
@@ -103,13 +109,14 @@ func (p *pathNode) Flatten() (result []xdr.Asset) {
 	return
 }
 
-func (p *pathNode) OrderBook() *OrderBook {
+func (p *pathNode) OrderBook() *orderBook {
 	if p.Tail == nil {
 		return nil
 	}
 
-	return &OrderBook{
+	return &orderBook{
 		Selling: p.Tail.Asset,
 		Buying:  p.Asset,
+		DB:      p.DB,
 	}
 }

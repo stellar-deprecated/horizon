@@ -20,7 +20,7 @@ type Path interface {
 	Destination() xdr.Asset
 	// Cost returns an amount (which may be estimated), delimited in the Source assets
 	// that is suitable for use as the `sendMax` field for a `PathPaymentOp` struct.
-	Cost(amount xdr.Int64) xdr.Int64
+	Cost(amount xdr.Int64) (xdr.Int64, error)
 }
 
 // Finder finds paths.

@@ -84,7 +84,12 @@ func (pr *PathResource) Populate(q paths.Query, p paths.Path) error {
 	var err error
 
 	pr.DestinationAmount = amount.String(q.DestinationAmount)
-	pr.SourceAmount = amount.String(p.Cost(q.DestinationAmount))
+	cost, err := p.Cost(q.DestinationAmount)
+	if err != nil {
+		return err
+	}
+
+	pr.SourceAmount = amount.String(cost)
 
 	err = p.Source().Extract(
 		&pr.SourceAssetType,
