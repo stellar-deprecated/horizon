@@ -10,6 +10,8 @@ import (
 	"math/big"
 )
 
+var ErrNotEnough = errors.New("not enough depth")
+
 type orderBook struct {
 	Selling xdr.Asset
 	Buying  xdr.Asset
@@ -86,7 +88,7 @@ func (ob *orderBook) Cost(source xdr.Asset, sourceAmount xdr.Int64) (result xdr.
 		needed -= available
 	}
 
-	err = errors.New("not enough depth")
+	err = ErrNotEnough
 	return
 }
 
