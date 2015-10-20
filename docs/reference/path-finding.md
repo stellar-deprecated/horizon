@@ -3,14 +3,15 @@ title: Find Payment Paths
 category: Endpoints
 ---
 
-The Stellar Network allows payments to be made across currencies through path payments.  A path payment specifies a series of currencies to route a payment through, from source asset (the asset debited from the payer) to destination asset (the asset credited to the payee).
+The Stellar Network allows payments to be made across assets through _path payments_.  A path payment specifies a series of assets to route a payment through, from source asset (the asset debited from the payer) to destination asset (the asset credited to the payee).
 
-The path search is specified using:
+A path search is specified using:
 
 - The destination address
 - The source address
-- The currency and amount that the destination account should receive
+- The asset and amount that the destination account should receive
 
+As part of the search, horizon will load a list of assets available to the source address and will find any payment paths from those source assets to the desired destination asset. The search's amount parameter will be used to determine if there a given path can satisfy a payment of the desired amount.
 
 ## Request
 
@@ -20,14 +21,14 @@ GET /paths?destination_account={da}&source_account={sa}&destination_asset_type={
 
 ## Arguments
 
-| name                        | notes  | description | example                                                    |
-|-----------------------------|--------|-------------|------------------------------------------------------------|
-| `?destination_account`      | string |             | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
-| `?destination_asset_type`   | string |             | `credit_alphanum4`                                         |
-| `?destination_asset_code`   | string |             | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
-| `?destination_asset_issuer` | string |             | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
-| `?destination_amount`       | string |             | `10.1`                                                     |
-| `?source_account`           | string |             | `GARSFJNXJIHO6ULUBK3DBYKVSIZE7SC72S5DYBCHU7DKL22UXKVD7MXP` |
+| name                        | notes  | description                                                                                        | example                                                    |
+|-----------------------------|--------|----------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| `?destination_account`      | string | The destination address that any returned path should use                                          | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
+| `?destination_asset_type`   | string | The type of the destination asset                                                                  | `credit_alphanum4`                                         |
+| `?destination_asset_code`   | string | The code for the destination, if destination_asset_type is not "native"                            | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
+| `?destination_asset_issuer` | string | The issuer for the destination, if destination_asset_type is not "native"                          | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
+| `?destination_amount`       | string | The amount, denominated in the destination asset, that any returned path should be able to satisfy | `10.1`                                                     |
+| `?source_account`           | string | The sender's address.  Any returned path must use a source that the sender can hold                | `GARSFJNXJIHO6ULUBK3DBYKVSIZE7SC72S5DYBCHU7DKL22UXKVD7MXP` |
 
 
 
@@ -39,7 +40,7 @@ curl https://horizon-testnet.stellar.org/paths?destination_account=GAEDTJ4PPEFVW
 
 ## Response
 
-This endpoint responds with a single Transaction.  See [transaction resource](./resources/transaction.md) for reference.
+This endpoint responds with a page of path resources.  See [path resource](./resources/path.md) for reference.
 
 ### Example Response:
 
