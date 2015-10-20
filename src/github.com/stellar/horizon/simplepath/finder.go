@@ -33,69 +33,19 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 		return
 	}
 
-	minDepth := q.DestinationAmount
-
-	next := []*pathNode{
-		&pathNode{
-			Asset: q.DestinationAsset,
-			Tail:  nil,
-			DB:    f.SqlQuery,
-		},
+	s := &search{
+		Query:  q,
+		Finder: f,
 	}
 
-	// build a map of asset's string representation to check if a given node
-	// is one of the targets for our search.  Unfortunately, xdr.Asset is not suitable
-	// for use as a map key, and so we use its string representation.
-	targets := map[string]bool{}
-	for _, a := range q.SourceAssets {
-		targets[a.String()] = true
-	}
+	s.Init()
+	s.Run()
 
-	visited := map[string]bool{}
+	return s.Results, s.Err
 
-	for len(next) > 0 {
-		cur := next[0]
-		next = next[1:]
-		id := cur.Asset.String()
-
-		if _, found := targets[id]; found {
-			result = append(result, cur)
-			// stop searching if we've found 4 paths
-			if len(result) >= 4 {
-				return
-			}
-			continue
-		}
-
-		if _, found := visited[id]; found {
-			continue
-		}
-		visited[id] = true
-
-		// A PathPaymentOp's path cannot be over 5 elements in length, and so
-		// we abort our search if the current linked list is over 7 (since the list
-		// includes both source and destination in addition to the path)
-		if cur.Depth() > 7 {
-			continue
-		}
-
-		var connected []xdr.Asset
-		q := db.ConnectedAssetsQuery{f.SqlQuery, cur.Asset}
-		err = db.Select(f.Ctx, q, &connected)
-		if err != nil {
-			return
-		}
-
-		var newPaths []*pathNode
-		newPaths, err = f.extendPaths(cur, connected, minDepth)
-		if err != nil {
-			return
-		}
-
-		next = append(next, newPaths...)
-	}
-
-	log.WithField(f.Ctx, "found", len(result)).Info("Finished pathfind")
+	log.WithField(f.Ctx, "found", len(s.Results)).
+		WithField("err", s.Err).
+		Info("Finished pathfind")
 	return
 }
 
