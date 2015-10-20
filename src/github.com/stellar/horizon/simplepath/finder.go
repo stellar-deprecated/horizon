@@ -80,22 +80,55 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 		}
 
 		var connected []xdr.Asset
-		q := db.AssetsWithDepthQuery{f.SqlQuery, cur.Asset, int64(minDepth)}
+		q := db.AssetsWithDepthQuery{f.SqlQuery, cur.Asset, int64(0)}
 		err = db.Select(f.Ctx, q, &connected)
-
 		if err != nil {
 			return
 		}
 
-		for _, a := range connected {
-			next = append(next, &pathNode{
-				Asset: a,
-				Tail:  cur,
-				DB:    f.SqlQuery,
-			})
+		var newPaths []*pathNode
+		newPaths, err = f.extendPaths(cur, connected, minDepth)
+		if err != nil {
+			return
 		}
+
+		next = append(next, newPaths...)
 	}
 
 	log.WithField(f.Ctx, "found", len(result)).Info("Finished pathfind")
+	return
+}
+
+func (f *Finder) hasEnoughDepth(path *pathNode, neededAmount xdr.Int64) (bool, error) {
+	_, err := path.Cost(neededAmount)
+	if err == ErrNotEnough {
+		return false, nil
+	}
+	return true, err
+}
+
+func (f *Finder) extendPaths(cur *pathNode,
+	connected []xdr.Asset,
+	neededAmount xdr.Int64) (results []*pathNode, err error) {
+
+	for _, a := range connected {
+		newPath := &pathNode{
+			Asset: a,
+			Tail:  cur,
+			DB:    f.SqlQuery,
+		}
+
+		var hasEnough bool
+		hasEnough, err = f.hasEnoughDepth(newPath, neededAmount)
+		if err != nil {
+			return
+		}
+
+		if !hasEnough {
+			continue
+		}
+
+		results = append(results, newPath)
+	}
 	return
 }

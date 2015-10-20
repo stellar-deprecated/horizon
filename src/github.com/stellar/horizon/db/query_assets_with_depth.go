@@ -40,8 +40,7 @@ func (q AssetsWithDepthQuery) Select(ctx context.Context, dest interface{}) erro
 		"coalesce(buyingissuer, '') AS issuer").
 		From("offers").
 		Where(sq.Eq{"sellingassettype": t}).
-		GroupBy("buyingassettype", "buyingassetcode", "buyingissuer").
-		Having(sq.Expr("SUM(amount) >= ?", q.NeededDepth))
+		GroupBy("buyingassettype", "buyingassetcode", "buyingissuer")
 
 	if t != xdr.AssetTypeAssetTypeNative {
 		sql = sql.Where(sq.Eq{"sellingassetcode": c, "sellingissuer": i})
