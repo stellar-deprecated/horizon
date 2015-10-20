@@ -2,7 +2,6 @@ package simplepath
 
 import (
 	"github.com/go-errors/errors"
-	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"

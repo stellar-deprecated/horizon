@@ -9,7 +9,7 @@ import (
 )
 
 // pathNode implements the paths.Path interface and represents a path
-// as a linked list pointing from destination to source.
+// as a linked list pointing from source to destination.
 type pathNode struct {
 	Asset xdr.Asset
 	Tail  *pathNode
@@ -37,6 +37,7 @@ func (p *pathNode) String() string {
 	return out.String()
 }
 
+// Destination implements paths.Path.Destination interface method
 func (p *pathNode) Destination() xdr.Asset {
 	cur := p
 	for cur.Tail != nil {
@@ -45,11 +46,13 @@ func (p *pathNode) Destination() xdr.Asset {
 	return cur.Asset
 }
 
+// Source implements paths.Path.Source interface method
 func (p *pathNode) Source() xdr.Asset {
 	// the destination for path is the head of the linked list
 	return p.Asset
 }
 
+// Path implements paths.Path.Path interface method
 func (p *pathNode) Path() []xdr.Asset {
 	path := p.Flatten()
 
@@ -62,6 +65,7 @@ func (p *pathNode) Path() []xdr.Asset {
 	return path[1 : len(path)-1]
 }
 
+// Cost implements the paths.Path.Cost interface method
 func (p *pathNode) Cost(amount xdr.Int64) (result xdr.Int64, err error) {
 	result = amount
 
@@ -83,6 +87,7 @@ func (p *pathNode) Cost(amount xdr.Int64) (result xdr.Int64, err error) {
 	return
 }
 
+// Depth returns the length of the list
 func (p *pathNode) Depth() int {
 	depth := 0
 	cur := p
@@ -95,6 +100,7 @@ func (p *pathNode) Depth() int {
 	}
 }
 
+// Flatten walks the list and returns a slice of assets
 func (p *pathNode) Flatten() (result []xdr.Asset) {
 	cur := p
 
