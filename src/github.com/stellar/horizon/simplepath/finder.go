@@ -48,37 +48,3 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 		Info("Finished pathfind")
 	return
 }
-
-func (f *Finder) hasEnoughDepth(path *pathNode, neededAmount xdr.Int64) (bool, error) {
-	_, err := path.Cost(neededAmount)
-	if err == ErrNotEnough {
-		return false, nil
-	}
-	return true, err
-}
-
-func (f *Finder) extendPaths(cur *pathNode,
-	connected []xdr.Asset,
-	neededAmount xdr.Int64) (results []*pathNode, err error) {
-
-	for _, a := range connected {
-		newPath := &pathNode{
-			Asset: a,
-			Tail:  cur,
-			DB:    f.SqlQuery,
-		}
-
-		var hasEnough bool
-		hasEnough, err = f.hasEnoughDepth(newPath, neededAmount)
-		if err != nil {
-			return
-		}
-
-		if !hasEnough {
-			continue
-		}
-
-		results = append(results, newPath)
-	}
-	return
-}
