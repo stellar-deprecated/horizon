@@ -7,16 +7,15 @@ import (
 	"golang.org/x/net/context"
 )
 
-// AssetsWithDepthQuery returns xdr.Asset records for the purposes of path finding.
-// Given the input asset type and minimum depth needed, a list of xdr.Assets is
-// returned that each have at least that minimum depth available for trade.
-type AssetsWithDepthQuery struct {
+// ConnectedAssetsQuery returns xdr.Asset records for the purposes of path
+// finding.  Given the input asset type, a list of xdr.Assets is returned that
+// each have some available trades for the input asset.
+type ConnectedAssetsQuery struct {
 	SqlQuery
 	SellingAsset xdr.Asset
-	NeededDepth  int64
 }
 
-func (q AssetsWithDepthQuery) Select(ctx context.Context, dest interface{}) error {
+func (q ConnectedAssetsQuery) Select(ctx context.Context, dest interface{}) error {
 
 	assets, ok := dest.(*[]xdr.Asset)
 	if !ok {

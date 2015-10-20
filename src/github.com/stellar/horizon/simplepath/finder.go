@@ -80,7 +80,7 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 		}
 
 		var connected []xdr.Asset
-		q := db.AssetsWithDepthQuery{f.SqlQuery, cur.Asset, int64(0)}
+		q := db.ConnectedAssetsQuery{f.SqlQuery, cur.Asset}
 		err = db.Select(f.Ctx, q, &connected)
 		if err != nil {
 			return
