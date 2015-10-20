@@ -6,9 +6,18 @@ import (
 	"time"
 )
 
-var LedgerRecordSelect sq.SelectBuilder = sq.
-	Select("hl.*").
-	From("history_ledgers hl")
+var LedgerRecordSelect sq.SelectBuilder = sq.Select(
+	"hl.id",
+	"hl.sequence",
+	"hl.importer_version",
+	"hl.ledger_hash",
+	"hl.previous_ledger_hash",
+	"hl.transaction_count",
+	"hl.operation_count",
+	"hl.closed_at",
+	"hl.created_at",
+	"hl.updated_at",
+).From("history_ledgers hl")
 
 type LedgerRecord struct {
 	HistoryRecord
