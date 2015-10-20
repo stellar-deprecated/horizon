@@ -17,6 +17,11 @@ var LedgerRecordSelect sq.SelectBuilder = sq.Select(
 	"hl.closed_at",
 	"hl.created_at",
 	"hl.updated_at",
+	"hl.total_coins",
+	"hl.fee_pool",
+	"hl.base_fee",
+	"hl.base_reserve",
+	"hl.max_tx_set_size",
 ).From("history_ledgers hl")
 
 type LedgerRecord struct {
@@ -30,4 +35,9 @@ type LedgerRecord struct {
 	ClosedAt           time.Time      `db:"closed_at"`
 	CreatedAt          time.Time      `db:"created_at"`
 	UpdatedAt          time.Time      `db:"updated_at"`
+	TotalCoins         int64          `db:"total_coins"`
+	FeePool            int64          `db:"fee_pool"`
+	BaseFee            int32          `db:"base_fee"`
+	BaseReserve        int32          `db:"base_reserve"`
+	MaxTxSetSize       int32          `db:"max_tx_set_size"`
 }

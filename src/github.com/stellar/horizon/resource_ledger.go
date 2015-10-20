@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/jagregory/halgo"
+	"github.com/stellar/go-stellar-base/amount"
+	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 )
@@ -20,6 +22,11 @@ type LedgerResource struct {
 	TransactionCount int32     `json:"transaction_count"`
 	OperationCount   int32     `json:"operation_count"`
 	ClosedAt         time.Time `json:"closed_at"`
+	TotalCoins       string    `json:"total_coins"`
+	FeePool          string    `json:"fee_pool"`
+	BaseFee          int32     `json:"base_fee"`
+	BaseReserve      string    `json:"base_reserve"`
+	MaxTxSetSize     int32     `json:"max_tx_set_size"`
 }
 
 // NewLedgerResource creates a new resource from a db.LedgerRecord
@@ -39,6 +46,11 @@ func NewLedgerResource(in db.LedgerRecord) LedgerResource {
 		TransactionCount: in.TransactionCount,
 		OperationCount:   in.OperationCount,
 		ClosedAt:         in.ClosedAt,
+		TotalCoins:       amount.String(xdr.Int64(in.TotalCoins)),
+		FeePool:          amount.String(xdr.Int64(in.FeePool)),
+		BaseFee:          in.BaseFee,
+		BaseReserve:      amount.String(xdr.Int64(in.BaseReserve)),
+		MaxTxSetSize:     in.MaxTxSetSize,
 	}
 }
 
