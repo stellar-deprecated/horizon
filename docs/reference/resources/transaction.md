@@ -18,7 +18,6 @@ To learn more about the concept of transactions in the Stellar network, take a l
 | ledger           | number | Sequence number of the ledger in which this transaction was applied.       |
 | account          | string |                                                                                                                                |
 | account_sequence | number |                                                                                                                                |
-| max_fee          | number | The maximum fee willing to be paid by the transaction creator in lumens.                          |
 | fee_paid         | number | The fee paid by the source account of this transaction when the transaction was applied to the ledger.                         |
 | operation_count  | number | The number of operations that are contained within this transaction.                                                           |
 | result_code      | number | The numeric result code for this transaction                                                                                   |
@@ -75,7 +74,6 @@ To learn more about the concept of transactions in the Stellar network, take a l
   "created_at": "2015-09-24T10:07:09Z",
   "account": "GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
   "account_sequence": 279172874343,
-  "max_fee": 0,
   "fee_paid": 0,
   "operation_count": 1,
   "result_code": 0,

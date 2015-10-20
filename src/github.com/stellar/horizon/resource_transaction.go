@@ -22,7 +22,6 @@ type TransactionResource struct {
 	LedgerCloseTime time.Time `json:"created_at"`
 	Account         string    `json:"source_account"`
 	AccountSequence int64     `json:"source_account_sequence"`
-	MaxFee          int32     `json:"max_fee"`
 	FeePaid         int32     `json:"fee_paid"`
 	OperationCount  int32     `json:"operation_count"`
 	EnvelopeXdr     string    `json:"envelope_xdr"`
@@ -62,7 +61,6 @@ func NewTransactionResource(tx db.TransactionRecord) TransactionResource {
 		LedgerCloseTime: tx.LedgerCloseTime,
 		Account:         tx.Account,
 		AccountSequence: tx.AccountSequence,
-		MaxFee:          tx.MaxFee,
 		FeePaid:         tx.FeePaid,
 		OperationCount:  tx.OperationCount,
 		EnvelopeXdr:     tx.TxEnvelope,
