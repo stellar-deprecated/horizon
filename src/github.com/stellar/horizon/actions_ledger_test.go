@@ -19,6 +19,7 @@ func TestLedgerActions(t *testing.T) {
 		Convey("GET /ledgers/1", func() {
 			w := rh.Get("/ledgers/1", test.RequestHelperNoop)
 
+			t.Log(w.Body.String())
 			So(w.Code, ShouldEqual, 200)
 
 			var result LedgerResource

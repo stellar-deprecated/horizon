@@ -15,7 +15,6 @@ var TransactionRecordSelect sq.SelectBuilder = sq.
 		"ht.application_order, " +
 		"ht.account, " +
 		"ht.account_sequence, " +
-		"ht.max_fee, " +
 		"ht.fee_paid, " +
 		"ht.operation_count, " +
 		"ht.tx_envelope, " +
@@ -41,7 +40,6 @@ type TransactionRecord struct {
 	ApplicationOrder int32          `db:"application_order"`
 	Account          string         `db:"account"`
 	AccountSequence  int64          `db:"account_sequence"`
-	MaxFee           int32          `db:"max_fee"`
 	FeePaid          int32          `db:"fee_paid"`
 	OperationCount   int32          `db:"operation_count"`
 	TxEnvelope       string         `db:"tx_envelope"`
