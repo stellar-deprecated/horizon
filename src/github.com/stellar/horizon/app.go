@@ -12,6 +12,7 @@ import (
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/pump"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/txsub"
@@ -40,6 +41,7 @@ type App struct {
 	networkPassphrase string
 	submitter         *txsub.System
 	pump              *pump.Pump
+	paths             paths.Finder
 
 	// metrics
 	metrics                metrics.Registry

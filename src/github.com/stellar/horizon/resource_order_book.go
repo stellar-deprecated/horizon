@@ -60,7 +60,7 @@ func NewOrderBookSummaryResource(query *db.OrderBookSummaryQuery, summary db.Ord
 	return
 }
 
-func newPriceLevelResources(records []db.PriceLevelRecord) []PriceLevelResource {
+func newPriceLevelResources(records []db.OrderBookSummaryPriceLevelRecord) []PriceLevelResource {
 	result := make([]PriceLevelResource, len(records))
 
 	for i, rec := range records {

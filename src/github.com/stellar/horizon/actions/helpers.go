@@ -4,7 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-errors/errors"
+	"github.com/stellar/go-stellar-base/amount"
+	"github.com/stellar/go-stellar-base/strkey"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
@@ -69,7 +70,7 @@ func (base *Base) GetInt64(name string) int64 {
 	asI64, err := strconv.ParseInt(asStr, 10, 64)
 
 	if err != nil {
-		base.Err = errors.Wrap(err, 1)
+		base.SetInvalidField(name, err)
 		return 0
 	}
 
@@ -97,7 +98,7 @@ func (base *Base) GetInt32(name string) int32 {
 	asI64, err := strconv.ParseInt(asStr, 10, 32)
 
 	if err != nil {
-		base.Err = errors.Wrap(err, 1)
+		base.SetInvalidField(name, err)
 		return 0
 	}
 
@@ -138,6 +139,58 @@ func (base *Base) GetPageQuery() db.PageQuery {
 	return r
 }
 
+func (base *Base) GetAddress(name string) (result string) {
+	if base.Err != nil {
+		return
+	}
+
+	result = base.GetString(name)
+
+	_, err := strkey.Decode(strkey.VersionByteAccountID, result)
+
+	if err != nil {
+		base.SetInvalidField(name, err)
+	}
+
+	return result
+}
+
+func (base *Base) GetAccountID(name string) (result xdr.AccountId) {
+	raw, err := strkey.Decode(strkey.VersionByteAccountID, base.GetString(name))
+
+	if base.Err != nil {
+		return
+	}
+
+	if err != nil {
+		base.SetInvalidField(name, err)
+		return
+	}
+
+	var key xdr.Uint256
+	copy(key[:], raw)
+
+	result, err = xdr.NewAccountId(xdr.CryptoKeyTypeKeyTypeEd25519, key)
+	if err != nil {
+		base.SetInvalidField(name, err)
+		return
+	}
+
+	return
+}
+
+func (base *Base) GetAmount(name string) (result xdr.Int64) {
+	var err error
+	result, err = amount.Parse(base.GetString("destination_amount"))
+
+	if err != nil {
+		base.SetInvalidField(name, err)
+		return
+	}
+
+	return
+}
+
 // GetAssetType is a helper that returns a xdr.AssetType by reading a string
 func (base *Base) GetAssetType(name string) xdr.AssetType {
 	if base.Err != nil {
@@ -151,7 +204,7 @@ func (base *Base) GetAssetType(name string) xdr.AssetType {
 	}
 
 	if err != nil {
-		base.Err = err
+		base.SetInvalidField(name, err)
 	}
 
 	return r
@@ -211,6 +264,59 @@ InvalidOrderBook:
 	}
 
 	return
+}
+
+// GetAsset
+func (base *Base) GetAsset(prefix string) (result xdr.Asset) {
+	if base.Err != nil {
+		return
+	}
+	var value interface{}
+
+	t := base.GetAssetType(prefix + "asset_type")
+
+	switch t {
+	case xdr.AssetTypeAssetTypeCreditAlphanum4:
+		a := xdr.AssetAlphaNum4{}
+		a.Issuer = base.GetAccountID(prefix + "asset_issuer")
+
+		c := base.GetString(prefix + "asset_code")
+		if len(c) > len(a.AssetCode) {
+			base.SetInvalidField(prefix+"asset_code", nil)
+			return
+		}
+
+		copy(a.AssetCode[:len(c)], []byte(c))
+		value = a
+	case xdr.AssetTypeAssetTypeCreditAlphanum12:
+		a := xdr.AssetAlphaNum12{}
+		a.Issuer = base.GetAccountID(prefix + "asset_issuer")
+
+		c := base.GetString(prefix + "asset_code")
+		if len(c) > len(a.AssetCode) {
+			base.SetInvalidField(prefix+"asset_code", nil)
+			return
+		}
+
+		copy(a.AssetCode[:len(c)], []byte(c))
+		value = a
+	}
+
+	result, err := xdr.NewAsset(t, value)
+	if err != nil {
+		panic(err)
+	}
+	return
+}
+
+func (base *Base) SetInvalidField(name string, reason error) {
+	br := problem.BadRequest
+
+	br.Extras = map[string]interface{}{}
+	br.Extras["invalid_field"] = name
+	br.Extras["reason"] = reason.Error()
+
+	base.Err = &br
 }
 
 // Path returns the current action's path, as determined by the http.Request of

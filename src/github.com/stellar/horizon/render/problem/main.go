@@ -174,4 +174,13 @@ var (
 			"this request",
 		Status: http.StatusNotAcceptable,
 	}
+
+	// BadRequest is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	BadRequest = P{
+		Type:   "bad_request",
+		Title:  "Bad Request",
+		Status: http.StatusBadRequest,
+		Detail: "The request you sent was invalid in some way",
+	}
 )
