@@ -28,6 +28,10 @@ type System struct {
 		// submissions to stellar-core
 		SubmissionTimer metrics.Timer
 
+		// BufferedSubmissionGauge tracks the count of submissions buffered
+		// behind this system's SubmissionQueue
+		BufferedSubmissionsGauge metrics.Gauge
+
 		// OpenSubmissionsGauge tracks the count of "open" submissions (i.e.
 		// submissions whose transactions haven't been confirmed successful or failed
 		OpenSubmissionsGauge metrics.Gauge
@@ -200,9 +204,9 @@ func (sys *System) Tick(ctx context.Context) {
 	if err != nil {
 		log.WithStack(ctx, err).Error(err)
 	}
-	stillBuffered := sys.SubmissionQueue.Size()
 
-	sys.Metrics.OpenSubmissionsGauge.Update(int64(stillOpen + stillBuffered))
+	sys.Metrics.OpenSubmissionsGauge.Update(int64(stillOpen))
+	sys.Metrics.BufferedSubmissionsGauge.Update(int64(sys.SubmissionQueue.Size()))
 }
 
 func (sys *System) Init(ctx context.Context) {
@@ -211,6 +215,7 @@ func (sys *System) Init(ctx context.Context) {
 		sys.Metrics.SuccessfulSubmissionsMeter = metrics.NewMeter()
 		sys.Metrics.SubmissionTimer = metrics.NewTimer()
 		sys.Metrics.OpenSubmissionsGauge = metrics.NewGauge()
+		sys.Metrics.BufferedSubmissionsGauge = metrics.NewGauge()
 
 		if sys.SubmissionTimeout == 0 {
 			sys.SubmissionTimeout = 1 * time.Minute
