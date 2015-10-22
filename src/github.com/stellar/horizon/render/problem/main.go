@@ -109,11 +109,13 @@ func renderErr(ctx context.Context, w http.ResponseWriter, err error) {
 
 	p, ok := errToProblemMap[origErr]
 
+	// If this error is not a registered error
+	// log it and replace it with a 500 error
 	if !ok {
+		log.WithStack(ctx, err).Error(err)
 		p = ServerError
 	}
 
-	log.WithStack(ctx, err).Error(err)
 	render(ctx, w, p)
 }
 
