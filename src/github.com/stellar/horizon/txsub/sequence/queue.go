@@ -25,7 +25,7 @@ type Queue struct {
 func NewQueue() *Queue {
 	result := &Queue{
 		lastActiveAt: time.Now(),
-		timeout:      1 * time.Minute,
+		timeout:      10 * time.Second,
 		queue:        nil,
 	}
 
