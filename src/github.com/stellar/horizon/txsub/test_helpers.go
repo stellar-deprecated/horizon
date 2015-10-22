@@ -1,5 +1,11 @@
 package txsub
 
+// This file provides mock implementations for the txsub interfaces
+// which are useful in a testing context.
+//
+// NOTE:  this file is not a test file so that other packages may import
+// txsub and use these mocks in their own tests
+
 import (
 	"golang.org/x/net/context"
 )

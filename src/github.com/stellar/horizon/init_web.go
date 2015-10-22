@@ -13,6 +13,7 @@ import (
 	"github.com/sebest/xff"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/problem"
+	"github.com/stellar/horizon/txsub/sequence"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
 )
@@ -39,6 +40,7 @@ func initWeb(app *App) {
 
 	// register problems
 	problem.RegisterError(db.ErrNoResults, problem.NotFound)
+	problem.RegisterError(sequence.ErrNoMoreRoom, problem.ServerOverCapacity)
 }
 
 // initWebMiddleware installs the middleware stack used for horizon onto the

@@ -183,4 +183,14 @@ var (
 		Status: http.StatusBadRequest,
 		Detail: "The request you sent was invalid in some way",
 	}
+
+	// ServerOverCapacity is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	ServerOverCapacity = P{
+		Type:   "server_over_capacity",
+		Title:  "Server Over Capacity",
+		Status: http.StatusServiceUnavailable,
+		Detail: "This horizon server is currently overloaded.  Please wait for " +
+			"several minutes before trying your request again.",
+	}
 )
