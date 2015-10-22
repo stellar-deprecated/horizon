@@ -5,14 +5,13 @@ import (
 	"time"
 )
 
-// Queue manages the submission queue for a single source account.  It queues transactions
-// for submission when it can detect that a given transaction is guaranteed to produce a tx_BAD_SEQ
-// error.
+// Queue manages the submission queue for a single source account. The
+// transaction system uses Push to enqueue submissions for given sequence
+// numbers.
 //
-// Queue maintains a priority queue of pending submissions, and when updated (via the Update() method)
-// with the current sequence number of the account being managed, queued submissions that can be acted upon
-// will be unblocked.
-//
+// Queue maintains a priority queue of pending submissions, and when updated
+// (via the Update() method) with the current sequence number of the account
+// being managed, queued submissions that can be acted upon will be unblocked.
 //
 type Queue struct {
 	lastActiveAt time.Time
@@ -39,8 +38,11 @@ func (q *Queue) Size() int {
 	return len(q.queue)
 }
 
-// Push registers a channel on the queue, to be triggered when the sequence
-// number provided is crossed.  Push does not perform any triggering (which
+// Push enqueues the intent to submit a transaction at the provided sequence
+// number and returns a channel that will emit when it is safe for the client
+// to do so.
+//
+// Push does not perform any triggering (which
 // occurs in Update(), even if the current sequence number for this queue is
 // the same as the provided sequence, to keep internal complexity much lower.
 // Given that, the recommended usage pattern is:
@@ -79,8 +81,8 @@ func (q *Queue) Update(sequence uint64) {
 			break
 		}
 
-		// since this entry is unlocked (i.e. it's sequence is the next available or in the past
-		// we can remove it an mark the queue as changed
+		// since this entry is unlocked (i.e. it's sequence is the next available
+		// or in the past we can remove it an mark the queue as changed
 		q.pop()
 		wasChanged = true
 
@@ -132,8 +134,8 @@ type item struct {
 	Chan     chan error
 }
 
-// pqueue is a priority queue used by Queue to manage
-// buffered submissions
+// pqueue is a priority queue used by Queue to manage buffered submissions.  It
+// implements heap.Interface.
 type pqueue []item
 
 func (pq pqueue) Len() int { return len(pq) }
