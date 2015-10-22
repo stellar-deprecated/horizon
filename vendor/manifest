@@ -169,12 +169,6 @@
 			"path": "/xdr3"
 		},
 		{
-			"importpath": "github.com/oleiade/lane",
-			"repository": "https://github.com/oleiade/lane",
-			"revision": "e2df44de3dbdd0074d315d1fa74f15a090802b45",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/rcrowley/go-metrics",
 			"repository": "https://github.com/rcrowley/go-metrics",
 			"revision": "a5cfc242a56ba7fa70b785f678d6214837bf93b9",

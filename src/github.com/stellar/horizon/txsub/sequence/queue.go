@@ -1,7 +1,7 @@
 package sequence
 
 import (
-	"github.com/oleiade/lane"
+	"container/heap"
 	"time"
 )
 
@@ -18,21 +18,25 @@ type Queue struct {
 	lastActiveAt time.Time
 	timeout      time.Duration
 	nextSequence uint64
-	queue        *lane.PQueue
+	queue        pqueue
 }
 
 // NewQueue creates a new *Queue
 func NewQueue() *Queue {
-	return &Queue{
+	result := &Queue{
 		lastActiveAt: time.Now(),
 		timeout:      1 * time.Minute,
-		queue:        lane.NewPQueue(lane.MINPQ),
+		queue:        nil,
 	}
+
+	heap.Init(&result.queue)
+
+	return result
 }
 
 // Size returns the count of currently buffered submissions in the queue.
 func (q *Queue) Size() int {
-	return q.queue.Size()
+	return len(q.queue)
 }
 
 // Push registers a channel on the queue, to be triggered when the sequence
@@ -47,7 +51,7 @@ func (q *Queue) Size() int {
 //		possible
 func (q *Queue) Push(sequence uint64) <-chan error {
 	ch := make(chan error, 1)
-	q.queue.Push(ch, int(sequence))
+	heap.Push(&q.queue, item{sequence, ch})
 	return ch
 }
 
@@ -77,7 +81,7 @@ func (q *Queue) Update(sequence uint64) {
 
 		// since this entry is unlocked (i.e. it's sequence is the next available or in the past
 		// we can remove it an mark the queue as changed
-		q.queue.Pop()
+		q.pop()
 		wasChanged = true
 
 		if hseq < q.nextSequence {
@@ -86,7 +90,6 @@ func (q *Queue) Update(sequence uint64) {
 		} else if hseq == q.nextSequence {
 			ch <- nil
 			close(ch)
-
 		}
 	}
 
@@ -99,31 +102,58 @@ func (q *Queue) Update(sequence uint64) {
 	// if the queue wasn't changed, see if it is too old, clear
 	// it and make room for other's
 	if time.Since(q.lastActiveAt) > q.timeout {
-		ch, _ := q.pop()
-		for ch != nil {
+		for q.Size() > 0 {
+			ch, _ := q.pop()
 			ch <- ErrTimeout
 			close(ch)
-			ch, _ = q.pop()
 		}
 	}
 }
 
 // helper function for interacting with the priority queue
 func (q *Queue) head() (chan error, uint64) {
-	v, s := q.queue.Head()
-	if v == nil {
-		return nil, uint64(s)
+	if len(q.queue) == 0 {
+		return nil, uint64(0)
 	}
 
-	return v.(chan error), uint64(s)
+	return q.queue[0].Chan, q.queue[0].Sequence
 }
 
 // helper function for interacting with the priority queue
 func (q *Queue) pop() (chan error, uint64) {
-	v, s := q.queue.Pop()
-	if v == nil {
-		return nil, uint64(s)
-	}
+	i := heap.Pop(&q.queue).(item)
 
-	return v.(chan error), uint64(s)
+	return i.Chan, i.Sequence
+}
+
+// item is a element of the priority queue
+type item struct {
+	Sequence uint64
+	Chan     chan error
+}
+
+// pqueue is a priority queue used by Queue to manage
+// buffered submissions
+type pqueue []item
+
+func (pq pqueue) Len() int { return len(pq) }
+
+func (pq pqueue) Less(i, j int) bool {
+	return pq[i].Sequence < pq[j].Sequence
+}
+
+func (pq pqueue) Swap(i, j int) {
+	pq[i], pq[j] = pq[j], pq[i]
+}
+
+func (pq *pqueue) Push(x interface{}) {
+	*pq = append(*pq, x.(item))
+}
+
+func (pq *pqueue) Pop() interface{} {
+	old := *pq
+	n := len(old)
+	result := old[n-1]
+	*pq = old[0 : n-1]
+	return result
 }
