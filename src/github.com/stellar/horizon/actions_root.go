@@ -8,8 +8,10 @@ import (
 // RootResource is the initial map of links into the api.
 type RootResource struct {
 	halgo.Links
-	HorizonVersion     string `json:"horizon_version"`
-	StellarCoreVersion string `json:"core_version"`
+	HorizonVersion      string `json:"horizon_version"`
+	StellarCoreVersion  string `json:"core_version"`
+	HorizonSequence     int32  `json:"horizon_latest_ledger"`
+	StellarCoreSequence int32  `json:"core_latest_ledger"`
 }
 
 type RootAction struct {
@@ -17,9 +19,13 @@ type RootAction struct {
 }
 
 func (action *RootAction) JSON() {
+	action.App.UpdateLedgerState()
+
 	var response = RootResource{
-		HorizonVersion:     action.App.horizonVersion,
-		StellarCoreVersion: action.App.coreVersion,
+		HorizonVersion:      action.App.horizonVersion,
+		HorizonSequence:     action.App.latestLedgerState.HorizonSequence,
+		StellarCoreVersion:  action.App.coreVersion,
+		StellarCoreSequence: action.App.latestLedgerState.StellarCoreSequence,
 		Links: halgo.Links{}.
 			Self("/").
 			Link("account", "/accounts/{address}").

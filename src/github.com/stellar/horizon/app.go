@@ -50,6 +50,9 @@ type App struct {
 	horizonConnGauge       metrics.Gauge
 	stellarCoreConnGauge   metrics.Gauge
 	goroutineGauge         metrics.Gauge
+
+	// cached state
+	latestLedgerState db.LedgerState
 }
 
 func SetVersion(v string) {
@@ -134,23 +137,30 @@ func (a *App) CoreQuery() db.SqlQuery {
 
 // UpdateMetrics triggers a refresh of several metrics gauges, such as open
 // db connections and ledger state
-func (a *App) UpdateMetrics(ctx context.Context) {
-
-	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
-
+func (a *App) UpdateLedgerState() {
 	var ls db.LedgerState
 	q := db.LedgerStateQuery{a.HistoryQuery(), a.CoreQuery()}
-	err := db.Get(ctx, q, &ls)
+	err := db.Get(a.ctx, q, &ls)
 
 	if err != nil {
-		log.WithStack(ctx, err).
+		log.WithStack(a.ctx, err).
 			WithField("err", err.Error()).
 			Error("failed to load ledger state")
 		return
 	}
 
-	a.horizonLedgerGauge.Update(int64(ls.HorizonSequence))
-	a.stellarCoreLedgerGauge.Update(int64(ls.StellarCoreSequence))
+	a.latestLedgerState = ls
+}
+
+// UpdateMetrics triggers a refresh of several metrics gauges, such as open
+// db connections and ledger state
+func (a *App) UpdateMetrics(ctx context.Context) {
+	a.UpdateLedgerState()
+
+	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
+
+	a.horizonLedgerGauge.Update(int64(a.latestLedgerState.HorizonSequence))
+	a.stellarCoreLedgerGauge.Update(int64(a.latestLedgerState.StellarCoreSequence))
 
 	a.horizonConnGauge.Update(int64(a.historyDb.Stats().OpenConnections))
 	a.stellarCoreConnGauge.Update(int64(a.coreDb.Stats().OpenConnections))
