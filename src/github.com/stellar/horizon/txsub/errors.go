@@ -8,11 +8,10 @@ import (
 )
 
 var (
-	ErrNoResults  = errors.New("No result found")
-	ErrNoMoreRoom = errors.New("queue full")
-	ErrTimeout    = errors.New("timeout")
-	ErrConflict   = errors.New("conflict")
-	ErrCanceled   = errors.New("canceled")
+	ErrNoResults = errors.New("No result found")
+	ErrTimeout   = errors.New("timeout")
+	ErrConflict  = errors.New("conflict")
+	ErrCanceled  = errors.New("canceled")
 
 	// ErrBadSequence is a canned error response for transactions whose sequence
 	// number is wrong.

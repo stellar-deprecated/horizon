@@ -40,5 +40,14 @@ func TestManager(t *testing.T) {
 			So(<-results[2], ShouldEqual, nil)
 			So(len(results[1]), ShouldEqual, 0)
 		})
+
+		Convey("Push returns ErrNoMoreRoom when fill", func() {
+			for i := 0; i < mgr.MaxSize; i++ {
+				mgr.Push("1", 2)
+			}
+
+			So(mgr.Size(), ShouldEqual, 1024)
+			So(<-mgr.Push("1", 2), ShouldEqual, ErrNoMoreRoom)
+		})
 	})
 }

@@ -60,7 +60,7 @@ func TestQueue(t *testing.T) {
 			queue.Update(0)
 
 			So(queue.Size(), ShouldEqual, 0)
-			So(<-result, ShouldEqual, ErrTimeout)
+			So(<-result, ShouldEqual, ErrBadSequence)
 		})
 	})
 }

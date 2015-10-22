@@ -104,7 +104,7 @@ func (q *Queue) Update(sequence uint64) {
 	if time.Since(q.lastActiveAt) > q.timeout {
 		for q.Size() > 0 {
 			ch, _ := q.pop()
-			ch <- ErrTimeout
+			ch <- ErrBadSequence
 			close(ch)
 		}
 	}
