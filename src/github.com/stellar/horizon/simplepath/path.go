@@ -111,8 +111,6 @@ func (p *pathNode) Flatten() (result []xdr.Asset) {
 		result = append(result, cur.Asset)
 		cur = cur.Tail
 	}
-
-	return
 }
 
 func (p *pathNode) OrderBook() *orderBook {

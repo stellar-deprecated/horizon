@@ -10,6 +10,9 @@ import (
 	"math/big"
 )
 
+// ErrNotEnough represents an error that occurs when pricing a trade on an
+// orderbook.  This error occurs when the orderbook cannot fulfill the
+// requested amount.
 var ErrNotEnough = errors.New("not enough depth")
 
 type orderBook struct {
@@ -61,8 +64,8 @@ func (ob *orderBook) Cost(source xdr.Asset, sourceAmount xdr.Int64) (result xdr.
 	defer rows.Close()
 
 	var (
-		needed int64 = int64(sourceAmount)
-		cost   int64 = 0
+		needed = int64(sourceAmount)
+		cost   int64
 	)
 
 	for rows.Next() {

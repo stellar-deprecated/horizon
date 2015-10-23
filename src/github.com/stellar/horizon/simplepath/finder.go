@@ -21,6 +21,7 @@ type Finder struct {
 // ensure the struct is paths.Finder compliant
 var _ paths.Finder = &Finder{}
 
+// Find performs a path find with the provided query.
 func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 	log.WithField(f.Ctx, "source_assets", q.SourceAssets).
 		WithField("destination_asset", q.DestinationAsset).
@@ -40,7 +41,7 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 	s.Init()
 	s.Run()
 
-	return s.Results, s.Err
+	result, err = s.Results, s.Err
 
 	log.WithField(f.Ctx, "found", len(s.Results)).
 		WithField("err", s.Err).
