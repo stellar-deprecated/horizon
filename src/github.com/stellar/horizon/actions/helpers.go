@@ -139,6 +139,8 @@ func (base *Base) GetPageQuery() db.PageQuery {
 	return r
 }
 
+// GetAddress retrieves a stellar address.  It confirms the value loaded is a
+// valid stellar address, setting an invalid field error if it is not.
 func (base *Base) GetAddress(name string) (result string) {
 	if base.Err != nil {
 		return
@@ -155,6 +157,8 @@ func (base *Base) GetAddress(name string) (result string) {
 	return result
 }
 
+// GetAccountID retireves an xdr.AccountID by attempting to decode a stellar
+// address at the provided name.
 func (base *Base) GetAccountID(name string) (result xdr.AccountId) {
 	raw, err := strkey.Decode(strkey.VersionByteAccountID, base.GetString(name))
 

@@ -8,6 +8,7 @@ import (
 	"github.com/stellar/horizon/render/hal"
 )
 
+// PathIndexAction provides path finding
 type PathIndexAction struct {
 	Action
 	Query     paths.Query
@@ -15,6 +16,7 @@ type PathIndexAction struct {
 	Resources []interface{}
 }
 
+// JSON implements actions.JSON
 func (action *PathIndexAction) JSON() {
 	action.Do(action.LoadQuery, action.LoadRecords, action.LoadResources)
 
@@ -27,6 +29,7 @@ func (action *PathIndexAction) JSON() {
 	})
 }
 
+// LoadQuery builds the path finding query based upon the request parameters.
 func (action *PathIndexAction) LoadQuery() {
 	action.Query.DestinationAmount = action.GetAmount("destination_amount")
 	action.Query.DestinationAddress = action.GetAddress("destination_account")
@@ -45,10 +48,12 @@ func (action *PathIndexAction) LoadQuery() {
 	action.Err = db.Select(action.Ctx, q, &action.Query.SourceAssets)
 }
 
+// LoadRecords performs the path find and populates action.Records
 func (action *PathIndexAction) LoadRecords() {
 	action.Records, action.Err = action.App.paths.Find(action.Query)
 }
 
+// LoadResources converts the found records into JSON resources
 func (action *PathIndexAction) LoadResources() {
 	action.Resources = make([]interface{}, len(action.Records))
 
@@ -62,6 +67,7 @@ func (action *PathIndexAction) LoadResources() {
 	}
 }
 
+// PathResource represents the JSON resource for a single payment path.
 type PathResource struct {
 	SourceAssetType        string              `json:"source_asset_type"`
 	SourceAssetCode        string              `json:"source_asset_code,omitempty"`
@@ -74,12 +80,15 @@ type PathResource struct {
 	Path                   []PathAssetResource `json:"path"`
 }
 
+// PathAssetResource represents a single hop in a payment path
 type PathAssetResource struct {
 	Type   string `json:"asset_type"`
 	Code   string `json:"asset_code,omitempty"`
 	Issuer string `json:"asset_issuer,omitempty"`
 }
 
+// Populate fills out the fields of the receiver based upon the provided
+// Query and Path.
 func (pr *PathResource) Populate(q paths.Query, p paths.Path) error {
 	var err error
 
