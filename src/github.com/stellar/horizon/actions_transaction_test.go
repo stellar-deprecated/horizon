@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/txsub"
+	"github.com/stellar/horizon/txsub/sequence"
+	"net/url"
 	"testing"
 )
 
@@ -67,6 +70,34 @@ func TestTransactionActions(t *testing.T) {
 			w = rh.Get("/accounts/GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU/transactions", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 2)
+		})
+
+		Convey("POST /transactions", func() {
+			Convey("503 response when Sequence buffer is full", func() {
+				app.submitter.Results = &txsub.MockResultProvider{
+					Results: []txsub.Result{
+						{Err: sequence.ErrNoMoreRoom},
+					},
+				}
+
+				w := rh.Post(
+					"/transactions",
+					url.Values{"tx": []string{"AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAAZAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAECDzqvkQBQoNAJifPRXDoLhvtycT3lFPCQ51gkdsFHaBNWw05S/VhW0Xgkr0CBPE4NaFV2Kmcs3ZwLmib4TRrML"}},
+					test.RequestHelperNoop,
+				)
+				So(w.Code, ShouldEqual, 503)
+
+			})
+
+			Convey("200 response for existing transaction", func() {
+				w := rh.Post(
+					"/transactions",
+					url.Values{"tx": []string{"AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAAZAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAECDzqvkQBQoNAJifPRXDoLhvtycT3lFPCQ51gkdsFHaBNWw05S/VhW0Xgkr0CBPE4NaFV2Kmcs3ZwLmib4TRrML"}},
+					test.RequestHelperNoop,
+				)
+				So(w.Code, ShouldEqual, 200)
+
+			})
 		})
 
 	})

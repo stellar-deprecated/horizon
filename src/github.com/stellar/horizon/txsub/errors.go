@@ -9,6 +9,14 @@ import (
 
 var (
 	ErrNoResults = errors.New("No result found")
+	ErrCanceled  = errors.New("canceled")
+
+	// ErrBadSequence is a canned error response for transactions whose sequence
+	// number is wrong.
+	ErrBadSequence = &FailedTransactionError{"AAAAAAAAAAD////7AAAAAA=="}
+	// ErrNoAccount is returned when the source account for the transaction
+	// cannot be found in the database
+	ErrNoAccount = &FailedTransactionError{"AAAAAAAAAAD////4AAAAAA=="}
 )
 
 // FailedTransactionError represent an error that occurred because

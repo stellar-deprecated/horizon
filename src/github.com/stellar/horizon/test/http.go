@@ -4,10 +4,13 @@ import (
 	"github.com/zenazn/goji/web"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 )
 
 type RequestHelper interface {
 	Get(string, func(*http.Request)) *httptest.ResponseRecorder
+	Post(string, url.Values, func(*http.Request)) *httptest.ResponseRecorder
 }
 
 type requestHelper struct {
@@ -44,6 +47,26 @@ func (r *requestHelper) Get(
 ) *httptest.ResponseRecorder {
 
 	req, _ := http.NewRequest("GET", path, nil)
+	return r.Execute(req, requestModFn)
+}
+
+func (r *requestHelper) Post(
+	path string,
+	form url.Values,
+	requestModFn func(*http.Request),
+) *httptest.ResponseRecorder {
+
+	body := strings.NewReader(form.Encode())
+	req, _ := http.NewRequest("POST", path, body)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	return r.Execute(req, requestModFn)
+}
+
+func (r *requestHelper) Execute(
+	req *http.Request,
+	requestModFn func(*http.Request),
+) *httptest.ResponseRecorder {
+
 	req.RemoteAddr = "127.0.0.1"
 	requestModFn(req)
 
@@ -54,4 +77,5 @@ func (r *requestHelper) Get(
 
 	r.router.ServeHTTPC(c, w, req)
 	return w
+
 }

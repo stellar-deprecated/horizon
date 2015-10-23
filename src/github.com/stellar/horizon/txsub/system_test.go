@@ -8,6 +8,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/txsub/sequence"
 )
 
 func TestTxsub(t *testing.T) {
@@ -15,24 +16,31 @@ func TestTxsub(t *testing.T) {
 		ctx := test.Context()
 		submitter := &MockSubmitter{}
 		results := &MockResultProvider{}
+		sequences := &MockSequenceProvider{}
 
 		system := &System{
 			Pending:           NewDefaultSubmissionList(),
 			Submitter:         submitter,
 			Results:           results,
+			Sequences:         sequences,
+			SubmissionQueue:   sequence.NewManager(),
 			NetworkPassphrase: build.TestNetwork.Passphrase,
 		}
 
 		noResults := Result{Err: ErrNoResults}
 		successTx := Result{
-			Hash:           "c492d87c4642815dfb3c7dcce01af4effd162b031064098a0d786b6e0a00fd74",
+			Hash:           "2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d",
 			LedgerSequence: 2,
-			EnvelopeXDR:    "AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAACgAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAEAKZ7IPj/46PuWU6ZOtyMosctNAkXRNX9WCAI5RnfRk+AyxDLoDZP/9l3NvsxQtWj9juQOuoBlFLnWu8intgxQA",
-			ResultXDR:      "xJLYfEZCgV37PH3M4Br07/0WKwMQZAmKDXhrbgoA/XQAAAAAAAAACgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA==",
+			EnvelopeXDR:    "AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAAZAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAECDzqvkQBQoNAJifPRXDoLhvtycT3lFPCQ51gkdsFHaBNWw05S/VhW0Xgkr0CBPE4NaFV2Kmcs3ZwLmib4TRrML",
+			ResultXDR:      "I3Tpk0m57326ml2zM5t4/ajzR3exrzO6RorVwN+UbU0AAAAAAAAAZAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA==",
 		}
 
 		badSeq := SubmissionResult{
-			Err: &FailedTransactionError{"AAAAAAAAAAD////7AAAAAA=="},
+			Err: ErrBadSequence,
+		}
+
+		sequences.Results = map[string]uint64{
+			"GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H": 0,
 		}
 
 		Convey("Submit", func() {

@@ -109,11 +109,13 @@ func renderErr(ctx context.Context, w http.ResponseWriter, err error) {
 
 	p, ok := errToProblemMap[origErr]
 
+	// If this error is not a registered error
+	// log it and replace it with a 500 error
 	if !ok {
+		log.WithStack(ctx, err).Error(err)
 		p = ServerError
 	}
 
-	log.WithStack(ctx, err).Error(err)
 	render(ctx, w, p)
 }
 
@@ -182,5 +184,15 @@ var (
 		Title:  "Bad Request",
 		Status: http.StatusBadRequest,
 		Detail: "The request you sent was invalid in some way",
+	}
+
+	// ServerOverCapacity is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	ServerOverCapacity = P{
+		Type:   "server_over_capacity",
+		Title:  "Server Over Capacity",
+		Status: http.StatusServiceUnavailable,
+		Detail: "This horizon server is currently overloaded.  Please wait for " +
+			"several minutes before trying your request again.",
 	}
 )
