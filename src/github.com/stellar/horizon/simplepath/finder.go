@@ -41,7 +41,7 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 	s.Init()
 	s.Run()
 
-	results, err = s.Results, s.Err
+	result, err = s.Results, s.Err
 
 	log.WithField(f.Ctx, "found", len(s.Results)).
 		WithField("err", s.Err).
