@@ -51,5 +51,4 @@ func (action *FriendbotAction) LoadAddress() {
 
 func (action *FriendbotAction) LoadResult() {
 	action.Result = action.App.friendbot.Pay(action.Ctx, action.Address)
-	action.Err = action.Result.Err
 }
