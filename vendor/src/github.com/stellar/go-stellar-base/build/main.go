@@ -8,20 +8,13 @@
 package build
 
 import (
-	"github.com/stellar/go-stellar-base"
+	"github.com/stellar/go-stellar-base/network"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
-const (
-	// PublicNetworkPassphrase is the pass phrase used for every transaction intended for the public stellar network
-	PublicNetworkPassphrase = "Public Global Stellar Network ; September 2015"
-	// TestNetworkPassphrase is the pass phrase used for every transaction intended for the SDF-run test network
-	TestNetworkPassphrase = "Test SDF Network ; September 2015"
-)
-
 var (
-	PublicNetwork  = Network{PublicNetworkPassphrase}
-	TestNetwork    = Network{TestNetworkPassphrase}
+	PublicNetwork  = Network{network.PublicNetworkPassphrase}
+	TestNetwork    = Network{network.TestNetworkPassphrase}
 	DefaultNetwork = TestNetwork
 )
 
@@ -29,15 +22,15 @@ var (
 type Defaults struct{}
 
 // Destination is a mutator capable of setting the destination on
-// an xdr.PaymentOp
+// an operations that have one.
 type Destination struct {
-	Address string
+	AddressOrSeed string
 }
 
 // SourceAccount is a mutator capable of setting the source account on
 // an xdr.Operation and an xdr.Transaction
 type SourceAccount struct {
-	Address string
+	AddressOrSeed string
 }
 
 // NativeAmount is a mutator that configures a payment to be using native
@@ -54,7 +47,7 @@ type Sequence struct {
 // Sign is a mutator that contributes a signature of the provided envelope's
 // transaction with the configured key
 type Sign struct {
-	Key stellarbase.Signer
+	Seed string
 }
 
 // Network establishes the stellar network that a transaction should apply to.
@@ -64,5 +57,5 @@ type Network struct {
 }
 
 func (n *Network) ID() [32]byte {
-	return stellarbase.Hash([]byte(n.Passphrase))
+	return network.ID(n.Passphrase)
 }

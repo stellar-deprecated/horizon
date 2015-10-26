@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/stellar/go-stellar-base"
+	"github.com/stellar/go-stellar-base/hash"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
@@ -13,10 +13,8 @@ import (
 // to Mutate.
 func Transaction(muts ...TransactionMutator) (result *TransactionBuilder) {
 	result = &TransactionBuilder{}
+	result.Mutate(muts...)
 	result.Mutate(Defaults{})
-	for _, m := range muts {
-		m.MutateTransaction(result)
-	}
 	return
 }
 
@@ -68,7 +66,7 @@ func (b *TransactionBuilder) Hash() ([32]byte, error) {
 		return [32]byte{}, err
 	}
 
-	return stellarbase.Hash(txBytes.Bytes()), nil
+	return hash.Hash(txBytes.Bytes()), nil
 }
 
 // HashHex returns the hex-encoded hash of this builder's transaction
@@ -84,7 +82,7 @@ func (b *TransactionBuilder) HashHex() (string, error) {
 // Sign returns an new TransactionEnvelopeBuilder using this builder's
 // transaction as the basis and with signatures of that transaction from the
 // provided Signers.
-func (b *TransactionBuilder) Sign(signers ...stellarbase.Signer) (result TransactionEnvelopeBuilder) {
+func (b *TransactionBuilder) Sign(signers ...string) (result TransactionEnvelopeBuilder) {
 	result.Mutate(b)
 
 	for _, s := range signers {
@@ -102,19 +100,21 @@ func (b *TransactionBuilder) Sign(signers ...stellarbase.Signer) (result Transac
 
 // MutateTransaction for Defaults sets reasonable defaults on the transaction being built
 func (m Defaults) MutateTransaction(o *TransactionBuilder) error {
-	o.TX.Fee = 100
-	memo, err := xdr.NewMemo(xdr.MemoTypeMemoNone, nil)
-	o.TX.Memo = memo
-	o.NetworkID = DefaultNetwork.ID()
-	return err
+
+	if o.TX.Fee == 0 {
+		o.TX.Fee = xdr.Uint32(100 * len(o.TX.Operations))
+	}
+
+	if o.NetworkID == [32]byte{} {
+		o.NetworkID = DefaultNetwork.ID()
+	}
+	return nil
 }
 
 // MutateTransaction for SourceAccount sets the transaction's SourceAccount
 // to the pubilic key for the address provided
 func (m SourceAccount) MutateTransaction(o *TransactionBuilder) error {
-	aid, err := stellarbase.AddressToAccountId(m.Address)
-	o.TX.SourceAccount = aid
-	return err
+	return setAccountId(m.AddressOrSeed, &o.TX.SourceAccount)
 }
 
 // MutateTransaction for PaymentBuilder causes the underylying PaymentOp

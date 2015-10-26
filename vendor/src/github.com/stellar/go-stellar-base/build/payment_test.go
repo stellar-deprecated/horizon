@@ -1,54 +1,75 @@
 package build
 
 import (
-	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/stellar/go-stellar-base"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
-func TestPaymentMutators(t *testing.T) {
-	Convey("TransactionBuilder Mutators:", t, func() {
-		b := PaymentBuilder{}
+var _ = Describe("Payment Mutators", func() {
 
-		Convey("Destination sets the destination of a payment", func() {
-			address := "GAWSI2JO2CF36Z43UGMUJCDQ2IMR5B3P5TMS7XM7NUTU3JHG3YJUDQXA"
-			aid, _ := stellarbase.AddressToAccountId(address)
+	var (
+		subject PaymentBuilder
+		mut     interface{}
 
-			b.Mutate(Destination{address})
-			So(b.P.Destination.MustEd25519(), ShouldEqual, aid.MustEd25519())
-			So(b.Err, ShouldBeNil)
+		address = "GAXEMCEXBERNSRXOEKD4JAIKVECIXQCENHEBRVSPX2TTYZPMNEDSQCNQ"
+		bad     = "foo"
+	)
+
+	JustBeforeEach(func() {
+		subject = PaymentBuilder{}
+		subject.Mutate(mut)
+	})
+
+	Describe("Destination", func() {
+		Context("using a valid stellar address", func() {
+			BeforeEach(func() { mut = Destination{address} })
+
+			It("succeeds", func() {
+				Expect(subject.Err).NotTo(HaveOccurred())
+			})
+
+			It("sets the destination to the correct xdr.AccountId", func() {
+				aid, _ := stellarbase.AddressToAccountId(address)
+				Expect(subject.P.Destination.MustEd25519()).To(Equal(aid.MustEd25519()))
+			})
 		})
 
-		Convey("Destination sets an error for invalid addresses", func() {
-			address := "foo"
-			b.Mutate(Destination{address})
-			So(b.Err, ShouldNotBeNil)
-		})
-
-		Convey("SourceAccount sets the transaction's SourceAccount correctly", func() {
-			address := "GAWSI2JO2CF36Z43UGMUJCDQ2IMR5B3P5TMS7XM7NUTU3JHG3YJUDQXA"
-			aid, _ := stellarbase.AddressToAccountId(address)
-
-			b.Mutate(SourceAccount{address})
-			So(b.O.SourceAccount, ShouldNotBeNil)
-			So(b.O.SourceAccount.MustEd25519(), ShouldEqual, aid.MustEd25519())
-			So(b.Err, ShouldBeNil)
-		})
-
-		Convey("SourceAccount sets an error for invalid addresses", func() {
-			address := "foo"
-			b.Mutate(SourceAccount{address})
-			So(b.Err, ShouldNotBeNil)
-		})
-
-		Convey("NativeAmount sets amount and currency correctly", func() {
-			b.Mutate(NativeAmount{"101"})
-			So(b.Err, ShouldBeNil)
-
-			So(b.P.Asset.Type, ShouldResemble, xdr.AssetTypeAssetTypeNative)
-			So(b.P.Amount, ShouldEqual, 1010000000)
+		Context("using an invalid value", func() {
+			BeforeEach(func() { mut = Destination{bad} })
+			It("failed", func() { Expect(subject.Err).To(HaveOccurred()) })
 		})
 	})
-}
+
+	Describe("SourceAccount", func() {
+		Context("using a valid stellar address", func() {
+			BeforeEach(func() { mut = SourceAccount{address} })
+
+			It("succeeds", func() {
+				Expect(subject.Err).NotTo(HaveOccurred())
+			})
+
+			It("sets the destination to the correct xdr.AccountId", func() {
+				aid, _ := stellarbase.AddressToAccountId(address)
+				Expect(subject.O.SourceAccount.MustEd25519()).To(Equal(aid.MustEd25519()))
+			})
+		})
+
+		Context("using an invalid value", func() {
+			BeforeEach(func() { mut = SourceAccount{bad} })
+			It("failed", func() { Expect(subject.Err).To(HaveOccurred()) })
+		})
+	})
+
+	Describe("NativeAmount", func() {
+		BeforeEach(func() { mut = NativeAmount{"101"} })
+		It("sets the starting balance properly", func() {
+			Expect(subject.P.Asset.Type).To(Equal(xdr.AssetTypeAssetTypeNative))
+			Expect(subject.P.Amount).To(Equal(xdr.Int64(1010000000)))
+		})
+		It("succeeds", func() {
+			Expect(subject.Err).NotTo(HaveOccurred())
+		})
+	})
+})
