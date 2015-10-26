@@ -77,11 +77,6 @@ func (base *Base) GetInt64(name string) int64 {
 	return asI64
 }
 
-// ValidateInt64 populates err if the value is not a valid int64
-func (base *Base) ValidateInt64(name string) {
-	_ = base.GetInt64(name)
-}
-
 // GetInt32 retrieves an int32 from the action parameter of the given name.
 // Populates err if the value is not a valid int32
 func (base *Base) GetInt32(name string) int32 {

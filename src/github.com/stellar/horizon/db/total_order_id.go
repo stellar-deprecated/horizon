@@ -1,5 +1,9 @@
 package db
 
+import (
+	"fmt"
+)
+
 //
 // A TotalOrderId expressed the total order of Ledgers, Transactions and
 // Operations.
@@ -89,6 +93,10 @@ func (id TotalOrderId) ToInt64() (result int64) {
 	result = result | ((int64(id.TransactionOrder) & TotalOrderTransactionMask) << TotalOrderTransactionShift)
 	result = result | ((int64(id.OperationOrder) & TotalOrderOperationMask) << TotalOrderOperationShift)
 	return
+}
+
+func (id TotalOrderId) String() string {
+	return fmt.Sprintf("%d", id.ToInt64())
 }
 
 func ParseTotalOrderId(id int64) (result TotalOrderId) {
