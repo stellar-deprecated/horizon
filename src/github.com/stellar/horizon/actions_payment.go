@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
@@ -16,7 +15,7 @@ type PaymentsIndexAction struct {
 
 // LoadQuery sets action.Query from the request params
 func (action *PaymentsIndexAction) LoadQuery() {
-	action.ValidateInt64(actions.ParamCursor)
+	action.ValidateCursorAsDefault()
 	action.Query = db.OperationPageQuery{
 		SqlQuery:        action.App.HistoryQuery(),
 		PageQuery:       action.GetPageQuery(),

@@ -19,7 +19,6 @@ type RootAction struct {
 }
 
 func (action *RootAction) JSON() {
-	action.App.UpdateLedgerState()
 
 	var response = RootResource{
 		HorizonVersion:      action.App.horizonVersion,

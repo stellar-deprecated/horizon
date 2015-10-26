@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
@@ -24,7 +23,7 @@ type TransactionIndexAction struct {
 
 // LoadQuery sets action.Query from the request params
 func (action *TransactionIndexAction) LoadQuery() {
-	action.ValidateInt64(actions.ParamCursor)
+	action.ValidateCursorAsDefault()
 	action.Query = db.TransactionPageQuery{
 		SqlQuery:       action.App.HistoryQuery(),
 		PageQuery:      action.GetPageQuery(),
