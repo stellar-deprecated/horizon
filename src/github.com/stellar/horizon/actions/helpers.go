@@ -183,6 +183,9 @@ func (base *Base) GetAccountID(name string) (result xdr.AccountId) {
 	return
 }
 
+// GetAmount returns a native amount (i.e. 64-bit integer) by parsing
+// the string at the provided name in accordance with the stellar client
+// conventions
 func (base *Base) GetAmount(name string) (result xdr.Int64) {
 	var err error
 	result, err = amount.Parse(base.GetString("destination_amount"))

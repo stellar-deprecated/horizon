@@ -122,6 +122,12 @@ func init() {
 		"Hostname to be added to every loggly log event",
 	)
 
+	rootCmd.Flags().String(
+		"friendbot-secret",
+		"",
+		"Secret seed for friendbot functionality. When empty, friendbot will be disabled",
+	)
+
 	viper.BindPFlags(rootCmd.Flags())
 }
 
@@ -160,6 +166,7 @@ func run(cmd *cobra.Command, args []string) {
 		SentryDSN:              viper.GetString("sentry-dsn"),
 		LogglyToken:            viper.GetString("loggly-token"),
 		LogglyHost:             viper.GetString("loggly-host"),
+		FriendbotSecret:        viper.GetString("friendbot-secret"),
 	}
 
 	app, err = horizon.NewApp(config)
