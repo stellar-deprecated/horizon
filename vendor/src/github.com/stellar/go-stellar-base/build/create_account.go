@@ -1,7 +1,6 @@
 package build
 
 import (
-	"github.com/stellar/go-stellar-base"
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -48,9 +47,7 @@ func (b *CreateAccountBuilder) Mutate(muts ...interface{}) {
 // MutateCreateAccount for Destination sets the CreateAccountOp's Destination
 // field
 func (m Destination) MutateCreateAccount(o *xdr.CreateAccountOp) error {
-	aid, err := stellarbase.AddressToAccountId(m.Address)
-	o.Destination = aid
-	return err
+	return setAccountId(m.AddressOrSeed, &o.Destination)
 }
 
 // MutateCreateAccount for NativeAmount sets the CreateAccountOp's

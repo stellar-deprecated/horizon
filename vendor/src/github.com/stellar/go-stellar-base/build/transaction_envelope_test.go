@@ -2,50 +2,54 @@ package build
 
 import (
 	"errors"
-	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/go-stellar-base"
-	"github.com/stellar/go-stellar-base/xdr"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestTransactionEnvelopeMutators(t *testing.T) {
-	Convey("TransactionEnvelope Mutators:", t, func() {
-		b := TransactionEnvelopeBuilder{
-			E: &xdr.TransactionEnvelope{},
-		}
+var _ = Describe("TransactionEnvelope Mutators:", func() {
 
-		Convey("TransactionBuilder sets the TX of the envelope", func() {
-			tx := Transaction(Sequence{10})
-			b.Mutate(tx)
-			So(b.E.Tx.SeqNum, ShouldEqual, 10)
-			So(b.Err, ShouldBeNil)
+	var (
+		subject TransactionEnvelopeBuilder
+		mut     TransactionEnvelopeMutator
+	)
+
+	BeforeEach(func() { subject = TransactionEnvelopeBuilder{} })
+	JustBeforeEach(func() { subject.Mutate(mut) })
+
+	Describe("TransactionBuilder", func() {
+		Context("that is valid", func() {
+			BeforeEach(func() { mut = Transaction(Sequence{10}) })
+			It("succeeds", func() { Expect(subject.Err).NotTo(HaveOccurred()) })
+			It("sets the TX", func() { Expect(subject.E.Tx.SeqNum).To(BeEquivalentTo(10)) })
 		})
 
-		Convey("TransactionBuilder propagates its error upwards", func() {
-			tx := &TransactionBuilder{Err: errors.New("busted in some fashion")}
-			b.Mutate(tx)
-			So(b.Err, ShouldNotBeNil)
+		Context("with an error set on it", func() {
+			err := errors.New("busted!")
+			BeforeEach(func() { mut = &TransactionBuilder{Err: err} })
+			It("propagates the error upwards", func() { Expect(subject.Err).To(Equal(err)) })
 		})
 
-		Convey("Sign adds a signature to the envelope", func() {
-			spub, spriv, _ := stellarbase.GenerateKeyFromSeed("SDOTALIMPAM2IV65IOZA7KZL7XWZI5BODFXTRVLIHLQZQCKK57PH5F3H")
+	})
 
-			b.MutateTX(SourceAccount{spub.Address()})
-			// TODO: ensure the signatures are valid
-			b.Mutate(Sign{&spriv})
-			So(b.Err, ShouldBeNil)
-			So(len(b.E.Signatures), ShouldEqual, 1)
+	Describe("Sign", func() {
+		Context("with a valid key", func() {
+			BeforeEach(func() {
+				subject.MutateTX(SourceAccount{"SDOTALIMPAM2IV65IOZA7KZL7XWZI5BODFXTRVLIHLQZQCKK57PH5F3H"})
+				mut = Sign{"SDOTALIMPAM2IV65IOZA7KZL7XWZI5BODFXTRVLIHLQZQCKK57PH5F3H"}
+			})
 
-			b.Mutate(Sign{&spriv})
-			So(b.Err, ShouldBeNil)
-			So(len(b.E.Signatures), ShouldEqual, 2)
+			It("succeeds", func() { Expect(subject.Err).NotTo(HaveOccurred()) })
+			It("adds a signature to the envelope", func() {
+				Expect(subject.E.Signatures).To(HaveLen(1))
+			})
 		})
 
-		Convey("Sign sets an error with an invalid key", func() {
-			b.Mutate(Sign{nil})
-			So(len(b.E.Signatures), ShouldEqual, 0)
-			So(b.Err, ShouldNotBeNil)
+		Context("with an invalid key", func() {
+			BeforeEach(func() { mut = Sign{""} })
+			It("fails", func() {
+				Expect(subject.Err).To(HaveOccurred())
+			})
 		})
 	})
-}
+
+})

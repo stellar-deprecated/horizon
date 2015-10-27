@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/howeyc/gopass"
-	"github.com/stellar/go-stellar-base"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/go-stellar-base/xdr"
 	"log"
@@ -42,17 +41,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// parse the seed into a private key
-	_, priv, err := stellarbase.GenerateKeyFromSeed(seed)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// sign the transaction
 	b := &build.TransactionEnvelopeBuilder{E: &txe}
 	b.Init()
 	b.MutateTX(build.PublicNetwork)
-	b.Mutate(build.Sign{&priv})
+	b.Mutate(build.Sign{seed})
 	if b.Err != nil {
 		log.Fatal(b.Err)
 	}

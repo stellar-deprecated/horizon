@@ -11,6 +11,7 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/friendbot"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/pump"
@@ -42,6 +43,7 @@ type App struct {
 	submitter         *txsub.System
 	pump              *pump.Pump
 	paths             paths.Finder
+	friendbot         *friendbot.Bot
 
 	// metrics
 	metrics                metrics.Registry

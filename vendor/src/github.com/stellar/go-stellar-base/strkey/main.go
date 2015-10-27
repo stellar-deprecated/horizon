@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"encoding/base32"
 	"encoding/binary"
+	"errors"
 	"fmt"
 
 	"github.com/stellar/go-stellar-base/crc16"
 )
+
+var ErrInvalidVersionByte = errors.New("invalid version byte")
 
 // VersionByte represents one of the possible prefix values for a StrKey base
 // string--the string the when encoded using base32 yields a final StrKey.
@@ -45,11 +48,7 @@ func Decode(expected VersionByte, src string) ([]byte, error) {
 
 	// ensure version byte is expected
 	if version != expected {
-		return nil, fmt.Errorf(
-			"invalid strkey, expected %d for version byte, got %d",
-			expected,
-			version,
-		)
+		return nil, ErrInvalidVersionByte
 	}
 
 	// ensure checksum is valid
@@ -118,5 +117,5 @@ func checkValidVersionByte(version VersionByte) error {
 		return nil
 	}
 
-	return fmt.Errorf("invalid version byte: %d", version)
+	return ErrInvalidVersionByte
 }

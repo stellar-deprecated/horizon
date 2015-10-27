@@ -1,7 +1,6 @@
 package build
 
 import (
-	"github.com/stellar/go-stellar-base"
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -46,9 +45,7 @@ func (b *PaymentBuilder) Mutate(muts ...interface{}) {
 
 // MutatePayment for Destination sets the PaymentOp's Destination field
 func (m Destination) MutatePayment(o *xdr.PaymentOp) error {
-	aid, err := stellarbase.AddressToAccountId(m.Address)
-	o.Destination = aid
-	return err
+	return setAccountId(m.AddressOrSeed, &o.Destination)
 }
 
 // MutatePayment for NativeAmount sets the PaymentOp's currency field to

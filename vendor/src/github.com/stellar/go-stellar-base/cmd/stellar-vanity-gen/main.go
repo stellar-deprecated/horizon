@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/stellar/go-stellar-base"
+	"github.com/stellar/go-stellar-base/keypair"
 	"log"
 	"os"
 	"strconv"
@@ -24,7 +24,7 @@ func main() {
 	checkPlausible()
 
 	for {
-		pub, priv, err := stellarbase.GenerateRandomKey()
+		kp, err := keypair.Random()
 
 		if err != nil {
 			log.Fatal(err)
@@ -33,10 +33,10 @@ func main() {
 		// NOTE: the first letter of an address will always be G, and the second letter will be one of only a few
 		// possibilities in the base32 alphabet, so we are actually searching for the vanity value after this 2
 		// character prefix.
-		if strings.HasPrefix(pub.Address()[2:], prefix) {
+		if strings.HasPrefix(kp.Address()[2:], prefix) {
 			fmt.Println("Found!")
-			fmt.Printf("Secret seed: %s\n", priv.Seed())
-			fmt.Printf("Public: %s\n", pub.Address())
+			fmt.Printf("Secret seed: %s\n", kp.(*keypair.Full).Seed())
+			fmt.Printf("Public: %s\n", kp.Address())
 			os.Exit(0)
 		}
 	}

@@ -3,8 +3,8 @@ package build
 import (
 	"bytes"
 	"encoding/base64"
-	"errors"
 
+	"github.com/stellar/go-stellar-base/keypair"
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
@@ -96,18 +96,17 @@ func (m Sign) MutateTransactionEnvelope(txe *TransactionEnvelopeBuilder) error {
 		return err
 	}
 
-	if m.Key == nil {
-		return errors.New("Invalid key")
+	kp, err := keypair.Parse(m.Seed)
+	if err != nil {
+		return err
 	}
 
-	sig := m.Key.Sign(hash[:])
-
-	ds := xdr.DecoratedSignature{
-		Hint:      m.Key.Hint(),
-		Signature: xdr.Signature(sig[:]),
+	sig, err := kp.SignDecorated(hash[:])
+	if err != nil {
+		return err
 	}
 
-	txe.E.Signatures = append(txe.E.Signatures, ds)
+	txe.E.Signatures = append(txe.E.Signatures, sig)
 	return nil
 }
 

@@ -20,4 +20,5 @@ type Config struct {
 	SentryDSN              string
 	LogglyHost             string
 	LogglyToken            string
+	FriendbotSecret        string
 }

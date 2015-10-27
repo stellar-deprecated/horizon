@@ -2,8 +2,6 @@ package horizon
 
 import (
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 	"strings"
 
 	"github.com/PuerkitoBio/throttled"
@@ -93,7 +91,7 @@ func initWebActions(app *App) {
 	r.Get("/accounts/:account_id/offers", &OffersByAccountAction{})
 	r.Get("/accounts/:account_id/trades", &TradeIndexAction{})
 
-	// transaction actions
+	// transaction history actions
 	r.Get("/transactions", &TransactionIndexAction{})
 	r.Get("/transactions/:id", &TransactionShowAction{})
 	r.Get("/transactions/:tx_id/operations", &OperationIndexAction{})
@@ -112,25 +110,13 @@ func initWebActions(app *App) {
 	r.Get("/order_book", &OrderBookShowAction{})
 	r.Get("/order_book/trades", &TradeIndexAction{})
 
+	// Transaction submission API
 	r.Post("/transactions", &TransactionCreateAction{})
 	r.Get("/paths", &PathIndexAction{})
 
-	// horizon doesn't implement everything ruby-horizon did,
-	// so we reverse proxy if we can
-	if app.config.RubyHorizonUrl != "" {
-
-		u, err := url.Parse(app.config.RubyHorizonUrl)
-		if err != nil {
-			panic("cannot parse ruby-horizon-url")
-		}
-
-		rp := httputil.NewSingleHostReverseProxy(u)
-		r.Post("/friendbot", rp)
-		r.Get("/friendbot", rp)
-	} else {
-		r.Post("/friendbot", &NotImplementedAction{})
-		r.Get("/friendbot", &NotImplementedAction{})
-	}
+	// friendbot
+	r.Post("/friendbot", &FriendbotAction{})
+	r.Get("/friendbot", &FriendbotAction{})
 
 	r.NotFound(&NotFoundAction{})
 }
