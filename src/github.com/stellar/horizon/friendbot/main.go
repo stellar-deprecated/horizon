@@ -39,6 +39,9 @@ func (bot *Bot) Pay(ctx context.Context, address string) (result txsub.Result) {
 
 	select {
 	case result := <-resultChan:
+		if result.Err != nil {
+			bot.refreshSequence(ctx)
+		}
 		return result
 	case <-ctx.Done():
 		return txsub.Result{Err: txsub.ErrCanceled}
