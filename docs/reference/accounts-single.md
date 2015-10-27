@@ -4,6 +4,8 @@ title: Account Details
 
 Returns information and links relating to a single [account](./resources/account.md).
 
+The balances section in the returned JSON will also list all the [trust lines](https://www.stellar.org/developers/learn/concepts/assets.html) this account has set up. 
+
 ## Request
 
 ```
