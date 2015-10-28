@@ -109,7 +109,7 @@ func WriteEvent(ctx context.Context, w http.ResponseWriter, e Event) {
 		fmt.Fprint(w, "event: err\n")
 		fmt.Fprintf(w, "data: %s\n\n", e.Error.Error())
 		w.(http.Flusher).Flush()
-		log.Error(ctx, e.Error)
+		log.Ctx(ctx).Error(e.Error)
 		return
 	}
 

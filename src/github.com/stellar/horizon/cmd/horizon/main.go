@@ -151,7 +151,7 @@ func run(cmd *cobra.Command, args []string) {
 		log.Fatalf("Could not parse log-level: %v", viper.GetString("log-level"))
 	}
 
-	hlog.SetDefaultLoggerLevel(ll)
+	hlog.DefaultLogger.Level = ll
 
 	config := horizon.Config{
 		DatabaseUrl:            viper.GetString("db-url"),

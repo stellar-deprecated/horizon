@@ -29,8 +29,7 @@ func (q SqlQuery) Select(ctx context.Context, sql sq.SelectBuilder, dest interfa
 
 // SelectRaw runs the provided postgres query and args against this sqlquery's db.
 func (q SqlQuery) SelectRaw(ctx context.Context, query string, args []interface{}, dest interface{}) error {
-	log.WithField(ctx, "sql", query).Info("query sql")
-	log.WithField(ctx, "args", args).Debug("query args")
+	q.logQuery(ctx, query, args)
 
 	err := q.DB.Select(dest, query, args...)
 	if err != nil {
@@ -54,8 +53,7 @@ func (q SqlQuery) Get(ctx context.Context, sql sq.SelectBuilder, dest interface{
 
 // GetRaw runs the provided postgres query and args against this sqlquery's db.
 func (q SqlQuery) GetRaw(ctx context.Context, query string, args []interface{}, dest interface{}) error {
-	log.WithField(ctx, "sql", query).Info("query sql")
-	log.WithField(ctx, "args", args).Debug("query args")
+	q.logQuery(ctx, query, args)
 
 	err := q.DB.Get(dest, query, args...)
 	if err != nil {
@@ -77,12 +75,19 @@ func (q SqlQuery) Query(ctx context.Context, sql sq.SelectBuilder) (*sqlx.Rows, 
 
 // QueryRaw runs the provided query and returns a *sqlx.Rows value to iterate through the response
 func (q SqlQuery) QueryRaw(ctx context.Context, query string, args []interface{}) (*sqlx.Rows, error) {
-	log.WithField(ctx, "sql", query).Info("query sql")
-	log.WithField(ctx, "args", args).Debug("query args")
+	q.logQuery(ctx, query, args)
 
 	rows, err := q.DB.Queryx(query, args...)
 	if err != nil {
 		err = errors.Wrap(err, 1)
 	}
 	return rows, err
+}
+
+func (q SqlQuery) logQuery(ctx context.Context, query string, args []interface{}) {
+	log.
+		Ctx(ctx).
+		WithField("args", args).
+		WithField("sql", query).
+		Debug("query sql")
 }

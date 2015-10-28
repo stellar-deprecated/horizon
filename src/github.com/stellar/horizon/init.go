@@ -2,7 +2,6 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/log"
-	"golang.org/x/net/context"
 )
 
 // InitFn is a function that contributes to the initialization of an App struct
@@ -54,11 +53,11 @@ func (is *initializerSet) Run(app *App) {
 				continue
 			}
 
-			log.Debugf(context.Background(), "running init:%s", i.Name)
+			log.Debugf("running init:%s", i.Name)
 			i.Fn(app)
 			alreadyRun[i.Name] = true
 			ranInitializer = true
-			log.Debugf(context.Background(), "ran init:%s", i.Name)
+			log.Debugf("ran init:%s", i.Name)
 		}
 		// If, after a full loop through the initializers we ran nothing
 		// we are done
@@ -69,6 +68,6 @@ func (is *initializerSet) Run(app *App) {
 
 	// if we didn't get to run all initializers, we have a cycle
 	if len(alreadyRun) != len(init) {
-		log.Panicln(context.Background(), "initializer cycle detected")
+		log.Panic("initializer cycle detected")
 	}
 }

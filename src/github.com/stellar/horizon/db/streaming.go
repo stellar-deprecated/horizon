@@ -33,26 +33,26 @@ func NewLedgerClosePump(ctx context.Context, db *sqlx.DB) <-chan struct{} {
 				err := row.Scan(&latestLedger)
 
 				if err != nil {
-					log.Warn(ctx, "Failed to check latest ledger", err)
+					log.Warn("Failed to check latest ledger", err)
 					break
 				}
 
 				if latestLedger > lastSeenLedger {
-					log.Debugf(ctx, "saw new ledger: %d, prev: %d", latestLedger, lastSeenLedger)
+					log.Debugf("saw new ledger: %d, prev: %d", latestLedger, lastSeenLedger)
 
 					select {
 					case result <- struct{}{}:
 						lastSeenLedger = latestLedger
 					default:
-						log.Debug(ctx, "ledger pump channel is blocked.  waiting...")
+						log.Debug("ledger pump channel is blocked.  waiting...")
 					}
 				} else if latestLedger < lastSeenLedger {
-					log.Warn(ctx, "latest ledger went backwards! reseting ledger pump")
+					log.Warn("latest ledger went backwards! reseting ledger pump")
 					lastSeenLedger = 0
 				}
 
 			case <-ctx.Done():
-				log.Info(ctx, "canceling ledger pump")
+				log.Info("canceling ledger pump")
 				close(result)
 				return
 			}

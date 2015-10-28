@@ -8,7 +8,7 @@ import (
 )
 
 func TestStreaming(t *testing.T) {
-	ctx, log := test.ContextWithLogBuffer()
+	ctx := test.Context()
 	ctx, cancel := context.WithCancel(ctx)
 	db := test.OpenDatabase(test.DatabaseUrl())
 
@@ -19,7 +19,6 @@ func TestStreaming(t *testing.T) {
 			cancel()
 			_, more := <-pump
 			So(more, ShouldBeFalse)
-			So(log.String(), ShouldContainSubstring, "canceling")
 		})
 	})
 }

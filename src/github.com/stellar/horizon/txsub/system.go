@@ -162,18 +162,18 @@ func (sys *System) submitOnce(ctx context.Context, env string) SubmissionResult 
 // Ticker triggers the system to update itself with any new data available.
 func (sys *System) Tick(ctx context.Context) {
 	sys.Init(ctx)
+	logger := log.Ctx(ctx)
 
-	log.
-		WithField(ctx, "queued", sys.SubmissionQueue.String()).
-		Debugln("ticking txsub system")
+	logger.
+		WithField("queued", sys.SubmissionQueue.String()).
+		Debug("ticking txsub system")
 
 	addys := sys.SubmissionQueue.Addresses()
 	if len(addys) > 0 {
 		curSeq, err := sys.Sequences.Get(ctx, addys)
 		if err != nil {
-			log.WithStack(ctx, err).Error(err)
+			logger.WithStack(err).Error(err)
 		} else {
-			log.Debugln(ctx, curSeq)
 			sys.SubmissionQueue.Update(curSeq)
 		}
 	}
@@ -182,7 +182,7 @@ func (sys *System) Tick(ctx context.Context) {
 		r := sys.Results.ResultByHash(ctx, hash)
 
 		if r.Err == nil {
-			log.WithField(ctx, "hash", hash).Debug("finishing open submission")
+			logger.WithField("hash", hash).Debug("finishing open submission")
 			sys.Pending.Finish(ctx, r)
 			continue
 		}
@@ -190,19 +190,19 @@ func (sys *System) Tick(ctx context.Context) {
 		_, ok := r.Err.(*FailedTransactionError)
 
 		if ok {
-			log.WithField(ctx, "hash", hash).Debug("finishing open submission")
+			logger.WithField("hash", hash).Debug("finishing open submission")
 			sys.Pending.Finish(ctx, r)
 			continue
 		}
 
 		if r.Err != ErrNoResults {
-			log.WithStack(ctx, r.Err).Error(r.Err)
+			logger.WithStack(r.Err).Error(r.Err)
 		}
 	}
 
 	stillOpen, err := sys.Pending.Clean(ctx, sys.SubmissionTimeout)
 	if err != nil {
-		log.WithStack(ctx, err).Error(err)
+		logger.WithStack(err).Error(err)
 	}
 
 	sys.Metrics.OpenSubmissionsGauge.Update(int64(stillOpen))

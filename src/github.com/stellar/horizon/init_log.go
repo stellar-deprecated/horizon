@@ -22,6 +22,7 @@ func initSentry(app *App) {
 
 	log.Infof(app.ctx, "Initializing sentry hook to: %s", app.config.SentryDSN)
 	err := raven.SetDSN(app.config.SentryDSN)
+
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +35,7 @@ func initLogglyLog(app *App) {
 		return
 	}
 
-	log.Infof(app.ctx, "Initializing loggly hook to: %s host: %s", app.config.LogglyToken, app.config.LogglyHost)
+	log.Infof("Initializing loggly hook to: %s host: %s", app.config.LogglyToken, app.config.LogglyHost)
 
 	hook := log.NewLogglyHook(app.config.LogglyToken)
 	app.log.Logger.Hooks.Add(hook)

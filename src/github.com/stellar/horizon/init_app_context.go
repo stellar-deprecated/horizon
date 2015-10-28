@@ -9,7 +9,7 @@ func initAppContext(app *App) {
 	ctx, cancel := context.WithCancel(context.Background())
 	ctx = context.WithValue(ctx, &appContextKey, app)
 
-	ctx = log.Context(ctx, app.log)
+	ctx = log.Set(ctx, app.log)
 	app.ctx = ctx
 	app.cancel = cancel
 }

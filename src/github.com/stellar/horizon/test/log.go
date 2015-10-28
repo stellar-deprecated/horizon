@@ -5,7 +5,7 @@ import (
 	"github.com/stellar/horizon/log"
 )
 
-var testLogger *logrus.Entry
+var testLogger *log.Logger
 
 func init() {
 	testLogger, _ = log.New()

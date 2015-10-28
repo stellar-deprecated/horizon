@@ -23,7 +23,7 @@ var _ paths.Finder = &Finder{}
 
 // Find performs a path find with the provided query.
 func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
-	log.WithField(f.Ctx, "source_assets", q.SourceAssets).
+	log.WithField("source_assets", q.SourceAssets).
 		WithField("destination_asset", q.DestinationAsset).
 		WithField("destination_amount", q.DestinationAmount).
 		Info("Starting pathfind")
@@ -43,7 +43,7 @@ func (f *Finder) Find(q paths.Query) (result []paths.Path, err error) {
 
 	result, err = s.Results, s.Err
 
-	log.WithField(f.Ctx, "found", len(s.Results)).
+	log.WithField("found", len(s.Results)).
 		WithField("err", s.Err).
 		Info("Finished pathfind")
 	return

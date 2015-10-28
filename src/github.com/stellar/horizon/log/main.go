@@ -7,162 +7,123 @@ import (
 )
 
 var contextKey = 0
-var defaultLogger *logrus.Entry
-var defaultMetrics *Metrics
+var DefaultLogger *Logger
+var DefaultMetrics *Metrics
+
+type F logrus.Fields
+
+func init() {
+	DefaultLogger, DefaultMetrics = New()
+}
 
 // New creates a new logger according to horizon specifications.
-func New() (result *logrus.Entry, m *Metrics) {
+func New() (result *Logger, m *Metrics) {
 	m = NewMetrics()
 	l := logrus.New()
 	l.Level = logrus.WarnLevel
 	l.Hooks.Add(m)
 
-	result = logrus.NewEntry(l)
+	result = (*Logger)(logrus.NewEntry(l))
 	return
 }
 
-// Context establishes a new context to which the provided sub-logger is bound
-func Context(parent context.Context, entry *logrus.Entry) context.Context {
-	return context.WithValue(parent, &contextKey, entry)
+// Set establishes a new context to which the provided sub-logger is bound
+func Set(parent context.Context, logger *Logger) context.Context {
+	return context.WithValue(parent, &contextKey, logger)
+}
+
+// DEPRECATED: Use Ctx instead.
+func FromContext(ctx context.Context) *Logger {
+	return Ctx(ctx)
+}
+
+// C returns the logger bound to the provided context, otherwise
+// providing the default logger.
+func Ctx(ctx context.Context) *Logger {
+	found := ctx.Value(&contextKey)
+
+	if found == nil {
+		return DefaultLogger
+	}
+
+	return found.(*Logger)
 }
 
 // PushContext is a helper method to derive a new context with a modified logger
 // bound to it, where the logger is derived from the current value on the
 // context.
-func PushContext(parent context.Context, modFn func(entry *logrus.Entry) *logrus.Entry) context.Context {
-	current := FromContext(parent)
+func PushContext(parent context.Context, modFn func(*Logger) *Logger) context.Context {
+	current := Ctx(parent)
 	next := modFn(current)
-	return Context(parent, next)
+	return Set(parent, next)
 }
 
-func WithField(ctx context.Context, key string, value interface{}) *logrus.Entry {
-	return FromContext(ctx).WithField(key, value)
+func WithField(key string, value interface{}) *Logger {
+	return DefaultLogger.WithField(key, value)
 }
 
-func WithFields(ctx context.Context, fields logrus.Fields) *logrus.Entry {
-	return FromContext(ctx).WithFields(fields)
+func WithFields(fields F) *Logger {
+	return DefaultLogger.WithFields(fields)
 }
 
-func WithStack(ctx context.Context, stackProvider interface{}) *logrus.Entry {
+func WithStack(stackProvider interface{}) *Logger {
 	stack := "unknown"
 
 	if stackProvider, ok := stackProvider.(*errors.Error); ok {
 		stack = string(stackProvider.Stack())
 	}
 
-	return WithField(ctx, "stack", stack)
-}
-
-// FromContext retrieves the current registered logger from the provided
-// context, defaulting to a process-wide default if the context does not have
-// an associated logger.
-func FromContext(ctx context.Context) *logrus.Entry {
-	found := ctx.Value(&contextKey)
-
-	if found == nil {
-		return defaultLogger
-	}
-
-	return found.(*logrus.Entry)
-}
-
-// SetDefaultLoggerLevel sets the logging level for the default logger
-func SetDefaultLoggerLevel(level logrus.Level) {
-	defaultLogger.Logger.Level = level
-}
-
-func init() {
-	defaultLogger, defaultMetrics = New()
+	return WithField("stack", stack)
 }
 
 // ===== Delegations =====
 
-// Debugf logs a message at the debug severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Debugf(ctx context.Context, format string, args ...interface{}) {
-	FromContext(ctx).Debugf(format, args...)
+// Debugf logs a message at the debug severity.
+func Debugf(format string, args ...interface{}) {
+	DefaultLogger.Debugf(format, args...)
 }
 
-// Debug logs a message at the debug severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Debug(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Debug(args...)
+// Debug logs a message at the debug severity.
+func Debug(args ...interface{}) {
+	DefaultLogger.Debug(args...)
 }
 
-// Debugln logs a message at the debug severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Debugln(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Debugln(args...)
+// Infof logs a message at the Info severity.
+func Infof(format string, args ...interface{}) {
+	DefaultLogger.Infof(format, args...)
 }
 
-// Infof logs a message at the Info severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Infof(ctx context.Context, format string, args ...interface{}) {
-	FromContext(ctx).Infof(format, args...)
+// Info logs a message at the Info severity.
+func Info(args ...interface{}) {
+	DefaultLogger.Info(args...)
 }
 
-// Info logs a message at the Info severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Info(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Info(args...)
+// Warnf logs a message at the Warn severity.
+func Warnf(format string, args ...interface{}) {
+	DefaultLogger.Warnf(format, args...)
 }
 
-// Infoln logs a message at the Info severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Infoln(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Infoln(args...)
+// Warn logs a message at the Warn severity.
+func Warn(args ...interface{}) {
+	DefaultLogger.Warn(args...)
 }
 
-// Warnf logs a message at the Warn severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Warnf(ctx context.Context, format string, args ...interface{}) {
-	FromContext(ctx).Warnf(format, args...)
+// Errorf logs a message at the Error severity.
+func Errorf(format string, args ...interface{}) {
+	DefaultLogger.Errorf(format, args...)
 }
 
-// Warn logs a message at the Warn severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Warn(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Warn(args...)
+// Error logs a message at the Error severity.
+func Error(args ...interface{}) {
+	DefaultLogger.Error(args...)
 }
 
-// Warnln logs a message at the Warn severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Warnln(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Warnln(args...)
+// Panicf logs a message at the Panic severity.
+func Panicf(format string, args ...interface{}) {
+	DefaultLogger.Panicf(format, args...)
 }
 
-// Errorf logs a message at the Error severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Errorf(ctx context.Context, format string, args ...interface{}) {
-	FromContext(ctx).Errorf(format, args...)
-}
-
-// Error logs a message at the Error severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Error(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Error(args...)
-}
-
-// Errorln logs a message at the Error severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Errorln(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Errorln(args...)
-}
-
-// Panicf logs a message at the Panic severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Panicf(ctx context.Context, format string, args ...interface{}) {
-	FromContext(ctx).Panicf(format, args...)
-}
-
-// Panic logs a message at the Panic severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Panic(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Panic(args...)
-}
-
-// Panicln logs a message at the Panic severity.  Delegates to the
-// logrus.Logger bound to the provided context.
-func Panicln(ctx context.Context, args ...interface{}) {
-	FromContext(ctx).Panicln(args...)
+// Panic logs a message at the Panic severity.
+func Panic(args ...interface{}) {
+	DefaultLogger.Panic(args...)
 }
