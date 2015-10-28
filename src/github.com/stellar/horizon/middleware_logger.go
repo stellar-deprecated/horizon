@@ -9,6 +9,7 @@ import (
 	gctx "github.com/goji/context"
 	"github.com/stellar/horizon/log"
 	"github.com/zenazn/goji/web"
+	"github.com/zenazn/goji/web/middleware"
 	"github.com/zenazn/goji/web/mutil"
 )
 
@@ -19,6 +20,12 @@ func LoggerMiddleware(c *web.C, h http.Handler) http.Handler {
 		ctx := gctx.FromC(*c)
 		mw := mutil.WrapWriter(w)
 
+		logger := log.WithField("req", middleware.GetReqID(*c))
+		logger.Debug("test")
+		ctx = log.Set(ctx, logger)
+		gctx.Set(c, ctx)
+
+		log.Errorf("here")
 		logStartOfRequest(ctx, r)
 
 		then := time.Now()
