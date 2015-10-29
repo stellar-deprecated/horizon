@@ -42,7 +42,7 @@
 		{
 			"importpath": "github.com/getsentry/raven-go",
 			"repository": "https://github.com/getsentry/raven-go",
-			"revision": "c8f8fb7c415203f52ca882e2661d21bc6dcb54d7",
+			"revision": "d25a363f644decca10856d923980d10555f473e9",
 			"branch": "master"
 		},
 		{

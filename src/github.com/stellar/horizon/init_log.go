@@ -1,11 +1,7 @@
 package horizon
 
 import (
-	"time"
-
-	"github.com/Sirupsen/logrus"
-	"github.com/Sirupsen/logrus/hooks/sentry"
-	_ "github.com/getsentry/raven-go" //raven-go is needed by sentry hook
+	"github.com/getsentry/raven-go"
 	"github.com/stellar/horizon/log"
 )
 
@@ -18,29 +14,17 @@ func initLog(app *App) {
 	app.logMetrics = m
 }
 
-// initSentryLog attaches a hook to our logging system that will report
-// errors and panics to the configured sentry server (from Config.SentryDSN).
-func initSentryLog(app *App) {
+// initSentry initialized the default sentry client with the configured DSN
+func initSentry(app *App) {
 	if app.config.SentryDSN == "" {
 		return
 	}
 
 	log.Infof(app.ctx, "Initializing sentry hook to: %s", app.config.SentryDSN)
-
-	hook, err := logrus_sentry.NewSentryHook(app.config.SentryDSN, []logrus.Level{
-		logrus.PanicLevel,
-		logrus.FatalLevel,
-		logrus.ErrorLevel,
-	})
-
-	hook.Timeout = 1 * time.Second
-
+	err := raven.SetDSN(app.config.SentryDSN)
 	if err != nil {
 		panic(err)
 	}
-
-	app.log.Logger.Hooks.Add(hook)
-
 }
 
 // initLogglyLog attaches a loggly hook to our logging system.
@@ -63,6 +47,6 @@ func initLogglyLog(app *App) {
 
 func init() {
 	appInit.Add("log", initLog)
-	appInit.Add("sentry", initSentryLog, "log", "app-context")
+	appInit.Add("sentry", initSentry, "log", "app-context")
 	appInit.Add("loggly", initLogglyLog, "log", "app-context")
 }

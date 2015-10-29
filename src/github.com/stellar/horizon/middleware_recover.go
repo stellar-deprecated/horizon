@@ -1,8 +1,10 @@
 package horizon
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/getsentry/raven-go"
 	"github.com/go-errors/errors"
 	gctx "github.com/goji/context"
 	"github.com/stellar/horizon/render/problem"
@@ -17,8 +19,9 @@ func RecoverMiddleware(c *web.C, h http.Handler) http.Handler {
 		ctx := gctx.FromC(*c)
 
 		defer func() {
-			if err := recover(); err != nil {
-				err := errors.Wrap(err, 2)
+			if rec := recover(); rec != nil {
+				err := extractErrorFromPanic(rec)
+				reportToSentry(err, r)
 				problem.Render(ctx, w, err)
 			}
 		}()
@@ -27,4 +30,22 @@ func RecoverMiddleware(c *web.C, h http.Handler) http.Handler {
 	}
 
 	return http.HandlerFunc(fn)
+}
+
+func reportToSentry(err error, r *http.Request) {
+	st := raven.NewStacktrace(4, 3, []string{"github.org/stellar"})
+	h := raven.NewHttp(r)
+	exc := raven.NewException(err, st)
+
+	packet := raven.NewPacket(err.Error(), exc, h)
+	raven.Capture(packet, nil)
+}
+
+func extractErrorFromPanic(rec interface{}) error {
+	err, ok := rec.(error)
+	if !ok {
+		err = fmt.Errorf("%s", rec)
+	}
+
+	return errors.Wrap(err, 4)
 }
