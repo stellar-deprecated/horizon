@@ -26,8 +26,12 @@ func (action *Action) Prepare(c web.C, w http.ResponseWriter, r *http.Request) {
 	base := &action.Base
 	base.Prepare(c, w, r)
 	action.App = action.GojiCtx.Env["app"].(*App)
-	action.Log = log.Ctx(action.Ctx)
 
+	if action.Ctx != nil {
+		action.Log = log.Ctx(action.Ctx)
+	} else {
+		action.Log = log.DefaultLogger
+	}
 }
 
 // GetPagingParams modifies the base GetPagingParams method to replace
