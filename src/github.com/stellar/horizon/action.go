@@ -1,11 +1,11 @@
 package horizon
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/log"
 	"github.com/zenazn/goji/web"
 )
 
@@ -18,6 +18,7 @@ import (
 type Action struct {
 	actions.Base
 	App *App
+	Log *log.Entry
 }
 
 // Prepare sets the action's App field based upon the goji context
@@ -25,6 +26,8 @@ func (action *Action) Prepare(c web.C, w http.ResponseWriter, r *http.Request) {
 	base := &action.Base
 	base.Prepare(c, w, r)
 	action.App = action.GojiCtx.Env["app"].(*App)
+	action.Log = log.Ctx(action.Ctx)
+
 }
 
 // GetPagingParams modifies the base GetPagingParams method to replace
@@ -40,7 +43,6 @@ func (action *Action) GetPagingParams() (cursor string, order string, limit int3
 		tid := db.TotalOrderId{
 			LedgerSequence: action.App.latestLedgerState.HorizonSequence,
 		}
-		log.Printf("tid: %#v", tid)
 		cursor = tid.String()
 	}
 
