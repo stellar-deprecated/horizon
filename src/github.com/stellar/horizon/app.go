@@ -34,8 +34,6 @@ type App struct {
 	ctx               context.Context
 	cancel            func()
 	redis             *redis.Pool
-	log               *log.Logger
-	logMetrics        *log.Metrics
 	coreVersion       string
 	horizonVersion    string
 	networkPassphrase string

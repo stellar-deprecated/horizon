@@ -21,11 +21,9 @@ func LoggerMiddleware(c *web.C, h http.Handler) http.Handler {
 		mw := mutil.WrapWriter(w)
 
 		logger := log.WithField("req", middleware.GetReqID(*c))
-		logger.Debug("test")
 		ctx = log.Set(ctx, logger)
 		gctx.Set(c, ctx)
 
-		log.Errorf("here")
 		logStartOfRequest(ctx, r)
 
 		then := time.Now()

@@ -48,7 +48,7 @@ func TestLogPackage(t *testing.T) {
 		So(output.String(), ShouldContainSubstring, "foo=bar")
 		So(output.String(), ShouldNotContainSubstring, "foo=baz")
 
-		ctx = PushContext(ctx, func(logger *Logger) *Logger {
+		ctx = PushContext(ctx, func(logger *Entry) *Entry {
 			return logger.WithField("foo", "baz")
 		})
 
