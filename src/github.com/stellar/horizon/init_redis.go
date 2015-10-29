@@ -16,7 +16,7 @@ func initRedis(app *App) {
 	redisURL, err := url.Parse(app.config.RedisUrl)
 
 	if err != nil {
-		log.Panic(app.ctx, err)
+		log.Panic(err)
 	}
 
 	app.redis = &redis.Pool{
@@ -33,7 +33,7 @@ func initRedis(app *App) {
 	_, err = c.Do("PING")
 
 	if err != nil {
-		log.Panic(app.ctx, err)
+		log.Panic(err)
 	}
 }
 
