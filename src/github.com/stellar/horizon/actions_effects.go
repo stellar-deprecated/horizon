@@ -60,6 +60,7 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 
 // LoadQuery sets action.Query from the request params
 func (action *EffectIndexAction) LoadQuery() {
+	action.ValidateCursorAsDefault()
 	action.Query = db.EffectPageQuery{
 		SqlQuery:  action.App.HistoryQuery(),
 		PageQuery: action.GetPageQuery(),

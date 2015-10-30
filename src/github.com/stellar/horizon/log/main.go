@@ -4,6 +4,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/go-errors/errors"
 	"golang.org/x/net/context"
+	"os"
 	// glog "log"
 )
 
@@ -32,7 +33,7 @@ func New() (result *Entry, m *Metrics) {
 	l.Level = logrus.WarnLevel
 	l.Hooks.Add(m)
 
-	result = &Entry{*logrus.NewEntry(l)}
+	result = &Entry{*logrus.NewEntry(l).WithField("pid", os.Getpid())}
 	return
 }
 
