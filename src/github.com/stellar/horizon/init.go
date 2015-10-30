@@ -53,11 +53,10 @@ func (is *initializerSet) Run(app *App) {
 				continue
 			}
 
-			log.Debugf("running init:%s", i.Name)
+			log.WithField("init_name", i.Name).Debug("running initializer")
 			i.Fn(app)
 			alreadyRun[i.Name] = true
 			ranInitializer = true
-			log.Debugf("ran init:%s", i.Name)
 		}
 		// If, after a full loop through the initializers we ran nothing
 		// we are done
