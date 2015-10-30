@@ -14,7 +14,7 @@ func initStellarCoreInfo(app *App) {
 	}
 
 	fail := func(err error) {
-		log.Warnf(app.ctx, "could not load stellar-core info: %s", err)
+		log.Warnf("could not load stellar-core info: %s", err)
 	}
 
 	resp, err := http.Get(fmt.Sprint(app.config.StellarCoreUrl, "/info"))

@@ -8,10 +8,7 @@ import (
 // initLog initialized the logging subsystem, attaching app.log and
 // app.logMetrics.  It also configured the logger's level using Config.LogLevel.
 func initLog(app *App) {
-	l, m := log.New()
-	l.Logger.Level = app.config.LogLevel
-	app.log = l
-	app.logMetrics = m
+	log.DefaultLogger.Logger.Level = app.config.LogLevel
 }
 
 // initSentry initialized the default sentry client with the configured DSN
@@ -20,8 +17,9 @@ func initSentry(app *App) {
 		return
 	}
 
-	log.Infof(app.ctx, "Initializing sentry hook to: %s", app.config.SentryDSN)
+	log.Infof("Initializing sentry hook to: %s", app.config.SentryDSN)
 	err := raven.SetDSN(app.config.SentryDSN)
+
 	if err != nil {
 		panic(err)
 	}
@@ -34,10 +32,10 @@ func initLogglyLog(app *App) {
 		return
 	}
 
-	log.Infof(app.ctx, "Initializing loggly hook to: %s host: %s", app.config.LogglyToken, app.config.LogglyHost)
+	log.Infof("Initializing loggly hook to: %s host: %s", app.config.LogglyToken, app.config.LogglyHost)
 
 	hook := log.NewLogglyHook(app.config.LogglyToken)
-	app.log.Logger.Hooks.Add(hook)
+	log.DefaultLogger.Logger.Hooks.Add(hook)
 
 	go func() {
 		<-app.ctx.Done()

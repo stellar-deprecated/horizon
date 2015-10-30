@@ -96,7 +96,7 @@ func loadSqlFile(url string, path string) {
 // a full App instance (in which case your tests should be using the app's
 // context).  This context has a logger bound to it suitable for testing.
 func Context() context.Context {
-	return glog.Context(context.Background(), testLogger)
+	return glog.Set(context.Background(), testLogger)
 }
 
 // ContextWithLogBuffer returns a context and a buffer into which the new, bound
@@ -109,7 +109,7 @@ func ContextWithLogBuffer() (context.Context, *bytes.Buffer) {
 	l.Logger.Formatter.(*logrus.TextFormatter).DisableColors = true
 	l.Logger.Level = logrus.DebugLevel
 
-	ctx := glog.Context(context.Background(), l)
+	ctx := glog.Set(context.Background(), l)
 	return ctx, output
 
 }

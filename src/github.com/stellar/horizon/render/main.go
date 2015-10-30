@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"bitbucket.org/ww/goautoneg"
-	"github.com/Sirupsen/logrus"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
 )
@@ -21,7 +20,7 @@ func Negotiate(ctx context.Context, r *http.Request) string {
 
 	result := goautoneg.Negotiate(r.Header.Get("Accept"), alternatives)
 
-	log.WithFields(ctx, logrus.Fields{
+	log.Ctx(ctx).WithFields(log.F{
 		"content_type": result,
 		"accept":       accept,
 	}).Debug("Negotiated content type")

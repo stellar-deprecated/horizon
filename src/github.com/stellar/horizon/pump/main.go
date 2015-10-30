@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+// Pump represents a broadcast channel that, when triggered via the input
+// channel, triggers all channels created through the `Subscribe()` method.
 type Pump struct {
 	trigger <-chan struct{}
 	outputs map[chan struct{}]bool

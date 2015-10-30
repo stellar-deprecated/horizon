@@ -2,20 +2,16 @@ package sse
 
 import (
 	"sync"
-
-	"github.com/stellar/horizon/log"
-	"golang.org/x/net/context"
 )
 
 var pump <-chan struct{}
 var lock sync.Mutex
-var ctx context.Context
 var nextTick chan struct{}
 
 // SetPump established the pump that will be used to drive streaming responses.
 // Everytime the provided channel sends any open connections will be triggered
 // to run their queries again and delivery any new results to clients.
-func SetPump(c context.Context, p <-chan struct{}) {
+func SetPump(p <-chan struct{}) {
 	if p == nil {
 		panic("cannot set a null pump")
 	}
@@ -23,7 +19,6 @@ func SetPump(c context.Context, p <-chan struct{}) {
 	lock.Lock()
 	defer lock.Unlock()
 
-	ctx = c
 	nextTick = make(chan struct{})
 
 	if pump != nil {
@@ -45,20 +40,14 @@ func Pumped() <-chan struct{} {
 // of open streams by closing a new channel every time the input pump sends.
 func run() {
 	for {
-		select {
-		case _, more := <-pump:
-			log.Debug(ctx, "sse pump")
+		_, more := <-pump
 
-			prev := nextTick
-			nextTick = make(chan struct{})
-			// trigger all listeners by closing the nextTick channel
-			close(prev)
+		prev := nextTick
+		nextTick = make(chan struct{})
+		// trigger all listeners by closing the nextTick channel
+		close(prev)
 
-			if !more {
-				return
-			}
-		case <-ctx.Done():
-			pump = nil
+		if !more {
 			return
 		}
 	}

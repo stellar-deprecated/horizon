@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/jmoiron/sqlx"
 	"github.com/rcrowley/go-metrics"
@@ -35,8 +34,6 @@ type App struct {
 	ctx               context.Context
 	cancel            func()
 	redis             *redis.Pool
-	log               *logrus.Entry
-	logMetrics        *log.Metrics
 	coreVersion       string
 	horizonVersion    string
 	networkPassphrase string
@@ -87,40 +84,32 @@ func (a *App) Serve() {
 
 	listenStr := fmt.Sprintf(":%d", a.config.Port)
 	listener := bind.Socket(listenStr)
-	log.Infof(a.ctx, "Starting horizon on %s", listener.Addr())
+	log.Infof("Starting horizon on %s", listener.Addr())
 
 	graceful.HandleSignals()
 	bind.Ready()
 	graceful.PreHook(func() {
-		log.Info(a.ctx, "received signal, gracefully stopping")
-		a.Cancel()
+		log.Info("received signal, gracefully stopping")
+		a.Close()
 	})
 	graceful.PostHook(func() {
-		log.Info(a.ctx, "stopped")
+		log.Info("stopped")
 	})
 
-	sse.SetPump(a.ctx, a.pump.Subscribe())
+	sse.SetPump(a.pump.Subscribe())
 
 	err := graceful.Serve(listener, http.DefaultServeMux)
 
 	if err != nil {
-		log.Panic(a.ctx, err)
+		log.Panic(err)
 	}
 
 	graceful.Wait()
 }
 
-// Cancel triggers the app's cancellation signal, which will trigger the shutdown
-// of all child subsystems.  Note connections to external systems (such as db
-// connections) are not closed.  Use `Close()` to force immediate closure of
-// those resources
-func (a *App) Cancel() {
-	a.cancel()
-}
-
 // Close cancels the app and forces the closure of db connections
 func (a *App) Close() {
-	a.Cancel()
+	a.cancel()
 	a.historyDb.Close()
 	a.coreDb.Close()
 }
@@ -142,10 +131,10 @@ func (a *App) CoreQuery() db.SqlQuery {
 func (a *App) UpdateLedgerState() {
 	var ls db.LedgerState
 	q := db.LedgerStateQuery{a.HistoryQuery(), a.CoreQuery()}
-	err := db.Get(a.ctx, q, &ls)
+	err := db.Get(context.Background(), q, &ls)
 
 	if err != nil {
-		log.WithStack(a.ctx, err).
+		log.WithStack(err).
 			WithField("err", err.Error()).
 			Error("failed to load ledger state")
 		return
