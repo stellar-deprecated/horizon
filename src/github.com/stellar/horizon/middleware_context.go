@@ -22,8 +22,8 @@ func contextMiddleware(parent context.Context) func(c *web.C, next http.Handler)
 			}
 
 			gctx.Set(c, ctx)
+			defer cancel()
 			next.ServeHTTP(w, r)
-			cancel()
 		}
 		return http.HandlerFunc(fn)
 	}
