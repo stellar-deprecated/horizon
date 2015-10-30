@@ -4,7 +4,38 @@ title: Horizon Development Guide
 
 This document contains topics related to the development of horizon.
 
-## Logging
+- [Regenerating generated code](#regen)
+- [Running tests](#tests)
+- [Logging](#logging)
+
+
+---
+## <a name="regen"></a> Regenerating generated code
+
+Horizon uses two go tools you'll need to install:
+1. [go-bindata](https://github.com/jteeuwen/go-bindata) is used to bundle test data
+1. [go-codegen](https://github.com/nullstyle/go-codegen) is used to generate some boilerplate code
+
+After the above are installed, simply run `gb generate`.
+
+## <a name="tests"></a> Running Tests
+
+first, create two local Postgres databases, and start a redis server on port
+`6379`
+
+```bash
+psql -c 'create database "horizon_test";'
+psql -c 'create database "stellar-core_test";'
+redis-server
+```
+
+then, run the tests like so:
+
+```bash
+bash scripts/run_tests.bash
+```
+
+## <a name="logging"></a> Logging
 
 All logging infrastructure is in the `github.com/stellar/horizon/log` package.  This package provides "level-based" logging:  Each logging statement has a severity, one of "Debug", "Info", "Warn", "Error" or "Panic".  The horizon server has a configured level "filter", specified either using the `--log-level` command line flag or the `LOG_LEVEL` environment variable.  When a logging statement is executed, the statements declared severity is checked against the filter and will only be emitted if the severity of the statement is equal or higher severity than the filter.
 

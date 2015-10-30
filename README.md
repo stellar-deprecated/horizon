@@ -23,27 +23,11 @@ go get -u github.com/constabulary/gb/...
 From within the project directory, simply run `gb build`.  After successful
 completion, you should find `bin/horizon` is present in the project directory.
 
-## Regenerating generated code
+## Developing Horizon
 
-Horizon uses two go tools you'll need to install:
-1. [go-bindata](https://github.com/jteeuwen/go-bindata) is used to bundle test data
-1. [go-codegen](https://github.com/nullstyle/go-codegen) is used to generate some boilerplate code
+See [the development guide](docs/developing.md).
 
-After the above are installed, simply run `gb generate`.
 
-## Running Tests
 
-first, create two local Postgres databases, and start a redis server on port
-`6379`
 
-```bash
-psql -c 'create database "horizon_test";'
-psql -c 'create database "stellar-core_test";'
-redis-server
-```
 
-then, run the tests like so:
-
-```bash
-bash scripts/run_tests.bash
-```
