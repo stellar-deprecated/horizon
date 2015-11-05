@@ -1,9 +1,11 @@
 package horizon
 
 import (
+	"errors"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
+	"regexp"
 )
 
 // This file contains the actions:
@@ -60,7 +62,7 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 
 // LoadQuery sets action.Query from the request params
 func (action *EffectIndexAction) LoadQuery() {
-	action.ValidateCursorAsDefault()
+	action.ValidateCursor()
 	action.Query = db.EffectPageQuery{
 		SqlQuery:  action.App.HistoryQuery(),
 		PageQuery: action.GetPageQuery(),
@@ -95,4 +97,25 @@ func (action *EffectIndexAction) LoadRecords() {
 // LoadPage populates action.Page
 func (action *EffectIndexAction) LoadPage() {
 	action.Page, action.Err = NewEffectResourcePage(action.Records, action.Query.PageQuery, action.Path())
+}
+
+func (action *EffectIndexAction) ValidateCursor() {
+	c := action.GetString("cursor")
+
+	if c == "" {
+		return
+	}
+
+	ok, err := regexp.MatchString("now|\\d+(-\\d+)?", c)
+	if err != nil {
+		action.Err = err
+		return
+	}
+
+	if !ok {
+		action.SetInvalidField("cursor", errors.New("invalid format"))
+		return
+	}
+
+	return
 }

@@ -21,13 +21,13 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 		PlaceholderFormat(sq.Dollar).
 		RunWith(q.DB)
 
-	cursorOp, cursorOrd, err := q.CursorInt64Pair(DefaultPairSep)
+	op, idx, err := q.CursorInt64Pair(DefaultPairSep)
 	if err != nil {
 		return
 	}
 
-	if cursorOrd > math.MaxInt32 {
-		cursorOrd = math.MaxInt32
+	if idx > math.MaxInt32 {
+		idx = math.MaxInt32
 	}
 
 	switch q.Order {
@@ -38,7 +38,7 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 				OR (
 							heff.history_operation_id = ?
 					AND heff.order > ?
-				))`, cursorOp, cursorOp, cursorOrd).
+				))`, op, op, idx).
 			OrderBy("heff.history_operation_id asc, heff.order asc")
 	case "desc":
 		sql = sql.
@@ -47,7 +47,7 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 				OR (
 							heff.history_operation_id = ?
 					AND heff.order < ?
-				))`, cursorOp, cursorOp, cursorOrd).
+				))`, op, op, idx).
 			OrderBy("heff.history_operation_id desc, heff.order desc")
 	}
 
