@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"github.com/go-errors/errors"
 	"math"
 	"reflect"
@@ -117,6 +118,7 @@ func (p PageQuery) CursorInt64() (int64, error) {
 
 // CursorInt64Pair parses this query's Cursor string as two int64s, separated by the provided separator
 func (p PageQuery) CursorInt64Pair(sep string) (l int64, r int64, err error) {
+
 	if p.Cursor == "" {
 		switch p.Order {
 		case OrderAscending:
@@ -133,9 +135,16 @@ func (p PageQuery) CursorInt64Pair(sep string) (l int64, r int64, err error) {
 
 	parts := strings.SplitN(p.Cursor, sep, 2)
 
+	// In the event that the cursor is only a single number
+	// we use maxInt as the second element.  This ensures that
+	// cursors containing a single element skip past all entries
+	// specified by the first element.
+	//
+	// As an example, this behavior ensures that an effect cursor
+	// specified using only a ledger sequence will properly exclude
+	// all effects originated in the sequence provided.
 	if len(parts) != 2 {
-		err = errors.New(ErrInvalidCursor)
-		return
+		parts = append(parts, fmt.Sprintf("%d", math.MaxInt64))
 	}
 
 	l, err = strconv.ParseInt(parts[0], 10, 64)

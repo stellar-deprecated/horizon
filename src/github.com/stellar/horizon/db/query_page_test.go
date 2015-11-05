@@ -83,10 +83,11 @@ func TestPageQuery(t *testing.T) {
 				So(r, ShouldEqual, math.MaxInt64)
 			})
 
-			Convey("Errors when cursor has no instance of the separator in it", func() {
-				p = MustPageQuery("nosep", "", 0)
-				_, _, err := p.CursorInt64Pair("-")
-				So(err, test.ShouldBeErr, ErrInvalidCursor)
+			Convey("Defaults r to MaxInt64 when the cursor has not separator in it", func() {
+				p = MustPageQuery("0", "", 0)
+				_, r, err := p.CursorInt64Pair("-")
+				So(err, ShouldBeNil)
+				So(r, ShouldEqual, math.MaxInt64)
 			})
 
 			Convey("Errors when cursor has an unparselable number contained within", func() {
