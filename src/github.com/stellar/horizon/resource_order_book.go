@@ -25,8 +25,8 @@ type PriceLevelResource struct {
 // AssetResource is the display form of a Asset in the stellar network
 type AssetResource struct {
 	AssetType   string `json:"asset_type"`
-	AssetCode   string `json:"asset_code,ignoreempty"`
-	AssetIssuer string `json:"asset_issuer,ignoreempty"`
+	AssetCode   string `json:"asset_code,omitempty"`
+	AssetIssuer string `json:"asset_issuer,omitempty"`
 }
 
 // NewOrderBookSummaryResource converts the provided query and summary into a json object
@@ -44,7 +44,7 @@ func NewOrderBookSummaryResource(query *db.OrderBookSummaryQuery, summary db.Ord
 
 	result = OrderBookSummaryResource{
 		Bids: newPriceLevelResources(summary.Bids()),
-		Asks: newPriceLevelResources(summary.Bids()),
+		Asks: newPriceLevelResources(summary.Asks()),
 		Selling: AssetResource{
 			AssetType:   bt,
 			AssetCode:   query.SellingCode,
@@ -65,7 +65,8 @@ func newPriceLevelResources(records []db.OrderBookSummaryPriceLevelRecord) []Pri
 
 	for i, rec := range records {
 		result[i] = PriceLevelResource{
-			Price: rec.PriceAsString(),
+			Price:  rec.PriceAsString(),
+			Amount: rec.AmountAsString(),
 			PriceR: PriceResource{
 				N: rec.Pricen,
 				D: rec.Priced,
