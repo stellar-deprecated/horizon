@@ -26,7 +26,8 @@ func (p *PriceLevelRecord) PriceAsString() string {
 	return big.NewRat(int64(p.Pricen), int64(p.Priced)).FloatString(7)
 }
 
-// PriceAsString returns the price as a string
+// AmountAsString returns the amount as a string, formatted using
+// the amount.String() utility from go-stellar-base.
 func (p *PriceLevelRecord) AmountAsString() string {
 	return amount.String(xdr.Int64(p.Amount))
 }
