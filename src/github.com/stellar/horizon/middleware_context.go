@@ -14,12 +14,7 @@ func contextMiddleware(parent context.Context) func(c *web.C, next http.Handler)
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			ctx := parent
 			ctx = requestid.ContextFromC(ctx, c)
-			cancel := func() {}
-
-			// establish "cancel on close" context if possible
-			if _, ok := w.(http.CloseNotifier); ok {
-				ctx, cancel = httpx.CancelWhenClosed(ctx, w)
-			}
+			ctx, cancel := httpx.RequestContext(ctx, w, r)
 
 			gctx.Set(c, ctx)
 			defer cancel()
