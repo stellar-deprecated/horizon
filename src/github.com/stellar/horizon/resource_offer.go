@@ -6,9 +6,9 @@ import (
 
 	"github.com/jagregory/halgo"
 
+	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
-	"github.com/stellar/go-stellar-base/xdr"
 )
 
 // OfferResource is the display form of an offer to trade currency.

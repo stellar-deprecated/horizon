@@ -2,6 +2,7 @@ package db
 
 import (
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/go-stellar-base/xdr"
 )
 
 var CoreTrustlineRecordSelect sq.SelectBuilder = sq.Select(
@@ -17,10 +18,10 @@ var CoreTrustlineRecordSelect sq.SelectBuilder = sq.Select(
 // A row of data from the `trustlines` table from stellar-core
 type CoreTrustlineRecord struct {
 	Accountid string
-	Assettype int32
+	Assettype xdr.AssetType
 	Issuer    string
 	Assetcode string
-	Tlimit    int64
-	Balance   int64
+	Tlimit    xdr.Int64
+	Balance   xdr.Int64
 	Flags     int32
 }

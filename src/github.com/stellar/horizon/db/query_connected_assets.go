@@ -46,7 +46,7 @@ func (q ConnectedAssetsQuery) Select(ctx context.Context, dest interface{}) erro
 	}
 
 	var rows []struct {
-		Type   int32
+		Type   xdr.AssetType
 		Code   string
 		Issuer string
 	}

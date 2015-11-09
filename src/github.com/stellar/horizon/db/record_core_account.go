@@ -1,10 +1,6 @@
 package db
 
 import (
-	"encoding/base64"
-	"strings"
-
-	"github.com/go-errors/errors"
 	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
@@ -29,32 +25,19 @@ const (
 // A row of data from the `accounts` table from stellar-core
 type CoreAccountRecord struct {
 	Accountid     string
-	Balance       int64
+	Balance       xdr.Int64
 	Seqnum        int64
 	Numsubentries int32
 	Inflationdest null.String
 	HomeDomain    null.String
-	Thresholds    string
-	Flags         int32
+	Thresholds    xdr.Thresholds
+	Flags         xdr.AccountFlags
 }
 
 func (ac CoreAccountRecord) IsAuthRequired() bool {
-	return (ac.Flags & FlagAuthRequired) != 0
+	return (ac.Flags & xdr.AccountFlagsAuthRequiredFlag) != 0
 }
 
 func (ac CoreAccountRecord) IsAuthRevocable() bool {
-	return (ac.Flags & FlagAuthRevocable) != 0
-}
-
-func (ac CoreAccountRecord) DecodeThresholds() (xdr.Thresholds, error) {
-	reader := strings.NewReader(ac.Thresholds)
-	b64r := base64.NewDecoder(base64.StdEncoding, reader)
-	var xdrThresholds xdr.Thresholds
-
-	_, err := xdr.Unmarshal(b64r, &xdrThresholds)
-	if err != nil {
-		err = errors.Wrap(err, 1)
-	}
-
-	return xdrThresholds, err
+	return (ac.Flags & xdr.AccountFlagsAuthRevocableFlag) != 0
 }

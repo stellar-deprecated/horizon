@@ -73,9 +73,9 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 		}
 
 		switch tl.Assettype {
-		case int32(xdr.AssetTypeAssetTypeCreditAlphanum4):
+		case xdr.AssetTypeAssetTypeCreditAlphanum4:
 			balance.Type = "credit_alphanum4"
-		case int32(xdr.AssetTypeAssetTypeCreditAlphanum12):
+		case xdr.AssetTypeAssetTypeCreditAlphanum12:
 			balance.Type = "credit_alphanum12"
 		}
 
@@ -86,14 +86,10 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 	balances[len(ac.Trustlines)] = BalanceResource{Type: "native", Balance: AmountToString(ac.Balance)}
 
 	// thresholds
-	var thresholds ThresholdsResource
-	xdrThresholds, err := ac.DecodeThresholds()
-	if err == nil {
-		thresholds = ThresholdsResource{
-			LowThreshold:  xdrThresholds[1],
-			MedThreshold:  xdrThresholds[2],
-			HighThreshold: xdrThresholds[3],
-		}
+	thresholds := ThresholdsResource{
+		LowThreshold:  ac.Thresholds[1],
+		MedThreshold:  ac.Thresholds[2],
+		HighThreshold: ac.Thresholds[3],
 	}
 
 	// signers
@@ -103,7 +99,7 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 		signers[i] = SignerResource{Address: s.Publickey, Weight: s.Weight}
 	}
 
-	signers[len(ac.Signers)] = SignerResource{Address: ac.Address, Weight: int32(xdrThresholds[0])}
+	signers[len(ac.Signers)] = SignerResource{Address: ac.Address, Weight: int32(ac.Thresholds[0])}
 
 	// flags
 	flags := FlagsResource{
@@ -132,7 +128,7 @@ func NewAccountResource(ac db.AccountRecord) AccountResource {
 	}
 }
 
-func AmountToString(amount int64) string {
+func AmountToString(amount xdr.Int64) string {
 	whole := amount / stellarbase.One
 	frac := amount % stellarbase.One
 	return fmt.Sprintf("%d.%07d", whole, frac)
