@@ -9,9 +9,7 @@ import (
 // AccountResource is the summary of an account
 type Account struct {
 	halgo.Links
-	ID                   string            `json:"id"`
-	PagingToken          string            `json:"paging_token"`
-	Address              string            `json:"address"`
+	HistoryAccount
 	Sequence             int64             `json:"sequence"`
 	SubentryCount        int32             `json:"subentry_count"`
 	InflationDestination string            `json:"inflation_destination,omitempty"`
@@ -44,6 +42,14 @@ type Balance struct {
 	Code   string `json:"asset_code,omitempty"`
 	Issuer string `json:"issuer,omitempty"`
 	Limit  string `json:"limit,omitempty"`
+}
+
+// HistoryAccount is a simple resource, used for the account collection
+// actions.  It provides only the TotalOrderId of the account and its address.
+type HistoryAccount struct {
+	ID          string `json:"id"`
+	PagingToken string `json:"paging_token"`
+	Address     string `json:"address"`
 }
 
 // Signer represents one of an account's signers.

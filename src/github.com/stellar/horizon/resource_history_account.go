@@ -4,24 +4,8 @@ import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/resource"
 )
-
-// HistoryAccountResource is a simple resource, used for the account collection actions.
-// It provides only the TotalOrderId of the account and its address.
-type HistoryAccountResource struct {
-	ID          string `json:"id"`
-	PagingToken string `json:"paging_token"`
-	Address     string `json:"address"`
-}
-
-// NewHistoryAccountResource creates a new resource from a db.HistoryAccountRecord
-func NewHistoryAccountResource(in db.HistoryAccountRecord) HistoryAccountResource {
-	return HistoryAccountResource{
-		ID:          in.Address,
-		PagingToken: in.PagingToken(),
-		Address:     in.Address,
-	}
-}
 
 //NewHistoryAccountResourcePage creates a page of HistoryAccountResources
 func NewHistoryAccountResourcePage(records []db.HistoryAccountRecord, query db.PageQuery) (hal.Page, error) {
@@ -33,7 +17,9 @@ func NewHistoryAccountResourcePage(records []db.HistoryAccountRecord, query db.P
 
 	resources := make([]interface{}, len(records))
 	for i, record := range records {
-		resources[i] = NewHistoryAccountResource(record)
+		var res resource.HistoryAccount
+		res.Populate(record)
+		resources[i] = res
 	}
 
 	return hal.Page{
