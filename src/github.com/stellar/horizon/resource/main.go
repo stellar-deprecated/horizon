@@ -3,12 +3,20 @@
 package resource
 
 import (
-	"github.com/jagregory/halgo"
+	"github.com/stellar/horizon/render/hal"
 )
 
 // AccountResource is the summary of an account
 type Account struct {
-	halgo.Links
+	Links struct {
+		Self         hal.Link `json:"self"`
+		Transactions hal.Link `json:"transactions"`
+		Operations   hal.Link `json:"operations"`
+		Payments     hal.Link `json:"payments"`
+		Effects      hal.Link `json:"effects"`
+		Offers       hal.Link `json:"offers"`
+	} `json:"_links"`
+
 	HistoryAccount
 	Sequence             int64             `json:"sequence"`
 	SubentryCount        int32             `json:"subentry_count"`

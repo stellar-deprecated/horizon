@@ -2,8 +2,8 @@ package resource
 
 import (
 	"fmt"
+	_ "golang.org/x/net/context"
 
-	"github.com/jagregory/halgo"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 )
@@ -43,13 +43,14 @@ func (a *Account) Populate(row db.AccountRecord) (err error) {
 
 	a.Signers[len(a.Signers)-1].PopulateMaster(row)
 
+	lb := hal.LinkBuilder{}
 	self := fmt.Sprintf("/accounts/%s", row.Address)
-	a.Links = halgo.Links{}.
-		Self(self).
-		Link("transactions", "%s/transactions%s", self, hal.StandardPagingOptions).
-		Link("operations", "%s/operations%s", self, hal.StandardPagingOptions).
-		Link("effects", "%s/effects%s", self, hal.StandardPagingOptions).
-		Link("offers", "%s/offers%s", self, hal.StandardPagingOptions)
+	a.Links.Self = lb.Link(self)
+	a.Links.Transactions = lb.PagedLink(self, "transactions")
+	a.Links.Operations = lb.PagedLink(self, "operations")
+	a.Links.Payments = lb.PagedLink(self, "payments")
+	a.Links.Effects = lb.PagedLink(self, "effects")
+	a.Links.Offers = lb.PagedLink(self, "Offers")
 
 	return
 }
