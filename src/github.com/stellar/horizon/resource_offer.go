@@ -6,6 +6,7 @@ import (
 
 	"github.com/jagregory/halgo"
 
+	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
@@ -54,7 +55,7 @@ func NewOfferResource(op db.CoreOfferRecord) OfferResource {
 		Seller:      op.SellerID,
 		Buying:      buying,
 		Selling:     selling,
-		Amount:      AmountToString(op.Amount),
+		Amount:      amount.String(op.Amount),
 		PriceR: PriceResource{
 			N: op.Pricen,
 			D: op.Priced,

@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/resource"
 )
 
 // This file contains the actions:
@@ -81,8 +82,9 @@ func (action *AccountIndexAction) SSE(stream sse.Stream) {
 // AccountShowAction renders a account summary found by its address.
 type AccountShowAction struct {
 	Action
-	Query  db.AccountByAddressQuery
-	Record db.AccountRecord
+	Query    db.AccountByAddressQuery
+	Record   db.AccountRecord
+	Resource resource.Account
 }
 
 // LoadQuery sets action.Query from the request params
@@ -96,37 +98,46 @@ func (action *AccountShowAction) LoadQuery() {
 
 // LoadRecord populates action.Record
 func (action *AccountShowAction) LoadRecord() {
-	action.LoadQuery()
-	if action.Err != nil {
-		return
-	}
-
 	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+}
+
+// LoadResource populates action.Resource
+func (action *AccountShowAction) LoadResource() {
+	action.Err = action.Resource.Populate(action.Record)
 }
 
 // JSON is a method for actions.JSON
 func (action *AccountShowAction) JSON() {
-	action.LoadRecord()
-	if action.Err != nil {
-		return
-	}
-
-	hal.Render(action.W, NewAccountResource(action.Record))
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecord,
+		action.LoadResource,
+		func() {
+			hal.Render(action.W, action.Resource)
+		},
+	)
 }
 
 // SSE is a method for actions.SSE
 func (action *AccountShowAction) SSE(stream sse.Stream) {
-	action.LoadRecord()
-	if action.Err != nil {
-		stream.Err(action.Err)
-		return
-	}
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecord,
+		action.LoadResource,
+		func() {
+			if action.Err != nil {
+				stream.Err(action.Err)
+				return
+			}
 
-	stream.Send(sse.Event{
-		Data: NewAccountResource(action.Record),
-	})
+			stream.Send(sse.Event{
+				Data: action.Resource,
+			})
 
-	if stream.SentCount() >= 10 {
-		stream.Done()
-	}
+			if stream.SentCount() >= 10 {
+				stream.Done()
+			}
+		},
+	)
+
 }
