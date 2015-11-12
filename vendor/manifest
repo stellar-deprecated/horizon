@@ -65,6 +65,12 @@
 			"path": "/lru"
 		},
 		{
+			"importpath": "github.com/guregu/null",
+			"repository": "https://github.com/guregu/null",
+			"revision": "79c5bd36b615db4c06132321189f579c8a5fca98",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/inconshreveable/mousetrap",
 			"repository": "https://github.com/inconshreveable/mousetrap",
 			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
