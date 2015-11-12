@@ -60,6 +60,66 @@ func New(row db.EffectRecord) (result hal.Pageable, err error) {
 		e.Populate(row)
 		err = row.UnmarshalDetails(&e)
 		result = e
+	case db.EffectSignerCreated:
+		e := SignerCreated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectSignerUpdated:
+		e := SignerUpdated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectSignerRemoved:
+		e := SignerRemoved{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectTrustlineCreated:
+		e := TrustlineCreated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectTrustlineUpdated:
+		e := TrustlineUpdated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectTrustlineRemoved:
+		e := TrustlineRemoved{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectTrustlineAuthorized:
+		e := TrustlineAuthorized{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectTrustlineDeauthorized:
+		e := TrustlineDeauthorized{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectOfferCreated:
+		e := OfferCreated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectOfferUpdated:
+		e := OfferUpdated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectOfferRemoved:
+		e := OfferRemoved{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectTrade:
+		e := Trade{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
 	default:
 		e := Base{}
 		e.Populate(row)
@@ -120,4 +180,52 @@ type AccountFlagsUpdated struct {
 	Base
 	AuthRequired  *bool `json:"auth_required_flag,omitempty"`
 	AuthRevokable *bool `json:"auth_revokable_flag,omitempty"`
+}
+
+type SignerCreated struct {
+	Base
+}
+
+type SignerRemoved struct {
+	Base
+}
+
+type SignerUpdated struct {
+	Base
+}
+
+type TrustlineCreated struct {
+	Base
+}
+
+type TrustlineRemoved struct {
+	Base
+}
+
+type TrustlineUpdated struct {
+	Base
+}
+
+type TrustlineAuthorized struct {
+	Base
+}
+
+type TrustlineDeauthorized struct {
+	Base
+}
+
+type OfferCreated struct {
+	Base
+}
+
+type OfferRemoved struct {
+	Base
+}
+
+type OfferUpdated struct {
+	Base
+}
+
+type Trade struct {
+	Base
 }
