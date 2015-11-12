@@ -1,7 +1,6 @@
 package effects
 
 import (
-	"github.com/guregu/null"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 )
@@ -119,6 +118,6 @@ type AccountHomeDomainUpdated struct {
 
 type AccountFlagsUpdated struct {
 	Base
-	AuthRequired  null.Bool `json:"auth_required_flag,omitempty"`
-	AuthRevokable null.Bool `json:"auth_revokable_flag,omitempty"`
+	AuthRequired  *bool `json:"auth_required_flag,omitempty"`
+	AuthRevokable *bool `json:"auth_revokable_flag,omitempty"`
 }
