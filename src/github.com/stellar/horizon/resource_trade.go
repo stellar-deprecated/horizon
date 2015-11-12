@@ -36,7 +36,7 @@ func NewTradeResource(r db.EffectRecord) (result TradeResource, err error) {
 	}
 
 	var details map[string]interface{}
-	details, err = r.Details()
+	err = r.UnmarshalDetails(&details)
 
 	if err != nil {
 		return

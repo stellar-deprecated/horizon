@@ -3,7 +3,9 @@
 package resource
 
 import (
+	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/resource/effects"
 )
 
 // AccountResource is the summary of an account
@@ -64,4 +66,8 @@ type HistoryAccount struct {
 type Signer struct {
 	Address string `json:"address"`
 	Weight  int32  `json:"weight"`
+}
+
+func NewEffect(row db.EffectRecord) (result hal.Pageable, err error) {
+	return effects.New(row)
 }

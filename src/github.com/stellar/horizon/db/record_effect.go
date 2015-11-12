@@ -54,18 +54,17 @@ type EffectRecord struct {
 	DetailsString      sql.NullString `db:"details"`
 }
 
-func (r EffectRecord) Details() (result map[string]interface{}, err error) {
+func (r EffectRecord) UnmarshalDetails(dest interface{}) error {
 	if !r.DetailsString.Valid {
-		return
+		return nil
 	}
 
-	err = json.Unmarshal([]byte(r.DetailsString.String), &result)
-
+	err := json.Unmarshal([]byte(r.DetailsString.String), &dest)
 	if err != nil {
 		err = errors.Wrap(err, 1)
 	}
 
-	return
+	return err
 }
 
 // ID returns a lexically ordered id for this effect record

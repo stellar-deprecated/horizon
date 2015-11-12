@@ -23,6 +23,11 @@ func (p *NewPage) Add(rec Pageable) {
 }
 
 func (p *NewPage) PopulateLinks() {
+	//TODO: find a better way to initialize records to 0
+	if p.Embedded.Records == nil {
+		p.Embedded.Records = make([]Pageable, 0)
+	}
+
 	fmts := p.BasePath + "?order=%s&limit=%d&cursor=%s"
 	lb := LinkBuilder{}
 
