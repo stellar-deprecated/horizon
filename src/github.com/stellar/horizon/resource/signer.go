@@ -4,12 +4,12 @@ import (
 	"github.com/stellar/horizon/db"
 )
 
-func (s *Signer) Populate(row db.CoreSignerRecord) {
-	s.Address = row.Publickey
-	s.Weight = row.Weight
+func (this *Signer) Populate(row db.CoreSignerRecord) {
+	this.Address = row.Publickey
+	this.Weight = row.Weight
 }
 
-func (s *Signer) PopulateMaster(row db.AccountRecord) {
-	s.Address = row.Accountid
-	s.Weight = int32(row.Thresholds[0])
+func (this *Signer) PopulateMaster(row db.AccountRecord) {
+	this.Address = row.Accountid
+	this.Weight = int32(row.Thresholds[0])
 }
