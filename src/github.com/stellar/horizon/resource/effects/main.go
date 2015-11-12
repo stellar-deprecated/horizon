@@ -184,14 +184,20 @@ type AccountFlagsUpdated struct {
 
 type SignerCreated struct {
 	Base
+	Weight    int32  `json:"weight"`
+	PublicKey string `json:"public_key"`
 }
 
 type SignerRemoved struct {
 	Base
+	Weight    int32  `json:"weight"`
+	PublicKey string `json:"public_key"`
 }
 
 type SignerUpdated struct {
 	Base
+	Weight    int32  `json:"weight"`
+	PublicKey string `json:"public_key"`
 }
 
 type TrustlineCreated struct {
