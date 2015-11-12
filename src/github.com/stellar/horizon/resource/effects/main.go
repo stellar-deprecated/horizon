@@ -1,6 +1,7 @@
 package effects
 
 import (
+	"github.com/guregu/null"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 )
@@ -47,6 +48,16 @@ func New(row db.EffectRecord) (result hal.Pageable, err error) {
 		result = e
 	case db.EffectAccountThresholdsUpdated:
 		e := AccountThresholdsUpdated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectAccountHomeDomainUpdated:
+		e := AccountHomeDomainUpdated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectAccountFlagsUpdated:
+		e := AccountFlagsUpdated{}
 		e.Populate(row)
 		err = row.UnmarshalDetails(&e)
 		result = e
@@ -99,4 +110,15 @@ type AccountThresholdsUpdated struct {
 	LowThreshold  int32 `json:"low_threshold"`
 	MedThreshold  int32 `json:"med_threshold"`
 	HighThreshold int32 `json:"high_threshold"`
+}
+
+type AccountHomeDomainUpdated struct {
+	Base
+	HomeDomain string `json:"home_domain"`
+}
+
+type AccountFlagsUpdated struct {
+	Base
+	AuthRequired  null.Bool `json:"auth_required_flag,omitempty"`
+	AuthRevokable null.Bool `json:"auth_revokable_flag,omitempty"`
 }
