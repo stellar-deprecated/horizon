@@ -202,22 +202,40 @@ type SignerUpdated struct {
 
 type TrustlineCreated struct {
 	Base
+	Limit       string `json:"limit"`
+	AssetType   string `json:"asset_type"`
+	AssetCode   string `json:"asset_code,omitempty"`
+	AssetIssuer string `json:"asset_issuer,omitempty"`
 }
 
 type TrustlineRemoved struct {
 	Base
+	Limit       string `json:"limit"`
+	AssetType   string `json:"asset_type"`
+	AssetCode   string `json:"asset_code,omitempty"`
+	AssetIssuer string `json:"asset_issuer,omitempty"`
 }
 
 type TrustlineUpdated struct {
 	Base
+	Limit       string `json:"limit"`
+	AssetType   string `json:"asset_type"`
+	AssetCode   string `json:"asset_code,omitempty"`
+	AssetIssuer string `json:"asset_issuer,omitempty"`
 }
 
 type TrustlineAuthorized struct {
 	Base
+	Trustor   string `json:"trustor"`
+	AssetType string `json:"asset_type"`
+	AssetCode string `json:"asset_code,omitempty"`
 }
 
 type TrustlineDeauthorized struct {
 	Base
+	Trustor   string `json:"trustor"`
+	AssetType string `json:"asset_type"`
+	AssetCode string `json:"asset_code,omitempty"`
 }
 
 type OfferCreated struct {
