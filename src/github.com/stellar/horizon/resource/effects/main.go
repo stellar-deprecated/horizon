@@ -28,16 +28,34 @@ var TypeNames = map[int32]string{
 }
 
 func New(row db.EffectRecord) (result hal.Pageable, err error) {
+
 	switch row.Type {
 	case db.EffectAccountCreated:
-		var e AccountCreated
-		err = e.Populate(row)
+		e := AccountCreated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectAccountCredited:
+		e := AccountCredited{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectAccountDebited:
+		e := AccountDebited{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
+		result = e
+	case db.EffectAccountThresholdsUpdated:
+		e := AccountThresholdsUpdated{}
+		e.Populate(row)
+		err = row.UnmarshalDetails(&e)
 		result = e
 	default:
-		var e Base
+		e := Base{}
 		e.Populate(row)
 		result = e
 	}
+
 	return
 }
 
@@ -58,4 +76,27 @@ type Base struct {
 type AccountCreated struct {
 	Base
 	StartingBalance string `json:"starting_balance"`
+}
+
+type AccountCredited struct {
+	Base
+	Amount      string `json:"amount"`
+	AssetType   string `json:"asset_type"`
+	AssetCode   string `json:"asset_code,omitempty"`
+	AssetIssuer string `json:"asset_issuer,omitempty"`
+}
+
+type AccountDebited struct {
+	Base
+	Amount      string `json:"amount"`
+	AssetType   string `json:"asset_type"`
+	AssetCode   string `json:"asset_code,omitempty"`
+	AssetIssuer string `json:"asset_issuer,omitempty"`
+}
+
+type AccountThresholdsUpdated struct {
+	Base
+	LowThreshold  int32 `json:"low_threshold"`
+	MedThreshold  int32 `json:"med_threshold"`
+	HighThreshold int32 `json:"high_threshold"`
 }
