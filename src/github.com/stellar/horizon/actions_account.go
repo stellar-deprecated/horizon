@@ -18,7 +18,7 @@ type AccountIndexAction struct {
 	Action
 	Query   db.HistoryAccountPageQuery
 	Records []db.HistoryAccountRecord
-	Page    hal.Page
+	Page    hal.NewPage
 }
 
 // LoadQuery sets action.Query from the request params
@@ -37,7 +37,17 @@ func (action *AccountIndexAction) LoadRecords() {
 
 // LoadPage populates action.Page
 func (action *AccountIndexAction) LoadPage() {
-	action.Page, action.Err = NewHistoryAccountResourcePage(action.Records, action.Query.PageQuery)
+	for _, record := range action.Records {
+		var res resource.HistoryAccount
+		res.Populate(record)
+		action.Page.Add(res)
+	}
+
+	action.Page.BasePath = "/accounts"
+	action.Page.Limit = action.Query.Limit
+	action.Page.Cursor = action.Query.Cursor
+	action.Page.Order = action.Query.Order
+	action.Page.PopulateLinks()
 }
 
 // JSON is a method for actions.JSON

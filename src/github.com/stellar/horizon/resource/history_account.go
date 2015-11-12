@@ -6,6 +6,10 @@ import (
 
 func (a *HistoryAccount) Populate(row db.HistoryAccountRecord) {
 	a.ID = row.Address
-	a.PagingToken = row.PagingToken()
+	a.PT = row.PagingToken()
 	a.Address = row.Address
+}
+
+func (a HistoryAccount) PagingToken() string {
+	return a.PT
 }

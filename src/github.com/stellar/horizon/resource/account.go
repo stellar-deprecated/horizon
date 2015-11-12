@@ -10,7 +10,7 @@ import (
 
 func (a *Account) Populate(row db.AccountRecord) (err error) {
 	a.ID = row.Accountid
-	a.PagingToken = row.PagingToken()
+	a.PT = row.PagingToken()
 	a.Address = row.Accountid
 	a.Sequence = row.Seqnum
 	a.SubentryCount = row.Numsubentries

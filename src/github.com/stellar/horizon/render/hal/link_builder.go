@@ -1,6 +1,7 @@
 package hal
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 )
@@ -31,4 +32,8 @@ func (lb *LinkBuilder) PagedLink(parts ...string) Link {
 	nl.Href += StandardPagingOptions
 	nl.PopulateTemplated()
 	return nl
+}
+
+func (lb *LinkBuilder) Linkf(format string, args ...interface{}) Link {
+	return lb.Link(fmt.Sprintf(format, args...))
 }

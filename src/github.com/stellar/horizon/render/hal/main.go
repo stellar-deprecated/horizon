@@ -16,6 +16,10 @@ type Page struct {
 	Records []interface{}
 }
 
+type Pageable interface {
+	PagingToken() string
+}
+
 // RenderToString renders the provided data as a json string
 func RenderToString(data interface{}, pretty bool) ([]byte, error) {
 	if pretty {
