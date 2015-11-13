@@ -4,6 +4,7 @@ import (
 	"github.com/jagregory/halgo"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/resource"
 )
 
 // OrderBookSummaryResource is the display form of an OrderBookSummary record.
@@ -17,9 +18,9 @@ type OrderBookSummaryResource struct {
 
 // PriceLevelResource is the display form of a PriceLevelRecord
 type PriceLevelResource struct {
-	PriceR PriceResource `json:"price_r"`
-	Price  string        `json:"price"`
-	Amount string        `json:"amount"`
+	PriceR resource.Price `json:"price_r"`
+	Price  string         `json:"price"`
+	Amount string         `json:"amount"`
 }
 
 // AssetResource is the display form of a Asset in the stellar network
@@ -67,7 +68,7 @@ func newPriceLevelResources(records []db.OrderBookSummaryPriceLevelRecord) []Pri
 		result[i] = PriceLevelResource{
 			Price:  rec.PriceAsString(),
 			Amount: rec.AmountAsString(),
-			PriceR: PriceResource{
+			PriceR: resource.Price{
 				N: rec.Pricen,
 				D: rec.Priced,
 			},

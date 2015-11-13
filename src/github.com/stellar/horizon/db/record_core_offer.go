@@ -18,11 +18,11 @@ type CoreOfferRecord struct {
 	SellerID string `db:"sellerid"`
 	OfferID  int64  `db:"offerid"`
 
-	SellingAssetType int32          `db:"sellingassettype"`
+	SellingAssetType xdr.AssetType  `db:"sellingassettype"`
 	SellingAssetCode sql.NullString `db:"sellingassetcode"`
 	SellingIssuer    sql.NullString `db:"sellingissuer"`
 
-	BuyingAssetType int32          `db:"buyingassettype"`
+	BuyingAssetType xdr.AssetType  `db:"buyingassettype"`
 	BuyingAssetCode sql.NullString `db:"buyingassetcode"`
 	BuyingIssuer    sql.NullString `db:"buyingissuer"`
 

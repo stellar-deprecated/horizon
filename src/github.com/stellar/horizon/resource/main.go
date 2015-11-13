@@ -86,6 +86,36 @@ type Ledger struct {
 	MaxTxSetSize     int32     `json:"max_tx_set_size"`
 }
 
+// Offer is the display form of an offer to trade currency.
+type Offer struct {
+	Links struct {
+		Self       hal.Link `json:"self"`
+		OfferMaker hal.Link `json:"offer_maker"`
+	} `json:"_links"`
+
+	ID      int64      `json:"id"`
+	PT      string     `json:"paging_token"`
+	Seller  string     `json:"seller"`
+	Selling OfferAsset `json:"selling"`
+	Buying  OfferAsset `json:"buying"`
+	Amount  string     `json:"amount"`
+	PriceR  Price      `json:"price_r"`
+	Price   string     `json:"price"`
+}
+
+// OfferAsset is the json resource for an asset component of an offer.
+type OfferAsset struct {
+	Type   string `json:"asset_type"`
+	Code   string `json:"asset_code,omitempty"`
+	Issuer string `json:"asset_issuer,omitempty"`
+}
+
+// Price is a price, used by offers, expressed as a fraction, N/D.
+type Price struct {
+	N int32 `json:"numerator"`
+	D int32 `json:"denominator"`
+}
+
 // Signer represents one of an account's signers.
 type Signer struct {
 	Address string `json:"address"`
