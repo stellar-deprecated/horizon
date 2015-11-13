@@ -100,21 +100,6 @@ func New(row db.EffectRecord) (result hal.Pageable, err error) {
 		e.Populate(row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectOfferCreated:
-		e := OfferCreated{}
-		e.Populate(row)
-		err = row.UnmarshalDetails(&e)
-		result = e
-	case db.EffectOfferUpdated:
-		e := OfferUpdated{}
-		e.Populate(row)
-		err = row.UnmarshalDetails(&e)
-		result = e
-	case db.EffectOfferRemoved:
-		e := OfferRemoved{}
-		e.Populate(row)
-		err = row.UnmarshalDetails(&e)
-		result = e
 	case db.EffectTrade:
 		e := Trade{}
 		e.Populate(row)
@@ -236,18 +221,6 @@ type TrustlineDeauthorized struct {
 	Trustor   string `json:"trustor"`
 	AssetType string `json:"asset_type"`
 	AssetCode string `json:"asset_code,omitempty"`
-}
-
-type OfferCreated struct {
-	Base
-}
-
-type OfferRemoved struct {
-	Base
-}
-
-type OfferUpdated struct {
-	Base
 }
 
 type Trade struct {
