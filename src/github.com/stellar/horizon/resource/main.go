@@ -94,17 +94,30 @@ type Offer struct {
 		OfferMaker hal.Link `json:"offer_maker"`
 	} `json:"_links"`
 
-	ID      int64      `json:"id"`
-	PT      string     `json:"paging_token"`
-	Seller  string     `json:"seller"`
-	Selling base.Asset `json:"selling"`
-	Buying  base.Asset `json:"buying"`
-	Amount  string     `json:"amount"`
-	PriceR  base.Price `json:"price_r"`
-	Price   string     `json:"price"`
+	ID      int64  `json:"id"`
+	PT      string `json:"paging_token"`
+	Seller  string `json:"seller"`
+	Selling Asset  `json:"selling"`
+	Buying  Asset  `json:"buying"`
+	Amount  string `json:"amount"`
+	PriceR  Price  `json:"price_r"`
+	Price   string `json:"price"`
+}
+
+type OrderBookSummary struct {
+	Bids    []PriceLevel `json:"bids"`
+	Asks    []PriceLevel `json:"asks"`
+	Selling Asset        `json:"base"`
+	Buying  Asset        `json:"counter"`
 }
 
 type Price base.Price
+
+type PriceLevel struct {
+	PriceR Price  `json:"price_r"`
+	Price  string `json:"price"`
+	Amount string `json:"amount"`
+}
 
 // Signer represents one of an account's signers.
 type Signer struct {
