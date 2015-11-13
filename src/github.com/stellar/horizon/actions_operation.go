@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/resource"
 )
 
 // This file contains the actions:
@@ -18,7 +19,42 @@ type OperationIndexAction struct {
 	Action
 	Query   db.OperationPageQuery
 	Records []db.OperationRecord
-	Page    hal.Page
+	Page    hal.NewPage
+}
+
+// JSON is a method for actions.JSON
+func (action *OperationIndexAction) JSON() {
+	action.Do(action.LoadQuery, action.LoadRecords, action.LoadPage)
+	action.Do(func() {
+		hal.Render(action.W, action.Page)
+	})
+}
+
+// SSE is a method for actions.SSE
+func (action *OperationIndexAction) SSE(stream sse.Stream) {
+	action.Do(action.LoadQuery, action.LoadRecords, action.LoadPage)
+	action.Do(func() {
+		records := action.Records[stream.SentCount():]
+
+		for _, record := range records {
+			res, err := resource.NewOperation(record)
+
+			if err != nil {
+				stream.Err(action.Err)
+				return
+			}
+
+			stream.Send(sse.Event{
+				ID:   res.PagingToken(),
+				Data: res,
+			})
+		}
+
+		if stream.SentCount() >= int(action.Query.Limit) {
+			stream.Done()
+		}
+	})
+
 }
 
 // LoadQuery sets action.Query from the request params
@@ -35,93 +71,54 @@ func (action *OperationIndexAction) LoadQuery() {
 
 // LoadRecords populates action.Records
 func (action *OperationIndexAction) LoadRecords() {
-	action.LoadQuery()
-	if action.Err != nil {
-		return
-	}
-
 	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
 }
 
 // LoadPage populates action.Page
 func (action *OperationIndexAction) LoadPage() {
-	action.LoadRecords()
-	if action.Err != nil {
-		return
-	}
-
-	action.Page, action.Err = NewOperationResourcePage(action.Records, action.Query.PageQuery, action.Path())
-}
-
-// JSON is a method for actions.JSON
-func (action *OperationIndexAction) JSON() {
-	action.LoadPage()
-	if action.Err != nil {
-		return
-	}
-	hal.Render(action.W, action.Page)
-}
-
-// SSE is a method for actions.SSE
-func (action *OperationIndexAction) SSE(stream sse.Stream) {
-	action.LoadRecords()
-
-	if action.Err != nil {
-		stream.Err(action.Err)
-		return
-	}
-
-	records := action.Records[stream.SentCount():]
-
-	for _, record := range records {
-		r, err := NewOperationResource(record)
-
-		if err != nil {
-			stream.Err(action.Err)
+	for _, record := range action.Records {
+		var res hal.Pageable
+		res, action.Err = resource.NewOperation(record)
+		if action.Err != nil {
 			return
 		}
-
-		stream.Send(sse.Event{
-			ID:   record.PagingToken(),
-			Data: r,
-		})
+		action.Page.Add(res)
 	}
 
-	if stream.SentCount() >= int(action.Query.Limit) {
-		stream.Done()
-	}
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.Query.Limit
+	action.Page.Cursor = action.Query.Cursor
+	action.Page.Order = action.Query.Order
+	action.Page.PopulateLinks()
 }
 
 // OperationShowAction renders a ledger found by its sequence number.
 type OperationShowAction struct {
 	Action
-	Record db.OperationRecord
+	Query    db.OperationByIdQuery
+	Record   db.OperationRecord
+	Resource interface{}
 }
 
-// Query returns a database query to find a ledger by sequence
-func (action *OperationShowAction) Query() db.OperationByIdQuery {
-	return db.OperationByIdQuery{
+func (action *OperationShowAction) LoadQuery() {
+	action.Query = db.OperationByIdQuery{
 		SqlQuery: action.App.HistoryQuery(),
 		Id:       action.GetInt64("id"),
 	}
 }
 
+func (action *OperationShowAction) LoadRecord() {
+	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+}
+
+func (action *OperationShowAction) LoadResource() {
+	action.Resource, action.Err = resource.NewOperation(action.Record)
+}
+
 // JSON is a method for actions.JSON
 func (action *OperationShowAction) JSON() {
-	query := action.Query()
-	if action.Err != nil {
-		return
-	}
-
-	action.Err = db.Get(action.Ctx, query, &action.Record)
-	if action.Err != nil {
-		return
-	}
-
-	r, err := NewOperationResource(action.Record)
-	if err != nil {
-		return
-	}
-
-	hal.Render(action.W, r)
+	action.Do(action.LoadQuery, action.LoadRecord, action.LoadResource)
+	action.Do(func() {
+		hal.Render(action.W, action.Resource)
+	})
 }

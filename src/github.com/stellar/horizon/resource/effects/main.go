@@ -3,6 +3,7 @@ package effects
 import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/resource/base"
 )
 
 var TypeNames = map[int32]string{
@@ -135,18 +136,14 @@ type AccountCreated struct {
 
 type AccountCredited struct {
 	Base
-	Amount      string `json:"amount"`
-	AssetType   string `json:"asset_type"`
-	AssetCode   string `json:"asset_code,omitempty"`
-	AssetIssuer string `json:"asset_issuer,omitempty"`
+	base.Asset
+	Amount string `json:"amount"`
 }
 
 type AccountDebited struct {
 	Base
-	Amount      string `json:"amount"`
-	AssetType   string `json:"asset_type"`
-	AssetCode   string `json:"asset_code,omitempty"`
-	AssetIssuer string `json:"asset_issuer,omitempty"`
+	base.Asset
+	Amount string `json:"amount"`
 }
 
 type AccountThresholdsUpdated struct {
@@ -187,26 +184,20 @@ type SignerUpdated struct {
 
 type TrustlineCreated struct {
 	Base
-	Limit       string `json:"limit"`
-	AssetType   string `json:"asset_type"`
-	AssetCode   string `json:"asset_code,omitempty"`
-	AssetIssuer string `json:"asset_issuer,omitempty"`
+	base.Asset
+	Limit string `json:"limit"`
 }
 
 type TrustlineRemoved struct {
 	Base
-	Limit       string `json:"limit"`
-	AssetType   string `json:"asset_type"`
-	AssetCode   string `json:"asset_code,omitempty"`
-	AssetIssuer string `json:"asset_issuer,omitempty"`
+	base.Asset
+	Limit string `json:"limit"`
 }
 
 type TrustlineUpdated struct {
 	Base
-	Limit       string `json:"limit"`
-	AssetType   string `json:"asset_type"`
-	AssetCode   string `json:"asset_code,omitempty"`
-	AssetIssuer string `json:"asset_issuer,omitempty"`
+	base.Asset
+	Limit string `json:"limit"`
 }
 
 type TrustlineAuthorized struct {

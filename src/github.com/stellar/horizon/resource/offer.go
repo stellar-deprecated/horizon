@@ -5,6 +5,7 @@ import (
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/resource/base"
 )
 
 func (this *Offer) Populate(row db.CoreOfferRecord) {
@@ -15,12 +16,12 @@ func (this *Offer) Populate(row db.CoreOfferRecord) {
 	this.PriceR.N = row.Pricen
 	this.PriceR.D = row.Priced
 	this.Price = row.PriceAsString()
-	this.Buying = OfferAsset{
+	this.Buying = base.Asset{
 		Type:   assets.MustString(row.BuyingAssetType),
 		Code:   row.BuyingAssetCode.String,
 		Issuer: row.BuyingIssuer.String,
 	}
-	this.Selling = OfferAsset{
+	this.Selling = base.Asset{
 		Type:   assets.MustString(row.SellingAssetType),
 		Code:   row.SellingAssetCode.String,
 		Issuer: row.SellingIssuer.String,

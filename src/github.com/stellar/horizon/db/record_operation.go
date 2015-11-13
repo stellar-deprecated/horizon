@@ -30,15 +30,15 @@ type OperationRecord struct {
 	SourceAccount    string            `db:"source_account"`
 }
 
-func (r OperationRecord) Details() (result map[string]interface{}, err error) {
+func (r OperationRecord) UnmarshalDetails(dest interface{}) error {
 	if !r.DetailsString.Valid {
-		return
+		return nil
 	}
 
-	err = json.Unmarshal([]byte(r.DetailsString.String), &result)
+	err := json.Unmarshal([]byte(r.DetailsString.String), &dest)
 	if err != nil {
 		err = errors.Wrap(err, 1)
 	}
 
-	return
+	return err
 }

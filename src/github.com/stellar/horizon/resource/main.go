@@ -5,7 +5,9 @@ package resource
 import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/resource/base"
 	"github.com/stellar/horizon/resource/effects"
+	"github.com/stellar/horizon/resource/operations"
 	"time"
 )
 
@@ -45,14 +47,13 @@ type AccountThresholds struct {
 	HighThreshold byte `json:"high_threshold"`
 }
 
+type Asset base.Asset
+
 // Balance represents an account's holdings for a single currency type
 type Balance struct {
-	Type    string `json:"asset_type"`
 	Balance string `json:"balance"`
-	// additional trustline data
-	Code   string `json:"asset_code,omitempty"`
-	Issuer string `json:"issuer,omitempty"`
-	Limit  string `json:"limit,omitempty"`
+	Limit   string `json:"limit,omitempty"`
+	base.Asset
 }
 
 // HistoryAccount is a simple resource, used for the account collection
@@ -96,25 +97,14 @@ type Offer struct {
 	ID      int64      `json:"id"`
 	PT      string     `json:"paging_token"`
 	Seller  string     `json:"seller"`
-	Selling OfferAsset `json:"selling"`
-	Buying  OfferAsset `json:"buying"`
+	Selling base.Asset `json:"selling"`
+	Buying  base.Asset `json:"buying"`
 	Amount  string     `json:"amount"`
-	PriceR  Price      `json:"price_r"`
+	PriceR  base.Price `json:"price_r"`
 	Price   string     `json:"price"`
 }
 
-// OfferAsset is the json resource for an asset component of an offer.
-type OfferAsset struct {
-	Type   string `json:"asset_type"`
-	Code   string `json:"asset_code,omitempty"`
-	Issuer string `json:"asset_issuer,omitempty"`
-}
-
-// Price is a price, used by offers, expressed as a fraction, N/D.
-type Price struct {
-	N int32 `json:"numerator"`
-	D int32 `json:"denominator"`
-}
+type Price base.Price
 
 // Signer represents one of an account's signers.
 type Signer struct {
@@ -122,6 +112,14 @@ type Signer struct {
 	Weight  int32  `json:"weight"`
 }
 
+// NewEffect returns a resource of the appropriate sub-type for the provided
+// effect record.
 func NewEffect(row db.EffectRecord) (result hal.Pageable, err error) {
 	return effects.New(row)
+}
+
+// NewOperation returns a resource of the appropriate sub-type for the provided
+// operation record.
+func NewOperation(row db.OperationRecord) (result hal.Pageable, err error) {
+	return operations.New(row)
 }
