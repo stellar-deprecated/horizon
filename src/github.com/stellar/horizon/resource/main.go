@@ -111,6 +111,19 @@ type OrderBookSummary struct {
 	Buying  Asset        `json:"counter"`
 }
 
+// Path represents a single payment path.
+type Path struct {
+	SourceAssetType        string  `json:"source_asset_type"`
+	SourceAssetCode        string  `json:"source_asset_code,omitempty"`
+	SourceAssetIssuer      string  `json:"source_asset_issuer,omitempty"`
+	SourceAmount           string  `json:"source_amount"`
+	DestinationAssetType   string  `json:"destination_asset_type"`
+	DestinationAssetCode   string  `json:"destination_asset_code,omitempty"`
+	DestinationAssetIssuer string  `json:"destination_asset_issuer,omitempty"`
+	DestinationAmount      string  `json:"destination_amount"`
+	Path                   []Asset `json:"path"`
+}
+
 type Price base.Price
 
 type PriceLevel struct {
@@ -136,3 +149,5 @@ func NewEffect(row db.EffectRecord) (result hal.Pageable, err error) {
 func NewOperation(row db.OperationRecord) (result hal.Pageable, err error) {
 	return operations.New(row)
 }
+
+
