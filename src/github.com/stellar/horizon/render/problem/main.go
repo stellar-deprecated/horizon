@@ -195,4 +195,14 @@ var (
 		Detail: "This horizon server is currently overloaded.  Please wait for " +
 			"several minutes before trying your request again.",
 	}
+
+	// Timeout is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	Timeout = P{
+		Type:   "timeout",
+		Title:  "Timeout",
+		Status: http.StatusGatewayTimeout,
+		Detail: "Your request timed out before completing.  Please try your " +
+			"request again.",
+	}
 )

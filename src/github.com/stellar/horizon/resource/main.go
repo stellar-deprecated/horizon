@@ -207,6 +207,22 @@ type Transaction struct {
 	ValidBefore     string    `json:"valid_before,omitempty"`
 }
 
+type TransactionResultCodes struct {
+	TransactionCode string   `json:"transaction"`
+	OperationCodes  []string `json:"operations,omitempty"`
+}
+
+type TransactionSuccess struct {
+	Links struct {
+		Transaction hal.Link `json:"transaction"`
+	} `json:"_links"`
+	Hash   string `json:"hash"`
+	Ledger int32  `json:"ledger"`
+	Env    string `json:"envelope_xdr"`
+	Result string `json:"result_xdr"`
+	Meta   string `json:"result_meta_xdr"`
+}
+
 // NewEffect returns a resource of the appropriate sub-type for the provided
 // effect record.
 func NewEffect(row db.EffectRecord) (result hal.Pageable, err error) {

@@ -1,11 +1,14 @@
 package horizon
 
 import (
+	"net/http"
+
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
+	"github.com/stellar/horizon/txsub"
 )
 
 // This file contains the actions:
@@ -123,24 +126,71 @@ func (action *TransactionShowAction) JSON() {
 // on behalf of the requesting client.
 type TransactionCreateAction struct {
 	Action
+	TX       string
+	Result   txsub.Result
+	Resource resource.TransactionSuccess
 }
 
 // JSON format action handler
 func (action *TransactionCreateAction) JSON() {
+	action.Do(
+		action.LoadTX,
+		action.LoadResult,
+		action.LoadResource,
 
-	l := action.App.submitter.Submit(action.Ctx, action.GetString("tx"))
+		func() {
+			hal.Render(action.W, action.Resource)
+		})
+}
+
+func (action *TransactionCreateAction) LoadTX() {
+	action.TX = action.GetString("tx")
+}
+
+func (action *TransactionCreateAction) LoadResult() {
+	submission := action.App.submitter.Submit(action.Ctx, action.TX)
 
 	select {
-	case result := <-l:
-		resource := &ResultResource{result}
-
-		if resource.IsSuccess() {
-			hal.Render(action.W, resource.Success())
-		} else {
-			problem.Render(action.Ctx, action.W, resource.Error())
-		}
+	case result := <-submission:
+		action.Result = result
 	case <-action.Ctx.Done():
+		action.Err = &problem.Timeout
+	}
+}
+
+func (action *TransactionCreateAction) LoadResource() {
+	if action.Result.Err == nil {
+		action.Resource.Populate(action.Result)
 		return
 	}
 
+	switch err := action.Result.Err.(type) {
+	case *txsub.FailedTransactionError:
+		rcr := resource.TransactionResultCodes{}
+		rcr.Populate(err)
+
+		action.Err = &problem.P{
+			Type:   "transaction_failed",
+			Title:  "Transaction Failed",
+			Status: http.StatusBadRequest,
+			Detail: "TODO",
+			Extras: map[string]interface{}{
+				"envelope_xdr": action.Result.EnvelopeXDR,
+				"result_xdr":   err.ResultXDR,
+				"result_codes": rcr,
+			},
+		}
+	case *txsub.MalformedTransactionError:
+		action.Err = &problem.P{
+			Type:   "transaction_malformed",
+			Title:  "Transaction Malformed",
+			Status: http.StatusBadRequest,
+			Detail: "TODO",
+			Extras: map[string]interface{}{
+				"envelope_xdr": err.EnvelopeXDR,
+			},
+		}
+	default:
+		action.Err = err
+	}
 }
