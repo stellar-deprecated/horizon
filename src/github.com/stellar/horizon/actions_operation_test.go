@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/resource/operations"
 	"github.com/stellar/horizon/test"
 )
 
@@ -64,10 +65,10 @@ func TestOperationActions(t *testing.T) {
 			w := rh.Get("/operations/8589938689", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 200)
 
-			var result OperationResource
+			var result operations.Base
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
-			So(result["paging_token"], ShouldEqual, "8589938689")
+			So(result.PT, ShouldEqual, "8589938689")
 
 			w = rh.Get("/operations/10", test.RequestHelperNoop)
 			So(w.Code, ShouldEqual, 404)
