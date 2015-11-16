@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// AccountResource is the summary of an account
+// Account is the summary of an account
 type Account struct {
 	Links struct {
 		Self         hal.Link `json:"self"`
@@ -132,6 +132,25 @@ type PriceLevel struct {
 	Amount string `json:"amount"`
 }
 
+// Root is the initial map of links into the api.
+type Root struct {
+	Links struct {
+		Account             hal.Link `json:"account"`
+		AccountTransactions hal.Link `json:"account_transactions"`
+		Friendbot           hal.Link `json:"friendbot"`
+		Metrics             hal.Link `json:"metrics"`
+		OrderBook           hal.Link `json:"order_book"`
+		Self                hal.Link `json:"self"`
+		Transaction         hal.Link `json:"transaction"`
+		Transactions        hal.Link `json:"transactions"`
+	} `json:"_links"`
+
+	HorizonVersion      string `json:"horizon_version"`
+	StellarCoreVersion  string `json:"core_version"`
+	HorizonSequence     int32  `json:"horizon_latest_ledger"`
+	StellarCoreSequence int32  `json:"core_latest_ledger"`
+}
+
 // Signer represents one of an account's signers.
 type Signer struct {
 	Address string `json:"address"`
@@ -149,5 +168,3 @@ func NewEffect(row db.EffectRecord) (result hal.Pageable, err error) {
 func NewOperation(row db.OperationRecord) (result hal.Pageable, err error) {
 	return operations.New(row)
 }
-
-

@@ -1,39 +1,24 @@
 package horizon
 
 import (
-	"github.com/jagregory/halgo"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/resource"
 )
 
-// RootResource is the initial map of links into the api.
-type RootResource struct {
-	halgo.Links
-	HorizonVersion      string `json:"horizon_version"`
-	StellarCoreVersion  string `json:"core_version"`
-	HorizonSequence     int32  `json:"horizon_latest_ledger"`
-	StellarCoreSequence int32  `json:"core_latest_ledger"`
-}
-
+// RootAction provides a summary of the horizon instance and links to various
+// useful endpoints
 type RootAction struct {
 	Action
 }
 
+// JSON renders the json response for RootAction
 func (action *RootAction) JSON() {
+	var res resource.Root
+	res.Populate(
+		action.App.latestLedgerState,
+		action.App.horizonVersion,
+		action.App.coreVersion,
+	)
 
-	var response = RootResource{
-		HorizonVersion:      action.App.horizonVersion,
-		HorizonSequence:     action.App.latestLedgerState.HorizonSequence,
-		StellarCoreVersion:  action.App.coreVersion,
-		StellarCoreSequence: action.App.latestLedgerState.StellarCoreSequence,
-		Links: halgo.Links{}.
-			Self("/").
-			Link("account", "/accounts/{address}").
-			Link("account_transactions", "/accounts/{address}/transactions{?cursor,limit,order}").
-			Link("transaction", "/transactions/{hash}").
-			Link("transactions", "/transactions{?cursor,limit,order}").
-			Link("order_book", "/order_book{?selling_asset_type,selling_asset_code,selling_issuer,buying_asset_type,buying_asset_code,buying_issuer}").
-			Link("metrics", "/metrics").
-			Link("friendbot", "/friendbot{?addr}"),
-	}
-	hal.Render(action.W, response)
+	hal.Render(action.W, res)
 }
