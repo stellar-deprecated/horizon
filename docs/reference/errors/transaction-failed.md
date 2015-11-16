@@ -24,12 +24,12 @@ As with all errors Horizon returns, `transaction_failed` follows the [Problem De
 
 In addition, the following additional data is provided in the `extras` field of the error:
 
-| Attribute         | Type   | Description                                                                                                                 |
-|-------------------|--------|-----------------------------------------------------------------------------------------------------------------------------|
-| `envelope_xdr`    | String | A base64-encoded representation of the TransactionEnvelope XDR whose failure triggered this response.                       |
-| `result_xdr`      | String | A base64-encoded representation of the TransactionResult XDR returned by stellar-core when submitting this transactions.    |
-| `result_code`     | String | The transaction result code returned by stellar-core.                                                                       |
-| `op_result_codes` | Array  | An array of strings, representing the operation result codes for each operation in the submitted transaction, if available. |
+| Attribute                  | Type   | Description                                                                                                                 |
+|----------------------------|--------|-----------------------------------------------------------------------------------------------------------------------------|
+| `envelope_xdr`             | String | A base64-encoded representation of the TransactionEnvelope XDR whose failure triggered this response.                       |
+| `result_xdr`               | String | A base64-encoded representation of the TransactionResult XDR returned by stellar-core when submitting this transactions.    |
+| `result_codes.transaction` | String | The transaction result code returned by stellar-core.                                                                       |
+| `result_codes.operations`  | Array  | An array of strings, representing the operation result codes for each operation in the submitted transaction, if available. |
 
 
 ## Example
@@ -43,9 +43,11 @@ In addition, the following additional data is provided in the `extras` field of 
 	"extras": {
 		"envelope_xdr": "...",
 		"result_xdr": "...",
-		"result_code": "tx_failed",
-		"op_result_codes": [ "op_bad_auth" ]
-	}
+    "result_codes": {
+      "transaction": "tx_failed",
+      "operations": [ "op_bad_auth" ]
+    }
+  }
 }
 ```
 
