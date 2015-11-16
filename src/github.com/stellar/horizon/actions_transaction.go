@@ -144,6 +144,7 @@ func (action *TransactionCreateAction) JSON() {
 }
 
 func (action *TransactionCreateAction) LoadTX() {
+	action.ValidateBodyType()
 	action.TX = action.GetString("tx")
 }
 
