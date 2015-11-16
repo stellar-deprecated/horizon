@@ -77,21 +77,9 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/jagregory/halgo",
-			"repository": "https://github.com/jagregory/halgo",
-			"revision": "d1d6fd6cbc6ff4df35f82b03bf93fdade591985d",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/jmoiron/sqlx",
 			"repository": "https://github.com/jmoiron/sqlx",
 			"revision": "ad7f2641d00865a3d5b860ccdade6f8e63dbdae6",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/jtacoma/uritemplates",
-			"repository": "https://github.com/jtacoma/uritemplates",
-			"revision": "0a85813ecac22e3cbe916ab9480b33f2f4a06b2e",
 			"branch": "master"
 		},
 		{
