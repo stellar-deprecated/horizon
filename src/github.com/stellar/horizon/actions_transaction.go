@@ -174,7 +174,10 @@ func (action *TransactionCreateAction) LoadResource() {
 			Type:   "transaction_failed",
 			Title:  "Transaction Failed",
 			Status: http.StatusBadRequest,
-			Detail: "TODO",
+			Detail: "The transaction failed when submitted to the stellar network. " +
+				"The `extras.result_codes` field on this response contains further " +
+				"details.  Descriptions of each code can be found at: " +
+				"https://www.stellar.org/developers/learn/concepts/list-of-operations.html",
 			Extras: map[string]interface{}{
 				"envelope_xdr": action.Result.EnvelopeXDR,
 				"result_xdr":   err.ResultXDR,
@@ -186,7 +189,11 @@ func (action *TransactionCreateAction) LoadResource() {
 			Type:   "transaction_malformed",
 			Title:  "Transaction Malformed",
 			Status: http.StatusBadRequest,
-			Detail: "TODO",
+			Detail: "Horizon could not decode the transaction envelope in this " +
+				"request. A transaction should be an XDR TransactionEnvelope struct " +
+				"encoded using base64.  The envelope read from this request is " +
+				"echoed in the `extras.envelope_xdr` field of this response for your " +
+				"convenience.",
 			Extras: map[string]interface{}{
 				"envelope_xdr": err.EnvelopeXDR,
 			},
