@@ -18,7 +18,7 @@ type LedgerIndexAction struct {
 	Action
 	Query   db.LedgerPageQuery
 	Records []db.LedgerRecord
-	Page    hal.NewPage
+	Page    hal.Page
 }
 
 // JSON is a method for actions.JSON

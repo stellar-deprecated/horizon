@@ -16,7 +16,7 @@ type OffersByAccountAction struct {
 	Action
 	Query   db.CoreOfferPageByAddressQuery
 	Records []db.CoreOfferRecord
-	Page    hal.NewPage
+	Page    hal.Page
 }
 
 // JSON is a method for actions.JSON

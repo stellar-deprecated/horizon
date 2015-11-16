@@ -18,7 +18,7 @@ type AccountIndexAction struct {
 	Action
 	Query   db.HistoryAccountPageQuery
 	Records []db.HistoryAccountRecord
-	Page    hal.NewPage
+	Page    hal.Page
 }
 
 // LoadQuery sets action.Query from the request params

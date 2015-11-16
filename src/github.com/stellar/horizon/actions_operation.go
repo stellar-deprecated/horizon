@@ -19,7 +19,7 @@ type OperationIndexAction struct {
 	Action
 	Query   db.OperationPageQuery
 	Records []db.OperationRecord
-	Page    hal.NewPage
+	Page    hal.Page
 }
 
 // JSON is a method for actions.JSON

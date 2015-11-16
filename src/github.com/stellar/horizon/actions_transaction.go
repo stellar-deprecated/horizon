@@ -22,7 +22,7 @@ type TransactionIndexAction struct {
 	Action
 	Query   db.TransactionPageQuery
 	Records []db.TransactionRecord
-	Page    hal.NewPage
+	Page    hal.Page
 }
 
 // LoadQuery sets action.Query from the request params

@@ -5,14 +5,6 @@ import (
 	"net/http"
 )
 
-// StandardPagingOptions is a helper string to make creating paged collection
-// URIs simpler.
-var StandardPagingOptions = "{?cursor,limit,order}"
-
-type Pageable interface {
-	PagingToken() string
-}
-
 // RenderToString renders the provided data as a json string
 func RenderToString(data interface{}, pretty bool) ([]byte, error) {
 	if pretty {

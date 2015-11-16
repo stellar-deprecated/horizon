@@ -20,7 +20,7 @@ type EffectIndexAction struct {
 	Action
 	Query   db.EffectPageQuery
 	Records []db.EffectRecord
-	Page    hal.NewPage
+	Page    hal.Page
 }
 
 // JSON is a method for actions.JSON

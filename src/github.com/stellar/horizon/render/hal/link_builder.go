@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+// StandardPagingOptions is a helper string to make creating paged collection
+// URIs simpler.
+const StandardPagingOptions = "{?cursor,limit,order}"
+
 type LinkBuilder struct {
 	Base *url.URL
 }

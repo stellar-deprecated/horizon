@@ -18,8 +18,7 @@ func (p *BasePage) Init() {
 	}
 }
 
-//TODO: rename to Page when we've remove all old Page uses
-type NewPage struct {
+type Page struct {
 	Links struct {
 		Self Link `json:"self"`
 		Next Link `json:"next"`
@@ -33,7 +32,7 @@ type NewPage struct {
 	Cursor   string `json:"-"`
 }
 
-func (p *NewPage) PopulateLinks() {
+func (p *Page) PopulateLinks() {
 	p.Init()
 
 	fmts := p.BasePath + "?order=%s&limit=%d&cursor=%s"
@@ -51,7 +50,7 @@ func (p *NewPage) PopulateLinks() {
 	}
 }
 
-func (p *NewPage) InvertedOrder() string {
+func (p *Page) InvertedOrder() string {
 	switch p.Order {
 	case "asc":
 		return "desc"
