@@ -157,6 +157,26 @@ type Signer struct {
 	Weight  int32  `json:"weight"`
 }
 
+// Trade represents a trade effect
+type Trade struct {
+	Links struct {
+		Self   hal.Link `json:"self"`
+		Seller hal.Link `json:"seller"`
+		Buyer  hal.Link `json:"buyer"`
+	} `json:"_links"`
+
+	ID                string `json:"id"`
+	PT                string `json:"paging_token"`
+	Seller            string `json:"seller"`
+	SoldAssetType     string `json:"sold_asset_type"`
+	SoldAssetCode     string `json:"sold_asset_code,omitempty"`
+	SoldAssetIssuer   string `json:"sold_asset_issuer,omitempty"`
+	Buyer             string `json:"buyer"`
+	BoughtAssetType   string `json:"bought_asset_type"`
+	BoughtAssetCode   string `json:"bought_asset_code,omitempty"`
+	BoughtAssetIssuer string `json:"bought_asset_issuer,omitempty"`
+}
+
 // NewEffect returns a resource of the appropriate sub-type for the provided
 // effect record.
 func NewEffect(row db.EffectRecord) (result hal.Pageable, err error) {
