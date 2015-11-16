@@ -177,6 +177,36 @@ type Trade struct {
 	BoughtAssetIssuer string `json:"bought_asset_issuer,omitempty"`
 }
 
+// Transaction represents a single, successful transaction
+type Transaction struct {
+	Links struct {
+		Self       hal.Link `json:"self"`
+		Account    hal.Link `json:"account"`
+		Ledger     hal.Link `json:"ledger"`
+		Operations hal.Link `json:"operations"`
+		Effects    hal.Link `json:"effects"`
+		Precedes   hal.Link `json:"precedes"`
+		Succeeds   hal.Link `json:"succeeds"`
+	} `json:"_links"`
+	ID              string    `json:"id"`
+	PT              string    `json:"paging_token"`
+	Hash            string    `json:"hash"`
+	Ledger          int32     `json:"ledger"`
+	LedgerCloseTime time.Time `json:"created_at"`
+	Account         string    `json:"source_account"`
+	AccountSequence int64     `json:"source_account_sequence"`
+	FeePaid         int32     `json:"fee_paid"`
+	OperationCount  int32     `json:"operation_count"`
+	EnvelopeXdr     string    `json:"envelope_xdr"`
+	ResultXdr       string    `json:"result_xdr"`
+	ResultMetaXdr   string    `json:"result_meta_xdr"`
+	MemoType        string    `json:"memo_type"`
+	Memo            string    `json:"memo,omitempty"`
+	Signatures      []string  `json:"signatures"`
+	ValidAfter      string    `json:"valid_after,omitempty"`
+	ValidBefore     string    `json:"valid_before,omitempty"`
+}
+
 // NewEffect returns a resource of the appropriate sub-type for the provided
 // effect record.
 func NewEffect(row db.EffectRecord) (result hal.Pageable, err error) {

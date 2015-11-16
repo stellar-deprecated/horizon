@@ -5,6 +5,7 @@ import (
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/resource"
 )
 
 // This file contains the actions:
@@ -18,7 +19,7 @@ type TransactionIndexAction struct {
 	Action
 	Query   db.TransactionPageQuery
 	Records []db.TransactionRecord
-	Page    hal.Page
+	Page    hal.NewPage
 }
 
 // LoadQuery sets action.Query from the request params
@@ -34,85 +35,88 @@ func (action *TransactionIndexAction) LoadQuery() {
 
 // LoadRecords populates action.Records
 func (action *TransactionIndexAction) LoadRecords() {
-	action.LoadQuery()
-	if action.Err != nil {
-		return
-	}
-
 	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
 }
 
 // LoadPage populates action.Page
 func (action *TransactionIndexAction) LoadPage() {
-	action.LoadRecords()
-	if action.Err != nil {
-		return
+	for _, record := range action.Records {
+		var res resource.Transaction
+		res.Populate(record)
+		action.Page.Add(res)
 	}
 
-	action.Page, action.Err = NewTransactionResourcePage(action.Records, action.Query.PageQuery, action.Path())
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.Query.Limit
+	action.Page.Cursor = action.Query.Cursor
+	action.Page.Order = action.Query.Order
+	action.Page.PopulateLinks()
 }
 
 // JSON is a method for actions.JSON
 func (action *TransactionIndexAction) JSON() {
-	action.LoadPage()
-	if action.Err != nil {
-		return
-	}
-	hal.Render(action.W, action.Page)
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecords,
+		action.LoadPage,
+		func() {
+			hal.Render(action.W, action.Page)
+		},
+	)
 }
 
 // SSE is a method for actions.SSE
 func (action *TransactionIndexAction) SSE(stream sse.Stream) {
-	action.LoadRecords()
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecords,
+		func() {
+			records := action.Records[stream.SentCount():]
 
-	if action.Err != nil {
-		stream.Err(action.Err)
-		return
-	}
+			for _, record := range records {
+				var res resource.Transaction
+				res.Populate(record)
+				stream.Send(sse.Event{ID: res.PagingToken(), Data: res})
+			}
 
-	records := action.Records[stream.SentCount():]
-
-	for _, record := range records {
-		stream.Send(sse.Event{
-			ID:   record.PagingToken(),
-			Data: NewTransactionResource(record),
-		})
-	}
-
-	if stream.SentCount() >= int(action.Query.Limit) {
-		stream.Done()
-	}
+			if stream.SentCount() >= int(action.Query.Limit) {
+				stream.Done()
+			}
+		},
+	)
 }
 
 // TransactionShowAction renders a ledger found by its sequence number.
 type TransactionShowAction struct {
 	Action
-	Record db.TransactionRecord
+	Query    db.TransactionByHashQuery
+	Record   db.TransactionRecord
+	Resource resource.Transaction
 }
 
-// Query returns a database query to find a ledger by sequence
-func (action *TransactionShowAction) Query() db.TransactionByHashQuery {
-	return db.TransactionByHashQuery{
+func (action *TransactionShowAction) LoadQuery() {
+	action.Query = db.TransactionByHashQuery{
 		SqlQuery: action.App.HistoryQuery(),
 		Hash:     action.GetString("id"),
 	}
 }
 
+func (action *TransactionShowAction) LoadRecord() {
+	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+}
+
+func (action *TransactionShowAction) LoadResource() {
+	action.Resource.Populate(action.Record)
+}
+
 // JSON is a method for actions.JSON
 func (action *TransactionShowAction) JSON() {
-	query := action.Query()
-
-	if action.Err != nil {
-		return
-	}
-
-	action.Err = db.Get(action.Ctx, query, &action.Record)
-
-	if action.Err != nil {
-		return
-	}
-
-	hal.Render(action.W, NewTransactionResource(action.Record))
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecord,
+		action.LoadResource,
+		func() { hal.Render(action.W, action.Resource) },
+	)
 }
 
 // TransactionCreateAction submits a transaction to the stellar-core network
