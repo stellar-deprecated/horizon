@@ -10,6 +10,7 @@ import (
 var (
 	ErrNoResults = errors.New("No result found")
 	ErrCanceled  = errors.New("canceled")
+	ErrTimeout   = errors.New("timeout")
 
 	// ErrBadSequence is a canned error response for transactions whose sequence
 	// number is wrong.

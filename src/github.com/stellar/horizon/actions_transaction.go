@@ -165,6 +165,16 @@ func (action *TransactionCreateAction) LoadResource() {
 		return
 	}
 
+	if action.Result.Err == txsub.ErrTimeout {
+		action.Err = &problem.Timeout
+		return
+	}
+
+	if action.Result.Err == txsub.ErrCanceled {
+		action.Err = &problem.Timeout
+		return
+	}
+
 	switch err := action.Result.Err.(type) {
 	case *txsub.FailedTransactionError:
 		rcr := resource.TransactionResultCodes{}

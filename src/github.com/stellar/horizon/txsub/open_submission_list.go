@@ -80,8 +80,10 @@ func (s *submissionList) Clean(ctx context.Context, maxAge time.Duration) (int, 
 
 	for _, os := range s.submissions {
 		if time.Since(os.SubmittedAt) > maxAge {
+			r := Result{Err: ErrTimeout}
 			delete(s.submissions, os.Hash)
 			for _, l := range os.Listeners {
+				l <- r
 				close(l)
 			}
 		}
