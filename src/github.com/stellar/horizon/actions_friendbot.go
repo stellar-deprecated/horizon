@@ -7,7 +7,6 @@ import (
 )
 
 type FriendbotAction struct {
-	Action
 	TransactionCreateAction
 	Address string
 }
