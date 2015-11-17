@@ -7,8 +7,8 @@ import (
 
 // This file contains helpers for working with stellar assets
 
-func assetFromDB(typ int32, code string, issuer string) (result xdr.Asset, err error) {
-	switch xdr.AssetType(typ) {
+func assetFromDB(typ xdr.AssetType, code string, issuer string) (result xdr.Asset, err error) {
+	switch typ {
 	case xdr.AssetTypeAssetTypeNative:
 		result, err = xdr.NewAsset(xdr.AssetTypeAssetTypeNative, nil)
 	case xdr.AssetTypeAssetTypeCreditAlphanum4:

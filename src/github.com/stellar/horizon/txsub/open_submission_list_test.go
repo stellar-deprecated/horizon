@@ -118,6 +118,8 @@ func TestDefaultSubmissionList(t *testing.T) {
 			})
 
 			Convey("closes any cleaned listeners", func() {
+				So(len(listeners[0]), ShouldEqual, 1)
+				<-listeners[0]
 				select {
 				case _, stillOpen := <-listeners[0]:
 					So(stillOpen, ShouldBeFalse)

@@ -173,7 +173,9 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 
 			So(len(records), ShouldEqual, 1)
 			r := records[0]
-			dets, _ := r.Details()
+
+			var dets map[string]interface{}
+			_ = r.UnmarshalDetails(&dets)
 
 			So(dets["sold_asset_type"].(string), ShouldEqual, "credit_alphanum4")
 			So(dets["sold_asset_code"], ShouldEqual, "EUR")

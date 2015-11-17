@@ -43,6 +43,14 @@ func String(aType xdr.AssetType) (string, error) {
 	return "", errors.New(ErrInvalidValue)
 }
 
+func MustString(aType xdr.AssetType) string {
+	s, err := String(aType)
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
+
 // Equals returns true if l and r are equivalent.
 func Equals(l, r xdr.Asset) bool {
 	var le, re struct {

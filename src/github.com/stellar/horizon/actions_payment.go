@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/resource"
 )
 
 type PaymentsIndexAction struct {
@@ -11,6 +12,41 @@ type PaymentsIndexAction struct {
 	Query   db.OperationPageQuery
 	Records []db.OperationRecord
 	Page    hal.Page
+}
+
+// JSON is a method for actions.JSON
+func (action *PaymentsIndexAction) JSON() {
+	action.Do(action.LoadQuery, action.LoadRecords, action.LoadPage)
+	action.Do(func() {
+		hal.Render(action.W, action.Page)
+	})
+}
+
+// SSE is a method for actions.SSE
+func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
+	action.Do(action.LoadQuery, action.LoadRecords)
+	action.Do(func() {
+		records := action.Records[stream.SentCount():]
+
+		for _, record := range records {
+			res, err := resource.NewOperation(record)
+
+			if err != nil {
+				stream.Err(action.Err)
+				return
+			}
+
+			stream.Send(sse.Event{
+				ID:   res.PagingToken(),
+				Data: res,
+			})
+		}
+
+		if stream.SentCount() >= int(action.Query.Limit) {
+			stream.Done()
+		}
+	})
+
 }
 
 // LoadQuery sets action.Query from the request params
@@ -28,59 +64,23 @@ func (action *PaymentsIndexAction) LoadQuery() {
 
 // LoadRecords populates action.Records
 func (action *PaymentsIndexAction) LoadRecords() {
-	action.LoadQuery()
-	if action.Err != nil {
-		return
-	}
-
 	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
 }
 
 // LoadPage populates action.Page
 func (action *PaymentsIndexAction) LoadPage() {
-	action.LoadRecords()
-	if action.Err != nil {
-		return
-	}
-
-	action.Page, action.Err = NewOperationResourcePage(action.Records, action.Query.PageQuery, action.Path())
-}
-
-// JSON is a method for actions.JSON
-func (action *PaymentsIndexAction) JSON() {
-	action.LoadPage()
-	if action.Err != nil {
-		return
-	}
-	hal.Render(action.W, action.Page)
-}
-
-// SSE is a method for actions.SSE
-func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
-	action.LoadRecords()
-
-	if action.Err != nil {
-		stream.Err(action.Err)
-		return
-	}
-
-	records := action.Records[stream.SentCount():]
-
-	for _, record := range records {
-		r, err := NewOperationResource(record)
-
-		if err != nil {
-			stream.Err(action.Err)
+	for _, record := range action.Records {
+		var res hal.Pageable
+		res, action.Err = resource.NewOperation(record)
+		if action.Err != nil {
 			return
 		}
-
-		stream.Send(sse.Event{
-			ID:   record.PagingToken(),
-			Data: r,
-		})
+		action.Page.Add(res)
 	}
 
-	if stream.SentCount() >= int(action.Query.Limit) {
-		stream.Done()
-	}
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.Query.Limit
+	action.Page.Cursor = action.Query.Cursor
+	action.Page.Order = action.Query.Order
+	action.Page.PopulateLinks()
 }

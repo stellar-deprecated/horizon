@@ -122,7 +122,8 @@ func TestTxsub(t *testing.T) {
 				system.Tick(ctx)
 
 				So(len(system.Pending.Pending(ctx)), ShouldEqual, 0)
-
+				So(len(l), ShouldEqual, 1)
+				<-l
 				select {
 				case _, stillOpen := <-l:
 					So(stillOpen, ShouldBeFalse)

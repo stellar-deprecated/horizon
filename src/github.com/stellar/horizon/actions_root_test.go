@@ -3,6 +3,7 @@ package horizon
 import (
 	"encoding/json"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/resource"
 	"github.com/stellar/horizon/test"
 	"testing"
 )
@@ -22,7 +23,7 @@ func TestRootAction(t *testing.T) {
 
 		So(w.Code, ShouldEqual, 200)
 
-		var result RootResource
+		var result resource.Root
 		err := json.Unmarshal(w.Body.Bytes(), &result)
 		So(err, ShouldBeNil)
 

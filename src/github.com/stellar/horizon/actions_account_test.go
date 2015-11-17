@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/resource"
 	"github.com/stellar/horizon/test"
 )
 
@@ -21,7 +22,7 @@ func TestAccountActions(t *testing.T) {
 
 			So(w.Code, ShouldEqual, 200)
 
-			var result AccountResource
+			var result resource.Account
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
 			So(result.Sequence, ShouldEqual, 3)

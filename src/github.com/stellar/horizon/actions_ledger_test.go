@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/resource"
 	"github.com/stellar/horizon/test"
 )
 
@@ -22,7 +23,7 @@ func TestLedgerActions(t *testing.T) {
 			t.Log(w.Body.String())
 			So(w.Code, ShouldEqual, 200)
 
-			var result LedgerResource
+			var result resource.Ledger
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
 			So(result.Sequence, ShouldEqual, 1)

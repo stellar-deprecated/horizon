@@ -1,6 +1,7 @@
-// Package null contains types that consider zero input and null input as separate values.
+// Package null contains SQL types that consider zero input and null input as separate values,
+// with convenient support for JSON and text marshaling.
 // Types in this package will always encode to their null value if null.
-// Use the zero subpackage if you want empty and null to be treated the same.
+// Use the zero subpackage if you want zero values and null to be treated the same.
 package null
 
 import (
@@ -40,12 +41,14 @@ func NewString(s string, valid bool) String {
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-// It supports string and null input. Blank string input produces a null String.
+// It supports string and null input. Blank string input does not produce a null String.
 // It also supports unmarshalling a sql.NullString.
 func (s *String) UnmarshalJSON(data []byte) error {
 	var err error
 	var v interface{}
-	json.Unmarshal(data, &v)
+	if err = json.Unmarshal(data, &v); err != nil {
+		return err
+	}
 	switch x := v.(type) {
 	case string:
 		s.String = x
@@ -57,7 +60,7 @@ func (s *String) UnmarshalJSON(data []byte) error {
 	default:
 		err = fmt.Errorf("json: cannot unmarshal %v into Go value of type null.String", reflect.TypeOf(v).Name())
 	}
-	s.Valid = (err == nil) && (s.String != "")
+	s.Valid = err == nil
 	return err
 }
 

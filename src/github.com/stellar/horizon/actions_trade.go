@@ -3,7 +3,7 @@ package horizon
 import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
-	_ "github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/resource"
 )
 
 // TradeIndexAction renders a page of effect resources, filtered to include
@@ -71,5 +71,18 @@ func (action *TradeIndexAction) LoadRecords() {
 
 // LoadPage populates action.Page
 func (action *TradeIndexAction) LoadPage() {
-	action.Page, action.Err = NewTradeResourcePage(action.Records, action.Query.PageQuery, action.Path())
+	for _, record := range action.Records {
+		var res resource.Trade
+		action.Err = res.Populate(record)
+		if action.Err != nil {
+			return
+		}
+		action.Page.Add(res)
+	}
+
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.Query.Limit
+	action.Page.Cursor = action.Query.Cursor
+	action.Page.Order = action.Query.Order
+	action.Page.PopulateLinks()
 }

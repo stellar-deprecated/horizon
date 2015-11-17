@@ -3,32 +3,26 @@ package horizon
 import (
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
-	"github.com/stellar/horizon/txsub"
 	"net/http"
 )
 
 type FriendbotAction struct {
-	Action
+	TransactionCreateAction
 	Address string
-	Result  txsub.Result
 }
 
 // JSON is a method for actions.JSON
 func (action *FriendbotAction) JSON() {
+
 	action.Do(
 		action.CheckEnabled,
 		action.LoadAddress,
 		action.LoadResult,
-		func() {
-			resource := &ResultResource{action.Result}
+		action.LoadResource,
 
-			if resource.IsSuccess() {
-				hal.Render(action.W, resource.Success())
-			} else {
-				problem.Render(action.Ctx, action.W, resource.Error())
-			}
-		},
-	)
+		func() {
+			hal.Render(action.W, action.Resource)
+		})
 }
 
 func (action *FriendbotAction) CheckEnabled() {

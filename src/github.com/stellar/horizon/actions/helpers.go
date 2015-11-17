@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"mime"
 	"net/http"
 	"strconv"
 
@@ -311,6 +312,8 @@ func (base *Base) GetAsset(prefix string) (result xdr.Asset) {
 	return
 }
 
+// SetInvalidField establishes an error response triggered by an invalid
+// input field from the user.
 func (base *Base) SetInvalidField(name string, reason error) {
 	br := problem.BadRequest
 
@@ -325,4 +328,25 @@ func (base *Base) SetInvalidField(name string, reason error) {
 // this action
 func (base *Base) Path() string {
 	return base.R.URL.Path
+}
+
+// ValidateBodyType sets an error on the action if the requests Content-Type
+//  is not `application/x-www-form-urlencoded`
+func (base *Base) ValidateBodyType() {
+	c := base.R.Header.Get("Content-Type")
+	mt, _, err := mime.ParseMediaType(c)
+
+	if err != nil {
+		base.Err = err
+		return
+	}
+
+	switch {
+	case mt == "application/x-www-form-urlencoded":
+		return
+	case mt == "multipart/form-data":
+		return
+	default:
+		base.Err = &problem.UnsupportedMediaType
+	}
 }

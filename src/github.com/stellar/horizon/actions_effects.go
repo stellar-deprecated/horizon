@@ -5,6 +5,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/resource"
 	"regexp"
 )
 
@@ -34,15 +35,11 @@ func (action *EffectIndexAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *EffectIndexAction) SSE(stream sse.Stream) {
 	action.Do(action.LoadQuery, action.LoadRecords)
-	if action.Err != nil {
-		stream.Err(action.Err)
-		return
-	}
 
 	records := action.Records[stream.SentCount():]
 
 	for _, record := range records {
-		r, err := NewEffectResource(record)
+		res, err := resource.NewEffect(record)
 
 		if err != nil {
 			stream.Err(action.Err)
@@ -50,8 +47,8 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 		}
 
 		stream.Send(sse.Event{
-			ID:   record.PagingToken(),
-			Data: r,
+			ID:   res.PagingToken(),
+			Data: res,
 		})
 	}
 
@@ -96,7 +93,20 @@ func (action *EffectIndexAction) LoadRecords() {
 
 // LoadPage populates action.Page
 func (action *EffectIndexAction) LoadPage() {
-	action.Page, action.Err = NewEffectResourcePage(action.Records, action.Query.PageQuery, action.Path())
+	for _, record := range action.Records {
+		var res hal.Pageable
+		res, action.Err = resource.NewEffect(record)
+		if action.Err != nil {
+			return
+		}
+		action.Page.Add(res)
+	}
+
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.Query.Limit
+	action.Page.Cursor = action.Query.Cursor
+	action.Page.Order = action.Query.Order
+	action.Page.PopulateLinks()
 }
 
 func (action *EffectIndexAction) ValidateCursor() {

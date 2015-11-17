@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/resource"
 )
 
 // OrderBookShowAction renders a account summary found by its address.
@@ -11,7 +12,7 @@ type OrderBookShowAction struct {
 	Action
 	Query    *db.OrderBookSummaryQuery
 	Record   db.OrderBookSummaryRecord
-	Resource OrderBookSummaryResource
+	Resource resource.OrderBookSummary
 }
 
 // LoadQuery sets action.Query from the request params
@@ -38,7 +39,7 @@ func (action *OrderBookShowAction) LoadRecord() {
 
 // LoadResource populates action.Record
 func (action *OrderBookShowAction) LoadResource() {
-	action.Resource, action.Err = NewOrderBookSummaryResource(action.Query, action.Record)
+	action.Err = action.Resource.Populate(action.Query, action.Record)
 }
 
 // JSON is a method for actions.JSON
@@ -53,16 +54,15 @@ func (action *OrderBookShowAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *OrderBookShowAction) SSE(stream sse.Stream) {
 	action.Do(action.LoadQuery, action.LoadRecord, action.LoadResource)
-	if action.Err != nil {
-		stream.Err(action.Err)
-		return
-	}
 
-	stream.Send(sse.Event{
-		Data: action.Resource,
+	action.Do(func() {
+		stream.Send(sse.Event{
+			Data: action.Resource,
+		})
+
+		if stream.SentCount() >= 10 {
+			stream.Done()
+		}
 	})
 
-	if stream.SentCount() >= 10 {
-		stream.Done()
-	}
 }

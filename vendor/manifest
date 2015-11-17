@@ -65,27 +65,21 @@
 			"path": "/lru"
 		},
 		{
+			"importpath": "github.com/guregu/null",
+			"repository": "https://github.com/guregu/null",
+			"revision": "79c5bd36b615db4c06132321189f579c8a5fca98",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/inconshreveable/mousetrap",
 			"repository": "https://github.com/inconshreveable/mousetrap",
 			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/jagregory/halgo",
-			"repository": "https://github.com/jagregory/halgo",
-			"revision": "d1d6fd6cbc6ff4df35f82b03bf93fdade591985d",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/jmoiron/sqlx",
 			"repository": "https://github.com/jmoiron/sqlx",
 			"revision": "ad7f2641d00865a3d5b860ccdade6f8e63dbdae6",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/jtacoma/uritemplates",
-			"repository": "https://github.com/jtacoma/uritemplates",
-			"revision": "0a85813ecac22e3cbe916ab9480b33f2f4a06b2e",
 			"branch": "master"
 		},
 		{
@@ -238,7 +232,7 @@
 		{
 			"importpath": "github.com/stellar/go-stellar-base",
 			"repository": "https://github.com/stellar/go-stellar-base",
-			"revision": "93086ff4a8a8f8b6154cdfe4344eb91b31c5174d",
+			"revision": "c8f1db727dfab151b053812d5bbdb584bf56e4af",
 			"branch": "master"
 		},
 		{

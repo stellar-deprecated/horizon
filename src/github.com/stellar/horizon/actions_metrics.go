@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"github.com/jagregory/halgo"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/horizon/render/hal"
 )
@@ -10,7 +9,6 @@ import (
 // will inlude any previously registered metrics.
 type MetricsAction struct {
 	Action
-	halgo.Links
 	Snapshot map[string]interface{}
 }
 
@@ -19,7 +17,7 @@ func (action *MetricsAction) JSON() {
 	action.App.UpdateMetrics(action.Ctx)
 	action.LoadSnapshot()
 	action.Snapshot["_links"] = map[string]interface{}{
-		"self": halgo.Link{Href: "/metrics"},
+		"self": hal.NewLink("/metrics"),
 	}
 
 	hal.Render(action.W, action.Snapshot)

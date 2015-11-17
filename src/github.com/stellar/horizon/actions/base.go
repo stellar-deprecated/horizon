@@ -68,6 +68,10 @@ func (base *Base) Execute(action interface{}) {
 		for {
 			action.SSE(stream)
 
+			if base.Err != nil {
+				stream.Err(base.Err)
+			}
+
 			if stream.IsDone() {
 				return
 			}

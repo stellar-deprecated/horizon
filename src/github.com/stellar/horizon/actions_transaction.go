@@ -1,10 +1,14 @@
 package horizon
 
 import (
+	"net/http"
+
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
+	"github.com/stellar/horizon/resource"
+	"github.com/stellar/horizon/txsub"
 )
 
 // This file contains the actions:
@@ -34,109 +38,177 @@ func (action *TransactionIndexAction) LoadQuery() {
 
 // LoadRecords populates action.Records
 func (action *TransactionIndexAction) LoadRecords() {
-	action.LoadQuery()
-	if action.Err != nil {
-		return
-	}
-
 	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
 }
 
 // LoadPage populates action.Page
 func (action *TransactionIndexAction) LoadPage() {
-	action.LoadRecords()
-	if action.Err != nil {
-		return
+	for _, record := range action.Records {
+		var res resource.Transaction
+		res.Populate(record)
+		action.Page.Add(res)
 	}
 
-	action.Page, action.Err = NewTransactionResourcePage(action.Records, action.Query.PageQuery, action.Path())
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.Query.Limit
+	action.Page.Cursor = action.Query.Cursor
+	action.Page.Order = action.Query.Order
+	action.Page.PopulateLinks()
 }
 
 // JSON is a method for actions.JSON
 func (action *TransactionIndexAction) JSON() {
-	action.LoadPage()
-	if action.Err != nil {
-		return
-	}
-	hal.Render(action.W, action.Page)
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecords,
+		action.LoadPage,
+		func() {
+			hal.Render(action.W, action.Page)
+		},
+	)
 }
 
 // SSE is a method for actions.SSE
 func (action *TransactionIndexAction) SSE(stream sse.Stream) {
-	action.LoadRecords()
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecords,
+		func() {
+			records := action.Records[stream.SentCount():]
 
-	if action.Err != nil {
-		stream.Err(action.Err)
-		return
-	}
+			for _, record := range records {
+				var res resource.Transaction
+				res.Populate(record)
+				stream.Send(sse.Event{ID: res.PagingToken(), Data: res})
+			}
 
-	records := action.Records[stream.SentCount():]
-
-	for _, record := range records {
-		stream.Send(sse.Event{
-			ID:   record.PagingToken(),
-			Data: NewTransactionResource(record),
-		})
-	}
-
-	if stream.SentCount() >= int(action.Query.Limit) {
-		stream.Done()
-	}
+			if stream.SentCount() >= int(action.Query.Limit) {
+				stream.Done()
+			}
+		},
+	)
 }
 
 // TransactionShowAction renders a ledger found by its sequence number.
 type TransactionShowAction struct {
 	Action
-	Record db.TransactionRecord
+	Query    db.TransactionByHashQuery
+	Record   db.TransactionRecord
+	Resource resource.Transaction
 }
 
-// Query returns a database query to find a ledger by sequence
-func (action *TransactionShowAction) Query() db.TransactionByHashQuery {
-	return db.TransactionByHashQuery{
+func (action *TransactionShowAction) LoadQuery() {
+	action.Query = db.TransactionByHashQuery{
 		SqlQuery: action.App.HistoryQuery(),
 		Hash:     action.GetString("id"),
 	}
 }
 
+func (action *TransactionShowAction) LoadRecord() {
+	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+}
+
+func (action *TransactionShowAction) LoadResource() {
+	action.Resource.Populate(action.Record)
+}
+
 // JSON is a method for actions.JSON
 func (action *TransactionShowAction) JSON() {
-	query := action.Query()
-
-	if action.Err != nil {
-		return
-	}
-
-	action.Err = db.Get(action.Ctx, query, &action.Record)
-
-	if action.Err != nil {
-		return
-	}
-
-	hal.Render(action.W, NewTransactionResource(action.Record))
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecord,
+		action.LoadResource,
+		func() { hal.Render(action.W, action.Resource) },
+	)
 }
 
 // TransactionCreateAction submits a transaction to the stellar-core network
 // on behalf of the requesting client.
 type TransactionCreateAction struct {
 	Action
+	TX       string
+	Result   txsub.Result
+	Resource resource.TransactionSuccess
 }
 
 // JSON format action handler
 func (action *TransactionCreateAction) JSON() {
+	action.Do(
+		action.LoadTX,
+		action.LoadResult,
+		action.LoadResource,
 
-	l := action.App.submitter.Submit(action.Ctx, action.GetString("tx"))
+		func() {
+			hal.Render(action.W, action.Resource)
+		})
+}
+
+func (action *TransactionCreateAction) LoadTX() {
+	action.ValidateBodyType()
+	action.TX = action.GetString("tx")
+}
+
+func (action *TransactionCreateAction) LoadResult() {
+	submission := action.App.submitter.Submit(action.Ctx, action.TX)
 
 	select {
-	case result := <-l:
-		resource := &ResultResource{result}
-
-		if resource.IsSuccess() {
-			hal.Render(action.W, resource.Success())
-		} else {
-			problem.Render(action.Ctx, action.W, resource.Error())
-		}
+	case result := <-submission:
+		action.Result = result
 	case <-action.Ctx.Done():
+		action.Err = &problem.Timeout
+	}
+}
+
+func (action *TransactionCreateAction) LoadResource() {
+	if action.Result.Err == nil {
+		action.Resource.Populate(action.Result)
 		return
 	}
 
+	if action.Result.Err == txsub.ErrTimeout {
+		action.Err = &problem.Timeout
+		return
+	}
+
+	if action.Result.Err == txsub.ErrCanceled {
+		action.Err = &problem.Timeout
+		return
+	}
+
+	switch err := action.Result.Err.(type) {
+	case *txsub.FailedTransactionError:
+		rcr := resource.TransactionResultCodes{}
+		rcr.Populate(err)
+
+		action.Err = &problem.P{
+			Type:   "transaction_failed",
+			Title:  "Transaction Failed",
+			Status: http.StatusBadRequest,
+			Detail: "The transaction failed when submitted to the stellar network. " +
+				"The `extras.result_codes` field on this response contains further " +
+				"details.  Descriptions of each code can be found at: " +
+				"https://www.stellar.org/developers/learn/concepts/list-of-operations.html",
+			Extras: map[string]interface{}{
+				"envelope_xdr": action.Result.EnvelopeXDR,
+				"result_xdr":   err.ResultXDR,
+				"result_codes": rcr,
+			},
+		}
+	case *txsub.MalformedTransactionError:
+		action.Err = &problem.P{
+			Type:   "transaction_malformed",
+			Title:  "Transaction Malformed",
+			Status: http.StatusBadRequest,
+			Detail: "Horizon could not decode the transaction envelope in this " +
+				"request. A transaction should be an XDR TransactionEnvelope struct " +
+				"encoded using base64.  The envelope read from this request is " +
+				"echoed in the `extras.envelope_xdr` field of this response for your " +
+				"convenience.",
+			Extras: map[string]interface{}{
+				"envelope_xdr": err.EnvelopeXDR,
+			},
+		}
+	default:
+		action.Err = err
+	}
 }

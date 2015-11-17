@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	errToProblemMap map[error]P = map[error]P{}
+	errToProblemMap = map[error]P{}
 )
 
 // RegisterError records an error -> P mapping, allowing the app to register
@@ -194,5 +194,25 @@ var (
 		Status: http.StatusServiceUnavailable,
 		Detail: "This horizon server is currently overloaded.  Please wait for " +
 			"several minutes before trying your request again.",
+	}
+
+	// Timeout is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	Timeout = P{
+		Type:   "timeout",
+		Title:  "Timeout",
+		Status: http.StatusGatewayTimeout,
+		Detail: "Your request timed out before completing.  Please try your " +
+			"request again.",
+	}
+
+	// UnsupportedMediaType is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	UnsupportedMediaType = P{
+		Type:   "unsupported_media_type",
+		Title:  "Unsupported Media Type",
+		Status: http.StatusUnsupportedMediaType,
+		Detail: "The request has an unsupported content type. Presently, the " +
+			"only supported content type is application/x-www-form-urlencoded.",
 	}
 )

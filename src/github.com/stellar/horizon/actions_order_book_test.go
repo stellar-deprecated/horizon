@@ -6,6 +6,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/render/problem"
+	"github.com/stellar/horizon/resource"
 	"github.com/stellar/horizon/test"
 )
 
@@ -92,16 +93,16 @@ func TestOrderBookActions(t *testing.T) {
 			w := rh.Get("/order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=USD&buying_asset_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4", test.RequestHelperNoop)
 			t.Log(w.Body.String())
 			So(w.Code, ShouldEqual, 200)
-			var result OrderBookSummaryResource
+			var result resource.OrderBookSummary
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
 
-			So(result.Selling.AssetType, ShouldEqual, "native")
-			So(result.Selling.AssetCode, ShouldEqual, "")
-			So(result.Selling.AssetIssuer, ShouldEqual, "")
-			So(result.Buying.AssetType, ShouldEqual, "credit_alphanum4")
-			So(result.Buying.AssetCode, ShouldEqual, "USD")
-			So(result.Buying.AssetIssuer, ShouldEqual, "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
+			So(result.Selling.Type, ShouldEqual, "native")
+			So(result.Selling.Code, ShouldEqual, "")
+			So(result.Selling.Issuer, ShouldEqual, "")
+			So(result.Buying.Type, ShouldEqual, "credit_alphanum4")
+			So(result.Buying.Code, ShouldEqual, "USD")
+			So(result.Buying.Issuer, ShouldEqual, "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
 			So(len(result.Asks), ShouldEqual, 3)
 			So(len(result.Bids), ShouldEqual, 3)
 
