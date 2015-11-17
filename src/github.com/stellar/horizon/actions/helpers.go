@@ -341,7 +341,12 @@ func (base *Base) ValidateBodyType() {
 		return
 	}
 
-	if mt != "application/x-www-form-urlencoded" {
+	switch {
+	case mt == "application/x-www-form-urlencoded":
+		return
+	case mt == "multipart/form-data":
+		return
+	default:
 		base.Err = &problem.UnsupportedMediaType
 	}
 }
