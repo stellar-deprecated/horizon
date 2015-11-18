@@ -113,8 +113,8 @@ type EffectLedgerFilter struct {
 }
 
 func (f *EffectLedgerFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
-	start := TotalOrderId{LedgerSequence: f.LedgerSequence}
-	end := TotalOrderId{LedgerSequence: f.LedgerSequence + 1}
+	start := TotalOrderID{LedgerSequence: f.LedgerSequence}
+	end := TotalOrderID{LedgerSequence: f.LedgerSequence + 1}
 	return sql.Where(
 		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
 		start.ToInt64(),
@@ -137,7 +137,7 @@ func (f *EffectTransactionFilter) Apply(ctx context.Context, sql sq.SelectBuilde
 		return sql, nil
 	}
 
-	start := ParseTotalOrderId(tx.Id)
+	start := ParseTotalOrderID(tx.Id)
 	end := start
 	end.TransactionOrder++
 	return sql.Where(
@@ -154,9 +154,9 @@ type EffectOperationFilter struct {
 }
 
 func (f *EffectOperationFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
-	start := ParseTotalOrderId(f.OperationID)
+	start := ParseTotalOrderID(f.OperationID)
 	end := start
-	end.OperationOrder++
+	end.IncOperationOrder()
 	return sql.Where(
 		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
 		start.ToInt64(),
@@ -190,14 +190,14 @@ func (f *EffectOrderBookFilter) Apply(ctx context.Context, in sq.SelectBuilder) 
 
 	if f.SellingType == xdr.AssetTypeAssetTypeNative {
 		sql = sql.Where(`
-				(heff.details->>'sold_asset_type' = ? 
+				(heff.details->>'sold_asset_type' = ?
 		AND heff.details ?? 'sold_asset_code' = false
 		AND heff.details ?? 'sold_asset_issuer' = false)`,
 			sellingType,
 		)
 	} else {
 		sql = sql.Where(`
-				(heff.details->>'sold_asset_type' = ? 
+				(heff.details->>'sold_asset_type' = ?
 		AND heff.details->>'sold_asset_code' = ?
 		AND heff.details->>'sold_asset_issuer' = ?)`,
 			sellingType,
@@ -208,14 +208,14 @@ func (f *EffectOrderBookFilter) Apply(ctx context.Context, in sq.SelectBuilder) 
 
 	if f.BuyingType == xdr.AssetTypeAssetTypeNative {
 		sql = sql.Where(`
-				(heff.details->>'bought_asset_type' = ? 
-		AND heff.details ?? 'bought_asset_code' = false 
+				(heff.details->>'bought_asset_type' = ?
+		AND heff.details ?? 'bought_asset_code' = false
 		AND heff.details ?? 'bought_asset_issuer' = false)`,
 			buyingType,
 		)
 	} else {
 		sql = sql.Where(`
-				(heff.details->>'bought_asset_type' = ? 
+				(heff.details->>'bought_asset_type' = ?
 		AND heff.details->>'bought_asset_code' = ?
 		AND heff.details->>'bought_asset_issuer' = ?)`,
 			buyingType,

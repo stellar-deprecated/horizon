@@ -111,7 +111,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 2)
 
 			for _, r := range records {
-				toid := ParseTotalOrderId(r.HistoryOperationID)
+				toid := ParseTotalOrderID(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 3)
 			}
 		})
@@ -124,7 +124,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderId(r.HistoryOperationID)
+				toid := ParseTotalOrderID(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 				So(toid.TransactionOrder, ShouldEqual, 1)
 				So(toid.OperationOrder, ShouldEqual, 1)
@@ -140,7 +140,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderId(r.HistoryOperationID)
+				toid := ParseTotalOrderID(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 				So(toid.TransactionOrder, ShouldEqual, 1)
 			}

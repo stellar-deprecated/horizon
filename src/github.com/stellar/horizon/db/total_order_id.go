@@ -5,7 +5,7 @@ import (
 )
 
 //
-// A TotalOrderId expressed the total order of Ledgers, Transactions and
+// A TotalOrderID expressed the total order of Ledgers, Transactions and
 // Operations.
 //
 // Operations within the stellar network have a total order, expressed by three
@@ -59,23 +59,46 @@ import (
 // single type of object, the sharing of ids across object types seems
 // acceptable.
 //
-type TotalOrderId struct {
+type TotalOrderID struct {
 	LedgerSequence   int32
 	TransactionOrder int32
 	OperationOrder   int32
 }
 
 const (
-	TotalOrderLedgerMask      = (1 << 32) - 1
+	// TotalOrderLedgerMask is the bitmask to mask out ledger sequences in a
+	// TotalOrderID
+	TotalOrderLedgerMask = (1 << 32) - 1
+	// TotalOrderTransactionMask is the bitmask to mask out transaction indexes
 	TotalOrderTransactionMask = (1 << 20) - 1
-	TotalOrderOperationMask   = (1 << 12) - 1
+	// TotalOrderOperationMask is the bitmask to mask out operation indexes
+	TotalOrderOperationMask = (1 << 12) - 1
 
-	TotalOrderLedgerShift      = 32
+	// TotalOrderLedgerShift is the number of bits to shift an int64 to target the
+	// ledger component
+	TotalOrderLedgerShift = 32
+	// TotalOrderTransactionShift is the number of bits to shift an int64 to
+	// target the transaction component
 	TotalOrderTransactionShift = 12
-	TotalOrderOperationShift   = 0
+	// TotalOrderOperationShift is the number of bits to shift an int64 to target
+	// the operation component
+	TotalOrderOperationShift = 0
 )
 
-func (id TotalOrderId) ToInt64() (result int64) {
+// IncOperationOrder increments the operation order, rolling over to the next
+// ledger if overflow occurs.  This allows queries to easily advance a cursor to
+// the next operation.
+func (id *TotalOrderID) IncOperationOrder() {
+	id.OperationOrder++
+
+	if id.OperationOrder > TotalOrderOperationMask {
+		id.OperationOrder = 0
+		id.LedgerSequence++
+	}
+}
+
+// ToInt64 converts this struct back into an int64
+func (id *TotalOrderID) ToInt64() (result int64) {
 
 	if id.LedgerSequence < 0 {
 		panic("invalid ledger sequence")
@@ -95,11 +118,13 @@ func (id TotalOrderId) ToInt64() (result int64) {
 	return
 }
 
-func (id TotalOrderId) String() string {
+// String returns a string representation of this id
+func (id *TotalOrderID) String() string {
 	return fmt.Sprintf("%d", id.ToInt64())
 }
 
-func ParseTotalOrderId(id int64) (result TotalOrderId) {
+// ParseTotalOrderID parses an int64 into a TotalOrderID struct
+func ParseTotalOrderID(id int64) (result TotalOrderID) {
 	result.LedgerSequence = int32((id >> TotalOrderLedgerShift) & TotalOrderLedgerMask)
 	result.TransactionOrder = int32((id >> TotalOrderTransactionShift) & TotalOrderTransactionMask)
 	result.OperationOrder = int32((id >> TotalOrderOperationShift) & TotalOrderOperationMask)
