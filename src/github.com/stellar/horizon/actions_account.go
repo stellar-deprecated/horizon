@@ -62,6 +62,8 @@ func (action *AccountIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *AccountIndexAction) SSE(stream sse.Stream) {
+	stream.SetLimit(int(action.Query.Limit))
+
 	action.Do(
 		action.LoadQuery,
 		action.LoadRecords,
@@ -70,10 +72,6 @@ func (action *AccountIndexAction) SSE(stream sse.Stream) {
 			for _, record := range action.Records[stream.SentCount():] {
 				res.Populate(action.Ctx, record)
 				stream.Send(sse.Event{ID: record.PagingToken(), Data: res})
-			}
-
-			if stream.SentCount() >= int(action.Query.Limit) {
-				stream.Done()
 			}
 		},
 	)
@@ -101,16 +99,13 @@ func (action *AccountShowAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *AccountShowAction) SSE(stream sse.Stream) {
+	stream.SetLimit(10)
 	action.Do(
 		action.LoadQuery,
 		action.LoadRecord,
 		action.LoadResource,
 		func() {
 			stream.Send(sse.Event{Data: action.Resource})
-
-			if stream.SentCount() >= 10 {
-				stream.Done()
-			}
 		},
 	)
 }

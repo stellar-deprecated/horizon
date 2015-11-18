@@ -33,6 +33,7 @@ func (action *OffersByAccountAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *OffersByAccountAction) SSE(stream sse.Stream) {
+	stream.SetLimit(int(action.Query.Limit))
 	action.Do(
 		action.LoadQuery,
 		action.LoadRecords,
@@ -41,10 +42,6 @@ func (action *OffersByAccountAction) SSE(stream sse.Stream) {
 				var res resource.Offer
 				res.Populate(action.Ctx, record)
 				stream.Send(sse.Event{ID: res.PagingToken(), Data: res})
-			}
-
-			if stream.SentCount() >= int(action.Query.Limit) {
-				stream.Done()
 			}
 		},
 	)
