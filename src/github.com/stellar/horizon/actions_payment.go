@@ -29,7 +29,7 @@ func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
 		records := action.Records[stream.SentCount():]
 
 		for _, record := range records {
-			res, err := resource.NewOperation(record)
+			res, err := resource.NewOperation(action.Ctx, record)
 
 			if err != nil {
 				stream.Err(action.Err)
@@ -71,7 +71,7 @@ func (action *PaymentsIndexAction) LoadRecords() {
 func (action *PaymentsIndexAction) LoadPage() {
 	for _, record := range action.Records {
 		var res hal.Pageable
-		res, action.Err = resource.NewOperation(record)
+		res, action.Err = resource.NewOperation(action.Ctx, record)
 		if action.Err != nil {
 			return
 		}

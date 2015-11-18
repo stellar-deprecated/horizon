@@ -3,9 +3,10 @@ package resource
 import (
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
+	"golang.org/x/net/context"
 )
 
-func (this *OrderBookSummary) Populate(query *db.OrderBookSummaryQuery, row db.OrderBookSummaryRecord) error {
+func (this *OrderBookSummary) Populate(ctx context.Context, query *db.OrderBookSummaryQuery, row db.OrderBookSummaryRecord) error {
 
 	st, err := assets.String(query.SellingType)
 	if err != nil {

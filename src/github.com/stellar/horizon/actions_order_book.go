@@ -39,7 +39,7 @@ func (action *OrderBookShowAction) LoadRecord() {
 
 // LoadResource populates action.Record
 func (action *OrderBookShowAction) LoadResource() {
-	action.Err = action.Resource.Populate(action.Query, action.Record)
+	action.Err = action.Resource.Populate(action.Ctx, action.Query, action.Record)
 }
 
 // JSON is a method for actions.JSON

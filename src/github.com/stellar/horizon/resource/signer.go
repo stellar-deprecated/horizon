@@ -2,9 +2,10 @@ package resource
 
 import (
 	"github.com/stellar/horizon/db"
+	"golang.org/x/net/context"
 )
 
-func (this *Signer) Populate(row db.CoreSignerRecord) {
+func (this *Signer) Populate(ctx context.Context, row db.CoreSignerRecord) {
 	this.Address = row.Publickey
 	this.Weight = row.Weight
 }

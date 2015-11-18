@@ -4,10 +4,12 @@ import (
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
+	"golang.org/x/net/context"
 )
 
-func (this *Offer) Populate(row db.CoreOfferRecord) {
+func (this *Offer) Populate(ctx context.Context, row db.CoreOfferRecord) {
 	this.ID = row.OfferID
 	this.PT = row.PagingToken()
 	this.Seller = row.SellerID
@@ -26,7 +28,7 @@ func (this *Offer) Populate(row db.CoreOfferRecord) {
 		Issuer: row.SellingIssuer.String,
 	}
 
-	lb := hal.LinkBuilder{}
+	lb := hal.LinkBuilder{httpx.Host(ctx)}
 	this.Links.Self = lb.Linkf("/offers/%d", row.OfferID)
 	this.Links.OfferMaker = lb.Linkf("/accounts/%s", row.SellerID)
 	return

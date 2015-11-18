@@ -2,13 +2,14 @@ package resource
 
 import (
 	"fmt"
-	_ "golang.org/x/net/context"
 
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
+	"golang.org/x/net/context"
 )
 
-func (this *Account) Populate(row db.AccountRecord) (err error) {
+func (this *Account) Populate(ctx context.Context, row db.AccountRecord) (err error) {
 	this.ID = row.Accountid
 	this.PT = row.PagingToken()
 	this.Address = row.Accountid
@@ -17,13 +18,13 @@ func (this *Account) Populate(row db.AccountRecord) (err error) {
 	this.InflationDestination = row.Inflationdest.String
 	this.HomeDomain = row.HomeDomain.String
 
-	this.Flags.Populate(row)
-	this.Thresholds.Populate(row)
+	this.Flags.Populate(ctx, row)
+	this.Thresholds.Populate(ctx, row)
 
 	// populate balances
 	this.Balances = make([]Balance, len(row.Trustlines)+1)
 	for i, tl := range row.Trustlines {
-		err = this.Balances[i].Populate(tl)
+		err = this.Balances[i].Populate(ctx, tl)
 		if err != nil {
 			return
 		}
@@ -38,12 +39,12 @@ func (this *Account) Populate(row db.AccountRecord) (err error) {
 	// populate signers
 	this.Signers = make([]Signer, len(row.Signers)+1)
 	for i, s := range row.Signers {
-		this.Signers[i].Populate(s)
+		this.Signers[i].Populate(ctx, s)
 	}
 
 	this.Signers[len(this.Signers)-1].PopulateMaster(row)
 
-	lb := hal.LinkBuilder{}
+	lb := hal.LinkBuilder{httpx.Host(ctx)}
 	self := fmt.Sprintf("/accounts/%s", row.Address)
 	this.Links.Self = lb.Link(self)
 	this.Links.Transactions = lb.PagedLink(self, "transactions")

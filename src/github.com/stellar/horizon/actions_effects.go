@@ -39,7 +39,7 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 	records := action.Records[stream.SentCount():]
 
 	for _, record := range records {
-		res, err := resource.NewEffect(record)
+		res, err := resource.NewEffect(action.Ctx, record)
 
 		if err != nil {
 			stream.Err(action.Err)
@@ -95,7 +95,7 @@ func (action *EffectIndexAction) LoadRecords() {
 func (action *EffectIndexAction) LoadPage() {
 	for _, record := range action.Records {
 		var res hal.Pageable
-		res, action.Err = resource.NewEffect(record)
+		res, action.Err = resource.NewEffect(action.Ctx, record)
 		if action.Err != nil {
 			return
 		}

@@ -37,7 +37,7 @@ func (action *OperationIndexAction) SSE(stream sse.Stream) {
 		records := action.Records[stream.SentCount():]
 
 		for _, record := range records {
-			res, err := resource.NewOperation(record)
+			res, err := resource.NewOperation(action.Ctx, record)
 
 			if err != nil {
 				stream.Err(action.Err)
@@ -78,7 +78,7 @@ func (action *OperationIndexAction) LoadRecords() {
 func (action *OperationIndexAction) LoadPage() {
 	for _, record := range action.Records {
 		var res hal.Pageable
-		res, action.Err = resource.NewOperation(record)
+		res, action.Err = resource.NewOperation(action.Ctx, record)
 		if action.Err != nil {
 			return
 		}
@@ -113,7 +113,7 @@ func (action *OperationShowAction) LoadRecord() {
 }
 
 func (action *OperationShowAction) LoadResource() {
-	action.Resource, action.Err = resource.NewOperation(action.Record)
+	action.Resource, action.Err = resource.NewOperation(action.Ctx, action.Record)
 }
 
 // JSON is a method for actions.JSON

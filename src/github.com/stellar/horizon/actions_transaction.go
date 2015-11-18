@@ -45,7 +45,7 @@ func (action *TransactionIndexAction) LoadRecords() {
 func (action *TransactionIndexAction) LoadPage() {
 	for _, record := range action.Records {
 		var res resource.Transaction
-		res.Populate(record)
+		res.Populate(action.Ctx, record)
 		action.Page.Add(res)
 	}
 
@@ -79,7 +79,7 @@ func (action *TransactionIndexAction) SSE(stream sse.Stream) {
 
 			for _, record := range records {
 				var res resource.Transaction
-				res.Populate(record)
+				res.Populate(action.Ctx, record)
 				stream.Send(sse.Event{ID: res.PagingToken(), Data: res})
 			}
 
@@ -110,7 +110,7 @@ func (action *TransactionShowAction) LoadRecord() {
 }
 
 func (action *TransactionShowAction) LoadResource() {
-	action.Resource.Populate(action.Record)
+	action.Resource.Populate(action.Ctx, action.Record)
 }
 
 // JSON is a method for actions.JSON
@@ -162,7 +162,7 @@ func (action *TransactionCreateAction) LoadResult() {
 
 func (action *TransactionCreateAction) LoadResource() {
 	if action.Result.Err == nil {
-		action.Resource.Populate(action.Result)
+		action.Resource.Populate(action.Ctx, action.Result)
 		return
 	}
 
@@ -179,7 +179,7 @@ func (action *TransactionCreateAction) LoadResource() {
 	switch err := action.Result.Err.(type) {
 	case *txsub.FailedTransactionError:
 		rcr := resource.TransactionResultCodes{}
-		rcr.Populate(err)
+		rcr.Populate(action.Ctx, err)
 
 		action.Err = &problem.P{
 			Type:   "transaction_failed",

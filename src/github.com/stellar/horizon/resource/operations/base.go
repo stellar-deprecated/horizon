@@ -3,20 +3,22 @@ package operations
 import (
 	"fmt"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
+	"golang.org/x/net/context"
 )
 
 func (this Base) PagingToken() string {
 	return this.PT
 }
 
-func (this *Base) Populate(row db.OperationRecord) {
+func (this *Base) Populate(ctx context.Context, row db.OperationRecord) {
 	this.ID = fmt.Sprintf("%d", row.Id)
 	this.PT = row.PagingToken()
 	this.SourceAccount = row.SourceAccount
 	this.populateType(row)
 
-	lb := hal.LinkBuilder{}
+	lb := hal.LinkBuilder{httpx.Host(ctx)}
 	self := fmt.Sprintf("/operations/%d", row.Id)
 	this.Links.Self = lb.Link(self)
 	this.Links.Succeeds = lb.Linkf("/effects?order=desc&cursor=%s", this.PT)

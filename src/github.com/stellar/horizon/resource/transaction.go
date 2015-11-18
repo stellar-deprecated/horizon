@@ -7,11 +7,16 @@ import (
 	"time"
 
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
+	"golang.org/x/net/context"
 )
 
 // Populate fills out the details
-func (res *Transaction) Populate(row db.TransactionRecord) (err error) {
+func (res *Transaction) Populate(
+	ctx context.Context,
+	row db.TransactionRecord,
+) (err error) {
 
 	res.ID = row.TransactionHash
 	res.PT = row.PagingToken()
@@ -31,7 +36,7 @@ func (res *Transaction) Populate(row db.TransactionRecord) (err error) {
 	res.ValidBefore = res.timeString(row.ValidBefore)
 	res.ValidAfter = res.timeString(row.ValidAfter)
 
-	lb := hal.LinkBuilder{}
+	lb := hal.LinkBuilder{httpx.Host(ctx)}
 	res.Links.Account = lb.Link("/accounts", res.Account)
 	res.Links.Ledger = lb.Link("/ledgers", fmt.Sprintf("%d", res.Ledger))
 	res.Links.Operations = lb.PagedLink("/transactions", res.ID, "operations")

@@ -73,7 +73,7 @@ func (action *TradeIndexAction) LoadRecords() {
 func (action *TradeIndexAction) LoadPage() {
 	for _, record := range action.Records {
 		var res resource.Trade
-		action.Err = res.Populate(record)
+		action.Err = res.Populate(action.Ctx, record)
 		if action.Err != nil {
 			return
 		}

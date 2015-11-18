@@ -39,7 +39,7 @@ func (action *AccountIndexAction) LoadRecords() {
 func (action *AccountIndexAction) LoadPage() {
 	for _, record := range action.Records {
 		var res resource.HistoryAccount
-		res.Populate(record)
+		res.Populate(action.Ctx, record)
 		action.Page.Add(res)
 	}
 	action.Page.Host = action.R.Host
@@ -68,7 +68,7 @@ func (action *AccountIndexAction) SSE(stream sse.Stream) {
 		func() {
 			var res resource.HistoryAccount
 			for _, record := range action.Records[stream.SentCount():] {
-				res.Populate(record)
+				res.Populate(action.Ctx, record)
 				stream.Send(sse.Event{ID: record.PagingToken(), Data: res})
 			}
 
@@ -131,5 +131,5 @@ func (action *AccountShowAction) LoadRecord() {
 
 // LoadResource populates action.Resource
 func (action *AccountShowAction) LoadResource() {
-	action.Err = action.Resource.Populate(action.Record)
+	action.Err = action.Resource.Populate(action.Ctx, action.Record)
 }

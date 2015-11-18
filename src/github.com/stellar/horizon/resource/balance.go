@@ -5,9 +5,10 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
+	"golang.org/x/net/context"
 )
 
-func (this *Balance) Populate(row db.CoreTrustlineRecord) (err error) {
+func (this *Balance) Populate(ctx context.Context, row db.CoreTrustlineRecord) (err error) {
 	this.Type, err = assets.String(row.Assettype)
 	if err != nil {
 		return

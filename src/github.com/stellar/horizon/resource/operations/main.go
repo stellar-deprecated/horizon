@@ -5,8 +5,11 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
+	"golang.org/x/net/context"
 )
 
+// TypeNames maps from operation type to the string used to represent that type
+// in horizon's JSON responses
 var TypeNames = map[xdr.OperationType]string{
 	xdr.OperationTypeCreateAccount:      "create_account",
 	xdr.OperationTypePayment:            "payment",
@@ -20,62 +23,67 @@ var TypeNames = map[xdr.OperationType]string{
 	xdr.OperationTypeInflation:          "inflation",
 }
 
-func New(row db.OperationRecord) (result hal.Pageable, err error) {
+// New creates a new operation resource, finding the appropriate type to use
+// based upon the row's type.
+func New(
+	ctx context.Context,
+	row db.OperationRecord,
+) (result hal.Pageable, err error) {
 
 	switch row.Type {
 	case xdr.OperationTypeCreateAccount:
 		e := CreateAccount{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypePayment:
 		e := Payment{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypePathPayment:
 		e := PathPayment{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeManageOffer:
 		e := ManageOffer{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeCreatePassiveOffer:
 		e := CreatePassiveOffer{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeSetOptions:
 		e := SetOptions{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeChangeTrust:
 		e := ChangeTrust{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeAllowTrust:
 		e := AllowTrust{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeAccountMerge:
 		e := AccountMerge{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeInflation:
 		e := Inflation{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	default:
 		e := Base{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		result = e
 	}
 
