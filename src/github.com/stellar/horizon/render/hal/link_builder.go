@@ -12,7 +12,7 @@ const StandardPagingOptions = "{?cursor,limit,order}"
 
 // LinkBuilder is a helper for constructing URLs in horizon.
 type LinkBuilder struct {
-	Base *url.URL
+	Host string
 }
 
 // Link returns a hal.Link whose href is each of the
@@ -44,7 +44,7 @@ func (lb *LinkBuilder) Linkf(format string, args ...interface{}) Link {
 // if set. NOTE: this method panics if the input href cannot be parsed. It is
 // meant to be used by developer author ed links, not with external data.
 func (lb *LinkBuilder) expandLink(href string) string {
-	if lb.Base == nil {
+	if lb.Host == "" {
 		return href
 	}
 
@@ -53,5 +53,9 @@ func (lb *LinkBuilder) expandLink(href string) string {
 		panic(err)
 	}
 
-	return lb.Base.ResolveReference(u).String()
+	if u.Host == "" {
+		u.Host = lb.Host
+	}
+
+	return u.String()
 }

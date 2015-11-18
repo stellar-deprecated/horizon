@@ -102,6 +102,7 @@ func (action *EffectIndexAction) LoadPage() {
 		action.Page.Add(res)
 	}
 
+	action.Page.Host = action.R.Host
 	action.Page.BasePath = action.Path()
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor
@@ -109,6 +110,9 @@ func (action *EffectIndexAction) LoadPage() {
 	action.Page.PopulateLinks()
 }
 
+// ValidateCursor ensures that the provided cursor parameter is of the form
+// OPERATIONID-INDEX (such as 1234-56) or is the special value "now" that
+// represents the the cursor directly after the last closed ledger
 func (action *EffectIndexAction) ValidateCursor() {
 	c := action.GetString("cursor")
 
