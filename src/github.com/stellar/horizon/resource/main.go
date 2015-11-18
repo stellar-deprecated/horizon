@@ -8,6 +8,7 @@ import (
 	"github.com/stellar/horizon/resource/base"
 	"github.com/stellar/horizon/resource/effects"
 	"github.com/stellar/horizon/resource/operations"
+	"golang.org/x/net/context"
 	"time"
 )
 
@@ -225,12 +226,18 @@ type TransactionSuccess struct {
 
 // NewEffect returns a resource of the appropriate sub-type for the provided
 // effect record.
-func NewEffect(row db.EffectRecord) (result hal.Pageable, err error) {
-	return effects.New(row)
+func NewEffect(
+	ctx context.Context,
+	row db.EffectRecord,
+) (result hal.Pageable, err error) {
+	return effects.New(ctx, row)
 }
 
 // NewOperation returns a resource of the appropriate sub-type for the provided
 // operation record.
-func NewOperation(row db.OperationRecord) (result hal.Pageable, err error) {
-	return operations.New(row)
+func NewOperation(
+	ctx context.Context,
+	row db.OperationRecord,
+) (result hal.Pageable, err error) {
+	return operations.New(ctx, row)
 }

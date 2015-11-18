@@ -39,7 +39,7 @@ func (action *OffersByAccountAction) SSE(stream sse.Stream) {
 		func() {
 			for _, record := range action.Records[stream.SentCount():] {
 				var res resource.Offer
-				res.Populate(record)
+				res.Populate(action.Ctx, record)
 				stream.Send(sse.Event{ID: res.PagingToken(), Data: res})
 			}
 
@@ -68,10 +68,11 @@ func (action *OffersByAccountAction) LoadRecords() {
 func (action *OffersByAccountAction) LoadPage() {
 	for _, record := range action.Records {
 		var res resource.Offer
-		res.Populate(record)
+		res.Populate(action.Ctx, record)
 		action.Page.Add(res)
 	}
 
+	action.Page.Host = action.R.Host
 	action.Page.BasePath = action.Path()
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor

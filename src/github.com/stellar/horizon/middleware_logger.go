@@ -21,6 +21,7 @@ func LoggerMiddleware(c *web.C, h http.Handler) http.Handler {
 		mw := mutil.WrapWriter(w)
 
 		logger := log.WithField("req", middleware.GetReqID(*c))
+
 		ctx = log.Set(ctx, logger)
 		gctx.Set(c, ctx)
 
@@ -40,6 +41,8 @@ func logStartOfRequest(ctx context.Context, r *http.Request) {
 	log.Ctx(ctx).WithFields(log.F{
 		"path":   r.URL.String(),
 		"method": r.Method,
+		"ip":     r.RemoteAddr,
+		"host":   r.Host,
 	}).Info("Starting request")
 }
 

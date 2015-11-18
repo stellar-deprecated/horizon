@@ -39,7 +39,7 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 	records := action.Records[stream.SentCount():]
 
 	for _, record := range records {
-		res, err := resource.NewEffect(record)
+		res, err := resource.NewEffect(action.Ctx, record)
 
 		if err != nil {
 			stream.Err(action.Err)
@@ -95,13 +95,14 @@ func (action *EffectIndexAction) LoadRecords() {
 func (action *EffectIndexAction) LoadPage() {
 	for _, record := range action.Records {
 		var res hal.Pageable
-		res, action.Err = resource.NewEffect(record)
+		res, action.Err = resource.NewEffect(action.Ctx, record)
 		if action.Err != nil {
 			return
 		}
 		action.Page.Add(res)
 	}
 
+	action.Page.Host = action.R.Host
 	action.Page.BasePath = action.Path()
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor
@@ -109,6 +110,9 @@ func (action *EffectIndexAction) LoadPage() {
 	action.Page.PopulateLinks()
 }
 
+// ValidateCursor ensures that the provided cursor parameter is of the form
+// OPERATIONID-INDEX (such as 1234-56) or is the special value "now" that
+// represents the the cursor directly after the last closed ledger
 func (action *EffectIndexAction) ValidateCursor() {
 	c := action.GetString("cursor")
 

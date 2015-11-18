@@ -5,10 +5,12 @@ import (
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
+	"golang.org/x/net/context"
 )
 
-func (this *Ledger) Populate(row db.LedgerRecord) {
+func (this *Ledger) Populate(ctx context.Context, row db.LedgerRecord) {
 	this.ID = row.LedgerHash
 	this.PT = row.PagingToken()
 	this.Hash = row.LedgerHash
@@ -24,7 +26,7 @@ func (this *Ledger) Populate(row db.LedgerRecord) {
 	this.MaxTxSetSize = row.MaxTxSetSize
 
 	self := fmt.Sprintf("/ledgers/%d", row.Sequence)
-	lb := hal.LinkBuilder{}
+	lb := hal.LinkBuilder{httpx.Host(ctx)}
 	this.Links.Self = lb.Link(self)
 	this.Links.Transactions = lb.PagedLink(self, "transactions")
 	this.Links.Operations = lb.PagedLink(self, "operations")

@@ -54,7 +54,7 @@ func (action *PathIndexAction) LoadPage() {
 	action.Page.Init()
 	for _, p := range action.Records {
 		var res resource.Path
-		action.Err = res.Populate(action.Query, p)
+		action.Err = res.Populate(action.Ctx, action.Query, p)
 		if action.Err != nil {
 			return
 		}

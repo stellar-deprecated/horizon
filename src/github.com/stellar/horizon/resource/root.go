@@ -2,17 +2,19 @@ package resource
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
+	"golang.org/x/net/context"
 )
 
 // Populate fills in the details
-func (res *Root) Populate(row db.LedgerState, hVersion string, cVersion string) {
+func (res *Root) Populate(ctx context.Context, row db.LedgerState, hVersion string, cVersion string) {
 	res.HorizonSequence = row.HorizonSequence
 	res.StellarCoreSequence = row.StellarCoreSequence
 	res.HorizonVersion = hVersion
 	res.StellarCoreVersion = cVersion
 
-	lb := hal.LinkBuilder{}
+	lb := hal.LinkBuilder{httpx.Host(ctx)}
 	res.Links.Account = lb.Link("/accounts/{address}")
 	res.Links.AccountTransactions = lb.PagedLink("/accounts/{address}/transactions")
 	res.Links.Friendbot = lb.Link("/friendbot{?addr}")

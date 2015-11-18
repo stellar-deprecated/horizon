@@ -3,9 +3,10 @@ package resource
 import (
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/horizon/paths"
+	"golang.org/x/net/context"
 )
 
-func (this *Path) Populate(q paths.Query, p paths.Path) (err error) {
+func (this *Path) Populate(ctx context.Context, q paths.Query, p paths.Path) (err error) {
 
 	this.DestinationAmount = amount.String(q.DestinationAmount)
 	cost, err := p.Cost(q.DestinationAmount)

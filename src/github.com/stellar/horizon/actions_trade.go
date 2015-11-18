@@ -73,13 +73,14 @@ func (action *TradeIndexAction) LoadRecords() {
 func (action *TradeIndexAction) LoadPage() {
 	for _, record := range action.Records {
 		var res resource.Trade
-		action.Err = res.Populate(record)
+		action.Err = res.Populate(action.Ctx, record)
 		if action.Err != nil {
 			return
 		}
 		action.Page.Add(res)
 	}
 
+	action.Page.Host = action.R.Host
 	action.Page.BasePath = action.Path()
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor

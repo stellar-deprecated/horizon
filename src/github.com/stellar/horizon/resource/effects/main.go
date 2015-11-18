@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
+	"golang.org/x/net/context"
 )
 
 var TypeNames = map[int32]string{
@@ -28,87 +29,90 @@ var TypeNames = map[int32]string{
 	db.EffectTrade:                    "trade",
 }
 
-func New(row db.EffectRecord) (result hal.Pageable, err error) {
+func New(
+	ctx context.Context,
+	row db.EffectRecord,
+) (result hal.Pageable, err error) {
 
 	switch row.Type {
 	case db.EffectAccountCreated:
 		e := AccountCreated{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectAccountCredited:
 		e := AccountCredited{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectAccountDebited:
 		e := AccountDebited{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectAccountThresholdsUpdated:
 		e := AccountThresholdsUpdated{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectAccountHomeDomainUpdated:
 		e := AccountHomeDomainUpdated{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectAccountFlagsUpdated:
 		e := AccountFlagsUpdated{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectSignerCreated:
 		e := SignerCreated{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectSignerUpdated:
 		e := SignerUpdated{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectSignerRemoved:
 		e := SignerRemoved{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectTrustlineCreated:
 		e := TrustlineCreated{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectTrustlineUpdated:
 		e := TrustlineUpdated{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectTrustlineRemoved:
 		e := TrustlineRemoved{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectTrustlineAuthorized:
 		e := TrustlineAuthorized{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectTrustlineDeauthorized:
 		e := TrustlineDeauthorized{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case db.EffectTrade:
 		e := Trade{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
 	default:
 		e := Base{}
-		e.Populate(row)
+		e.Populate(ctx, row)
 		result = e
 	}
 

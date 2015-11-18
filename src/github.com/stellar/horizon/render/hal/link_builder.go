@@ -10,27 +10,23 @@ import (
 // URIs simpler.
 const StandardPagingOptions = "{?cursor,limit,order}"
 
+// LinkBuilder is a helper for constructing URLs in horizon.
 type LinkBuilder struct {
-	Base *url.URL
+	Host string
 }
 
+// Link returns a hal.Link whose href is each of the
+// provided parts joined by '/'
 func (lb *LinkBuilder) Link(parts ...string) Link {
 	path := strings.Join(parts, "/")
 
-	var href string
-	if lb.Base != nil {
-		pu, err := url.Parse(path)
-		if err != nil {
-			panic(err)
-		}
-		href = lb.Base.ResolveReference(pu).String()
-	} else {
-		href = path
-	}
+	href := lb.expandLink(path)
 
 	return NewLink(href)
 }
 
+// PagedLink creates a link using the `Link` method and
+// appends the common paging options
 func (lb *LinkBuilder) PagedLink(parts ...string) Link {
 	nl := lb.Link(parts...)
 	nl.Href += StandardPagingOptions
@@ -38,6 +34,28 @@ func (lb *LinkBuilder) PagedLink(parts ...string) Link {
 	return nl
 }
 
+// Linkf provides a helper function that returns a link with an
+// href created by passing the arguments into fmt.Sprintf
 func (lb *LinkBuilder) Linkf(format string, args ...interface{}) Link {
 	return lb.Link(fmt.Sprintf(format, args...))
+}
+
+// expandLink takes an href and resolves it against the LinkBuilders base url,
+// if set. NOTE: this method panics if the input href cannot be parsed. It is
+// meant to be used by developer author ed links, not with external data.
+func (lb *LinkBuilder) expandLink(href string) string {
+	if lb.Host == "" {
+		return href
+	}
+
+	u, err := url.Parse(href)
+	if err != nil {
+		panic(err)
+	}
+
+	if u.Host == "" {
+		u.Host = lb.Host
+	}
+
+	return u.String()
 }
