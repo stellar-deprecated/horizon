@@ -44,7 +44,7 @@ func (action *Action) GetPagingParams() (cursor string, order string, limit int3
 	cursor, order, limit = action.Base.GetPagingParams()
 
 	if cursor == "now" {
-		tid := db.TotalOrderId{
+		tid := db.TotalOrderID{
 			LedgerSequence:   action.App.latestLedgerState.HorizonSequence,
 			TransactionOrder: db.TotalOrderTransactionMask,
 			OperationOrder:   db.TotalOrderOperationMask,

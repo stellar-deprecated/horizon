@@ -90,7 +90,7 @@ func TestOperationPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderId(r.TransactionId)
+				toid := ParseTotalOrderID(r.TransactionId)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 			}
 		})

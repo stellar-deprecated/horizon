@@ -68,8 +68,8 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 		if err != nil {
 			return err
 		}
-		start := TotalOrderId{LedgerSequence: q.LedgerSequence}
-		end := TotalOrderId{LedgerSequence: q.LedgerSequence + 1}
+		start := TotalOrderID{LedgerSequence: q.LedgerSequence}
+		end := TotalOrderID{LedgerSequence: q.LedgerSequence + 1}
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())
 	}
 
@@ -82,7 +82,7 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 			return err
 		}
 
-		start := ParseTotalOrderId(tx.Id)
+		start := ParseTotalOrderID(tx.Id)
 		end := start
 		end.TransactionOrder++
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())

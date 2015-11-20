@@ -58,7 +58,7 @@ type Balance struct {
 }
 
 // HistoryAccount is a simple resource, used for the account collection
-// actions.  It provides only the TotalOrderId of the account and its address.
+// actions.  It provides only the TotalOrderID of the account and its address.
 type HistoryAccount struct {
 	ID      string `json:"id"`
 	PT      string `json:"paging_token"`
