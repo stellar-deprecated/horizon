@@ -14,7 +14,7 @@ func (res *Root) Populate(ctx context.Context, row db.LedgerState, hVersion stri
 	res.HorizonVersion = hVersion
 	res.StellarCoreVersion = cVersion
 
-	lb := hal.LinkBuilder{httpx.Host(ctx)}
+	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	res.Links.Account = lb.Link("/accounts/{address}")
 	res.Links.AccountTransactions = lb.PagedLink("/accounts/{address}/transactions")
 	res.Links.Friendbot = lb.Link("/friendbot{?addr}")

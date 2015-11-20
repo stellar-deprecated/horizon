@@ -44,7 +44,7 @@ func (this *Account) Populate(ctx context.Context, row db.AccountRecord) (err er
 
 	this.Signers[len(this.Signers)-1].PopulateMaster(row)
 
-	lb := hal.LinkBuilder{httpx.Host(ctx)}
+	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	self := fmt.Sprintf("/accounts/%s", row.Address)
 	this.Links.Self = lb.Link(self)
 	this.Links.Transactions = lb.PagedLink(self, "transactions")

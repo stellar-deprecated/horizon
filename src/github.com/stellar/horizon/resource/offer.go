@@ -28,7 +28,7 @@ func (this *Offer) Populate(ctx context.Context, row db.CoreOfferRecord) {
 		Issuer: row.SellingIssuer.String,
 	}
 
-	lb := hal.LinkBuilder{httpx.Host(ctx)}
+	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	this.Links.Self = lb.Linkf("/offers/%d", row.OfferID)
 	this.Links.OfferMaker = lb.Linkf("/accounts/%s", row.SellerID)
 	return

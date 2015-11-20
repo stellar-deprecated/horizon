@@ -1,9 +1,13 @@
 package hal
 
+import (
+	"net/url"
+)
+
 // BasePage represents the simplest page: one with no links and only embedded records.
 // Can be used to build custom page-like resources
 type BasePage struct {
-	Host     string `json:"-"`
+	BaseURL  *url.URL `json:"-"`
 	Embedded struct {
 		Records []Pageable `json:"records"`
 	} `json:"_embedded"`
@@ -43,7 +47,7 @@ type Page struct {
 func (p *Page) PopulateLinks() {
 	p.Init()
 	fmts := p.BasePath + "?order=%s&limit=%d&cursor=%s"
-	lb := LinkBuilder{p.Host}
+	lb := LinkBuilder{p.BaseURL}
 
 	p.Links.Self = lb.Linkf(fmts, p.Order, p.Limit, p.Cursor)
 	rec := p.Embedded.Records

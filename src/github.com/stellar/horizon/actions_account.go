@@ -42,7 +42,7 @@ func (action *AccountIndexAction) LoadPage() {
 		res.Populate(action.Ctx, record)
 		action.Page.Add(res)
 	}
-	action.Page.Host = action.R.Host
+	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = "/accounts"
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor

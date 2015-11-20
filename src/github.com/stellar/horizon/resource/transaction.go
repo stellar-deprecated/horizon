@@ -36,7 +36,7 @@ func (res *Transaction) Populate(
 	res.ValidBefore = res.timeString(row.ValidBefore)
 	res.ValidAfter = res.timeString(row.ValidAfter)
 
-	lb := hal.LinkBuilder{httpx.Host(ctx)}
+	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	res.Links.Account = lb.Link("/accounts", res.Account)
 	res.Links.Ledger = lb.Link("/ledgers", fmt.Sprintf("%d", res.Ledger))
 	res.Links.Operations = lb.PagedLink("/transactions", res.ID, "operations")

@@ -103,7 +103,7 @@ func (action *EffectIndexAction) LoadPage() {
 		action.Page.Add(res)
 	}
 
-	action.Page.Host = action.R.Host
+	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = action.Path()
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor
