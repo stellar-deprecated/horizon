@@ -32,9 +32,9 @@ func (action *OperationIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *OperationIndexAction) SSE(stream sse.Stream) {
-	stream.SetLimit(int(action.Query.Limit))
 	action.Do(action.LoadQuery, action.LoadRecords, action.LoadPage)
 	action.Do(func() {
+		stream.SetLimit(int(action.Query.Limit))
 		records := action.Records[stream.SentCount():]
 
 		for _, record := range records {

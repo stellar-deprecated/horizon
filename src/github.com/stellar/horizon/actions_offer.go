@@ -33,11 +33,11 @@ func (action *OffersByAccountAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *OffersByAccountAction) SSE(stream sse.Stream) {
-	stream.SetLimit(int(action.Query.Limit))
 	action.Do(
 		action.LoadQuery,
 		action.LoadRecords,
 		func() {
+			stream.SetLimit(int(action.Query.Limit))
 			for _, record := range action.Records[stream.SentCount():] {
 				var res resource.Offer
 				res.Populate(action.Ctx, record)

@@ -53,10 +53,10 @@ func (action *OrderBookShowAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *OrderBookShowAction) SSE(stream sse.Stream) {
-	stream.SetLimit(10)
 	action.Do(action.LoadQuery, action.LoadRecord, action.LoadResource)
 
 	action.Do(func() {
+		stream.SetLimit(10)
 		stream.Send(sse.Event{
 			Data: action.Resource,
 		})
