@@ -56,13 +56,10 @@ func (action *OrderBookShowAction) SSE(stream sse.Stream) {
 	action.Do(action.LoadQuery, action.LoadRecord, action.LoadResource)
 
 	action.Do(func() {
+		stream.SetLimit(10)
 		stream.Send(sse.Event{
 			Data: action.Resource,
 		})
-
-		if stream.SentCount() >= 10 {
-			stream.Done()
-		}
 	})
 
 }

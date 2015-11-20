@@ -20,7 +20,7 @@ func (res *Trade) Populate(ctx context.Context, row db.EffectRecord) (err error)
 	res.PT = row.PagingToken()
 	res.Buyer = row.Account
 
-	lb := hal.LinkBuilder{httpx.Host(ctx)}
+	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	res.Links.Self = lb.Link("/accounts", res.Seller)
 	res.Links.Seller = lb.Link("/accounts", res.Seller)
 	res.Links.Buyer = lb.Link("/accounts", res.Buyer)

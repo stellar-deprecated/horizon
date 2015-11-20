@@ -37,14 +37,11 @@ func (action *OffersByAccountAction) SSE(stream sse.Stream) {
 		action.LoadQuery,
 		action.LoadRecords,
 		func() {
+			stream.SetLimit(int(action.Query.Limit))
 			for _, record := range action.Records[stream.SentCount():] {
 				var res resource.Offer
 				res.Populate(action.Ctx, record)
 				stream.Send(sse.Event{ID: res.PagingToken(), Data: res})
-			}
-
-			if stream.SentCount() >= int(action.Query.Limit) {
-				stream.Done()
 			}
 		},
 	)
@@ -72,7 +69,7 @@ func (action *OffersByAccountAction) LoadPage() {
 		action.Page.Add(res)
 	}
 
-	action.Page.Host = action.R.Host
+	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = action.Path()
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor

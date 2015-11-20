@@ -21,12 +21,8 @@ func TestEffectActions(t *testing.T) {
 			So(w.Body, ShouldBePageOf, 11)
 
 			// test streaming, regression for https://github.com/stellar/horizon/issues/147
-			// TODO: fix goji so that HttpResponseRecorder writers are considered flushable, allowing us
-			// to test streaming responses
-			// w = rh.Get("/effects?limit=2", test.RequestHelperStreaming)
-			// t.Log(w.Body.String())
-			// So(w.Code, ShouldEqual, 200)
-
+			w = rh.Get("/effects?limit=2", test.RequestHelperStreaming)
+			So(w.Code, ShouldEqual, 200)
 		})
 
 		Convey("GET /ledgers/:ledger_id/effects", func() {

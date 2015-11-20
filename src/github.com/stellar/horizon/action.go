@@ -2,9 +2,11 @@ package horizon
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/log"
 	"github.com/zenazn/goji/web"
 )
@@ -81,4 +83,8 @@ func (action *Action) ValidateCursorAsDefault() {
 	}
 
 	action.GetInt64(actions.ParamCursor)
+}
+
+func (action *Action) BaseURL() *url.URL {
+	return httpx.BaseURL(action.Ctx)
 }

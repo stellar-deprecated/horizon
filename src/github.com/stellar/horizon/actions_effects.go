@@ -34,27 +34,28 @@ func (action *EffectIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *EffectIndexAction) SSE(stream sse.Stream) {
-	action.Do(action.LoadQuery, action.LoadRecords)
+	action.Do(
+		action.LoadQuery,
+		action.LoadRecords,
+		func() {
+			stream.SetLimit(int(action.Query.Limit))
+			records := action.Records[stream.SentCount():]
 
-	records := action.Records[stream.SentCount():]
+			for _, record := range records {
+				res, err := resource.NewEffect(action.Ctx, record)
 
-	for _, record := range records {
-		res, err := resource.NewEffect(action.Ctx, record)
+				if err != nil {
+					stream.Err(action.Err)
+					return
+				}
 
-		if err != nil {
-			stream.Err(action.Err)
-			return
-		}
-
-		stream.Send(sse.Event{
-			ID:   res.PagingToken(),
-			Data: res,
-		})
-	}
-
-	if stream.SentCount() >= int(action.Query.Limit) {
-		stream.Done()
-	}
+				stream.Send(sse.Event{
+					ID:   res.PagingToken(),
+					Data: res,
+				})
+			}
+		},
+	)
 }
 
 // LoadQuery sets action.Query from the request params
@@ -102,7 +103,7 @@ func (action *EffectIndexAction) LoadPage() {
 		action.Page.Add(res)
 	}
 
-	action.Page.Host = action.R.Host
+	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = action.Path()
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor

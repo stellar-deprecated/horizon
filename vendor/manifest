@@ -242,23 +242,29 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/zenazn/goji",
+			"repository": "https://github.com/zenazn/goji",
+			"revision": "09c4160eb01c64b5a7d3b8dfd93712828143c4ce",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/zenazn/goji/bind",
 			"repository": "https://github.com/zenazn/goji",
-			"revision": "1421f7cecb33069e8a1d951d57d76544ffaac735",
+			"revision": "09c4160eb01c64b5a7d3b8dfd93712828143c4ce",
 			"branch": "master",
 			"path": "/bind"
 		},
 		{
 			"importpath": "github.com/zenazn/goji/graceful",
 			"repository": "https://github.com/zenazn/goji",
-			"revision": "1421f7cecb33069e8a1d951d57d76544ffaac735",
+			"revision": "09c4160eb01c64b5a7d3b8dfd93712828143c4ce",
 			"branch": "master",
 			"path": "/graceful"
 		},
 		{
 			"importpath": "github.com/zenazn/goji/web",
 			"repository": "https://github.com/zenazn/goji",
-			"revision": "1421f7cecb33069e8a1d951d57d76544ffaac735",
+			"revision": "09c4160eb01c64b5a7d3b8dfd93712828143c4ce",
 			"branch": "master",
 			"path": "/web"
 		},

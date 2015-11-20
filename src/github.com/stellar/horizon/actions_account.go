@@ -42,7 +42,7 @@ func (action *AccountIndexAction) LoadPage() {
 		res.Populate(action.Ctx, record)
 		action.Page.Add(res)
 	}
-	action.Page.Host = action.R.Host
+	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = "/accounts"
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor
@@ -62,18 +62,16 @@ func (action *AccountIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *AccountIndexAction) SSE(stream sse.Stream) {
+
 	action.Do(
 		action.LoadQuery,
 		action.LoadRecords,
 		func() {
+			stream.SetLimit(int(action.Query.Limit))
 			var res resource.HistoryAccount
 			for _, record := range action.Records[stream.SentCount():] {
 				res.Populate(action.Ctx, record)
 				stream.Send(sse.Event{ID: record.PagingToken(), Data: res})
-			}
-
-			if stream.SentCount() >= int(action.Query.Limit) {
-				stream.Done()
 			}
 		},
 	)
@@ -106,11 +104,8 @@ func (action *AccountShowAction) SSE(stream sse.Stream) {
 		action.LoadRecord,
 		action.LoadResource,
 		func() {
+			stream.SetLimit(10)
 			stream.Send(sse.Event{Data: action.Resource})
-
-			if stream.SentCount() >= 10 {
-				stream.Done()
-			}
 		},
 	)
 }

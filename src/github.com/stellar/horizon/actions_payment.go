@@ -26,6 +26,7 @@ func (action *PaymentsIndexAction) JSON() {
 func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
 	action.Do(action.LoadQuery, action.LoadRecords)
 	action.Do(func() {
+		stream.SetLimit(int(action.Query.Limit))
 		records := action.Records[stream.SentCount():]
 
 		for _, record := range records {
@@ -40,10 +41,6 @@ func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
 				ID:   res.PagingToken(),
 				Data: res,
 			})
-		}
-
-		if stream.SentCount() >= int(action.Query.Limit) {
-			stream.Done()
 		}
 	})
 
@@ -78,7 +75,7 @@ func (action *PaymentsIndexAction) LoadPage() {
 		action.Page.Add(res)
 	}
 
-	action.Page.Host = action.R.Host
+	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = action.Path()
 	action.Page.Limit = action.Query.Limit
 	action.Page.Cursor = action.Query.Cursor

@@ -17,7 +17,7 @@ func (this *Base) Populate(ctx context.Context, row db.EffectRecord) {
 	this.Account = row.Account
 	this.populateType(row)
 
-	lb := hal.LinkBuilder{httpx.Host(ctx)}
+	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	this.Links.Operation = lb.Linkf("/operations/%d", row.HistoryOperationID)
 	this.Links.Succeeds = lb.Linkf("/effects?order=desc&cursor=%s", this.PT)
 	this.Links.Precedes = lb.Linkf("/effects?order=asc&cursor=%s", this.PT)

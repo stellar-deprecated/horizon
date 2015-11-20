@@ -18,7 +18,7 @@ func (this *Base) Populate(ctx context.Context, row db.OperationRecord) {
 	this.SourceAccount = row.SourceAccount
 	this.populateType(row)
 
-	lb := hal.LinkBuilder{httpx.Host(ctx)}
+	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	self := fmt.Sprintf("/operations/%d", row.Id)
 	this.Links.Self = lb.Link(self)
 	this.Links.Succeeds = lb.Linkf("/effects?order=desc&cursor=%s", this.PT)
