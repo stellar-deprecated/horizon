@@ -13,6 +13,8 @@ type RootAction struct {
 
 // JSON renders the json response for RootAction
 func (action *RootAction) JSON() {
+	action.App.UpdateStellarCoreInfo()
+
 	var res resource.Root
 	res.Populate(
 		action.Ctx,

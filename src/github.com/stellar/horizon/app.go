@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
+	"encoding/json"
+	"io/ioutil"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/jmoiron/sqlx"
@@ -141,6 +143,48 @@ func (a *App) UpdateLedgerState() {
 	}
 
 	a.latestLedgerState = ls
+}
+
+// UpdateCoreVersion updates the value of coreVersion from the Stellar core API
+func (a *App) UpdateStellarCoreInfo() {
+	if a.config.StellarCoreUrl == "" {
+		return
+	}
+
+	fail := func(err error) {
+		log.Warnf("could not load stellar-core info: %s", err)
+	}
+
+	resp, err := http.Get(fmt.Sprint(a.config.StellarCoreUrl, "/info"))
+
+	if err != nil {
+		fail(err)
+		return
+	}
+
+	defer resp.Body.Close()
+	contents, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fail(err)
+		return
+	}
+
+	var responseJson map[string]*json.RawMessage
+	err = json.Unmarshal(contents, &responseJson)
+	if err != nil {
+		fail(err)
+		return
+	}
+
+	var serverInfo map[string]interface{}
+	err = json.Unmarshal(*responseJson["info"], &serverInfo)
+	if err != nil {
+		fail(err)
+		return
+	}
+
+	a.coreVersion = serverInfo["build"].(string)
+	a.networkPassphrase = serverInfo["network"].(string)
 }
 
 // UpdateMetrics triggers a refresh of several metrics gauges, such as open
