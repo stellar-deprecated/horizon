@@ -12,9 +12,16 @@ func TestRootAction(t *testing.T) {
 
 	Convey("GET /", t, func() {
 		test.LoadScenario("base")
+		server := test.NewStaticMockServer(`{
+				"info": {
+					"network": "test",
+					"build": "test-core"
+				}
+			}`)
+		defer server.Close()
 		app := NewTestApp()
-		app.coreVersion = "test-core"
 		app.horizonVersion = "test-horizon"
+		app.config.StellarCoreUrl = server.URL
 
 		defer app.Close()
 		rh := NewRequestHelper(app)
