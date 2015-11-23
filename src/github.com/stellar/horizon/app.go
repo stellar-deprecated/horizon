@@ -183,6 +183,7 @@ func (a *App) UpdateStellarCoreInfo() {
 		return
 	}
 
+	// TODO: make resilient to changes in stellar-core's info output
 	a.coreVersion = serverInfo["build"].(string)
 	a.networkPassphrase = serverInfo["network"].(string)
 }
