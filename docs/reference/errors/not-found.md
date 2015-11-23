@@ -21,7 +21,7 @@ As with all errors Horizon returns, `not_found` follows the [Problem Details for
 ## Example
 
 ```shell
-$ curl -X GET 'https://horizon-testnet.stellar.org/accounts/accountthatdoesntexist'
+$ curl -X GET "https://horizon-testnet.stellar.org/accounts/accountthatdoesntexist"
 {
   "type": "not_found",
   "title": "Resource Missing",

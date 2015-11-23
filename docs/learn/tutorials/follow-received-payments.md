@@ -76,7 +76,7 @@ can use to get testnet lumens for testing purposes. To fund your account, simply
 execute the following curl command:
 
 ```bash
-$ curl https://horizon-testnet.stellar.org/friendbot?addr=GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3
+$ curl "https://horizon-testnet.stellar.org/friendbot?addr=GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3"
 ```
 
 Don't forget to replace the address above with your own.  If the request
@@ -100,7 +100,7 @@ terminal.
 To follow new payments connected to your account you simply need to send `Accept: text/event-stream` header to the [/payments](../../reference/payments-all.md) endpoint.
 
 ```bash
-$ curl -H 'Accept: text/event-stream' https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3/payments
+$ curl -H "Accept: text/event-stream" "https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3/payments"
 ```
 
 As a result you will see something like:
@@ -170,7 +170,7 @@ We now know how to get a stream of transactions to an account. Let's check if ou
 First, let's check our account sequence number so we can create a payment operation. To do this we send a request to horizon:
 
 ```bash
-$ curl https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3
+$ curl "https://horizon-testnet.stellar.org/accounts/GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3"
 ```
 
 Sequence number can be found under the `sequence` field. The current sequence number is `713226564141056`. Save this value somewhere.
@@ -202,7 +202,7 @@ After running this script you should see a signed transaction blob. To submit th
 Now to send a transaction just use horizon:
 
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"tx":"AAAAAH6Sq76F4cHVMWvGG4AtNtFVIvayUxSgR401rPY9ej3TAAAD6AACiK0AAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAKc1j3y10+nI+sxuXlmFz71JS35mp/RcPCP45Gw0obdAAAAAAAAAAAAExLQAAAAAAAAAAAT16PdMAAABAsJTBC5N5B9Q/9+ZKS7qkMd/wZHWlP6uCCFLzeD+JWT60/VgGFCpzQhZmMg2k4Vg+AwKJTwko3d7Jt3Y6WhjLCg=="}' https://horizon-testnet.stellar.org/transactions
+curl -H "Content-Type: application/json" -X POST -d '{"tx":"AAAAAH6Sq76F4cHVMWvGG4AtNtFVIvayUxSgR401rPY9ej3TAAAD6AACiK0AAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAKc1j3y10+nI+sxuXlmFz71JS35mp/RcPCP45Gw0obdAAAAAAAAAAAAExLQAAAAAAAAAAAT16PdMAAABAsJTBC5N5B9Q/9+ZKS7qkMd/wZHWlP6uCCFLzeD+JWT60/VgGFCpzQhZmMg2k4Vg+AwKJTwko3d7Jt3Y6WhjLCg=="}' "https://horizon-testnet.stellar.org/transactions"
 ```
 
 You should see a new payment in a window running `stream_payments.js` script.

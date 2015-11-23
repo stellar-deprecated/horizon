@@ -25,7 +25,7 @@ GET /transactions{?cursor,limit,order}
 
 ```sh
 # Retrieve the 200 latest transactions, ordered chronologically:
-curl https://horizon-testnet.stellar.org/transactions?limit=200&order=desc
+curl "https://horizon-testnet.stellar.org/transactions?limit=200&order=desc"
 ```
 
 ### JavaScript Example Request

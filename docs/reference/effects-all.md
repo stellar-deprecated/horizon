@@ -24,7 +24,7 @@ GET /effects{?cursor,limit,order}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/effects
+curl "https://horizon-testnet.stellar.org/effects"
 ```
 
 ### JavaScript Example Request
