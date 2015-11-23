@@ -22,7 +22,7 @@ GET /ledgers/{id}/transactions{?cursor,limit,order}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/ledgers/69859/transactions
+curl "https://horizon-testnet.stellar.org/ledgers/69859/transactions"
 ```
 
 ### JavaScript Example Request

@@ -22,7 +22,7 @@ GET /operations/{id}/effects{?cursor,limit,order}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/operations/77309415424/effects
+curl "https://horizon-testnet.stellar.org/operations/77309415424/effects"
 ```
 
 ### JavaScript Example Request

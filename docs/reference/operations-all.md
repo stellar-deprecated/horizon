@@ -23,7 +23,7 @@ GET /operations{?cursor,limit,order}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/operations?limit=200&order=desc
+curl "https://horizon-testnet.stellar.org/operations?limit=200&order=desc"
 ```
 
 ### JavaScript Example Request

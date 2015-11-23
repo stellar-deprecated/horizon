@@ -26,7 +26,7 @@ GET /accounts/{id}/payments{?cursor,limit,order}
 
 ```bash
 # Retrieve the 25 latest payments for a specific account.
-curl https://horizon-testnet.stellar.org/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments?limit=25&order=desc
+curl "https://horizon-testnet.stellar.org/account/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ/payments?limit=25&order=desc"
 ```
 
 ### JavaScript Example Request

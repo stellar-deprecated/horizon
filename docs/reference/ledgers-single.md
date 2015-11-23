@@ -19,7 +19,7 @@ GET /ledgers/{id}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/ledgers/69859
+curl "https://horizon-testnet.stellar.org/ledgers/69859"
 ```
 
 ### JavaScript Example Request

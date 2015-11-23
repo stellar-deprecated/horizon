@@ -21,7 +21,7 @@ GET /accounts/{account}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ
+curl "https://horizon-testnet.stellar.org/accounts/GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
 ```
 
 ### JavaScript Example Request

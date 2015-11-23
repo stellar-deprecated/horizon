@@ -25,7 +25,7 @@ GET /accounts{?cursor,limit,order}
 ### curl Example Request
 
 ```shell
-curl https://horizon-testnet.stellar.org/transactions?limit=200&order=desc
+curl "https://horizon-testnet.stellar.org/transactions?limit=200&order=desc"
 ```
 
 ### JavaScript Example Request

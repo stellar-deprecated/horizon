@@ -24,7 +24,7 @@ GET /ledgers/{id}/effects{?cursor,limit,order}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/ledgers/69859/effects
+curl "https://horizon-testnet.stellar.org/ledgers/69859/effects"
 ```
 
 ### JavaScript Example Request

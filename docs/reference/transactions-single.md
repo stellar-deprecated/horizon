@@ -19,7 +19,7 @@ GET /transactions/{hash}
 ### curl Example Request
 
 ```sh
-curl https://horizon-testnet.stellar.org/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a
+curl "https://horizon-testnet.stellar.org/transactions/6391dd190f15f7d1665ba53c63842e368f485651a53d8d852ed442a446d1c69a"
 ```
 
 ### JavaScript Example Request
