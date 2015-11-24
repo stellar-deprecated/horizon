@@ -62,9 +62,8 @@ func (action *AccountIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *AccountIndexAction) SSE(stream sse.Stream) {
-
+	action.Setup(action.LoadQuery)
 	action.Do(
-		action.LoadQuery,
 		action.LoadRecords,
 		func() {
 			stream.SetLimit(int(action.Query.Limit))

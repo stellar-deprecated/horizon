@@ -22,6 +22,8 @@ type Base struct {
 	W       http.ResponseWriter
 	R       *http.Request
 	Err     error
+
+	isSetup bool
 }
 
 // Prepare established the common attributes that get used in nearly every
@@ -94,8 +96,9 @@ NotAcceptable:
 	return
 }
 
-// Do executes the provided func iff there is no current error for the action. Provides
-// a nicer way to invoke a set of steps that each may set `action.Err` during execution
+// Do executes the provided func iff there is no current error for the action.
+// Provides a nicer way to invoke a set of steps that each may set `action.Err`
+// during execution
 func (base *Base) Do(fns ...func()) {
 	for _, fn := range fns {
 		if base.Err != nil {
@@ -104,4 +107,14 @@ func (base *Base) Do(fns ...func()) {
 
 		fn()
 	}
+}
+
+// Setup runs the provided funcs if and only if no call to Setup() has been
+// made previously on this action.
+func (base *Base) Setup(fns ...func()) {
+	if base.isSetup {
+		return
+	}
+	base.Do(fns...)
+	base.isSetup = true
 }

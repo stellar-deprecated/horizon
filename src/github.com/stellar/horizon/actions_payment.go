@@ -24,25 +24,28 @@ func (action *PaymentsIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
-	action.Do(action.LoadQuery, action.LoadRecords)
-	action.Do(func() {
-		stream.SetLimit(int(action.Query.Limit))
-		records := action.Records[stream.SentCount():]
+	action.Setup(action.LoadQuery)
+	action.Do(
+		action.LoadRecords,
+		func() {
+			stream.SetLimit(int(action.Query.Limit))
 
-		for _, record := range records {
-			res, err := resource.NewOperation(action.Ctx, record)
+			records := action.Records[stream.SentCount():]
 
-			if err != nil {
-				stream.Err(action.Err)
-				return
+			for _, record := range records {
+				res, err := resource.NewOperation(action.Ctx, record)
+
+				if err != nil {
+					stream.Err(action.Err)
+					return
+				}
+
+				stream.Send(sse.Event{
+					ID:   res.PagingToken(),
+					Data: res,
+				})
 			}
-
-			stream.Send(sse.Event{
-				ID:   res.PagingToken(),
-				Data: res,
-			})
-		}
-	})
+		})
 
 }
 
