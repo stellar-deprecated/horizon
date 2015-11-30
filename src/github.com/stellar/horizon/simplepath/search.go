@@ -113,7 +113,6 @@ func (s *search) runOnce() {
 
 	if s.isTarget(id) {
 		s.Results = append(s.Results, cur)
-		return
 	}
 
 	if !s.visit(id) {
