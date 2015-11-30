@@ -52,5 +52,12 @@ func TestFinder(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(len(paths), ShouldEqual, 0)
 		})
+
+		Convey("regression: paths that route through source currencies are found", func() {
+			//TODO: the scenario.  Payer holds USD and XLM, Payee wants USD.  There
+			//is an offer selling XLM for USD.  The payer should see 2 paths to Payee,
+			//one with no intervening hop (paying USD directly) and another that hops
+			//through XLM
+		})
 	})
 }
