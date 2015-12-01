@@ -9,7 +9,6 @@ before_script:
 - psql -c 'create database "stellar-core_test";' -U postgres
 script:
 - bash scripts/run_tests.bash
-- bash scripts/build_artifacts.bash
 env:
   global:
   - DATABASE_URL=postgres://localhost:5432/horizon_test?sslmode=disable&user=postgres
@@ -24,6 +23,8 @@ addons:
 matrix:
   allow_failures:
   - go: tip
+before_deploy:
+  - bash scripts/build_artifacts.bash
 deploy:
   provider: releases
   api_key:
