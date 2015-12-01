@@ -46,8 +46,14 @@ func (ob *orderBook) Cost(source xdr.Asset, sourceAmount xdr.Int64) (result xdr.
 	sql := sq.
 		Select("amount", "pricen", "priced", "offerid").
 		From("offers").
-		Where(sq.Eq{"sellingassettype": st, "sellingassetcode": sc, "sellingissuer": si}).
-		Where(sq.Eq{"buyingassettype": bt, "buyingassetcode": bc, "buyingissuer": bi})
+		Where(sq.Eq{
+		"sellingassettype":               st,
+		"COALESCE(sellingassetcode, '')": sc,
+		"COALESCE(sellingissuer, '')":    si}).
+		Where(sq.Eq{
+		"buyingassettype":               bt,
+		"COALESCE(buyingassetcode, '')": bc,
+		"COALESCE(buyingissuer, '')":    bi})
 
 	inverted := assets.Equals(source, ob.Buying)
 
