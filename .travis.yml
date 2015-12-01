@@ -9,6 +9,7 @@ before_script:
 - psql -c 'create database "stellar-core_test";' -U postgres
 script:
 - bash scripts/run_tests.bash
+- bash scripts/build_artifacts.bash
 env:
   global:
   - DATABASE_URL=postgres://localhost:5432/horizon_test?sslmode=disable&user=postgres
@@ -22,4 +23,18 @@ addons:
   postgresql: '9.4'
 matrix:
   allow_failures:
-    - go: tip
+  - go: tip
+
+before_deploy:
+  - export RELEASE_PKG_FILE=$(ls dist/*)
+  - echo "deploying $RELEASE_PKG_FILE to GitHub releases"
+deploy:
+  provider: releases
+  api_key:
+    secure: Hj5m2dZiD8DFElVtFmwgtlEUvL+s+g74MzhMp/xXZb8rKcyYyLrPVjUkQcpJaFRLoFhTMszEktEh3fkCAXkQLS7jrxA+/Oy6NqhlDtGl+pq1kh0uIStmQky8tneLpgAPLFdvWkl72P5FwPhBWfNtfE+7UKdKggGePXXWJ0qL0SU=
+  file_glob: true
+  file: "${RELEASE_PKG_FILE}"
+  on:
+    repo: stellar/horizon
+    tags: true
+    go: '1.5'
