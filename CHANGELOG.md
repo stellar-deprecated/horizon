@@ -8,7 +8,10 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+## [v0.1.1] - 2015-12-01
+
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.1.0...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.1.1...master
+[v0.1.1]: https://github.com/stellar/horizon/compare/v0.1.0...v0.1.1
