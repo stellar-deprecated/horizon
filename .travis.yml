@@ -24,16 +24,12 @@ addons:
 matrix:
   allow_failures:
   - go: tip
-
-before_deploy:
-  - export RELEASE_PKG_FILE=$(ls dist/*)
-  - echo "deploying $RELEASE_PKG_FILE to GitHub releases"
 deploy:
   provider: releases
   api_key:
     secure: Hj5m2dZiD8DFElVtFmwgtlEUvL+s+g74MzhMp/xXZb8rKcyYyLrPVjUkQcpJaFRLoFhTMszEktEh3fkCAXkQLS7jrxA+/Oy6NqhlDtGl+pq1kh0uIStmQky8tneLpgAPLFdvWkl72P5FwPhBWfNtfE+7UKdKggGePXXWJ0qL0SU=
   file_glob: true
-  file: "${RELEASE_PKG_FILE}"
+  file: "dist/*"
   on:
     repo: stellar/horizon
     tags: true
