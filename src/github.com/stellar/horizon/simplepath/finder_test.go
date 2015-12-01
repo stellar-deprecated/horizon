@@ -55,7 +55,7 @@ func TestFinder(t *testing.T) {
 			So(len(paths), ShouldEqual, 0)
 		})
 
-		Convey("regression: paths that route through source currencies are found", func() {
+		Convey("regression: paths that involve native currencies can be found", func() {
 
 			query := paths.Query{
 				DestinationAddress: "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
