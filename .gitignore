@@ -3,6 +3,7 @@ docs/public
 /tmp/
 /pkg
 /bin
+/dist
 /vendor/pkg
 /vendor/bin
 *.bts
