@@ -13,7 +13,7 @@ build() {
 	PKG_DIR="$DIST/$RELEASE"
 
 	# do the actual build
-	GOOS=$GOOS GOARCH=$GOARCH gb build
+	GOOS=$GOOS GOARCH=$GOARCH gb build  -ldflags "-X main.version=$VERSION"
 
 	# make package directory
 	rm -rf $PKG_DIR
