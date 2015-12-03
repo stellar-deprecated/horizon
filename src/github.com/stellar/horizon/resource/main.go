@@ -48,6 +48,7 @@ type AccountThresholds struct {
 	HighThreshold byte `json:"high_threshold"`
 }
 
+// Asset represents a single asset
 type Asset base.Asset
 
 // Balance represents an account's holdings for a single currency type
@@ -57,14 +58,15 @@ type Balance struct {
 	base.Asset
 }
 
-// HistoryAccount is a simple resource, used for the account collection
-// actions.  It provides only the TotalOrderID of the account and its address.
+// HistoryAccount is a simple resource, used for the account collection actions.
+// It provides only the TotalOrderID of the account and its account id.
 type HistoryAccount struct {
-	ID      string `json:"id"`
-	PT      string `json:"paging_token"`
-	Address string `json:"address"`
+	ID        string `json:"id"`
+	PT        string `json:"paging_token"`
+	AccountID string `json:"account_id"`
 }
 
+// Ledger represents a single closed ledger
 type Ledger struct {
 	Links struct {
 		Self         hal.Link `json:"self"`
@@ -105,6 +107,7 @@ type Offer struct {
 	Price   string `json:"price"`
 }
 
+// OrderBookSummary represents a snapshot summary of a given order book
 type OrderBookSummary struct {
 	Bids    []PriceLevel `json:"bids"`
 	Asks    []PriceLevel `json:"asks"`
@@ -125,8 +128,10 @@ type Path struct {
 	Path                   []Asset `json:"path"`
 }
 
+// Price represents a price
 type Price base.Price
 
+// PriceLevel represents an aggregation of offers that share a given price
 type PriceLevel struct {
 	PriceR Price  `json:"price_r"`
 	Price  string `json:"price"`
@@ -154,8 +159,8 @@ type Root struct {
 
 // Signer represents one of an account's signers.
 type Signer struct {
-	Address string `json:"address"`
-	Weight  int32  `json:"weight"`
+	PublicKey string `json:"public_key"`
+	Weight    int32  `json:"weight"`
 }
 
 // Trade represents a trade effect
@@ -208,11 +213,15 @@ type Transaction struct {
 	ValidBefore     string    `json:"valid_before,omitempty"`
 }
 
+// TransactionResultCodes represent a summary of result codes returned from
+// a single xdr TransactionResult
 type TransactionResultCodes struct {
 	TransactionCode string   `json:"transaction"`
 	OperationCodes  []string `json:"operations,omitempty"`
 }
 
+// TransactionSuccess represents the result of a successful transaction
+// submission.
 type TransactionSuccess struct {
 	Links struct {
 		Transaction hal.Link `json:"transaction"`
