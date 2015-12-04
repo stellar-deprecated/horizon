@@ -8,6 +8,11 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+### Changes
+
+- BREAKING CHANGE: the `address` field of a signer in the account resource has been renamed to `public_key`.
+- BREAKING CHANGE: the `address` on the account resource has been renamed to `account_id`.
+
 ## [v0.1.1] - 2015-12-01
 
 ### Added

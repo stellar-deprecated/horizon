@@ -17,7 +17,7 @@ GET /accounts/{id}/payments{?cursor,limit,order}
 
 |  name  |  notes  | description | example |
 | ------ | ------- | ----------- | ------- |
-| `id`      | required, string | The address of the account used to constrain results. | `GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ` |
+| `id`      | required, string | The account id of the account used to constrain results. | `GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ` |
 | `?cursor` | optional, default _null_ | A payment paging token specifying from where to begin results. | `8589934592`                                          |
 | `?limit`  | optional, number, default `10`  | Specifies the count of records at most to return. | `200` |
 | `?order` | optional, string, default `asc` | Specifies order of returned results. `asc` means older payments first, `desc` mean newer payments first. | `desc` |

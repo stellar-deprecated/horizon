@@ -98,4 +98,4 @@ This endpoint responds with a list of operations that are part of a given transa
 ## Possible Errors
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.
+- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `hash` argument.

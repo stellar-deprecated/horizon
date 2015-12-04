@@ -11,7 +11,7 @@ Horizon only returns offers that belong to a particular account.  When it does, 
 |--------------|------------------|------------------------------------------------------------------------------------------------------------------------|
 | id           | integer           | The ID of this offer. |
 | paging_token | string           | A [paging token](./page.md) suitable for use as a `cursor` parameter.                                                                |
-| seller      | string           | Address of the account making this offer.                                                    |
+| seller      | string           | Account id of the account making this offer.                                                    |
 | selling     | [Asset](http://stellar.org/developers/learn/concepts/assets.html)           | The Asset this offer wants to sell.                      |
 | buying     | [Asset](http://stellar.org/developers/learn/concepts/assets.html) | The Asset this offer wants to buy. |
 | amount | string | The amount of `selling` the account making this offer is willing to sell.|
