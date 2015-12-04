@@ -91,7 +91,10 @@ This endpoint responds with a list of payments operations that are part of a giv
       "href": "?order=asc&limit=10&cursor="
     }
   }
+}
 ```
+
+
 
 ## Possible Errors
 
