@@ -7,11 +7,11 @@ The Stellar Network allows payments to be made across assets through _path payme
 
 A path search is specified using:
 
-- The destination address
-- The source address
+- The destination account id
+- The source account id
 - The asset and amount that the destination account should receive
 
-As part of the search, horizon will load a list of assets available to the source address and will find any payment paths from those source assets to the desired destination asset. The search's amount parameter will be used to determine if there a given path can satisfy a payment of the desired amount.
+As part of the search, horizon will load a list of assets available to the source account id and will find any payment paths from those source assets to the desired destination asset. The search's amount parameter will be used to determine if there a given path can satisfy a payment of the desired amount.
 
 ## Request
 
@@ -23,12 +23,12 @@ GET /paths?destination_account={da}&source_account={sa}&destination_asset_type={
 
 | name                        | notes  | description                                                                                        | example                                                    |
 |-----------------------------|--------|----------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `?destination_account`      | string | The destination address that any returned path should use                                          | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
+| `?destination_account`      | string | The destination account that any returned path should use                                          | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
 | `?destination_asset_type`   | string | The type of the destination asset                                                                  | `credit_alphanum4`                                         |
 | `?destination_asset_code`   | string | The code for the destination, if destination_asset_type is not "native"                            | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
 | `?destination_asset_issuer` | string | The issuer for the destination, if destination_asset_type is not "native"                          | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
 | `?destination_amount`       | string | The amount, denominated in the destination asset, that any returned path should be able to satisfy | `10.1`                                                     |
-| `?source_account`           | string | The sender's address.  Any returned path must use a source that the sender can hold                | `GARSFJNXJIHO6ULUBK3DBYKVSIZE7SC72S5DYBCHU7DKL22UXKVD7MXP` |
+| `?source_account`           | string | The sender's account id.  Any returned path must use a source that the sender can hold                | `GARSFJNXJIHO6ULUBK3DBYKVSIZE7SC72S5DYBCHU7DKL22UXKVD7MXP` |
 
 
 

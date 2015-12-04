@@ -3,7 +3,7 @@ title: All Accounts
 ---
 
 The all accounts endpoint returns a collection of all the [accounts](./resources/account.md) that have ever existed. Results
-are ordered by account creation time. An address may show up multiple times if they were [merged](./resources/operation.md#Account_Merge) and then [created](./resources/operation.md#Create_Account) again.
+are ordered by account creation time. An account id may show up multiple times if they were [merged](./resources/operation.md#Account_Merge) and then [created](./resources/operation.md#Create_Account) again.
 
 This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new accounts as they get made in the Stellar network.
 If called in streaming mode Horizon will start at the earliest known account unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream accounts created since your request time.
@@ -66,52 +66,52 @@ See [accounts](./resources/account.md) for reference.
       {
         "id": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO",
         "paging_token": "77309415424",
-        "address": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO"
+        "account_id": "GBIA4FH6TV64KSPDAJCNUQSM7PFL4ILGUVJDPCLUOPJ7ONMKBBVUQHRO"
       },
       {
         "id": "GC2ADYAIPKYQRGGUFYBV2ODJ54PY6VZUPKNCWWNX2C7FCJYKU4ZZNKVL",
         "paging_token": "463856472064",
-        "address": "GC2ADYAIPKYQRGGUFYBV2ODJ54PY6VZUPKNCWWNX2C7FCJYKU4ZZNKVL"
+        "account_id": "GC2ADYAIPKYQRGGUFYBV2ODJ54PY6VZUPKNCWWNX2C7FCJYKU4ZZNKVL"
       },
       {
         "id": "GB4ZONAMYWRCU7KPV6A6DEPIY3YDZFVFTFC42XQGLWJQ53GQEDE3TI4C",
         "paging_token": "605590392832",
-        "address": "GB4ZONAMYWRCU7KPV6A6DEPIY3YDZFVFTFC42XQGLWJQ53GQEDE3TI4C"
+        "account_id": "GB4ZONAMYWRCU7KPV6A6DEPIY3YDZFVFTFC42XQGLWJQ53GQEDE3TI4C"
       },
       {
         "id": "GBC6OK4WVUKWUTHNJLKLYJ57G6UUQTJMHY2ON6R4DMRRCRDKYAWGH6CY",
         "paging_token": "31490700218368",
-        "address": "GBC6OK4WVUKWUTHNJLKLYJ57G6UUQTJMHY2ON6R4DMRRCRDKYAWGH6CY"
+        "account_id": "GBC6OK4WVUKWUTHNJLKLYJ57G6UUQTJMHY2ON6R4DMRRCRDKYAWGH6CY"
       },
       {
         "id": "GC5BIFJBP5GTNYB3WHM7MA7J3Z2EF7VE7XCDU7V47AOZMGIBB4324W63",
         "paging_token": "35631048691712",
-        "address": "GC5BIFJBP5GTNYB3WHM7MA7J3Z2EF7VE7XCDU7V47AOZMGIBB4324W63"
+        "account_id": "GC5BIFJBP5GTNYB3WHM7MA7J3Z2EF7VE7XCDU7V47AOZMGIBB4324W63"
       },
       {
         "id": "GD7IDKHPOQJ2DFICCBSX5QEDSXSC5U7HRZLKNIXGCLDRRU5UOBEYABJO",
         "paging_token": "35927401435136",
-        "address": "GD7IDKHPOQJ2DFICCBSX5QEDSXSC5U7HRZLKNIXGCLDRRU5UOBEYABJO"
+        "account_id": "GD7IDKHPOQJ2DFICCBSX5QEDSXSC5U7HRZLKNIXGCLDRRU5UOBEYABJO"
       },
       {
         "id": "GBSN5O2Q47RDWKANTBK5PZAOMHMQQZE53LS32OKCBY6XGXZSFAVD7SUR",
         "paging_token": "46269682683904",
-        "address": "GBSN5O2Q47RDWKANTBK5PZAOMHMQQZE53LS32OKCBY6XGXZSFAVD7SUR"
+        "account_id": "GBSN5O2Q47RDWKANTBK5PZAOMHMQQZE53LS32OKCBY6XGXZSFAVD7SUR"
       },
       {
         "id": "GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB",
         "paging_token": "46316927324160",
-        "address": "GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB"
+        "account_id": "GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB"
       },
       {
         "id": "GAKLBGHNHFQ3BMUYG5KU4BEWO6EYQHZHAXEWC33W34PH2RBHZDSQBD75",
         "paging_token": "46428596473856",
-        "address": "GAKLBGHNHFQ3BMUYG5KU4BEWO6EYQHZHAXEWC33W34PH2RBHZDSQBD75"
+        "account_id": "GAKLBGHNHFQ3BMUYG5KU4BEWO6EYQHZHAXEWC33W34PH2RBHZDSQBD75"
       },
       {
         "id": "GBAP36MOHWTXNGO6I6UYUXSOF7AA2PA5Y26PJW6VG7CVDFQPIX243ILV",
         "paging_token": "46669114642432",
-        "address": "GBAP36MOHWTXNGO6I6UYUXSOF7AA2PA5Y26PJW6VG7CVDFQPIX243ILV"
+        "account_id": "GBAP36MOHWTXNGO6I6UYUXSOF7AA2PA5Y26PJW6VG7CVDFQPIX243ILV"
       }
     ]
   },
@@ -156,7 +156,7 @@ See [accounts](./resources/account.md) for reference.
   },
   "id": "GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36",
   "paging_token": "66035122180096",
-  "address": "GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36",
+  "account_id": "GA2HGBJIJKI6O4XEM7CZWY5PS6GKSXL6D34ERAJYQSPYA6X6AI7HYW36",
   "sequence": 66035122176002,
   "balances": [
     {
@@ -170,5 +170,3 @@ See [accounts](./resources/account.md) for reference.
 ## errors
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
-
-

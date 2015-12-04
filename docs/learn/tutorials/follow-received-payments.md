@@ -79,7 +79,7 @@ execute the following curl command:
 $ curl "https://horizon-testnet.stellar.org/friendbot?addr=GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3"
 ```
 
-Don't forget to replace the address above with your own.  If the request
+Don't forget to replace the account id above with your own.  If the request
 succeeds, you should see a response like:
 
 ```json

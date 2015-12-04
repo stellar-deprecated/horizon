@@ -9,14 +9,14 @@ If called in streaming mode Horizon will start at the earliest known transaction
 ## Request
 
 ```
-GET /accounts/{address}/transactions{?cursor,limit,order}
+GET /accounts/{account_id}/transactions{?cursor,limit,order}
 ```
 
 ### Arguments
 
 | name | notes | description | example |
 | ---- | ----- | ----------- | ------- |
-| `address` | required, string | Address of an account | GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ |
+| `account_id` | required, string | ID of an account | GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ |
 | `?cursor` | optional, any, default _null_ | A paging token, specifying where to start returning records from. | 12884905984 |
 | `?order`  | optional, string, default `asc` | The order in which to return rows, "asc" or "desc". | `asc` |
 | `?limit`  | optional, number, default: `10` | Maximum number of records to return. | `200` |
@@ -178,4 +178,4 @@ This endpoint responds with a list of transactions that changed a given account'
 ## Possible Errors
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `address` argument.
+- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `account_id` argument.

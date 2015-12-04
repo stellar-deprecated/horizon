@@ -9,10 +9,11 @@ import (
 	"golang.org/x/net/context"
 )
 
+// Populate fills out the resource's fields
 func (this *Account) Populate(ctx context.Context, row db.AccountRecord) (err error) {
 	this.ID = row.Accountid
 	this.PT = row.PagingToken()
-	this.Address = row.Accountid
+	this.AccountID = row.Accountid
 	this.Sequence = row.Seqnum
 	this.SubentryCount = row.Numsubentries
 	this.InflationDestination = row.Inflationdest.String

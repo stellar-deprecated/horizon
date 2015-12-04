@@ -8,7 +8,7 @@ import (
 func (this *HistoryAccount) Populate(ctx context.Context, row db.HistoryAccountRecord) {
 	this.ID = row.Address
 	this.PT = row.PagingToken()
-	this.Address = row.Address
+	this.AccountID = row.Address
 }
 
 func (this HistoryAccount) PagingToken() string {

@@ -354,7 +354,7 @@ Use “Set Options” operation to set following options to your account:
 
 | Field           |  Type  | Description       |
 | --------------- | ------ | ----------------- |
-| signer_key | string | The address of the new signer. |
+| signer_key | string | The public key of the new signer. |
 | signer_weight | int | The weight of the new signer (1-255). |
 | master_key_weight | int | The weight of the master key (1-255). |
 | low_threshold | int | The sum weight for the low threshold. |
@@ -519,7 +519,7 @@ Removes the account and transfers all remaining XLM to the destination account.
 
 | Field           |  Type  | Description       |
 | --------------- | ------ | ----------------- |
-| into | string | Address where funds of deleted account were transferred. |
+| into | string | Account ID where funds of deleted account were transferred. |
 
 #### Example
 ```json
@@ -594,4 +594,3 @@ Runs inflation.
 | [Ledger Operations](../operations-for-ledger.md)   | Collection | `/ledgers/{id}/operations{?cursor,limit,order}` |
 | [Account Operations](../operations-for-account.md) | Collection | `/accounts/:account_id/operations` |
 | [Account Payments](../payments-for-account.md)     | Collection | `/accounts/:account_id/payments` |
-
