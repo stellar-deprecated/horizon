@@ -16,6 +16,6 @@ func (res *TransactionSuccess) Populate(ctx context.Context, result txsub.Result
 	res.Meta = result.ResultMetaXDR
 
 	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
-	res.Links.Transaction = lb.Link("/transaction", result.Hash)
+	res.Links.Transaction = lb.Link("/transactions", result.Hash)
 	return
 }
