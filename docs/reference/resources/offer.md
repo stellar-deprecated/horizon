@@ -16,7 +16,7 @@ Horizon only returns offers that belong to a particular account.  When it does, 
 | buying     | [Asset](http://stellar.org/developers/learn/concepts/assets.html) | The Asset this offer wants to buy. |
 | amount | string | The amount of `selling` the account making this offer is willing to sell.|
 | price_r | object | An object of a number numerator and number denominator that represent the buy and sell price of the currencies on offer.|
-| price| string | A number representing the decimal form of `price_r`.|
+| price| string | How many units of `buying` it takes to get 1 unit of `selling`. A number representing the decimal form of `price_r`.|
 
 ## Links
 | rel          | Example                                                                                           | Description                                                | `templated` |
