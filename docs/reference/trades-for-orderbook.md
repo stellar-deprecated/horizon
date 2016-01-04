@@ -29,7 +29,7 @@ GET /order_book/trades?selling_asset_type={selling_asset_type}&selling_asset_cod
 ### curl Example Request
 
 ```sh
-curl "https://horizon-testnet.stellar.org/order_book/trades?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=USD&buying_asset_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
+curl "https://horizon-testnet.stellar.org/order_book/trades?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=FOO&buying_asset_issuer=GBAUUA74H4XOQYRSOW2RZUA4QL5PB37U3JS5NE3RTB2ELJVMIF5RLMAG"
 ```
 
 ### JavaScript Example Request
@@ -38,7 +38,7 @@ curl "https://horizon-testnet.stellar.org/order_book/trades?selling_asset_type=n
 var StellarSdk = require('stellar-sdk');
 var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
-server.orderbook(new StellarSdk.Asset("EUR", "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG"), new StellarSdk.Asset("USD", "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"))
+server.orderbook(new StellarSdk.Asset.native(), new StellarSdk.Asset('FOO', 'GBAUUA74H4XOQYRSOW2RZUA4QL5PB37U3JS5NE3RTB2ELJVMIF5RLMAG'))
   .trades()
   .call()
   .then(function(resp) { console.log(resp); })
@@ -48,6 +48,69 @@ server.orderbook(new StellarSdk.Asset("EUR", "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQ
 ## Response
 
 The list of trades.
+
+### Example Response
+```js
+{
+  "_links": {
+    "self": {
+      "href": "https://horizon-testnet.stellar.org/order_book/trades?order=asc\u0026limit=10\u0026cursor="
+    },
+    "next": {
+      "href": "https://horizon-testnet.stellar.org/order_book/trades?order=asc\u0026limit=10\u0026cursor=7281919481876481-2"
+    },
+    "prev": {
+      "href": "https://horizon-testnet.stellar.org/order_book/trades?order=desc\u0026limit=10\u0026cursor=7281893712072705-2"
+    }
+  },
+  "_embedded": {
+    "records": [
+      {
+        "_links": {
+          "self": {
+            "href": "https://horizon-testnet.stellar.org/accounts/GCJ34JYMXNI7N55YREWAACMMZECOMTPIYDTFCQBWPUP7BLJQDDTVGUW4"
+          },
+          "seller": {
+            "href": "https://horizon-testnet.stellar.org/accounts/GCJ34JYMXNI7N55YREWAACMMZECOMTPIYDTFCQBWPUP7BLJQDDTVGUW4"
+          },
+          "buyer": {
+            "href": "https://horizon-testnet.stellar.org/accounts/GD42RQNXTRIW6YR3E2HXV5T2AI27LBRHOERV2JIYNFMXOBA234SWLQQB"
+          }
+        },
+        "id": "7281893712072705-2",
+        "paging_token": "7281893712072705-2",
+        "seller": "GCJ34JYMXNI7N55YREWAACMMZECOMTPIYDTFCQBWPUP7BLJQDDTVGUW4",
+        "sold_asset_type": "native",
+        "buyer": "GD42RQNXTRIW6YR3E2HXV5T2AI27LBRHOERV2JIYNFMXOBA234SWLQQB",
+        "bought_asset_type": "credit_alphanum4",
+        "bought_asset_code": "FOO",
+        "bought_asset_issuer": "GBAUUA74H4XOQYRSOW2RZUA4QL5PB37U3JS5NE3RTB2ELJVMIF5RLMAG"
+      },
+      {
+        "_links": {
+          "self": {
+            "href": "https://horizon-testnet.stellar.org/accounts/GCJ34JYMXNI7N55YREWAACMMZECOMTPIYDTFCQBWPUP7BLJQDDTVGUW4"
+          },
+          "seller": {
+            "href": "https://horizon-testnet.stellar.org/accounts/GCJ34JYMXNI7N55YREWAACMMZECOMTPIYDTFCQBWPUP7BLJQDDTVGUW4"
+          },
+          "buyer": {
+            "href": "https://horizon-testnet.stellar.org/accounts/GD42RQNXTRIW6YR3E2HXV5T2AI27LBRHOERV2JIYNFMXOBA234SWLQQB"
+          }
+        },
+        "id": "7281919481876481-2",
+        "paging_token": "7281919481876481-2",
+        "seller": "GCJ34JYMXNI7N55YREWAACMMZECOMTPIYDTFCQBWPUP7BLJQDDTVGUW4",
+        "sold_asset_type": "native",
+        "buyer": "GD42RQNXTRIW6YR3E2HXV5T2AI27LBRHOERV2JIYNFMXOBA234SWLQQB",
+        "bought_asset_type": "credit_alphanum4",
+        "bought_asset_code": "FOO",
+        "bought_asset_issuer": "GBAUUA74H4XOQYRSOW2RZUA4QL5PB37U3JS5NE3RTB2ELJVMIF5RLMAG"
+      }
+    ]
+  }
+}
+```
 
 ## Possible Errors
 
