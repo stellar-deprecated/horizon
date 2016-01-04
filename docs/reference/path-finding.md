@@ -28,7 +28,7 @@ GET /paths?destination_account={da}&source_account={sa}&destination_asset_type={
 | `?destination_asset_code`   | string | The code for the destination, if destination_asset_type is not "native"                            | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
 | `?destination_asset_issuer` | string | The issuer for the destination, if destination_asset_type is not "native"                          | `GAEDTJ4PPEFVW5XV2S7LUXBEHNQMX5Q2GM562RJGOQG7GVCE5H3HIB4V` |
 | `?destination_amount`       | string | The amount, denominated in the destination asset, that any returned path should be able to satisfy | `10.1`                                                     |
-| `?source_account`           | string | The sender's account id.  Any returned path must use a source that the sender can hold                | `GARSFJNXJIHO6ULUBK3DBYKVSIZE7SC72S5DYBCHU7DKL22UXKVD7MXP` |
+| `?source_account`           | string | The sender's account id.  Any returned path must use a source that the sender can hold             | `GARSFJNXJIHO6ULUBK3DBYKVSIZE7SC72S5DYBCHU7DKL22UXKVD7MXP` |
 
 
 
@@ -46,64 +46,65 @@ This endpoint responds with a page of path resources.  See [path resource](./res
 
 ```json
 {
-    "_embedded": {
-        "records": [
-            {
-                "destination_amount": "20.0000000",
-                "destination_asset_code": "EUR",
-                "destination_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                "destination_asset_type": "credit_alphanum4",
-                "path": [],
-                "source_amount": "30.0000000",
-                "source_asset_code": "USD",
-                "source_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                "source_asset_type": "credit_alphanum4"
-            },
-            {
-                "destination_amount": "20.0000000",
-                "destination_asset_code": "EUR",
-                "destination_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                "destination_asset_type": "credit_alphanum4",
-                "path": [
-                    {
-                        "asset_code": "1",
-                        "asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                        "asset_type": "credit_alphanum4"
-                    }
-                ],
-                "source_amount": "20.0000000",
-                "source_asset_code": "USD",
-                "source_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                "source_asset_type": "credit_alphanum4"
-            },
-            {
-                "destination_amount": "20.0000000",
-                "destination_asset_code": "EUR",
-                "destination_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                "destination_asset_type": "credit_alphanum4",
-                "path": [
-                    {
-                        "asset_code": "21",
-                        "asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                        "asset_type": "credit_alphanum4"
-                    },
-                    {
-                        "asset_code": "22",
-                        "asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                        "asset_type": "credit_alphanum4"
-                    }
-                ],
-                "source_amount": "20.0000000",
-                "source_asset_code": "USD",
-                "source_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
-                "source_asset_type": "credit_alphanum4"
-            }        ]
-    },
-    "_links": {
-        "self": {
-            "href": "/paths"
-        }
+  "_embedded": {
+    "records": [
+      {
+        "destination_amount": "20.0000000",
+        "destination_asset_code": "EUR",
+        "destination_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+        "destination_asset_type": "credit_alphanum4",
+        "path": [],
+        "source_amount": "30.0000000",
+        "source_asset_code": "USD",
+        "source_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+        "source_asset_type": "credit_alphanum4"
+      },
+      {
+        "destination_amount": "20.0000000",
+        "destination_asset_code": "EUR",
+        "destination_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+        "destination_asset_type": "credit_alphanum4",
+        "path": [
+          {
+            "asset_code": "1",
+            "asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+            "asset_type": "credit_alphanum4"
+          }
+        ],
+        "source_amount": "20.0000000",
+        "source_asset_code": "USD",
+        "source_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+        "source_asset_type": "credit_alphanum4"
+      },
+      {
+        "destination_amount": "20.0000000",
+        "destination_asset_code": "EUR",
+        "destination_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+        "destination_asset_type": "credit_alphanum4",
+        "path": [
+          {
+            "asset_code": "21",
+            "asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+            "asset_type": "credit_alphanum4"
+          },
+          {
+            "asset_code": "22",
+            "asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+            "asset_type": "credit_alphanum4"
+          }
+        ],
+        "source_amount": "20.0000000",
+        "source_asset_code": "USD",
+        "source_asset_issuer": "GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN",
+        "source_asset_type": "credit_alphanum4"
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "/paths"
     }
+  }
 }
 ```
 
