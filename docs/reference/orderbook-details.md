@@ -29,15 +29,16 @@ GET /order_book?selling_asset_type={selling_asset_type}&selling_asset_code={sell
 ### curl Example Request
 
 ```sh
-curl "https://horizon-testnet.stellar.org/order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=USD&buying_asset_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
+curl "https://horizon-testnet.stellar.org/order_book?selling_asset_type=native&buying_asset_type=credit_alphanum4&buying_asset_code=FOO&buying_asset_issuer=GBAUUA74H4XOQYRSOW2RZUA4QL5PB37U3JS5NE3RTB2ELJVMIF5RLMAG"
 ```
+
 ### JavaScript Example Request
 
 ```js
 var StellarSdk = require('stellar-sdk');
 var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
 
-server.orderbook(new StellarSdk.Asset("EUR", "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG"), new StellarSdk.Asset("USD", "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"))
+server.orderbook(new StellarSdk.Asset.native(), new StellarSdk.Asset('FOO', 'GBAUUA74H4XOQYRSOW2RZUA4QL5PB37U3JS5NE3RTB2ELJVMIF5RLMAG'))
   .call()
   .then(function(resp) { console.log(resp); })
   .catch(function(err) { console.log(err); })
@@ -46,6 +47,40 @@ server.orderbook(new StellarSdk.Asset("EUR", "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQ
 ## Response
 
 The summary of the orderbook and its bids and asks.
+
+## Example Response
+```json
+{
+  "bids": [
+    {
+      "price_r": {
+        "n": 100000000,
+        "d": 12953367
+      },
+      "price": "7.7200005",
+      "amount": "12.0000000"
+    }
+  ],
+  "asks": [
+    {
+      "price_r": {
+        "n": 194,
+        "d": 25
+      },
+      "price": "7.7600000",
+      "amount": "238.4804125"
+    }
+  ],
+  "base": {
+    "asset_type": "native"
+  },
+  "counter": {
+    "asset_type": "credit_alphanum4",
+    "asset_code": "FOO",
+    "asset_issuer": "GBAUUA74H4XOQYRSOW2RZUA4QL5PB37U3JS5NE3RTB2ELJVMIF5RLMAG"
+  }
+}
+```
 
 ## Possible Errors
 
