@@ -36,7 +36,7 @@ curl "https://horizon-testnet.stellar.org/order_book/trades?selling_asset_type=n
 
 ```js
 var StellarSdk = require('stellar-sdk');
-var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 
 server.orderbook(new StellarSdk.Asset.native(), new StellarSdk.Asset('FOO', 'GBAUUA74H4XOQYRSOW2RZUA4QL5PB37U3JS5NE3RTB2ELJVMIF5RLMAG'))
   .trades()

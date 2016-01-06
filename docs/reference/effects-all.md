@@ -31,7 +31,7 @@ curl "https://horizon-testnet.stellar.org/effects"
 
 ```javascript
 var StellarSdk = require('stellar-sdk');
-var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 
 server.effects()
   .call()

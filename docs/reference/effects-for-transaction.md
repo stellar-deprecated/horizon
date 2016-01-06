@@ -29,7 +29,7 @@ curl "https://horizon-testnet.stellar.org/transactions/6391dd190f15f7d1665ba53c6
 
 ```javascript
 var StellarSdk = require('stellar-sdk');
-var server = new StellarSdk.Server({hostname:'horizon-testnet.stellar.org', secure:true, port:443});
+var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 
 server.effects()
   .forTransaction("2ca4cb42fda85f4f0b4bc0a0dc6517a7f109761d0da784cb7c38fb6ee378b1b5")
