@@ -30,7 +30,7 @@ build() {
 
 srcBin() {
 	GOOS=$1
-	BIN="federation-$GOOS-$GOARCH"
+	BIN="horizon-$GOOS-$GOARCH"
 
 	if [ "$GOOS" = "windows" ]; then
 		BIN+=".exe"
