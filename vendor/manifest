@@ -85,7 +85,7 @@
 		{
 			"importpath": "github.com/jteeuwen/go-bindata",
 			"repository": "https://github.com/jteeuwen/go-bindata",
-			"revision": "91db54b0401d0679b3cf743142e4f3c86b4aaa4e",
+			"revision": "a0ff2567cfb70903282db057e799fd826784d41d",
 			"branch": "master"
 		},
 		{
