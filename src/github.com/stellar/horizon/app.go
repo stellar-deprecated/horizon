@@ -1,11 +1,11 @@
 package horizon
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"runtime"
-	"encoding/json"
-	"io/ioutil"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/jmoiron/sqlx"
@@ -72,9 +72,13 @@ func NewApp(config Config) (*App, error) {
 	result := &App{config: config}
 	result.horizonVersion = version
 	result.networkPassphrase = build.DefaultNetwork.Passphrase
-	appInit.Run(result)
-
 	return result, nil
+}
+
+// Init initializes app, using the config to populate db connections and
+// whatnot.
+func (a *App) Init() {
+	appInit.Run(a)
 }
 
 // Serve starts the horizon system, binding it to a socket, setting up

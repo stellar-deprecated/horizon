@@ -14,8 +14,9 @@ import (
 )
 
 var app *horizon.App
-var rootCmd *cobra.Command
 var version string
+
+var rootCmd *cobra.Command
 
 func main() {
 	if version != "" {
@@ -44,10 +45,14 @@ func init() {
 	viper.BindEnv("loggly-host", "LOGGLY_HOST")
 
 	rootCmd = &cobra.Command{
-		Use:   "horizon",
-		Short: "client-facing api server for the stellar network",
-		Long:  "client-facing api server for the stellar network",
-		Run:   run,
+		Use:              "horizon",
+		Short:            "client-facing api server for the stellar network",
+		Long:             "client-facing api server for the stellar network",
+		PersistentPreRun: initApp,
+		Run: func(cmd *cobra.Command, args []string) {
+			app.Init()
+			app.Serve()
+		},
 	}
 
 	rootCmd.Flags().String(
@@ -128,11 +133,12 @@ func init() {
 		"Secret seed for friendbot functionality. When empty, friendbot will be disabled",
 	)
 
+	rootCmd.AddCommand(dbCmd)
+
 	viper.BindPFlags(rootCmd.Flags())
 }
 
-func run(cmd *cobra.Command, args []string) {
-
+func initApp(cmd *cobra.Command, args []string) {
 	var err error
 
 	if viper.GetString("db-url") == "" {
@@ -174,6 +180,4 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	app.Serve()
 }
