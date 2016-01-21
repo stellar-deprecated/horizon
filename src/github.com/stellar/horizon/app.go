@@ -72,12 +72,13 @@ func NewApp(config Config) (*App, error) {
 	result := &App{config: config}
 	result.horizonVersion = version
 	result.networkPassphrase = build.DefaultNetwork.Passphrase
+	result.init()
 	return result, nil
 }
 
 // Init initializes app, using the config to populate db connections and
 // whatnot.
-func (a *App) Init() {
+func (a *App) init() {
 	appInit.Run(a)
 }
 

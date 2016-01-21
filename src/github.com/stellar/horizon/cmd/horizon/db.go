@@ -50,7 +50,6 @@ var dbMigrateCmd = &cobra.Command{
 			}
 		}
 
-		app.Init()
 		// HACK: getting the raw *sql.DB value through HistoryQuery()
 		// TODO: refactor app such that historyDB is exported
 		db := app.HistoryQuery().DB.DB

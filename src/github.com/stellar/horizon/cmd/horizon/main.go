@@ -50,7 +50,6 @@ func init() {
 		Long:             "client-facing api server for the stellar network",
 		PersistentPreRun: initApp,
 		Run: func(cmd *cobra.Command, args []string) {
-			app.Init()
 			app.Serve()
 		},
 	}
