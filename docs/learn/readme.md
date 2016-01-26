@@ -16,3 +16,4 @@ Libraries (in various states of completeness) for interacting with Horizon in ot
 - [Go](https://github.com/stellar/go-stellar-base) *Community maintained*
 - [Python](https://github.com/StellarCN/py-stellar-base) *Community maintained*
 - [Java](https://github.com/stellar/java-stellar-base) *Community maintained*
+- [C#](https://github.com/QuantozTechnology/csharp-stellar-base) *Community maintained*
