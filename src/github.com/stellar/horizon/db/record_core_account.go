@@ -26,7 +26,7 @@ const (
 type CoreAccountRecord struct {
 	Accountid     string
 	Balance       xdr.Int64
-	Seqnum        int64
+	Seqnum        string
 	Numsubentries int32
 	Inflationdest null.String
 	HomeDomain    null.String
