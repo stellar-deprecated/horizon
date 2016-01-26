@@ -24,7 +24,7 @@ type Account struct {
 	} `json:"_links"`
 
 	HistoryAccount
-	Sequence             int64             `json:"sequence"`
+	Sequence             string            `json:"sequence"`
 	SubentryCount        int32             `json:"subentry_count"`
 	InflationDestination string            `json:"inflation_destination,omitempty"`
 	HomeDomain           string            `json:"home_domain,omitempty"`

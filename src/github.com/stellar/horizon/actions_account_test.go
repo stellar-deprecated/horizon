@@ -25,7 +25,7 @@ func TestAccountActions(t *testing.T) {
 			var result resource.Account
 			err := json.Unmarshal(w.Body.Bytes(), &result)
 			So(err, ShouldBeNil)
-			So(result.Sequence, ShouldEqual, 3)
+			So(result.Sequence, ShouldEqual, "3")
 		})
 
 		Convey("GET /accounts/100", func() {
