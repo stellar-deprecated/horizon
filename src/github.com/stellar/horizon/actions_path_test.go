@@ -33,7 +33,7 @@ func TestPathActions(t *testing.T) {
 			So(w.Code, ShouldEqual, 200)
 			t.Log(qs)
 			t.Log(w.Body.String())
-			So(w.Body, ShouldBePageOf, 4)
+			So(w.Body, ShouldBePageOf, 3)
 		})
 	})
 }

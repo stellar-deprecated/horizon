@@ -42,7 +42,7 @@ func TestFinder(t *testing.T) {
 
 			paths, err := finder.Find(query)
 			So(err, ShouldBeNil)
-			So(len(paths), ShouldEqual, 4)
+			So(len(paths), ShouldEqual, 3)
 
 			query.DestinationAmount = xdr.Int64(200000001)
 			paths, err = finder.Find(query)
