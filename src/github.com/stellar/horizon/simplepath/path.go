@@ -3,6 +3,7 @@ package simplepath
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/paths"
@@ -77,7 +78,7 @@ func (p *pathNode) Cost(amount xdr.Int64) (result xdr.Int64, err error) {
 
 	for cur.Tail != nil {
 		ob := cur.OrderBook()
-		result, err = ob.Cost(cur.Asset, result)
+		result, err = ob.Cost(cur.Tail.Asset, result)
 		if err != nil {
 			return
 		}

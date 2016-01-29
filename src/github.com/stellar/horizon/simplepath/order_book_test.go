@@ -12,10 +12,6 @@ import (
 func TestOrderBook(t *testing.T) {
 
 	Convey("orderBook", t, func() {
-		test.LoadScenario("paths")
-		conn := test.OpenDatabase(test.StellarCoreDatabaseUrl())
-		defer conn.Close()
-
 		ob := orderBook{
 			Selling: makeAsset(
 				xdr.AssetTypeAssetTypeCreditAlphanum4,
@@ -25,13 +21,17 @@ func TestOrderBook(t *testing.T) {
 				xdr.AssetTypeAssetTypeCreditAlphanum4,
 				"USD",
 				"GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN"),
-			DB: db.SqlQuery{conn},
 		}
 
-		Convey("Cost", func() {
-			r, err := ob.Cost(ob.Buying, 10)
+		Convey("Cost from paths scenario", func() {
+			test.LoadScenario("paths")
+			conn := test.OpenDatabase(test.StellarCoreDatabaseUrl())
+			defer conn.Close()
+			ob.DB = db.SqlQuery{conn}
+
+			r, err := ob.Cost(ob.Buying, 10000000)
 			So(err, ShouldBeNil)
-			So(r, ShouldEqual, xdr.Int64(10))
+			So(r, ShouldEqual, xdr.Int64(10000000))
 
 			// this cost should consume the entire lowest priced order, whose price
 			// is 1.0, thus the output should be the same
@@ -50,6 +50,17 @@ func TestOrderBook(t *testing.T) {
 
 			r, err = ob.Cost(ob.Buying, 500000001)
 			So(err, ShouldNotBeNil)
+		})
+
+		Convey("Cost from bad_cost scenario", func() {
+			test.LoadScenario("bad_cost")
+			conn := test.OpenDatabase(test.StellarCoreDatabaseUrl())
+			defer conn.Close()
+			ob.DB = db.SqlQuery{conn}
+
+			r, err := ob.Cost(ob.Buying, 10000000)
+			So(err, ShouldBeNil)
+			So(r, ShouldEqual, xdr.Int64(2000000000))
 		})
 	})
 }
