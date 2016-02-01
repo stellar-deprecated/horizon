@@ -8,6 +8,10 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+### Added
+
+- Add `horizon db migrate [up|down|redo]` commands, used for installing schema migrations.  This work is in service of porting the horizon-importer project directly to horizon.
+
 ## [v0.3.0] - 2016-01-29
 
 ### Changes
