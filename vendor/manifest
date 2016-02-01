@@ -85,7 +85,7 @@
 		{
 			"importpath": "github.com/jteeuwen/go-bindata",
 			"repository": "https://github.com/jteeuwen/go-bindata",
-			"revision": "91db54b0401d0679b3cf743142e4f3c86b4aaa4e",
+			"revision": "a0ff2567cfb70903282db057e799fd826784d41d",
 			"branch": "master"
 		},
 		{
@@ -172,6 +172,12 @@
 			"importpath": "github.com/rs/cors",
 			"repository": "https://github.com/rs/cors",
 			"revision": "5e4ce6bc0ecd3472f6f943666d84876691be2ced",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/rubenv/sql-migrate",
+			"repository": "https://github.com/rubenv/sql-migrate",
+			"revision": "53184e1edfb4f9655b0fa8dd2c23e7763f452bda",
 			"branch": "master"
 		},
 		{
@@ -274,6 +280,12 @@
 			"revision": "34ff4cd5e6de00702100a0ab3bb73de8de5ab35d",
 			"branch": "master",
 			"path": "/context"
+		},
+		{
+			"importpath": "gopkg.in/gorp.v1",
+			"repository": "https://gopkg.in/gorp.v1",
+			"revision": "c87af80f3cc5036b55b83d77171e156791085e2e",
+			"branch": "master"
 		},
 		{
 			"importpath": "gopkg.in/yaml.v2",

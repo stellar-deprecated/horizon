@@ -1,0 +1,23 @@
+func (stack *{{ $.Name }}) Push(val {{ index .Args 0  }}) {
+  stack.data = append(stack.data, val)
+  stack.top++
+}
+
+func (stack *{{ .Name }}) Pop() error {
+  if stack.top == 0 {
+    return ErrEmptyStack
+  }
+
+  stack.top--
+  return nil
+}
+
+func (stack *{{ .Name }}) Peek() (result {{ index .Args 0 }}, err error) {
+  if stack.top <= 0 {
+    err = ErrEmptyStack
+    return
+  }
+
+  result = stack.data[stack.top - 1]
+  return
+}
