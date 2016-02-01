@@ -12,31 +12,37 @@ type LedgerState struct {
 	StellarCoreSequence int32
 }
 
+// UpToDate return true if the history state is up to date with the stellar-core
+// state.
+func (s *LedgerState) UpToDate() bool {
+	return s.HorizonSequence >= s.StellarCoreSequence
+}
+
 // LedgerStateQuery retrieves the latest ledgers for stellar-core and horizon.
 type LedgerStateQuery struct {
 	Horizon SqlQuery
 	Core    SqlQuery
 }
 
-// Get executes the query, returning any found results
+// Select executes the query, returning any found results
 func (q LedgerStateQuery) Select(ctx context.Context, dest interface{}) error {
-	hSql := sq.
+	hSQL := sq.
 		Select("MAX(sequence) as horizonsequence").
 		From("history_ledgers")
 
-	scSql := sq.
+	scSQL := sq.
 		Select("MAX(ledgerseq) as stellarcoresequence").
 		From("ledgerheaders")
 
 	var result LedgerState
 
-	err := q.Horizon.Get(ctx, hSql, &result)
+	err := q.Horizon.Get(ctx, hSQL, &result)
 
 	if err != nil {
 		return err
 	}
 
-	err = q.Core.Get(ctx, scSql, &result)
+	err = q.Core.Get(ctx, scSQL, &result)
 
 	if err != nil {
 		return err

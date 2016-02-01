@@ -45,6 +45,7 @@ func init() {
 	viper.BindEnv("loggly-host", "LOGGLY_HOST")
 	viper.BindEnv("tls-cert", "TLS_CERT")
 	viper.BindEnv("tls-key", "TLS_KEY")
+	viper.BindEnv("import-history", "IMPORT_HISTORY")
 
 	rootCmd = &cobra.Command{
 		Use:              "horizon",
@@ -197,6 +198,7 @@ func initApp(cmd *cobra.Command, args []string) {
 		FriendbotSecret:        viper.GetString("friendbot-secret"),
 		TLSCert:                cert,
 		TLSKey:                 key,
+		ImportHistory:          viper.GetBool("import-history"),
 	}
 
 	app, err = horizon.NewApp(config)

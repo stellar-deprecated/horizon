@@ -14,6 +14,7 @@ import (
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/friendbot"
+	"github.com/stellar/horizon/history"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/pump"
@@ -29,6 +30,7 @@ var appContextKey = 0
 // You can override this variable using: gb build -ldflags "-X main.version aabbccdd"
 var version = ""
 
+// App represents the root of the state of a horizon instance.
 type App struct {
 	config            Config
 	web               *Web
@@ -44,6 +46,7 @@ type App struct {
 	pump              *pump.Pump
 	paths             paths.Finder
 	friendbot         *friendbot.Bot
+	importer          *history.Importer
 
 	// metrics
 	metrics                metrics.Registry
@@ -129,6 +132,11 @@ func (a *App) Serve() {
 // Close cancels the app and forces the closure of db connections
 func (a *App) Close() {
 	a.cancel()
+
+	if a.importer != nil {
+		a.importer.Close()
+	}
+
 	a.historyDb.Close()
 	a.coreDb.Close()
 }
