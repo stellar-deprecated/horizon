@@ -27,11 +27,11 @@ type LedgerStateQuery struct {
 // Select executes the query, returning any found results
 func (q LedgerStateQuery) Select(ctx context.Context, dest interface{}) error {
 	hSQL := sq.
-		Select("MAX(sequence) as horizonsequence").
+		Select("COALESCE(MAX(sequence), 0) as horizonsequence").
 		From("history_ledgers")
 
 	scSQL := sq.
-		Select("MAX(ledgerseq) as stellarcoresequence").
+		Select("COALESCE(MAX(ledgerseq), 0) as stellarcoresequence").
 		From("ledgerheaders")
 
 	var result LedgerState
