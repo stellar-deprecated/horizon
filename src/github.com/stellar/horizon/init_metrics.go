@@ -24,6 +24,19 @@ func initDbMetrics(app *App) {
 	app.metrics.Register("goroutines", app.goroutineGauge)
 }
 
+func initImporterMetrics(app *App) {
+	if app.importer == nil {
+		return
+	}
+
+	app.metrics.Register("importer.total",
+		app.importer.Metrics.ImportTimer)
+	app.metrics.Register("importer.succeeded",
+		app.importer.Metrics.SuccessfulImportMeter)
+	app.metrics.Register("importer.failed",
+		app.importer.Metrics.FailedImportMeter)
+}
+
 func initLogMetrics(app *App) {
 	for level, meter := range *log.DefaultMetrics {
 		key := fmt.Sprintf("logging.%s", level)
@@ -54,4 +67,5 @@ func init() {
 	appInit.Add("db-metrics", initDbMetrics, "metrics", "history-db", "core-db")
 	appInit.Add("web.metrics", initWebMetrics, "web.init", "metrics")
 	appInit.Add("txsub.metrics", initTxSubMetrics, "txsub", "metrics")
+	appInit.Add("importer.metrics", initImporterMetrics, "importer", "metrics")
 }

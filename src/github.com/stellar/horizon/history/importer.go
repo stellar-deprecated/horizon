@@ -3,6 +3,7 @@ package history
 import (
 	"time"
 
+	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
@@ -10,6 +11,7 @@ import (
 
 // Close causes the importer to shut down.
 func (i *Importer) Close() {
+	log.Info("canceling importer poller")
 	i.tick.Stop()
 }
 
@@ -25,14 +27,23 @@ func (i *Importer) ImportLedger(seq int32) error {
 func (i *Importer) Init() error {
 	i.initializer.Do(func() {
 		i.tick = time.NewTicker(1 * time.Second)
+		i.Metrics.ImportTimer = metrics.NewTimer()
+		i.Metrics.SuccessfulImportMeter = metrics.NewMeter()
+		i.Metrics.FailedImportMeter = metrics.NewMeter()
 		go i.run()
 	})
 	return nil
 }
+func (i *Importer) run() {
+	for _ = range i.tick.C {
+		log.Debug("ticking importer")
+		i.runOnce()
+	}
+}
 
 // run causes the importer to check stellar-core to see if we can import new
 // data.
-func (i *Importer) run() {
+func (i *Importer) runOnce() {
 	q := db.LedgerStateQuery{
 		Horizon: i.HistoryDB,
 		Core:    i.CoreDB,
@@ -46,7 +57,7 @@ func (i *Importer) run() {
 		err := db.Get(context.Background(), q, &i.lastState)
 
 		if err != nil {
-			log.Warnf("could not load ledger state: %s", err)
+			log.Errorf("could not load ledger state: %s", err)
 			return
 		}
 
@@ -55,19 +66,23 @@ func (i *Importer) run() {
 			return
 		}
 
-		start, end := i.lastState.HorizonSequence, i.lastState.StellarCoreSequence
-
-		for j := start; j < end; j++ {
-			seq := j + 1
-			err := i.ImportLedger(seq)
-
-			if err != nil {
-				log.Warnf("failed to import ledger %d: %s", seq, err)
-				return
-			}
+		is := ImportSession{
+			Importer:    i,
+			FirstLedger: i.lastState.HorizonSequence + 1,
+			LastLedger:  i.lastState.StellarCoreSequence,
 		}
 
-		// 3. no-op, the for loop brings us back to 1.
+		is.Import()
+
+		if is.Err != nil {
+			log.Errorf("import session failed: %s", is.Err)
+			return
+		}
+
+		// 3.
+		if is.Imported == 0 {
+			return
+		}
 	}
 
 }
