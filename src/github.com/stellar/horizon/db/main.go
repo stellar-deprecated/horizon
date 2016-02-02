@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	stderr "errors"
 	"fmt"
 	"reflect"
@@ -49,8 +50,25 @@ type HistoryRecord struct {
 	Id int64 `db:"id"`
 }
 
+// Tx represents a single db transaction
+type Tx struct {
+	TX     *sqlx.Tx
+	Result sql.Result
+	Err    error
+}
+
 func (r HistoryRecord) PagingToken() string {
 	return fmt.Sprintf("%d", r.Id)
+}
+
+// Begin start a transaction
+func Begin(q SqlQuery) (*Tx, error) {
+	tx, err := q.DB.Beginx()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Tx{TX: tx}, nil
 }
 
 // Open the postgres database at the provided url and performing an initial
