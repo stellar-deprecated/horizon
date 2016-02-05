@@ -39,7 +39,7 @@ type TransactionRecord struct {
 	LedgerCloseTime  time.Time      `db:"ledger_close_time"`
 	ApplicationOrder int32          `db:"application_order"`
 	Account          string         `db:"account"`
-	AccountSequence  int64          `db:"account_sequence"`
+	AccountSequence  string         `db:"account_sequence"`
 	FeePaid          int32          `db:"fee_paid"`
 	OperationCount   int32          `db:"operation_count"`
 	TxEnvelope       string         `db:"tx_envelope"`
