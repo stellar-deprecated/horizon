@@ -18,7 +18,7 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 		notl := "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
 
 		q := CoreTrustlinesByAddressQuery{
-			SqlQuery{core},
+			SqlQuery{coreDb},
 			withtl,
 		}
 
@@ -35,7 +35,7 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 		So(tl.Assetcode, ShouldEqual, "USD")
 
 		q = CoreTrustlinesByAddressQuery{
-			SqlQuery{core},
+			SqlQuery{coreDb},
 			notl,
 		}
 

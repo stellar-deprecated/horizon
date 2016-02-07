@@ -1,6 +1,8 @@
 package db
 
-import "golang.org/x/net/context"
+import (
+	"golang.org/x/net/context"
+)
 
 // AccountByAddressQuery represents a query that retrieves a composite
 // of the CoreAccount and the HistoryAccount associated with an address.
@@ -21,7 +23,7 @@ func (q AccountByAddressQuery) Select(ctx context.Context, dest interface{}) err
 	}
 
 	cq = CoreAccountByAddressQuery{q.Core, q.Address}
-	err = Get(ctx, cq, &result.CoreAccountRecord)
+	err = Get(ctx, cq, &result.Account)
 	if err != nil {
 		return err
 	}

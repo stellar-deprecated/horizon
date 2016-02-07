@@ -22,7 +22,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return CoreOfferPageByCurrencyQuery{
-				SqlQuery:  SqlQuery{core},
+				SqlQuery:  SqlQuery{coreDb},
 				PageQuery: pq,
 			}
 		}

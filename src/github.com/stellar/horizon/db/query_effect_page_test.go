@@ -20,7 +20,7 @@ func TestEffectPageQuery(t *testing.T) {
 			pq := MustPageQuery(c, o, l)
 
 			return EffectPageQuery{
-				SqlQuery:  SqlQuery{history},
+				SqlQuery:  SqlQuery{historyDb},
 				PageQuery: pq,
 			}
 		}
@@ -157,7 +157,7 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 
 		Convey("restricts to order book properly", func() {
 			q := EffectPageQuery{
-				SqlQuery:  SqlQuery{history},
+				SqlQuery:  SqlQuery{historyDb},
 				PageQuery: MustPageQuery("", "asc", 0),
 				Filter: &EffectOrderBookFilter{
 					SellingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,
@@ -188,7 +188,7 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 
 		Convey("regression: does not crash when using a native asset", func() {
 			q := EffectPageQuery{
-				SqlQuery:  SqlQuery{history},
+				SqlQuery:  SqlQuery{historyDb},
 				PageQuery: MustPageQuery("", "asc", 0),
 				Filter: &EffectOrderBookFilter{
 					SellingType:  xdr.AssetTypeAssetTypeNative,

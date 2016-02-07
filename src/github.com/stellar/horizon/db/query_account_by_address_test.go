@@ -19,8 +19,8 @@ func TestAccountByAddressQuery(t *testing.T) {
 		notl := "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
 
 		q := AccountByAddressQuery{
-			Core:    SqlQuery{core},
-			History: SqlQuery{history},
+			Core:    SqlQuery{coreDb},
+			History: SqlQuery{historyDb},
 			Address: withtl,
 		}
 

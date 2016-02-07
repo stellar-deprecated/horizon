@@ -17,7 +17,7 @@ func TestOperationByIdQuery(t *testing.T) {
 		Convey("Existing record behavior", func() {
 			id := int64(8589938689)
 			q := OperationByIdQuery{
-				SqlQuery{history},
+				SqlQuery{historyDb},
 				id,
 			}
 			err := Get(ctx, q, &op)
@@ -29,7 +29,7 @@ func TestOperationByIdQuery(t *testing.T) {
 		Convey("Missing record behavior", func() {
 			id := int64(0)
 			q := OperationByIdQuery{
-				SqlQuery{history},
+				SqlQuery{historyDb},
 				id,
 			}
 			err := Get(ctx, q, &op)

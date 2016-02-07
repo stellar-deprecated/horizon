@@ -15,7 +15,7 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 		test.LoadScenario("order_books")
 
 		q := &OrderBookSummaryQuery{
-			SqlQuery:      SqlQuery{core},
+			SqlQuery:      SqlQuery{coreDb},
 			SellingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,
 			SellingCode:   "USD",
 			SellingIssuer: "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",

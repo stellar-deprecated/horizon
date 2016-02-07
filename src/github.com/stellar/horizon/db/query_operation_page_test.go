@@ -20,7 +20,7 @@ func TestOperationPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return OperationPageQuery{
-				SqlQuery:  SqlQuery{history},
+				SqlQuery:  SqlQuery{historyDb},
 				PageQuery: pq,
 			}
 		}

@@ -1,9 +1,12 @@
 package db
 
+import (
+	"github.com/stellar/horizon/db/records/core"
+)
+
 type AccountRecord struct {
 	HistoryAccountRecord
-	CoreAccountRecord
+	core.Account
 	Trustlines []CoreTrustlineRecord
-	Signers []CoreSignerRecord
+	Signers    []CoreSignerRecord
 }
-

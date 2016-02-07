@@ -14,8 +14,8 @@ func TestLedgerStateQuery(t *testing.T) {
 		var ls LedgerState
 
 		q := LedgerStateQuery{
-			SqlQuery{history},
-			SqlQuery{core},
+			SqlQuery{historyDb},
+			SqlQuery{coreDb},
 		}
 
 		err := Get(ctx, q, &ls)

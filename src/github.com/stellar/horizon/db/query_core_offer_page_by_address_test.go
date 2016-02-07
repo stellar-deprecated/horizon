@@ -18,7 +18,7 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return CoreOfferPageByAddressQuery{
-				SqlQuery:  SqlQuery{core},
+				SqlQuery:  SqlQuery{coreDb},
 				PageQuery: pq,
 				Address:   a,
 			}

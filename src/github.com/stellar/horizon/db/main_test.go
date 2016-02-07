@@ -8,20 +8,21 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
 	"golang.org/x/net/context"
 )
 
 var ctx context.Context
-var core *sqlx.DB
-var history *sqlx.DB
+var coreDb *sqlx.DB
+var historyDb *sqlx.DB
 
 func TestMain(m *testing.M) {
 	ctx = test.Context()
-	core = OpenStellarCoreTestDatabase()
-	history = OpenTestDatabase()
-	defer core.Close()
-	defer history.Close()
+	coreDb = OpenStellarCoreTestDatabase()
+	historyDb = OpenTestDatabase()
+	defer coreDb.Close()
+	defer historyDb.Close()
 
 	os.Exit(m.Run())
 
@@ -109,7 +110,7 @@ func ExampleGet() {
 		"GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
 	}
 
-	var account CoreAccountRecord
+	var account core.Account
 	err := Get(context.Background(), q, &account)
 
 	if err != nil {
@@ -129,7 +130,7 @@ func ExampleSelect() {
 		"GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
 	}
 
-	var records []CoreAccountRecord
+	var records []core.Account
 	err := Select(context.Background(), q, &records)
 
 	if err != nil {

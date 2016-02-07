@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
 )
 
@@ -12,12 +13,12 @@ func TestCoreAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("base")
 
 	Convey("CoreAccountByAddress", t, func() {
-		var account CoreAccountRecord
+		var account core.Account
 
 		Convey("Existing record behavior", func() {
 			address := "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
 			q := CoreAccountByAddressQuery{
-				SqlQuery{core},
+				SqlQuery{coreDb},
 				address,
 			}
 
@@ -31,7 +32,7 @@ func TestCoreAccountByAddressQuery(t *testing.T) {
 		Convey("Missing record behavior", func() {
 			address := "not real"
 			q := CoreAccountByAddressQuery{
-				SqlQuery{core},
+				SqlQuery{coreDb},
 				address,
 			}
 			err := Get(ctx, q, &account)
