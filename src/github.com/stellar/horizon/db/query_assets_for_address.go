@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/go-errors/errors"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db/records/core"
 	"golang.org/x/net/context"
 )
 
@@ -15,7 +16,7 @@ type AssetsForAddressQuery struct {
 }
 
 func (q AssetsForAddressQuery) Select(ctx context.Context, dest interface{}) error {
-	var tls []CoreTrustlineRecord
+	var tls []core.Trustline
 
 	tlq := CoreTrustlinesByAddressQuery{q.SqlQuery, q.Address}
 	err := Select(ctx, tlq, &tls)

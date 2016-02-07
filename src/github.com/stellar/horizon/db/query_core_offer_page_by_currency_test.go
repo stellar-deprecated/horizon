@@ -7,6 +7,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
 )
 
@@ -14,7 +15,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 	test.LoadScenario("order_books")
 
 	Convey("CoreOfferPageByCurrencyQuery", t, func() {
-		var records []CoreOfferRecord
+		var records []core.Offer
 
 		makeQuery := func(c string, o string, l int32) CoreOfferPageByCurrencyQuery {
 			pq, err := NewPageQuery(c, o, l)
@@ -69,8 +70,8 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			MustSelect(ctx, q, &records)
 
 			So(records, ShouldBeOrderedAscending, func(r interface{}) int64 {
-				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
-				return int64(r.(CoreOfferRecord).Price * 10000000)
+				So(r, ShouldHaveSameTypeAs, core.Offer{})
+				return int64(r.(core.Offer).Price * 10000000)
 			})
 
 			// asc orders ascending by price
@@ -79,8 +80,8 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 			MustSelect(ctx, q, &records)
 
 			So(records, ShouldBeOrderedDescending, func(r interface{}) int64 {
-				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
-				return int64(r.(CoreOfferRecord).Price * 10000000)
+				So(r, ShouldHaveSameTypeAs, core.Offer{})
+				return int64(r.(core.Offer).Price * 10000000)
 			})
 		})
 
@@ -99,7 +100,7 @@ func TestCoreOfferPageByCurrencyQuery(t *testing.T) {
 		})
 
 		Convey("cursor works properly", func() {
-			var record CoreOfferRecord
+			var record core.Offer
 			// lowest price if ordered ascending and no cursor
 			q := simpleQuery
 			MustGet(ctx, q, &record)

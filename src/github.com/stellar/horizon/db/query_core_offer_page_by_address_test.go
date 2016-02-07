@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
 )
 
@@ -24,7 +25,7 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 			}
 		}
 
-		var records []CoreOfferRecord
+		var records []core.Offer
 
 		Convey("works with native offers", func() {
 			MustSelect(ctx, makeQuery("", "asc", 0, "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU"), &records)
@@ -45,16 +46,16 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 			MustSelect(ctx, makeQuery("", "asc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &records)
 
 			So(records, ShouldBeOrderedAscending, func(r interface{}) int64 {
-				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
-				return r.(CoreOfferRecord).OfferID
+				So(r, ShouldHaveSameTypeAs, core.Offer{})
+				return r.(core.Offer).OfferID
 			})
 
 			// desc orders descending by id
 			MustSelect(ctx, makeQuery("", "desc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &records)
 
 			So(records, ShouldBeOrderedDescending, func(r interface{}) int64 {
-				So(r, ShouldHaveSameTypeAs, CoreOfferRecord{})
-				return r.(CoreOfferRecord).OfferID
+				So(r, ShouldHaveSameTypeAs, core.Offer{})
+				return r.(core.Offer).OfferID
 			})
 		})
 
@@ -69,7 +70,7 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 		})
 
 		Convey("cursor works properly", func() {
-			var record CoreOfferRecord
+			var record core.Offer
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0, "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2"), &record)
 			So(record.OfferID, ShouldEqual, 1)

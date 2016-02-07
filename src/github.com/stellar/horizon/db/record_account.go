@@ -7,6 +7,6 @@ import (
 type AccountRecord struct {
 	HistoryAccountRecord
 	core.Account
-	Trustlines []CoreTrustlineRecord
-	Signers    []CoreSignerRecord
+	Trustlines []core.Trustline
+	Signers    []core.Signer
 }

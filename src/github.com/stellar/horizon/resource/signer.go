@@ -2,12 +2,13 @@ package resource
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/core"
 	"golang.org/x/net/context"
 )
 
 // Populate fills out the fields of the signer, using one of an account's
 // secondary signers.
-func (this *Signer) Populate(ctx context.Context, row db.CoreSignerRecord) {
+func (this *Signer) Populate(ctx context.Context, row core.Signer) {
 	this.PublicKey = row.Publickey
 	this.Weight = row.Weight
 }

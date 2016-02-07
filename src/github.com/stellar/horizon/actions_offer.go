@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -15,7 +16,7 @@ import (
 type OffersByAccountAction struct {
 	Action
 	Query   db.CoreOfferPageByAddressQuery
-	Records []db.CoreOfferRecord
+	Records []core.Offer
 	Page    hal.Page
 }
 

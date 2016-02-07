@@ -9,10 +9,3 @@ var CoreSignerRecordSelect sq.SelectBuilder = sq.Select(
 	"si.publickey",
 	"si.weight",
 ).From("signers si")
-
-// A row of data from the `signers` table from stellar-core
-type CoreSignerRecord struct {
-	Accountid string
-	Publickey string
-	Weight    int32
-}

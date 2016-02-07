@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
 )
 
@@ -12,7 +13,7 @@ func TestCoreTrustlinesByAddressQuery(t *testing.T) {
 	test.LoadScenario("non_native_payment")
 
 	Convey("CoreTrustlinesByAddress", t, func() {
-		var tls []CoreTrustlineRecord
+		var tls []core.Trustline
 
 		withtl := "GBXGQJWVLWOYHFLVTKWV5FGHA3LNYY2JQKM7OAJAUEQFU6LPCSEFVXON"
 		notl := "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
