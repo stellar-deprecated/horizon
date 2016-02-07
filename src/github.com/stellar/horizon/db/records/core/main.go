@@ -58,6 +58,16 @@ type Signer struct {
 	Weight    int32
 }
 
+// Transaction is row of data from the `txhistory` table from stellar-core
+type Transaction struct {
+	TransactionHash string `db:"txid"`
+	LedgerSequence  int32  `db:"ledgerseq"`
+	Index           int32  `db:"txindex"`
+	EnvelopeXDR     string `db:"txbody"`
+	ResultXDR       string `db:"txresult"`
+	ResultMetaXDR   string `db:"txmeta"`
+}
+
 // Trustline is a row of data from the `trustlines` table from stellar-core
 type Trustline struct {
 	Accountid string

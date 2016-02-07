@@ -9,16 +9,6 @@ import (
 // select into a CoreTransactionRecord
 var CoreTransactionRecordSelect = sq.Select("ctxh.*").From("txhistory ctxh")
 
-// CoreTransactionRecord is row of data from the `txhistory` table from stellar-core
-type CoreTransactionRecord struct {
-	TransactionHash string `db:"txid"`
-	LedgerSequence  int32  `db:"ledgerseq"`
-	Index           int32  `db:"txindex"`
-	EnvelopeXDR     string `db:"txbody"`
-	ResultXDR       string `db:"txresult"`
-	ResultMetaXDR   string `db:"txmeta"`
-}
-
 // txhistory queries
 
 type CoreTransactionByHashQuery struct {

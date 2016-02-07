@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"github.com/jmoiron/sqlx"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 )
@@ -33,7 +34,7 @@ func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.R
 	}
 
 	// query core database
-	var cr CoreTransactionRecord
+	var cr core.Transaction
 	cq := CoreTransactionByHashQuery{
 		SqlQuery: SqlQuery{rp.Core},
 		Hash:     hash,
@@ -62,7 +63,7 @@ func txResultFromHistory(tx TransactionRecord) txsub.Result {
 	}
 }
 
-func txResultFromCore(tx CoreTransactionRecord) txsub.Result {
+func txResultFromCore(tx core.Transaction) txsub.Result {
 	//decode the result xdr, extract TransactionResult
 	var trp xdr.TransactionResultPair
 	err := xdr.SafeUnmarshalBase64(tx.ResultXDR, &trp)
