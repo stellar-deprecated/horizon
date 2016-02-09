@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/test"
 )
 
@@ -12,7 +13,7 @@ func TestLedgerBySequenceQuery(t *testing.T) {
 
 	Convey("LedgerBySequenceQuery", t, func() {
 		test.LoadScenario("base")
-		var record LedgerRecord
+		var record history.Ledger
 
 		Convey("Existing record behavior", func() {
 			sequence := int32(2)

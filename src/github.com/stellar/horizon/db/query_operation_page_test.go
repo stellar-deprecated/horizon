@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/test"
 )
 
@@ -12,7 +13,7 @@ func TestOperationPageQuery(t *testing.T) {
 	test.LoadScenario("base")
 
 	Convey("OperationPageQuery", t, func() {
-		var records []OperationRecord
+		var records []history.Operation
 
 		makeQuery := func(c string, o string, l int32) OperationPageQuery {
 			pq, err := NewPageQuery(c, o, l)
@@ -29,15 +30,15 @@ func TestOperationPageQuery(t *testing.T) {
 			// asc orders ascending by id
 			MustSelect(ctx, makeQuery("", "asc", 0), &records)
 			So(records, ShouldBeOrderedAscending, func(r interface{}) int64 {
-				So(r, ShouldHaveSameTypeAs, OperationRecord{})
-				return r.(OperationRecord).Id
+				So(r, ShouldHaveSameTypeAs, history.Operation{})
+				return r.(history.Operation).ID
 			})
 
 			// desc orders descending by id
 			MustSelect(ctx, makeQuery("", "desc", 0), &records)
 			So(records, ShouldBeOrderedDescending, func(r interface{}) int64 {
-				So(r, ShouldHaveSameTypeAs, OperationRecord{})
-				return r.(OperationRecord).Id
+				So(r, ShouldHaveSameTypeAs, history.Operation{})
+				return r.(history.Operation).ID
 			})
 		})
 
@@ -52,23 +53,23 @@ func TestOperationPageQuery(t *testing.T) {
 		})
 
 		Convey("cursor works properly", func() {
-			var record OperationRecord
+			var record history.Operation
 
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 8589938689)
+			So(record.ID, ShouldEqual, 8589938689)
 
 			// highest id if ordered descending and no cursor
 			MustGet(ctx, makeQuery("", "desc", 0), &record)
-			So(record.Id, ShouldEqual, 12884905985)
+			So(record.ID, ShouldEqual, 12884905985)
 
 			// starts after the cursor if ordered ascending
 			MustGet(ctx, makeQuery("8589938689", "asc", 0), &record)
-			So(record.Id, ShouldEqual, 8589942785)
+			So(record.ID, ShouldEqual, 8589942785)
 
 			// starts before the cursor if ordered descending
 			MustGet(ctx, makeQuery("12884905985", "desc", 0), &record)
-			So(record.Id, ShouldEqual, 8589946881)
+			So(record.ID, ShouldEqual, 8589946881)
 		})
 
 		Convey("restricts to address properly", func() {
@@ -78,8 +79,8 @@ func TestOperationPageQuery(t *testing.T) {
 			MustSelect(ctx, q, &records)
 
 			So(len(records), ShouldEqual, 2)
-			So(records[0].Id, ShouldEqual, 8589946881)
-			So(records[1].Id, ShouldEqual, 12884905985)
+			So(records[0].ID, ShouldEqual, 8589946881)
+			So(records[1].ID, ShouldEqual, 12884905985)
 		})
 
 		Convey("restricts to ledger properly", func() {
@@ -90,7 +91,7 @@ func TestOperationPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderID(r.TransactionId)
+				toid := ParseTotalOrderID(r.TransactionID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 			}
 		})
@@ -103,7 +104,7 @@ func TestOperationPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 1)
 
 			for _, r := range records {
-				So(r.TransactionId, ShouldEqual, 8589938688)
+				So(r.TransactionID, ShouldEqual, 8589938688)
 			}
 		})
 

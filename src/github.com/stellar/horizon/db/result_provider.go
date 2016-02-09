@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db/records/core"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 )
@@ -18,7 +19,7 @@ type ResultProvider struct {
 func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.Result {
 
 	// query history database
-	var hr TransactionRecord
+	var hr history.Transaction
 	hq := TransactionByHashQuery{
 		SqlQuery: SqlQuery{rp.History},
 		Hash:     hash,
@@ -53,7 +54,7 @@ func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.R
 	return txsub.Result{Err: txsub.ErrNoResults}
 }
 
-func txResultFromHistory(tx TransactionRecord) txsub.Result {
+func txResultFromHistory(tx history.Transaction) txsub.Result {
 	return txsub.Result{
 		Hash:           tx.TransactionHash,
 		LedgerSequence: tx.LedgerSequence,

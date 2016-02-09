@@ -5,7 +5,7 @@ package resource
 import (
 	"time"
 
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
 	"github.com/stellar/horizon/resource/effects"
@@ -239,7 +239,7 @@ type TransactionSuccess struct {
 // effect record.
 func NewEffect(
 	ctx context.Context,
-	row db.EffectRecord,
+	row history.Effect,
 ) (result hal.Pageable, err error) {
 	return effects.New(ctx, row)
 }
@@ -248,7 +248,7 @@ func NewEffect(
 // operation record.
 func NewOperation(
 	ctx context.Context,
-	row db.OperationRecord,
+	row history.Operation,
 ) (result hal.Pageable, err error) {
 	return operations.New(ctx, row)
 }

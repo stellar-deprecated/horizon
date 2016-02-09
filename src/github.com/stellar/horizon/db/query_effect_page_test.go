@@ -7,6 +7,7 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/test"
 )
 
@@ -14,7 +15,7 @@ func TestEffectPageQuery(t *testing.T) {
 	test.LoadScenario("base")
 
 	Convey("EffectPageQuery", t, func() {
-		var records []EffectRecord
+		var records []history.Effect
 
 		makeQuery := func(c string, o string, l int32) EffectPageQuery {
 			pq := MustPageQuery(c, o, l)
@@ -29,8 +30,8 @@ func TestEffectPageQuery(t *testing.T) {
 			// asc orders ascending by operation_id, order
 			MustSelect(ctx, makeQuery("", "asc", 0), &records)
 			var cmp OrderComparator = func(idx int, l, r interface{}) string {
-				leff := l.(EffectRecord)
-				reff := r.(EffectRecord)
+				leff := l.(history.Effect)
+				reff := r.(history.Effect)
 
 				if leff.ID() > reff.ID() {
 					return fmt.Sprintf("effects are not in order: %s %s", leff.ID(), reff.ID())
@@ -44,8 +45,8 @@ func TestEffectPageQuery(t *testing.T) {
 			// desc orders descending by id
 			MustSelect(ctx, makeQuery("", "desc", 0), &records)
 			cmp = func(idx int, l, r interface{}) string {
-				leff := l.(EffectRecord)
-				reff := r.(EffectRecord)
+				leff := l.(history.Effect)
+				reff := r.(history.Effect)
 
 				if leff.ID() < reff.ID() {
 					return fmt.Sprintf("effects are not in order: %s %s", leff.ID(), reff.ID())
@@ -68,7 +69,7 @@ func TestEffectPageQuery(t *testing.T) {
 		})
 
 		Convey("cursor works properly", func() {
-			var record EffectRecord
+			var record history.Effect
 
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0), &record)
@@ -153,7 +154,7 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 	test.LoadScenario("trades")
 
 	Convey("EffectOrderBookFilter", t, func() {
-		var records []EffectRecord
+		var records []history.Effect
 
 		Convey("restricts to order book properly", func() {
 			q := EffectPageQuery{

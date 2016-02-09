@@ -17,7 +17,7 @@ func (q AccountByAddressQuery) Select(ctx context.Context, dest interface{}) err
 	var cq Query
 
 	cq = HistoryAccountByAddressQuery{q.History, q.Address}
-	err := Get(ctx, cq, &result.HistoryAccountRecord)
+	err := Get(ctx, cq, &result.History)
 	if err != nil {
 		return err
 	}

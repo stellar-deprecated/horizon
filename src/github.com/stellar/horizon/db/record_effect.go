@@ -1,80 +1,17 @@
 package db
 
 import (
-	"database/sql"
-	"encoding/json"
-	"fmt"
-	"github.com/go-errors/errors"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
+	"github.com/stellar/horizon/db/records/history"
 	"golang.org/x/net/context"
-)
-
-const (
-	// account effects
-	EffectAccountCreated           = 0 // from create_account
-	EffectAccountRemoved           = 1 // from merge_account
-	EffectAccountCredited          = 2 // from create_account, payment, path_payment, merge_account
-	EffectAccountDebited           = 3 // from create_account, payment, path_payment, create_account
-	EffectAccountThresholdsUpdated = 4 // from set_options
-	EffectAccountHomeDomainUpdated = 5 // from set_options
-	EffectAccountFlagsUpdated      = 6 // from set_options
-
-	// signer effects
-	EffectSignerCreated = 10 // from set_options
-	EffectSignerRemoved = 11 // from set_options
-	EffectSignerUpdated = 12 // from set_options
-
-	// trustline effects
-	EffectTrustlineCreated      = 20 // from change_trust
-	EffectTrustlineRemoved      = 21 // from change_trust
-	EffectTrustlineUpdated      = 22 // from change_trust, allow_trust
-	EffectTrustlineAuthorized   = 23 // from allow_trust
-	EffectTrustlineDeauthorized = 24 // from allow_trust
-
-	// trading effects
-	EffectOfferCreated = 30 // from manage_offer, creat_passive_offer
-	EffectOfferRemoved = 31 // from manage_offer, creat_passive_offer, path_payment
-	EffectOfferUpdated = 32 // from manage_offer, creat_passive_offer, path_payment
-	EffectTrade        = 33 // from manage_offer, creat_passive_offer, path_payment
 )
 
 var EffectRecordSelect sq.SelectBuilder = sq.
 	Select("heff.*, hacc.address").
 	From("history_effects heff").
 	LeftJoin("history_accounts hacc ON hacc.id = heff.history_account_id")
-
-type EffectRecord struct {
-	HistoryAccountID   int64          `db:"history_account_id"`
-	Account            string         `db:"address"`
-	HistoryOperationID int64          `db:"history_operation_id"`
-	Order              int32          `db:"order"`
-	Type               int32          `db:"type"`
-	DetailsString      sql.NullString `db:"details"`
-}
-
-func (r EffectRecord) UnmarshalDetails(dest interface{}) error {
-	if !r.DetailsString.Valid {
-		return nil
-	}
-
-	err := json.Unmarshal([]byte(r.DetailsString.String), &dest)
-	if err != nil {
-		err = errors.Wrap(err, 1)
-	}
-
-	return err
-}
-
-// ID returns a lexically ordered id for this effect record
-func (r EffectRecord) ID() string {
-	return fmt.Sprintf("%019d-%010d", r.HistoryOperationID, r.Order)
-}
-
-func (r EffectRecord) PagingToken() string {
-	return fmt.Sprintf("%d-%d", r.HistoryOperationID, r.Order)
-}
 
 // SQLFilter implementerations
 
@@ -96,14 +33,14 @@ type EffectAccountFilter struct {
 }
 
 func (f *EffectAccountFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
-	var account HistoryAccountRecord
+	var account history.Account
 	err := Get(ctx, HistoryAccountByAddressQuery{f.SqlQuery, f.AccountAddress}, &account)
 
 	if err != nil {
 		return sql, err
 	}
 
-	return sql.Where("heff.history_account_id = ?", account.Id), nil
+	return sql.Where("heff.history_account_id = ?", account.ID), nil
 }
 
 // EffectLedgerFilter represents a filter that excludes all rows that did not occur
@@ -130,14 +67,14 @@ type EffectTransactionFilter struct {
 }
 
 func (f *EffectTransactionFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
-	var tx TransactionRecord
+	var tx history.Transaction
 	err := Get(ctx, TransactionByHashQuery{f.SqlQuery, f.TransactionHash}, &tx)
 
 	if err != nil {
 		return sql, nil
 	}
 
-	start := ParseTotalOrderID(tx.Id)
+	start := ParseTotalOrderID(tx.ID)
 	end := start
 	end.TransactionOrder++
 	return sql.Where(

@@ -9,11 +9,3 @@ import (
 var HistoryAccountRecordSelect = sq.
 	Select("ha.*").
 	From("history_accounts ha")
-
-// HistoryAccountRecord represents a single row from the history database's
-// `history_accounts` table
-type HistoryAccountRecord struct {
-	HistoryRecord
-	Address string `db:"address"`
-}
-

@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/test"
 )
 
@@ -12,7 +13,7 @@ func TestOperationByIdQuery(t *testing.T) {
 	test.LoadScenario("base")
 
 	Convey("OperationByIdQuery", t, func() {
-		var op OperationRecord
+		var op history.Operation
 
 		Convey("Existing record behavior", func() {
 			id := int64(8589938689)
@@ -22,8 +23,8 @@ func TestOperationByIdQuery(t *testing.T) {
 			}
 			err := Get(ctx, q, &op)
 			So(err, ShouldBeNil)
-			So(op.Id, ShouldEqual, id)
-			So(op.TransactionId, ShouldEqual, id-1)
+			So(op.ID, ShouldEqual, id)
+			So(op.TransactionID, ShouldEqual, id-1)
 		})
 
 		Convey("Missing record behavior", func() {

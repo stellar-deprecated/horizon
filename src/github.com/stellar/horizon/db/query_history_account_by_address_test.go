@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/test"
 )
 
@@ -12,7 +13,7 @@ func TestHistoryAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("base")
 
 	Convey("AccountByAddress", t, func() {
-		var account HistoryAccountRecord
+		var account history.Account
 
 		Convey("Existing record behavior", func() {
 			address := "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
@@ -22,7 +23,7 @@ func TestHistoryAccountByAddressQuery(t *testing.T) {
 			}
 			err := Get(ctx, q, &account)
 			So(err, ShouldBeNil)
-			So(account.Id, ShouldEqual, 1)
+			So(account.ID, ShouldEqual, 1)
 			So(account.Address, ShouldEqual, address)
 		})
 

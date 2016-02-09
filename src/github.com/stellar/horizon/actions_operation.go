@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -18,7 +19,7 @@ import (
 type OperationIndexAction struct {
 	Action
 	Query   db.OperationPageQuery
-	Records []db.OperationRecord
+	Records []history.Operation
 	Page    hal.Page
 }
 
@@ -96,7 +97,7 @@ func (action *OperationIndexAction) LoadPage() {
 type OperationShowAction struct {
 	Action
 	Query    db.OperationByIdQuery
-	Record   db.OperationRecord
+	Record   history.Operation
 	Resource interface{}
 }
 

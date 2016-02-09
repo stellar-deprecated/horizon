@@ -2,7 +2,7 @@ package operations
 
 import (
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
 	"golang.org/x/net/context"
@@ -27,7 +27,7 @@ var TypeNames = map[xdr.OperationType]string{
 // based upon the row's type.
 func New(
 	ctx context.Context,
-	row db.OperationRecord,
+	row history.Operation,
 ) (result hal.Pageable, err error) {
 
 	switch row.Type {

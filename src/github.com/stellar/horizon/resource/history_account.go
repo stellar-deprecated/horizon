@@ -1,11 +1,11 @@
 package resource
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"golang.org/x/net/context"
 )
 
-func (this *HistoryAccount) Populate(ctx context.Context, row db.HistoryAccountRecord) {
+func (this *HistoryAccount) Populate(ctx context.Context, row history.Account) {
 	this.ID = row.Address
 	this.PT = row.PagingToken()
 	this.AccountID = row.Address

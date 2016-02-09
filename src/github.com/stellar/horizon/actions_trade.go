@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource"
 )
@@ -12,7 +13,7 @@ import (
 type TradeIndexAction struct {
 	Action
 	Query   db.EffectPageQuery
-	Records []db.EffectRecord
+	Records []history.Effect
 	Page    hal.Page
 }
 
@@ -33,7 +34,7 @@ func (action *TradeIndexAction) LoadQuery() {
 	action.Query = db.EffectPageQuery{
 		SqlQuery:  action.App.HistoryQuery(),
 		PageQuery: action.GetPageQuery(),
-		Filter:    &db.EffectTypeFilter{db.EffectTrade},
+		Filter:    &db.EffectTypeFilter{history.EffectTrade},
 	}
 
 	if address := action.GetString("account_id"); address != "" {

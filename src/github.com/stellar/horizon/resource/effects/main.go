@@ -1,111 +1,111 @@
 package effects
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
 	"golang.org/x/net/context"
 )
 
 var TypeNames = map[int32]string{
-	db.EffectAccountCreated:           "account_created",
-	db.EffectAccountRemoved:           "account_removed",
-	db.EffectAccountCredited:          "account_credited",
-	db.EffectAccountDebited:           "account_debited",
-	db.EffectAccountThresholdsUpdated: "account_thresholds_updated",
-	db.EffectAccountHomeDomainUpdated: "account_home_domain_updated",
-	db.EffectAccountFlagsUpdated:      "account_flags_updated",
-	db.EffectSignerCreated:            "signer_created",
-	db.EffectSignerRemoved:            "signer_removed",
-	db.EffectSignerUpdated:            "signer_updated",
-	db.EffectTrustlineCreated:         "trustline_created",
-	db.EffectTrustlineRemoved:         "trustline_removed",
-	db.EffectTrustlineUpdated:         "trustline_updated",
-	db.EffectTrustlineAuthorized:      "trustline_authorized",
-	db.EffectTrustlineDeauthorized:    "trustline_deauthorized",
-	db.EffectOfferCreated:             "offer_created",
-	db.EffectOfferRemoved:             "offer_removed",
-	db.EffectOfferUpdated:             "offer_updated",
-	db.EffectTrade:                    "trade",
+	history.EffectAccountCreated:           "account_created",
+	history.EffectAccountRemoved:           "account_removed",
+	history.EffectAccountCredited:          "account_credited",
+	history.EffectAccountDebited:           "account_debited",
+	history.EffectAccountThresholdsUpdated: "account_thresholds_updated",
+	history.EffectAccountHomeDomainUpdated: "account_home_domain_updated",
+	history.EffectAccountFlagsUpdated:      "account_flags_updated",
+	history.EffectSignerCreated:            "signer_created",
+	history.EffectSignerRemoved:            "signer_removed",
+	history.EffectSignerUpdated:            "signer_updated",
+	history.EffectTrustlineCreated:         "trustline_created",
+	history.EffectTrustlineRemoved:         "trustline_removed",
+	history.EffectTrustlineUpdated:         "trustline_updated",
+	history.EffectTrustlineAuthorized:      "trustline_authorized",
+	history.EffectTrustlineDeauthorized:    "trustline_deauthorized",
+	history.EffectOfferCreated:             "offer_created",
+	history.EffectOfferRemoved:             "offer_removed",
+	history.EffectOfferUpdated:             "offer_updated",
+	history.EffectTrade:                    "trade",
 }
 
 func New(
 	ctx context.Context,
-	row db.EffectRecord,
+	row history.Effect,
 ) (result hal.Pageable, err error) {
 
 	switch row.Type {
-	case db.EffectAccountCreated:
+	case history.EffectAccountCreated:
 		e := AccountCreated{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountCredited:
+	case history.EffectAccountCredited:
 		e := AccountCredited{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountDebited:
+	case history.EffectAccountDebited:
 		e := AccountDebited{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountThresholdsUpdated:
+	case history.EffectAccountThresholdsUpdated:
 		e := AccountThresholdsUpdated{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountHomeDomainUpdated:
+	case history.EffectAccountHomeDomainUpdated:
 		e := AccountHomeDomainUpdated{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountFlagsUpdated:
+	case history.EffectAccountFlagsUpdated:
 		e := AccountFlagsUpdated{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectSignerCreated:
+	case history.EffectSignerCreated:
 		e := SignerCreated{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectSignerUpdated:
+	case history.EffectSignerUpdated:
 		e := SignerUpdated{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectSignerRemoved:
+	case history.EffectSignerRemoved:
 		e := SignerRemoved{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineCreated:
+	case history.EffectTrustlineCreated:
 		e := TrustlineCreated{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineUpdated:
+	case history.EffectTrustlineUpdated:
 		e := TrustlineUpdated{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineRemoved:
+	case history.EffectTrustlineRemoved:
 		e := TrustlineRemoved{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineAuthorized:
+	case history.EffectTrustlineAuthorized:
 		e := TrustlineAuthorized{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineDeauthorized:
+	case history.EffectTrustlineDeauthorized:
 		e := TrustlineDeauthorized{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrade:
+	case history.EffectTrade:
 		e := Trade{}
 		e.Populate(ctx, row)
 		err = row.UnmarshalDetails(&e)

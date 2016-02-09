@@ -12,7 +12,7 @@ import (
 // Populate fills out the resource's fields
 func (this *Account) Populate(ctx context.Context, row db.AccountRecord) (err error) {
 	this.ID = row.Accountid
-	this.PT = row.PagingToken()
+	this.PT = row.History.PagingToken()
 	this.AccountID = row.Accountid
 	this.Sequence = row.Seqnum
 	this.SubentryCount = row.Numsubentries
@@ -46,7 +46,7 @@ func (this *Account) Populate(ctx context.Context, row db.AccountRecord) (err er
 	this.Signers[len(this.Signers)-1].PopulateMaster(row)
 
 	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
-	self := fmt.Sprintf("/accounts/%s", row.Address)
+	self := fmt.Sprintf("/accounts/%s", row.History.Address)
 	this.Links.Self = lb.Link(self)
 	this.Links.Transactions = lb.PagedLink(self, "transactions")
 	this.Links.Operations = lb.PagedLink(self, "operations")

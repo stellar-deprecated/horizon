@@ -3,6 +3,7 @@ package db
 import (
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db/records/history"
 	"golang.org/x/net/context"
 )
 
@@ -62,7 +63,7 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 
 	// filter by ledger sequence
 	if q.LedgerSequence != 0 {
-		var ledger LedgerRecord
+		var ledger history.Ledger
 		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
 
 		if err != nil {
@@ -75,14 +76,14 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 
 	// filter by transaction hash
 	if q.TransactionHash != "" {
-		var tx TransactionRecord
+		var tx history.Transaction
 		err := Get(ctx, TransactionByHashQuery{q.SqlQuery, q.TransactionHash}, &tx)
 
 		if err != nil {
 			return err
 		}
 
-		start := ParseTotalOrderID(tx.Id)
+		start := ParseTotalOrderID(tx.ID)
 		end := start
 		end.TransactionOrder++
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())
@@ -90,7 +91,7 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 
 	// filter by account address
 	if q.AccountAddress != "" {
-		var account HistoryAccountRecord
+		var account history.Account
 		err := Get(ctx, HistoryAccountByAddressQuery{q.SqlQuery, q.AccountAddress}, &account)
 
 		if err != nil {
@@ -99,7 +100,7 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 
 		sql = sql.
 			Join("history_operation_participants hopp ON hopp.history_operation_id = hop.id").
-			Where("hopp.history_account_id = ?", account.Id)
+			Where("hopp.history_account_id = ?", account.ID)
 	}
 
 	if types, ok := operationFilterMap[q.TypeFilter]; ok {

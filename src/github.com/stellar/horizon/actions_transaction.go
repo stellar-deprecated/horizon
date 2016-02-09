@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
@@ -21,7 +22,7 @@ import (
 type TransactionIndexAction struct {
 	Action
 	Query   db.TransactionPageQuery
-	Records []db.TransactionRecord
+	Records []history.Transaction
 	Page    hal.Page
 }
 
@@ -91,7 +92,7 @@ func (action *TransactionIndexAction) SSE(stream sse.Stream) {
 type TransactionShowAction struct {
 	Action
 	Query    db.TransactionByHashQuery
-	Record   db.TransactionRecord
+	Record   history.Transaction
 	Resource resource.Transaction
 }
 

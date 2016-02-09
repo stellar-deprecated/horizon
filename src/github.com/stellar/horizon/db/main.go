@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	stderr "errors"
-	"fmt"
 	"reflect"
 
 	"golang.org/x/net/context"
@@ -46,19 +45,11 @@ type Pageable interface {
 
 type Record interface{}
 
-type HistoryRecord struct {
-	Id int64 `db:"id"`
-}
-
 // Tx represents a single db transaction
 type Tx struct {
 	TX     *sqlx.Tx
 	Result sql.Result
 	Err    error
-}
-
-func (r HistoryRecord) PagingToken() string {
-	return fmt.Sprintf("%d", r.Id)
 }
 
 // Begin start a transaction

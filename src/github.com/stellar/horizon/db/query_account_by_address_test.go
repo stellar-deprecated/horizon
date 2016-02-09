@@ -27,7 +27,7 @@ func TestAccountByAddressQuery(t *testing.T) {
 		err := Get(ctx, q, &account)
 		So(err, ShouldBeNil)
 
-		So(account.Address, ShouldEqual, withtl)
+		So(account.History.Address, ShouldEqual, withtl)
 		So(account.Seqnum, ShouldEqual, "8589934593")
 		So(len(account.Trustlines), ShouldEqual, 1)
 

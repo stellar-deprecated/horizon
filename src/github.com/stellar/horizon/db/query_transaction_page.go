@@ -1,6 +1,9 @@
 package db
 
-import "golang.org/x/net/context"
+import (
+	"github.com/stellar/horizon/db/records/history"
+	"golang.org/x/net/context"
+)
 
 type TransactionPageQuery struct {
 	SqlQuery
@@ -32,7 +35,7 @@ func (q TransactionPageQuery) Select(ctx context.Context, dest interface{}) erro
 	}
 
 	if q.LedgerSequence != 0 {
-		var ledger LedgerRecord
+		var ledger history.Ledger
 		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
 
 		if err != nil {

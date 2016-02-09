@@ -3,6 +3,7 @@ package horizon
 import (
 	"errors"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -19,7 +20,7 @@ import (
 type EffectIndexAction struct {
 	Action
 	Query   db.EffectPageQuery
-	Records []db.EffectRecord
+	Records []history.Effect
 	Page    hal.Page
 }
 

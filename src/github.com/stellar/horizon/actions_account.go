@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -17,7 +18,7 @@ import (
 type AccountIndexAction struct {
 	Action
 	Query   db.HistoryAccountPageQuery
-	Records []db.HistoryAccountRecord
+	Records []history.Account
 	Page    hal.Page
 }
 
