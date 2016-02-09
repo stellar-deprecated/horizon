@@ -8,8 +8,13 @@ You can interact directly with horizon via curl or a web browser but SDF provide
 
 SDF runs a instance of Horizon that is connected to the test net [https://horizon-testnet.stellar.org/](https://horizon-testnet.stellar.org/).
 
+## Libraries
+
+SDF maintained libraries:<br />
+- [JavaScript](https://github.com/stellar/js-stellar-sdk)
+- [Java](https://github.com/stellar/java-stellar-sdk)
+- [Go](https://github.com/stellar/go-stellar-base)
+
 Community maintained libraries (in various states of completeness) for interacting with Horizon in other languages:<br>
 - [Ruby](https://github.com/stellar/ruby-stellar-sdk)
-- [Go](https://github.com/stellar/go-stellar-base)
 - [Python](https://github.com/StellarCN/py-stellar-base)
-- [Java](https://github.com/stellar/java-stellar-base)
