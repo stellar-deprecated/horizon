@@ -1,5 +1,7 @@
 ---
 title: All Accounts
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=accounts&endpoint=all
 ---
 
 The all accounts endpoint returns a collection of all the [accounts](./resources/account.md) that have ever existed. Results

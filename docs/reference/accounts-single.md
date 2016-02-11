@@ -1,5 +1,7 @@
 ---
 title: Account Details
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=accounts&endpoint=single
 ---
 
 Returns information and links relating to a single [account](./resources/account.md).

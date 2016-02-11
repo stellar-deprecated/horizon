@@ -1,5 +1,7 @@
 ---
 title: Effects for Ledger
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=effects&endpoint=for_ledger
 ---
 
 Effects are the specific ways that the ledger was changed by any operation.

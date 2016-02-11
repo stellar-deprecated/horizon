@@ -1,5 +1,7 @@
 ---
 title: All Ledgers
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=ledgers&endpoint=all
 ---
 
 This endpoint represents all [ledgers](./resources/ledger.md).
@@ -159,6 +161,3 @@ This endpoint responds with a list of ledgers.  See [ledger resource](./resource
 ## Errors
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
-
-
-

@@ -1,5 +1,7 @@
 ---
 title: Offers for Account
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=offers&endpoint=for_account
 ---
 
 People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  This endpoint represents all the offers a particular account makes.

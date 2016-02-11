@@ -1,5 +1,7 @@
 ---
 title: All Payments
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=payments&endpoint=all
 ---
 
 This endpoint represents all payment [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md). This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new payments as they get made in the Stellar network.

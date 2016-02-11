@@ -1,5 +1,7 @@
 ---
 title: Operation Details
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=operations&endpoint=single
 ---
 
 The operation details endpoint provides information on a single [operation](./resources/operation.md). The operation ID provided in the `id` argument specifies which operation to load.

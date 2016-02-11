@@ -1,5 +1,7 @@
 ---
 title: Payments for Account
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=payments&endpoint=for_account
 ---
 
 This endpoint responds with a collection of [Payment operations](./resources/operation.md) where the given [account](./resources/account.md) was either the sender or receiver.

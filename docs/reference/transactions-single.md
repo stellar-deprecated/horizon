@@ -1,5 +1,7 @@
 ---
 title: Transaction Details
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=transactions&endpoint=single
 ---
 
 The transaction details endpoint provides information on a single [transaction](./resources/transaction.md). The transaction hash provided in the `hash` argument specifies which transaction to load.

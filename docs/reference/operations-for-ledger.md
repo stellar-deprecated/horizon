@@ -1,5 +1,7 @@
 ---
 title: Operations for Ledger
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=operations&endpoint=for_ledger
 ---
 
 This endpoint returns all [operations](./resources/operation.md) that occurred in a given [ledger](./resources/ledger.md).

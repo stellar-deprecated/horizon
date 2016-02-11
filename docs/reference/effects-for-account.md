@@ -1,5 +1,7 @@
 ---
 title: Effects for Account
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=effects&endpoint=for_account
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that changed a given [account](./resources/account.md). It will return relevant effects from the creation of the account to the current ledger.
