@@ -1,5 +1,7 @@
 ---
 title: Payments for Ledger
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=payments&endpoint=for_ledger
 ---
 
 This endpoint represents all payment [operations](./resources/operation.md) that are part of a valid [transactions](./resources/transaction.md) in a given [ledger](./resources/ledger.md).

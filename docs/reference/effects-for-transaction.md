@@ -1,5 +1,7 @@
 ---
 title: Effects for Transaction
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=effects&endpoint=for_transaction
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that occurred as a result of a given [transaction](./resources/transaction.md).

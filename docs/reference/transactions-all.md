@@ -1,5 +1,7 @@
 ---
 title: All Transactions
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=transactions&endpoint=all
 ---
 
 This endpoint represents all validated [transactions](./resources/transaction.md).

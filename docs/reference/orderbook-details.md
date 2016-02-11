@@ -1,5 +1,7 @@
 ---
 title: Orderbook Details
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=order_book&endpoint=details
 ---
 
 People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  These offers are summarized by the assets being bought and sold in [orderbooks](./resources/orderbook.md).

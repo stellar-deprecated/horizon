@@ -1,5 +1,7 @@
 ---
 title: Effects for Operation
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=effects&endpoint=for_operation
 ---
 
 This endpoint represents all [effects](./resources/effect.md) that occurred as a result of a given [operation](./resources/operation.md).
@@ -130,4 +132,3 @@ This endpoint responds with a list of effects on the ledger as a result of a giv
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
 - [not_found](./errors/not-found.md): A `not_found` errors will be returned if there are no effects for operation whose ID matches the `id` argument.
-
