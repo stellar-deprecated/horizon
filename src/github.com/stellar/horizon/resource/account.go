@@ -3,14 +3,14 @@ package resource
 import (
 	"fmt"
 
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"
 )
 
 // Populate fills out the resource's fields
-func (this *Account) Populate(ctx context.Context, row db.AccountRecord) (err error) {
+func (this *Account) Populate(ctx context.Context, row records.Account) (err error) {
 	this.ID = row.Accountid
 	this.PT = row.History.PagingToken()
 	this.AccountID = row.Accountid

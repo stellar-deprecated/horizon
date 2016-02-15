@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records"
 	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
@@ -81,7 +82,7 @@ func (action *AccountIndexAction) SSE(stream sse.Stream) {
 type AccountShowAction struct {
 	Action
 	Query    db.AccountByAddressQuery
-	Record   db.AccountRecord
+	Record   records.Account
 	Resource resource.Account
 }
 

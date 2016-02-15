@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/stellar/horizon/db/records"
 	"golang.org/x/net/context"
 )
 
@@ -13,7 +14,7 @@ type AccountByAddressQuery struct {
 }
 
 func (q AccountByAddressQuery) Select(ctx context.Context, dest interface{}) error {
-	var result AccountRecord
+	var result records.Account
 	var cq Query
 
 	cq = HistoryAccountByAddressQuery{q.History, q.Address}
@@ -39,6 +40,6 @@ func (q AccountByAddressQuery) Select(ctx context.Context, dest interface{}) err
 	if err != nil {
 		return err
 	}
-	setOn([]AccountRecord{result}, dest)
+	setOn([]records.Account{result}, dest)
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db/records"
 	"github.com/stellar/horizon/test"
 )
 
@@ -12,7 +13,7 @@ func TestAccountByAddressQuery(t *testing.T) {
 	test.LoadScenario("non_native_payment")
 
 	Convey("AccountByAddress", t, func() {
-		var account AccountRecord
+		var account records.Account
 
 		notreal := "not_real"
 		withtl := "GBXGQJWVLWOYHFLVTKWV5FGHA3LNYY2JQKM7OAJAUEQFU6LPCSEFVXON"
