@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -11,7 +12,7 @@ import (
 type OrderBookShowAction struct {
 	Action
 	Query    *db.OrderBookSummaryQuery
-	Record   db.OrderBookSummaryRecord
+	Record   core.OrderBookSummary
 	Resource resource.OrderBookSummary
 }
 

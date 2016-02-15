@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
 )
 
@@ -23,7 +24,7 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 		}
 
 		Convey("loads correctly", func() {
-			var result OrderBookSummaryRecord
+			var result core.OrderBookSummary
 			So(Select(ctx, q, &result), ShouldBeNil)
 
 			asks := result.Asks()
@@ -55,8 +56,8 @@ func TestOrderBookSummaryQuery(t *testing.T) {
 		})
 
 		Convey("works in either direction", func() {
-			var result OrderBookSummaryRecord
-			var inversion OrderBookSummaryRecord
+			var result core.OrderBookSummary
+			var inversion core.OrderBookSummary
 
 			So(Select(ctx, q, &result), ShouldBeNil)
 			So(Select(ctx, q.Invert(), &inversion), ShouldBeNil)

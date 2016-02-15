@@ -15,14 +15,14 @@ const OrderBookSummaryPageSize = 20
 // OrderBookSummarySQL is the raw sql query (postgresql style placeholders) to query for
 // a summary of price levels for a given order book.
 const OrderBookSummarySQL = `
-SELECT 
+SELECT
 	*,
 	(pricen :: double precision / priced :: double precision) as pricef
 
 FROM
 ((
 	-- This query returns the "asks" portion of the summary, and it is very straightforward
-	SELECT 
+	SELECT
 		'ask' as type,
 		co.pricen,
 		co.priced,
@@ -42,13 +42,13 @@ FROM
 		co.pricen,
 		co.priced,
 		co.price
-	LIMIT $1 
+	LIMIT $1
 
 ) UNION (
 	-- This query returns the "bids" portion, inverting the where clauses
 	-- and the pricen/priced.  This inversion is necessary to produce the "bid"
 	-- view of a given offer (which are stored in the db as an offer to sell)
-	SELECT 
+	SELECT
 		'bid'  as type,
 		co.priced as pricen,
 		co.pricen as priced,
@@ -63,7 +63,7 @@ FROM
 	AND   {{ .Filter "co.buyingassettype"  .SellingType }}
 	AND   {{ .Filter "co.buyingassetcode"  .SellingCode}}
 	AND   {{ .Filter "co.buyingissuer"     .SellingIssuer}}
-	
+
 	GROUP BY
 		co.pricen,
 		co.priced,
@@ -104,7 +104,7 @@ func (q *OrderBookSummaryQuery) Invert() *OrderBookSummaryQuery {
 	}
 }
 
-// Select executes the query, populating the provided OrderBookSummaryRecord with data.
+// Select executes the query, populating the provided OrderBookSummary with data.
 func (q *OrderBookSummaryQuery) Select(ctx context.Context, dest interface{}) error {
 	var sql bytes.Buffer
 

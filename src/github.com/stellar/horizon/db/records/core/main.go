@@ -51,6 +51,26 @@ type Offer struct {
 	Lastmodified int32     `db:"lastmodified"`
 }
 
+// OrderBookSummaryPriceLevel is a collapsed view of multiple offers at the same price that
+// contains the summed amount from all the member offers. Used by OrderBookSummary
+type OrderBookSummaryPriceLevel struct {
+	Type string `db:"type"`
+	PriceLevel
+}
+
+// OrderBookSummary is a summary of a set of offers for a given base and
+// counter currency
+type OrderBookSummary []OrderBookSummaryPriceLevel
+
+// PriceLevel represents an aggregation of offers to trade at a certain
+// price.
+type PriceLevel struct {
+	Pricen int32   `db:"pricen"`
+	Priced int32   `db:"priced"`
+	Pricef float64 `db:"pricef"`
+	Amount int64   `db:"amount"`
+}
+
 // Signer is a row of data from the `signers` table from stellar-core
 type Signer struct {
 	Accountid string

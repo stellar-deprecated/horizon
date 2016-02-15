@@ -3,10 +3,11 @@ package resource
 import (
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/core"
 	"golang.org/x/net/context"
 )
 
-func (this *OrderBookSummary) Populate(ctx context.Context, query *db.OrderBookSummaryQuery, row db.OrderBookSummaryRecord) error {
+func (this *OrderBookSummary) Populate(ctx context.Context, query *db.OrderBookSummaryQuery, row core.OrderBookSummary) error {
 
 	st, err := assets.String(query.SellingType)
 	if err != nil {
@@ -35,7 +36,7 @@ func (this *OrderBookSummary) Populate(ctx context.Context, query *db.OrderBookS
 	return nil
 }
 
-func (this *OrderBookSummary) populateLevels(destp *[]PriceLevel, rows []db.OrderBookSummaryPriceLevelRecord) {
+func (this *OrderBookSummary) populateLevels(destp *[]PriceLevel, rows []core.OrderBookSummaryPriceLevel) {
 	*destp = make([]PriceLevel, len(rows))
 	dest := *destp
 
