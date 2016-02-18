@@ -10,3 +10,6 @@ docs/public
 *.swp
 
 /test.go
+/tls/*.crt
+/tls/*.key
+/tls/*.csr
