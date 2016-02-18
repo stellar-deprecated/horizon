@@ -1,6 +1,7 @@
 ---
 title: Find Payment Paths
-category: Endpoints
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=paths&endpoint=all
 ---
 
 The Stellar Network allows payments to be made across assets through _path payments_.  A path payment specifies a series of assets to route a payment through, from source asset (the asset debited from the payer) to destination asset (the asset credited to the payee).

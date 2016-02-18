@@ -1,5 +1,7 @@
 ---
 title: All Effects
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=effects&endpoint=all
 ---
 
 This endpoint represents all [effects](./resources/effect.md).
@@ -112,4 +114,3 @@ The list of effects.
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
 - [not_found](./errors/not-found.md): A `not_found` error will be returned if there are no effects for the given account.
-

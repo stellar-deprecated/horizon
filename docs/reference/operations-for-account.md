@@ -1,5 +1,7 @@
 ---
 title: Operations for Account
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=operations&endpoint=for_account
 ---
 
 This endpoint represents all [operations](./resources/operation.md) that were included in valid [transactions](./resources/transaction.md) that affected a particular [account](./resources/account.md).

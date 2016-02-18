@@ -1,5 +1,7 @@
 ---
 title: Payments for Transaction
+clientData:
+  laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=payments&endpoint=for_transaction
 ---
 
 This endpoint represents all payment [operations](./resources/operation.md) that are part of a given [transaction](./resources/transaction.md).
