@@ -1,4 +1,4 @@
-package history
+package ingest
 
 import (
 	"time"
@@ -9,43 +9,36 @@ import (
 	"golang.org/x/net/context"
 )
 
-// Close causes the importer to shut down.
-func (i *Importer) Close() {
-	log.Info("canceling importer poller")
+// Close causes the ingester to shut down.
+func (i *Ingester) Close() {
+	log.Info("canceling ingestion poller")
 	i.tick.Stop()
 }
 
-// ImportLedger imports the ledger at the provided sequence number into the
-// history database.
-func (i *Importer) ImportLedger(seq int32) error {
-	log.Debugf("Importing ledger %d", seq)
-	return nil
-}
-
-// Init initializes the importer, causing it to begin polling the stellar-core
-// database for now ledgers and importing data into the history databae.
-func (i *Importer) Init() error {
+// Init initializes the ingester, causing it to begin polling the stellar-core
+// database for now ledgers and ingesting data into the horizon database.
+func (i *Ingester) Init() error {
 	i.initializer.Do(func() {
 		i.tick = time.NewTicker(1 * time.Second)
-		i.Metrics.ImportTimer = metrics.NewTimer()
-		i.Metrics.SuccessfulImportMeter = metrics.NewMeter()
-		i.Metrics.FailedImportMeter = metrics.NewMeter()
+		i.Metrics.TotalTimer = metrics.NewTimer()
+		i.Metrics.SuccessfulMeter = metrics.NewMeter()
+		i.Metrics.FailedMeter = metrics.NewMeter()
 		go i.run()
 	})
 	return nil
 }
-func (i *Importer) run() {
+func (i *Ingester) run() {
 	for _ = range i.tick.C {
-		log.Debug("ticking importer")
+		log.Debug("ticking ingester")
 		i.runOnce()
 	}
 }
 
 // run causes the importer to check stellar-core to see if we can import new
 // data.
-func (i *Importer) runOnce() {
+func (i *Ingester) runOnce() {
 	q := db.LedgerStateQuery{
-		Horizon: i.HistoryDB,
+		Horizon: i.HorizonDB,
 		Core:    i.CoreDB,
 	}
 
@@ -66,13 +59,13 @@ func (i *Importer) runOnce() {
 			return
 		}
 
-		is := ImportSession{
-			Importer:    i,
+		is := Session{
+			Ingester:    i,
 			FirstLedger: i.lastState.HorizonSequence + 1,
 			LastLedger:  i.lastState.StellarCoreSequence,
 		}
 
-		is.Import()
+		is.Run()
 
 		if is.Err != nil {
 			log.Errorf("import session failed: %s", is.Err)
@@ -80,7 +73,7 @@ func (i *Importer) runOnce() {
 		}
 
 		// 3.
-		if is.Imported == 0 {
+		if is.Ingested == 0 {
 			return
 		}
 	}

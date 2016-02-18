@@ -5,15 +5,15 @@ import (
 	"github.com/stellar/horizon/log"
 )
 
-func initHistoryDb(app *App) {
-	historyDb, err := db.Open(app.config.DatabaseUrl)
+func initHorizonDb(app *App) {
+	horizonDb, err := db.Open(app.config.DatabaseUrl)
 
 	if err != nil {
 		log.Panic(err)
 	}
-	historyDb.SetMaxIdleConns(4)
-	historyDb.SetMaxOpenConns(12)
-	app.historyDb = historyDb
+	horizonDb.SetMaxIdleConns(4)
+	horizonDb.SetMaxOpenConns(12)
+	app.horizonDb = horizonDb
 }
 
 func initCoreDb(app *App) {
@@ -29,6 +29,6 @@ func initCoreDb(app *App) {
 }
 
 func init() {
-	appInit.Add("history-db", initHistoryDb, "app-context", "log")
+	appInit.Add("horizon-db", initHorizonDb, "app-context", "log")
 	appInit.Add("core-db", initCoreDb, "app-context", "log")
 }

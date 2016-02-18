@@ -15,14 +15,14 @@ import (
 
 var ctx context.Context
 var coreDb *sqlx.DB
-var historyDb *sqlx.DB
+var horizonDb *sqlx.DB
 
 func TestMain(m *testing.M) {
 	ctx = test.Context()
 	coreDb = OpenStellarCoreTestDatabase()
-	historyDb = OpenTestDatabase()
+	horizonDb = OpenTestDatabase()
 	defer coreDb.Close()
-	defer historyDb.Close()
+	defer horizonDb.Close()
 
 	os.Exit(m.Run())
 

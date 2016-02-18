@@ -43,9 +43,13 @@ func init() {
 	viper.BindEnv("sentry-dsn", "SENTRY_DSN")
 	viper.BindEnv("loggly-token", "LOGGLY_TOKEN")
 	viper.BindEnv("loggly-host", "LOGGLY_HOST")
+<<<<<<< HEAD
 	viper.BindEnv("tls-cert", "TLS_CERT")
 	viper.BindEnv("tls-key", "TLS_KEY")
 	viper.BindEnv("import-history", "IMPORT_HISTORY")
+=======
+	viper.BindEnv("ingest", "INGEST")
+>>>>>>> Rename "history" db to "horizon" db, rename importer to ingester
 
 	rootCmd = &cobra.Command{
 		Use:              "horizon",
@@ -198,7 +202,7 @@ func initApp(cmd *cobra.Command, args []string) {
 		FriendbotSecret:        viper.GetString("friendbot-secret"),
 		TLSCert:                cert,
 		TLSKey:                 key,
-		ImportHistory:          viper.GetBool("import-history"),
+		Ingest:                 viper.GetBool("ingest"),
 	}
 
 	app, err = horizon.NewApp(config)

@@ -18,7 +18,7 @@ func TestLedgerBySequenceQuery(t *testing.T) {
 		Convey("Existing record behavior", func() {
 			sequence := int32(2)
 			q := LedgerBySequenceQuery{
-				SqlQuery{historyDb},
+				SqlQuery{horizonDb},
 				sequence,
 			}
 			err := Get(ctx, q, &record)
@@ -29,7 +29,7 @@ func TestLedgerBySequenceQuery(t *testing.T) {
 		Convey("Missing record behavior", func() {
 			sequence := int32(-1)
 			query := LedgerBySequenceQuery{
-				SqlQuery{historyDb},
+				SqlQuery{horizonDb},
 				sequence,
 			}
 			err := Get(ctx, query, &record)

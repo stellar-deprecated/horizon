@@ -30,7 +30,7 @@ type TransactionIndexAction struct {
 func (action *TransactionIndexAction) LoadQuery() {
 	action.ValidateCursorAsDefault()
 	action.Query = db.TransactionPageQuery{
-		SqlQuery:       action.App.HistoryQuery(),
+		SqlQuery:       action.App.HorizonQuery(),
 		PageQuery:      action.GetPageQuery(),
 		AccountAddress: action.GetString("account_id"),
 		LedgerSequence: action.GetInt32("ledger_id"),
@@ -98,7 +98,7 @@ type TransactionShowAction struct {
 
 func (action *TransactionShowAction) LoadQuery() {
 	action.Query = db.TransactionByHashQuery{
-		SqlQuery: action.App.HistoryQuery(),
+		SqlQuery: action.App.HorizonQuery(),
 		Hash:     action.GetString("id"),
 	}
 }

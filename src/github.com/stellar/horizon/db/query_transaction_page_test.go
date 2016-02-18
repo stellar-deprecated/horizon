@@ -21,7 +21,7 @@ func TestTransactionPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return TransactionPageQuery{
-				SqlQuery:  SqlQuery{historyDb},
+				SqlQuery:  SqlQuery{horizonDb},
 				PageQuery: pq,
 			}
 		}

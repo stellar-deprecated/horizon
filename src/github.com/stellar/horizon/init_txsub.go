@@ -14,7 +14,7 @@ func initSubmissionSystem(app *App) {
 		SubmissionQueue: sequence.NewManager(),
 		Results: &db.ResultProvider{
 			Core:    app.coreDb,
-			History: app.historyDb,
+			History: app.horizonDb,
 		},
 		Sequences: db.SequenceByAddressQuery{
 			SqlQuery: app.CoreQuery(),
@@ -33,5 +33,5 @@ func initSubmissionSystem(app *App) {
 }
 
 func init() {
-	appInit.Add("txsub", initSubmissionSystem, "app-context", "log", "history-db", "core-db", "pump")
+	appInit.Add("txsub", initSubmissionSystem, "app-context", "log", "horizon-db", "core-db", "pump")
 }

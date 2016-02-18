@@ -50,9 +50,9 @@ var dbMigrateCmd = &cobra.Command{
 			}
 		}
 
-		// HACK: getting the raw *sql.DB value through HistoryQuery()
-		// TODO: refactor app such that historyDB is exported
-		db := app.HistoryQuery().DB.DB
+		// HACK: getting the raw *sql.DB value through HorizonQuery()
+		// TODO: refactor app such that horizonDb is exported
+		db := app.HorizonQuery().DB.DB
 
 		_, err := schema.Migrate(db, dir, count)
 		if err != nil {

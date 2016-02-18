@@ -24,17 +24,17 @@ func initDbMetrics(app *App) {
 	app.metrics.Register("goroutines", app.goroutineGauge)
 }
 
-func initImporterMetrics(app *App) {
-	if app.importer == nil {
+func initIngesterMetrics(app *App) {
+	if app.ingester == nil {
 		return
 	}
 
-	app.metrics.Register("importer.total",
-		app.importer.Metrics.ImportTimer)
-	app.metrics.Register("importer.succeeded",
-		app.importer.Metrics.SuccessfulImportMeter)
-	app.metrics.Register("importer.failed",
-		app.importer.Metrics.FailedImportMeter)
+	app.metrics.Register("ingester.total",
+		app.ingester.Metrics.TotalTimer)
+	app.metrics.Register("ingester.succeeded",
+		app.ingester.Metrics.SuccessfulMeter)
+	app.metrics.Register("ingester.failed",
+		app.ingester.Metrics.FailedMeter)
 }
 
 func initLogMetrics(app *App) {
@@ -64,8 +64,8 @@ func initWebMetrics(app *App) {
 func init() {
 	appInit.Add("metrics", initMetrics)
 	appInit.Add("log.metrics", initLogMetrics, "metrics")
-	appInit.Add("db-metrics", initDbMetrics, "metrics", "history-db", "core-db")
+	appInit.Add("db-metrics", initDbMetrics, "metrics", "horizon-db", "core-db")
 	appInit.Add("web.metrics", initWebMetrics, "web.init", "metrics")
 	appInit.Add("txsub.metrics", initTxSubMetrics, "txsub", "metrics")
-	appInit.Add("importer.metrics", initImporterMetrics, "importer", "metrics")
+	appInit.Add("ingester.metrics", initIngesterMetrics, "ingester", "metrics")
 }

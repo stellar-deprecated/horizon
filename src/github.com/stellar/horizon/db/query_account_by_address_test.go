@@ -21,7 +21,7 @@ func TestAccountByAddressQuery(t *testing.T) {
 
 		q := AccountByAddressQuery{
 			Core:    SqlQuery{coreDb},
-			History: SqlQuery{historyDb},
+			History: SqlQuery{horizonDb},
 			Address: withtl,
 		}
 

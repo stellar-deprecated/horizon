@@ -18,7 +18,7 @@ func TestHistoryAccountByAddressQuery(t *testing.T) {
 		Convey("Existing record behavior", func() {
 			address := "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
 			q := HistoryAccountByAddressQuery{
-				SqlQuery{historyDb},
+				SqlQuery{horizonDb},
 				address,
 			}
 			err := Get(ctx, q, &account)
@@ -30,7 +30,7 @@ func TestHistoryAccountByAddressQuery(t *testing.T) {
 		Convey("Missing record behavior", func() {
 			address := "not real"
 			q := HistoryAccountByAddressQuery{
-				SqlQuery{historyDb},
+				SqlQuery{horizonDb},
 				address,
 			}
 			err := Get(ctx, q, &account)

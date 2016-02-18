@@ -1,4 +1,4 @@
-package history
+package ingest
 
 import (
 	"fmt"
@@ -9,33 +9,34 @@ import (
 	// "golang.org/x/net/context"
 )
 
-// Import runs an import of the range of ledgers specified in this session.
-func (is *ImportSession) Import() {
+// Run starts an attempt to ingest the range of ledgers specified in this
+// session.
+func (is *Session) Run() {
 	// 1. start transaction
-	is.TX, is.Err = db.Begin(is.Importer.HistoryDB)
+	is.TX, is.Err = db.Begin(is.Ingester.HorizonDB)
 	defer is.TX.Commit()
 
 	if is.Err != nil {
 		return
 	}
 	for seq := is.FirstLedger; seq <= is.LastLedger; seq++ {
-		is.Importer.Metrics.ImportTimer.Time(func() {
-			is.importSingle(seq)
+		is.Ingester.Metrics.TotalTimer.Time(func() {
+			is.ingestSingle(seq)
 		})
 
 		if is.Err != nil {
-			is.Importer.Metrics.FailedImportMeter.Mark(1)
+			is.Ingester.Metrics.FailedMeter.Mark(1)
 			is.TX.Rollback()
 			return
 		}
 
-		is.Importer.Metrics.SuccessfulImportMeter.Mark(1)
-		is.Imported++
+		is.Ingester.Metrics.SuccessfulMeter.Mark(1)
+		is.Ingested++
 	}
 }
 
-func (is *ImportSession) importSingle(seq int32) {
-	log.Debugf("importing ledger %d", seq)
+func (is *Session) ingestSingle(seq int32) {
+	log.Debugf("ingesting ledger %d", seq)
 	// TODO: load a history bundle for this sequence
 
 	ib := is.TX.Insert("history_ledgers").Columns(
@@ -44,7 +45,7 @@ func (is *ImportSession) importSingle(seq int32) {
 		"closed_at",
 		"created_at", "updated_at",
 	).Values(
-		CurrentImporterVersion, seq, fmt.Sprint(seq), fmt.Sprint(seq-1),
+		CurrentVersion, seq, fmt.Sprint(seq), fmt.Sprint(seq-1),
 		0, 0, 0, 0, 0,
 		time.Now().UTC(),
 		time.Now().UTC(), time.Now().UTC(),

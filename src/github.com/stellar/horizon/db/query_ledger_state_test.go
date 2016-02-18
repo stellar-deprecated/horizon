@@ -14,7 +14,7 @@ func TestLedgerStateQuery(t *testing.T) {
 		var ls LedgerState
 
 		q := LedgerStateQuery{
-			SqlQuery{historyDb},
+			SqlQuery{horizonDb},
 			SqlQuery{coreDb},
 		}
 

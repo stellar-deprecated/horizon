@@ -14,7 +14,7 @@ import (
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/friendbot"
-	"github.com/stellar/horizon/history"
+	"github.com/stellar/horizon/ingest"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/pump"
@@ -34,7 +34,7 @@ var version = ""
 type App struct {
 	config            Config
 	web               *Web
-	historyDb         *sqlx.DB
+	horizonDb         *sqlx.DB
 	coreDb            *sqlx.DB
 	ctx               context.Context
 	cancel            func()
@@ -46,7 +46,7 @@ type App struct {
 	pump              *pump.Pump
 	paths             paths.Finder
 	friendbot         *friendbot.Bot
-	importer          *history.Importer
+	ingester          *ingest.Ingester
 
 	// metrics
 	metrics                metrics.Registry
@@ -60,6 +60,8 @@ type App struct {
 	latestLedgerState db.LedgerState
 }
 
+// SetVersion records the provided version string in the package level `version`
+// var, which will be used for the reported horizon version.
 func SetVersion(v string) {
 	version = v
 }
@@ -133,18 +135,18 @@ func (a *App) Serve() {
 func (a *App) Close() {
 	a.cancel()
 
-	if a.importer != nil {
-		a.importer.Close()
+	if a.ingester != nil {
+		a.ingester.Close()
 	}
 
-	a.historyDb.Close()
+	a.horizonDb.Close()
 	a.coreDb.Close()
 }
 
-// HistoryQuery returns a SqlQuery that can be embedded in a parent query
-// to specify the query should run against the history database
-func (a *App) HistoryQuery() db.SqlQuery {
-	return db.SqlQuery{DB: a.historyDb}
+// HorizonQuery returns a SqlQuery that can be embedded in a parent query
+// to specify the query should run against the horizon database
+func (a *App) HorizonQuery() db.SqlQuery {
+	return db.SqlQuery{DB: a.horizonDb}
 }
 
 // CoreQuery returns a SqlQuery that can be embedded in a parent query
@@ -153,11 +155,11 @@ func (a *App) CoreQuery() db.SqlQuery {
 	return db.SqlQuery{DB: a.coreDb}
 }
 
-// UpdateMetrics triggers a refresh of several metrics gauges, such as open
+// UpdateLedgerState triggers a refresh of several metrics gauges, such as open
 // db connections and ledger state
 func (a *App) UpdateLedgerState() {
 	var ls db.LedgerState
-	q := db.LedgerStateQuery{a.HistoryQuery(), a.CoreQuery()}
+	q := db.LedgerStateQuery{a.HorizonQuery(), a.CoreQuery()}
 	err := db.Get(context.Background(), q, &ls)
 
 	if err != nil {
@@ -170,7 +172,8 @@ func (a *App) UpdateLedgerState() {
 	a.latestLedgerState = ls
 }
 
-// UpdateCoreVersion updates the value of coreVersion from the Stellar core API
+// UpdateStellarCoreInfo updates the value of coreVersion and networkPassphrase
+// from the Stellar core API.
 func (a *App) UpdateStellarCoreInfo() {
 	if a.config.StellarCoreUrl == "" {
 		return
@@ -194,15 +197,15 @@ func (a *App) UpdateStellarCoreInfo() {
 		return
 	}
 
-	var responseJson map[string]*json.RawMessage
-	err = json.Unmarshal(contents, &responseJson)
+	var responseJSON map[string]*json.RawMessage
+	err = json.Unmarshal(contents, &responseJSON)
 	if err != nil {
 		fail(err)
 		return
 	}
 
 	var serverInfo map[string]interface{}
-	err = json.Unmarshal(*responseJson["info"], &serverInfo)
+	err = json.Unmarshal(*responseJSON["info"], &serverInfo)
 	if err != nil {
 		fail(err)
 		return
@@ -223,6 +226,6 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 	a.horizonLedgerGauge.Update(int64(a.latestLedgerState.HorizonSequence))
 	a.stellarCoreLedgerGauge.Update(int64(a.latestLedgerState.StellarCoreSequence))
 
-	a.horizonConnGauge.Update(int64(a.historyDb.Stats().OpenConnections))
+	a.horizonConnGauge.Update(int64(a.horizonDb.Stats().OpenConnections))
 	a.stellarCoreConnGauge.Update(int64(a.coreDb.Stats().OpenConnections))
 }

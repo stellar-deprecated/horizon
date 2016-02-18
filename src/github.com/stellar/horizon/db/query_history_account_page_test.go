@@ -20,7 +20,7 @@ func TestHistoryPageQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			return HistoryAccountPageQuery{
-				SqlQuery:  SqlQuery{historyDb},
+				SqlQuery:  SqlQuery{horizonDb},
 				PageQuery: pq,
 			}
 		}

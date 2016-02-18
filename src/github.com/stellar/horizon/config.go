@@ -24,6 +24,6 @@ type Config struct {
 	// TLSCert is a path to a certificate file to use for horizon's TLS config
 	TLSCert string
 	// TLSKey is the path to a private key file to use for horizon's TLS config
-	TLSKey        string
-	ImportHistory bool
+	TLSKey string
+	Ingest bool
 }

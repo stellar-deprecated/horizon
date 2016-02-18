@@ -12,5 +12,5 @@ func initLedgerState(app *App) {
 }
 
 func init() {
-	appInit.Add("ledger-state", initLedgerState, "app-context", "log", "history-db", "core-db", "pump")
+	appInit.Add("ledger-state", initLedgerState, "app-context", "log", "horizon-db", "core-db", "pump")
 }

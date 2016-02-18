@@ -64,7 +64,7 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 func (action *EffectIndexAction) LoadQuery() {
 	action.ValidateCursor()
 	action.Query = db.EffectPageQuery{
-		SqlQuery:  action.App.HistoryQuery(),
+		SqlQuery:  action.App.HorizonQuery(),
 		PageQuery: action.GetPageQuery(),
 	}
 

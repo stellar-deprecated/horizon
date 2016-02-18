@@ -18,7 +18,7 @@ func TestLedgerPageQuery(t *testing.T) {
 		pq, err := NewPageQuery("", "asc", 2)
 		So(err, ShouldBeNil)
 
-		q := LedgerPageQuery{SqlQuery{historyDb}, pq}
+		q := LedgerPageQuery{SqlQuery{horizonDb}, pq}
 		err = Select(ctx, q, &records)
 
 		So(err, ShouldBeNil)

@@ -61,7 +61,7 @@ func (action *OperationIndexAction) SSE(stream sse.Stream) {
 func (action *OperationIndexAction) LoadQuery() {
 	action.ValidateCursorAsDefault()
 	action.Query = db.OperationPageQuery{
-		SqlQuery:        action.App.HistoryQuery(),
+		SqlQuery:        action.App.HorizonQuery(),
 		PageQuery:       action.GetPageQuery(),
 		AccountAddress:  action.GetString("account_id"),
 		LedgerSequence:  action.GetInt32("ledger_id"),
@@ -103,7 +103,7 @@ type OperationShowAction struct {
 
 func (action *OperationShowAction) LoadQuery() {
 	action.Query = db.OperationByIdQuery{
-		SqlQuery: action.App.HistoryQuery(),
+		SqlQuery: action.App.HorizonQuery(),
 		Id:       action.GetInt64("id"),
 	}
 }

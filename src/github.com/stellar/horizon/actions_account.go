@@ -27,7 +27,7 @@ type AccountIndexAction struct {
 func (action *AccountIndexAction) LoadQuery() {
 	action.ValidateCursorAsDefault()
 	action.Query = db.HistoryAccountPageQuery{
-		SqlQuery:  action.App.HistoryQuery(),
+		SqlQuery:  action.App.HorizonQuery(),
 		PageQuery: action.GetPageQuery(),
 	}
 }
@@ -115,7 +115,7 @@ func (action *AccountShowAction) SSE(stream sse.Stream) {
 func (action *AccountShowAction) LoadQuery() {
 	action.Query = db.AccountByAddressQuery{
 		Core:    action.App.CoreQuery(),
-		History: action.App.HistoryQuery(),
+		History: action.App.HorizonQuery(),
 		Address: action.GetString("id"),
 	}
 }

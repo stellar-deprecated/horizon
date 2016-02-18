@@ -32,7 +32,7 @@ func (action *TradeIndexAction) JSON() {
 // LoadQuery sets action.Query from the request params
 func (action *TradeIndexAction) LoadQuery() {
 	action.Query = db.EffectPageQuery{
-		SqlQuery:  action.App.HistoryQuery(),
+		SqlQuery:  action.App.HorizonQuery(),
 		PageQuery: action.GetPageQuery(),
 		Filter:    &db.EffectTypeFilter{history.EffectTrade},
 	}
