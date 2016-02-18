@@ -2,6 +2,12 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "bitbucket.org/ww/goautoneg",
+			"repository": "https://bitbucket.org/ww/goautoneg",
+			"revision": "75cd24fc2f2c",
+			"branch": "default"
+		},
+		{
 			"importpath": "github.com/BurntSushi/toml",
 			"repository": "https://github.com/BurntSushi/toml",
 			"revision": "056c9bc7be7190eaa7715723883caffa5f8fa3e4",
@@ -262,27 +268,27 @@
 		{
 			"importpath": "github.com/zenazn/goji",
 			"repository": "https://github.com/zenazn/goji",
-			"revision": "09c4160eb01c64b5a7d3b8dfd93712828143c4ce",
+			"revision": "bf843a174a08e846246b8945f8a9a853d84a256a",
 			"branch": "master"
 		},
 		{
 			"importpath": "github.com/zenazn/goji/bind",
 			"repository": "https://github.com/zenazn/goji",
-			"revision": "09c4160eb01c64b5a7d3b8dfd93712828143c4ce",
+			"revision": "bf843a174a08e846246b8945f8a9a853d84a256a",
 			"branch": "master",
 			"path": "/bind"
 		},
 		{
 			"importpath": "github.com/zenazn/goji/graceful",
 			"repository": "https://github.com/zenazn/goji",
-			"revision": "09c4160eb01c64b5a7d3b8dfd93712828143c4ce",
+			"revision": "bf843a174a08e846246b8945f8a9a853d84a256a",
 			"branch": "master",
 			"path": "/graceful"
 		},
 		{
 			"importpath": "github.com/zenazn/goji/web",
 			"repository": "https://github.com/zenazn/goji",
-			"revision": "09c4160eb01c64b5a7d3b8dfd93712828143c4ce",
+			"revision": "bf843a174a08e846246b8945f8a9a853d84a256a",
 			"branch": "master",
 			"path": "/web"
 		},

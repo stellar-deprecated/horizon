@@ -20,14 +20,15 @@ Given you have a running golang installation, you can install this with:
 go get -u github.com/constabulary/gb/...
 ```
 
-From within the project directory, simply run `gb build`.  After successful
+Next, you must download the source for packages that horizon depends upon.  From within the project directory, run:
+
+```bash
+gb vendor restore
+```
+
+Then, simply run `gb build`.  After successful
 completion, you should find `bin/horizon` is present in the project directory.
 
 ## Developing Horizon
 
 See [the development guide](docs/developing.md).
-
-
-
-
-
