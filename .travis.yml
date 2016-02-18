@@ -24,7 +24,6 @@ addons:
 matrix:
   allow_failures:
   - go: tip
-  - go: '1.6'
 before_deploy:
   - bash scripts/build_artifacts.bash
 deploy:
