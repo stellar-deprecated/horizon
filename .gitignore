@@ -6,6 +6,7 @@ docs/public
 /dist
 /vendor/pkg
 /vendor/bin
+/vendor/src
 *.bts
 *.swp
 
