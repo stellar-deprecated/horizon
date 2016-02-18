@@ -43,6 +43,8 @@ func init() {
 	viper.BindEnv("sentry-dsn", "SENTRY_DSN")
 	viper.BindEnv("loggly-token", "LOGGLY_TOKEN")
 	viper.BindEnv("loggly-host", "LOGGLY_HOST")
+	viper.BindEnv("tls-cert", "TLS_CERT")
+	viper.BindEnv("tls-key", "TLS_KEY")
 
 	rootCmd = &cobra.Command{
 		Use:              "horizon",
@@ -132,6 +134,18 @@ func init() {
 		"Secret seed for friendbot functionality. When empty, friendbot will be disabled",
 	)
 
+	rootCmd.Flags().String(
+		"tls-cert",
+		"",
+		"The TLS certificate file to use for securing connections to horizon",
+	)
+
+	rootCmd.Flags().String(
+		"tls-key",
+		"",
+		"The TLS private key file to use for securing connections to horizon",
+	)
+
 	rootCmd.AddCommand(dbCmd)
 
 	viper.BindPFlags(rootCmd.Flags())
@@ -158,6 +172,15 @@ func initApp(cmd *cobra.Command, args []string) {
 
 	hlog.DefaultLogger.Level = ll
 
+	cert, key := viper.GetString("tls-cert"), viper.GetString("tls-key")
+
+	switch {
+	case cert != "" && key == "":
+		log.Fatal("Invalid TLS config: key not configured")
+	case cert == "" && key != "":
+		log.Fatal("Invalid TLS config: cert not configured")
+	}
+
 	config := horizon.Config{
 		DatabaseUrl:            viper.GetString("db-url"),
 		StellarCoreDatabaseUrl: viper.GetString("stellar-core-db-url"),
@@ -172,6 +195,8 @@ func initApp(cmd *cobra.Command, args []string) {
 		LogglyToken:            viper.GetString("loggly-token"),
 		LogglyHost:             viper.GetString("loggly-host"),
 		FriendbotSecret:        viper.GetString("friendbot-secret"),
+		TLSCert:                cert,
+		TLSKey:                 key,
 	}
 
 	app, err = horizon.NewApp(config)

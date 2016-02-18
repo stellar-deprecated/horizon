@@ -26,6 +26,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/codegangsta/negroni",
+			"repository": "https://github.com/codegangsta/negroni",
+			"revision": "c7477ad8e330bef55bf1ebe300cf8aa67c492d1b",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/garyburd/redigo/internal",
 			"repository": "https://github.com/garyburd/redigo",
 			"revision": "8b1d80a45a732e6d95e22dcc2e067312c664936c",
@@ -242,6 +248,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/tylerb/graceful",
+			"repository": "https://github.com/tylerb/graceful",
+			"revision": "7116c7a8115899e80197cd9e0b97998c0f97ed8e",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/visionmedia/go-debug",
 			"repository": "https://github.com/visionmedia/go-debug",
 			"revision": "ff4a55a20a86994118644bbddc6a216da193cc13",
@@ -275,6 +287,13 @@
 			"path": "/web"
 		},
 		{
+			"importpath": "golang.org/x/crypto/ssh/terminal",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "1f22c0103821b9390939b6776727195525381532",
+			"branch": "master",
+			"path": "/ssh/terminal"
+		},
+		{
 			"importpath": "golang.org/x/net/context",
 			"repository": "https://go.googlesource.com/net",
 			"revision": "34ff4cd5e6de00702100a0ab3bb73de8de5ab35d",
@@ -282,9 +301,29 @@
 			"path": "/context"
 		},
 		{
+			"importpath": "golang.org/x/net/http2",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b6d7b1396ec874c3b00f6c84cd4301a17c56c8ed",
+			"branch": "master",
+			"path": "/http2"
+		},
+		{
+			"importpath": "golang.org/x/net/netutil",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b6d7b1396ec874c3b00f6c84cd4301a17c56c8ed",
+			"branch": "master",
+			"path": "/netutil"
+		},
+		{
 			"importpath": "gopkg.in/gorp.v1",
 			"repository": "https://gopkg.in/gorp.v1",
 			"revision": "c87af80f3cc5036b55b83d77171e156791085e2e",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/tylerb/graceful.v1",
+			"repository": "https://gopkg.in/tylerb/graceful.v1",
+			"revision": "119c58e176bce26fd40698146d9a106c8f1723a5",
 			"branch": "master"
 		},
 		{
