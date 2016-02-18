@@ -51,8 +51,8 @@ var Keypair = require("stellar-base").Keypair;
 
 var newAccount = Keypair.random();
 
-console.log("New account created!");
-console.log("  Address: " + newAccount.address());
+console.log("New key pair created!");
+console.log("  Account ID: " + newAccount.accountId());
 console.log("  Seed: " + newAccount.seed());
 ```
 
@@ -60,8 +60,8 @@ Save the file and run it:
 
 ```bash
 $ node make_account.js
-New account created!
-  Address: GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3
+New key pair created!
+  Account ID: GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3
   Seed: SCU36VV2OYTUMDSSU4EIVX4UUHY3XC7N44VL4IJ26IOG6HVNC7DY5UJO
 $
 ```
@@ -120,7 +120,7 @@ data: {"_links":{"effects":{"href":"/operations/713226564145153/effects/{?cursor
        "funder":"GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K",
        "id":713226564145153,
        "paging_token":"713226564145153",
-       "starting_balance":1e+09,
+       "starting_balance":"10000",
        "type_i":0,
        "type":"create_account"}
 ```
@@ -158,7 +158,7 @@ New payment:
   funder: 'GBS43BF24ENNS3KPACUZVKK2VYPOZVBQO2CISGZ777RYGOPYC2FT6S3K',
   id: 713226564145153,
   paging_token: '713226564145153',
-  starting_balance: 1000000000,
+  starting_balance: '10000',
   type_i: 0,
   type: 'create_account' }
 ```
@@ -181,13 +181,13 @@ Now, create `make_payment.js` file and paste the following code into it:
 var StellarBase = require("stellar-base");
 
 var keypair = StellarBase.Keypair.fromSeed('SCU36VV2OYTUMDSSU4EIVX4UUHY3XC7N44VL4IJ26IOG6HVNC7DY5UJO');
-var account = new StellarBase.Account(keypair.address(), 713226564141056);
+var account = new StellarBase.Account(keypair.accountId(), "713226564141056");
 
 var asset = StellarBase.Asset.native();
-var amount = 100000000; // 100 XLM
+var amount = "100";
 var transaction = new StellarBase.TransactionBuilder(account)
   .addOperation(StellarBase.Operation.payment({
-    destination: StellarBase.Keypair.random().address(),
+    destination: StellarBase.Keypair.random().accountId(),
     asset: asset,
     amount: amount
   }))
