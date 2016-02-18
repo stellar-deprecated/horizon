@@ -102,5 +102,8 @@ log.WithField("init_name", i.Name).Info("running initializer")
 With the "bad" form of the logging example above, an operator can filter on both the message as well as the initializer name independently.  This gets more powerful when multiple fields are combined, allowing for all sorts of slicing and dicing.
 
 
+## <a name="TLS"></a> Enabling TLS on your local workstation
 
+Horizon support HTTP/2 when served using TLS.  To enable TLS on your local workstation, you must generate a certificate and configure horizon to use it.  We've written a helper script at `tls/regen.sh` to make this simple.  Run the script from your terminal, and simply choose all the default options.  This will create two files: `tls/server.crt` and `tls/server.key`.  
 
+Now you must configure horizon to use them: You can simply add `--tls-cert tls/server.crt --tls-key tls/server.key` to your command line invocations of horizon, or you may specify `TLS_CERT` and `TLS_KEY` environment variables.
