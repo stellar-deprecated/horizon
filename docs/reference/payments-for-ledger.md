@@ -30,7 +30,7 @@ curl "https://horizon-testnet.stellar.org/ledgers/69859/payments"
 ### JavaScript Example Request
 
 ```js
-var StellarSdk = require('./stellar-sdk')
+var StellarSdk = require('stellar-sdk')
 var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 
 server.payments()
