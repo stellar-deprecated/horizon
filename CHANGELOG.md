@@ -8,6 +8,8 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+## [v0.4.0] - 2016-02-19
+
 ### Added
 
 - Add `horizon db migrate [up|down|redo]` commands, used for installing schema migrations.  This work is in service of porting the horizon-importer project directly to horizon.
@@ -37,7 +39,8 @@ bumps.  A breaking change will get clearly notified in this log.
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.3.0...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.4.0...master
+[v0.4.0]: https://github.com/stellar/horizon/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/stellar/horizon/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/stellar/horizon/compare/v0.1.1...v0.2.0
 [v0.1.1]: https://github.com/stellar/horizon/compare/v0.1.0...v0.1.1
