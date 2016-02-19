@@ -36,3 +36,7 @@ deploy:
     repo: stellar/horizon
     tags: true
     go: '1.6'
+cache:
+  directories:
+  - vendor
+  - pkg
