@@ -2,12 +2,6 @@
 	"version": 0,
 	"dependencies": [
 		{
-			"importpath": "bitbucket.org/ww/goautoneg",
-			"repository": "https://bitbucket.org/ww/goautoneg",
-			"revision": "75cd24fc2f2c",
-			"branch": "default"
-		},
-		{
 			"importpath": "github.com/BurntSushi/toml",
 			"repository": "https://github.com/BurntSushi/toml",
 			"revision": "056c9bc7be7190eaa7715723883caffa5f8fa3e4",
