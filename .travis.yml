@@ -1,10 +1,10 @@
 language: go
 go:
-- '1.5'
 - '1.6'
 - tip
 install:
   - go get github.com/constabulary/gb/...
+  - gb vendor restore
 before_script:
 - psql -c 'create database "horizon_test";' -U postgres
 - psql -c 'create database "stellar-core_test";' -U postgres
@@ -35,4 +35,4 @@ deploy:
   on:
     repo: stellar/horizon
     tags: true
-    go: '1.5'
+    go: '1.6'

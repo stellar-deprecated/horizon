@@ -6,7 +6,11 @@ docs/public
 /dist
 /vendor/pkg
 /vendor/bin
+/vendor/src
 *.bts
 *.swp
 
 /test.go
+/tls/*.crt
+/tls/*.key
+/tls/*.csr

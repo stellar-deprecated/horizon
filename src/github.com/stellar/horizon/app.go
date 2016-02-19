@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"runtime"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/jmoiron/sqlx"
@@ -18,9 +19,9 @@ import (
 	"github.com/stellar/horizon/pump"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/txsub"
-	"github.com/zenazn/goji/bind"
-	"github.com/zenazn/goji/graceful"
 	"golang.org/x/net/context"
+	"golang.org/x/net/http2"
+	"gopkg.in/tylerb/graceful.v1"
 )
 
 var appContextKey = 0
@@ -89,29 +90,40 @@ func (a *App) Serve() {
 	a.web.router.Compile()
 	http.Handle("/", a.web.router)
 
-	listenStr := fmt.Sprintf(":%d", a.config.Port)
-	listener := bind.Socket(listenStr)
-	log.Infof("Starting horizon on %s", listener.Addr())
+	addr := fmt.Sprintf(":%d", a.config.Port)
 
-	graceful.HandleSignals()
-	bind.Ready()
-	graceful.PreHook(func() {
-		log.Info("received signal, gracefully stopping")
-		a.Close()
-	})
-	graceful.PostHook(func() {
-		log.Info("stopped")
-	})
+	srv := &graceful.Server{
+		Timeout: 10 * time.Second,
+
+		Server: &http.Server{
+			Addr:    addr,
+			Handler: http.DefaultServeMux,
+		},
+
+		ShutdownInitiated: func() {
+			log.Info("received signal, gracefully stopping")
+			a.Close()
+		},
+	}
+
+	http2.ConfigureServer(srv.Server, nil)
 
 	sse.SetPump(a.pump.Subscribe())
 
-	err := graceful.Serve(listener, http.DefaultServeMux)
+	log.Infof("Starting horizon on %s", addr)
+
+	var err error
+	if a.config.TLSCert != "" {
+		err = srv.ListenAndServeTLS(a.config.TLSCert, a.config.TLSKey)
+	} else {
+		err = srv.ListenAndServe()
+	}
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	graceful.Wait()
+	log.Info("stopped")
 }
 
 // Close cancels the app and forces the closure of db connections
