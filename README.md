@@ -8,7 +8,7 @@ Horizon is the [client facing API](/docs) server for the Stellar ecosystem.  It 
 
 ## Dependencies
 
-Horizon requires go 1.5 or higher to build. See (https://golang.org/doc/install) for installation instructions.
+Horizon requires go 1.6 or higher to build. See (https://golang.org/doc/install) for installation instructions.
 
 ## Building
 
