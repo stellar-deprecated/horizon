@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/PuerkitoBio/throttled"
+	hlog "github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/test"
 )
@@ -26,6 +27,7 @@ func NewTestConfig() Config {
 		DatabaseUrl:            test.DatabaseUrl(),
 		StellarCoreDatabaseUrl: test.StellarCoreDatabaseUrl(),
 		RateLimit:              throttled.PerHour(1000),
+		LogLevel:               hlog.InfoLevel,
 	}
 }
 
