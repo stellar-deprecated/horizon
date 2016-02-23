@@ -45,8 +45,8 @@ func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.R
 	// query core database
 	var cr core.Transaction
 	cq := &cqs.TransactionByHash{
-		SqlQuery: db.SqlQuery{DB: rp.Core},
-		Hash:     hash,
+		DB:   db.SqlQuery{DB: rp.Core},
+		Hash: hash,
 	}
 
 	err = db.Get(ctx, cq, &cr)
