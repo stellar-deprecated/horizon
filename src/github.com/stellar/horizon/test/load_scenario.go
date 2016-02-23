@@ -1,0 +1,26 @@
+package test
+
+import (
+	"bytes"
+	"log"
+	"os/exec"
+)
+
+func loadSQLFile(url string, path string) {
+	sql, err := Asset(path)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	reader := bytes.NewReader(sql)
+	cmd := exec.Command("psql", url)
+	cmd.Stdin = reader
+
+	err = cmd.Run()
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+}
