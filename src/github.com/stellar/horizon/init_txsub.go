@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/rp"
 	"github.com/stellar/horizon/txsub"
 	"github.com/stellar/horizon/txsub/sequence"
 	"net/http"
@@ -12,7 +13,7 @@ func initSubmissionSystem(app *App) {
 		Pending:         txsub.NewDefaultSubmissionList(),
 		Submitter:       txsub.NewDefaultSubmitter(http.DefaultClient, app.config.StellarCoreUrl),
 		SubmissionQueue: sequence.NewManager(),
-		Results: &db.ResultProvider{
+		Results: &rp.ResultProvider{
 			Core:    app.coreDb,
 			History: app.horizonDb,
 		},

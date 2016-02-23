@@ -1,52 +1,60 @@
-package db
+// Package rp provides an implementation of the txsub.ResultProvider interface
+// backed using the SQL databases used by both stellar core and horizon
+package rp
 
 import (
 	"bytes"
 	"encoding/base64"
 	"github.com/jmoiron/sqlx"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db"
+	cqs "github.com/stellar/horizon/db/queries/core"
+	hqs "github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 )
 
+// ResultProvider provides transactio submission results by querying the
+// connected horizon and stellar core databases.
 type ResultProvider struct {
 	Core    *sqlx.DB
 	History *sqlx.DB
 }
 
+// ResultByHash implements txsub.ResultProvider
 func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.Result {
 
 	// query history database
 	var hr history.Transaction
-	hq := TransactionByHashQuery{
-		SqlQuery: SqlQuery{rp.History},
+	hq := &hqs.TransactionByHash{
+		SqlQuery: db.SqlQuery{DB: rp.History},
 		Hash:     hash,
 	}
 
-	err := Get(ctx, hq, &hr)
+	err := db.Get(ctx, hq, &hr)
 	if err == nil {
 		return txResultFromHistory(hr)
 	}
 
-	if err != ErrNoResults {
+	if err != db.ErrNoResults {
 		return txsub.Result{Err: err}
 	}
 
 	// query core database
 	var cr core.Transaction
-	cq := CoreTransactionByHashQuery{
-		SqlQuery: SqlQuery{rp.Core},
+	cq := &cqs.TransactionByHash{
+		SqlQuery: db.SqlQuery{DB: rp.Core},
 		Hash:     hash,
 	}
 
-	err = Get(ctx, cq, &cr)
+	err = db.Get(ctx, cq, &cr)
 	if err == nil {
 		return txResultFromCore(cr)
 	}
 
-	if err != ErrNoResults {
+	if err != db.ErrNoResults {
 		return txsub.Result{Err: err}
 	}
 

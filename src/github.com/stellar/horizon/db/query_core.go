@@ -5,7 +5,6 @@ package db
 
 import (
 	sq "github.com/lann/squirrel"
-	"golang.org/x/net/context"
 )
 
 var CoreAccountRecordSelect sq.SelectBuilder = sq.Select(
@@ -31,10 +30,6 @@ var CoreSignerRecordSelect sq.SelectBuilder = sq.Select(
 	"si.weight",
 ).From("signers si")
 
-// CoreTransactionRecordSelect is a sql fragment to help select form queries that
-// select into a CoreTransactionRecord
-var CoreTransactionRecordSelect = sq.Select("ctxh.*").From("txhistory ctxh")
-
 var CoreTrustlineRecordSelect sq.SelectBuilder = sq.Select(
 	"tl.accountid",
 	"tl.assettype",
@@ -44,18 +39,3 @@ var CoreTrustlineRecordSelect sq.SelectBuilder = sq.Select(
 	"tl.balance",
 	"tl.flags",
 ).From("trustlines tl")
-
-// txhistory queries
-
-type CoreTransactionByHashQuery struct {
-	SqlQuery
-	Hash string
-}
-
-func (q CoreTransactionByHashQuery) Select(ctx context.Context, dest interface{}) error {
-	sql := CoreTransactionRecordSelect.
-		Limit(1).
-		Where("ctxh.txid = ?", q.Hash)
-
-	return q.SqlQuery.Select(ctx, sql, dest)
-}
