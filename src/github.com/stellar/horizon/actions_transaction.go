@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/stellar/horizon/db"
+	hq "github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
@@ -91,32 +92,32 @@ func (action *TransactionIndexAction) SSE(stream sse.Stream) {
 // TransactionShowAction renders a ledger found by its sequence number.
 type TransactionShowAction struct {
 	Action
-	Query    db.TransactionByHashQuery
+	Query    hq.TransactionByHash
 	Record   history.Transaction
 	Resource resource.Transaction
 }
 
-func (action *TransactionShowAction) LoadQuery() {
-	action.Query = db.TransactionByHashQuery{
+func (action *TransactionShowAction) loadQuery() {
+	action.Query = hq.TransactionByHash{
 		SqlQuery: action.App.HorizonQuery(),
 		Hash:     action.GetString("id"),
 	}
 }
 
-func (action *TransactionShowAction) LoadRecord() {
-	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+func (action *TransactionShowAction) loadRecord() {
+	action.Err = db.Get(action.Ctx, &action.Query, &action.Record)
 }
 
-func (action *TransactionShowAction) LoadResource() {
+func (action *TransactionShowAction) loadResource() {
 	action.Resource.Populate(action.Ctx, action.Record)
 }
 
 // JSON is a method for actions.JSON
 func (action *TransactionShowAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecord,
-		action.LoadResource,
+		action.loadQuery,
+		action.loadRecord,
+		action.loadResource,
 		func() { hal.Render(action.W, action.Resource) },
 	)
 }
@@ -133,21 +134,21 @@ type TransactionCreateAction struct {
 // JSON format action handler
 func (action *TransactionCreateAction) JSON() {
 	action.Do(
-		action.LoadTX,
-		action.LoadResult,
-		action.LoadResource,
+		action.loadTX,
+		action.loadResult,
+		action.loadResource,
 
 		func() {
 			hal.Render(action.W, action.Resource)
 		})
 }
 
-func (action *TransactionCreateAction) LoadTX() {
+func (action *TransactionCreateAction) loadTX() {
 	action.ValidateBodyType()
 	action.TX = action.GetString("tx")
 }
 
-func (action *TransactionCreateAction) LoadResult() {
+func (action *TransactionCreateAction) loadResult() {
 	submission := action.App.submitter.Submit(action.Ctx, action.TX)
 
 	select {
@@ -158,7 +159,7 @@ func (action *TransactionCreateAction) LoadResult() {
 	}
 }
 
-func (action *TransactionCreateAction) LoadResource() {
+func (action *TransactionCreateAction) loadResource() {
 	if action.Result.Err == nil {
 		action.Resource.Populate(action.Ctx, action.Result)
 		return

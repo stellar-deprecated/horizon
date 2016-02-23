@@ -18,7 +18,7 @@ func (action *FriendbotAction) JSON() {
 		action.CheckEnabled,
 		action.LoadAddress,
 		action.LoadResult,
-		action.LoadResource,
+		action.loadResource,
 
 		func() {
 			hal.Render(action.W, action.Resource)
