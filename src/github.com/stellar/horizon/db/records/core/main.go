@@ -80,12 +80,23 @@ type Signer struct {
 
 // Transaction is row of data from the `txhistory` table from stellar-core
 type Transaction struct {
-	TransactionHash string `db:"txid"`
-	LedgerSequence  int32  `db:"ledgerseq"`
-	Index           int32  `db:"txindex"`
-	EnvelopeXDR     string `db:"txbody"`
-	ResultXDR       string `db:"txresult"`
-	ResultMetaXDR   string `db:"txmeta"`
+	TransactionHash string                    `db:"txid"`
+	LedgerSequence  int32                     `db:"ledgerseq"`
+	Index           int32                     `db:"txindex"`
+	EnvelopeXDR     string                    `db:"txbody"`
+	Envelope        xdr.TransactionEnvelope   `db:"txbody"`
+	ResultXDR       string                    `db:"txresult"`
+	Result          xdr.TransactionResultPair `db:"txresult"`
+	ResultMetaXDR   string                    `db:"txmeta"`
+	ResultMeta      xdr.TransactionMeta       `db:"txmeta"`
+}
+
+// TransactionFee is row of data from the `txfeehistory` table from stellar-core
+type TransactionFee struct {
+	TransactionHash string                 `db:"txid"`
+	LedgerSequence  int32                  `db:"ledgerseq"`
+	Index           int32                  `db:"txindex"`
+	Changes         xdr.LedgerEntryChanges `db:"txchanges"`
 }
 
 // Trustline is a row of data from the `trustlines` table from stellar-core

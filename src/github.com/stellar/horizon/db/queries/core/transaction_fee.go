@@ -6,11 +6,11 @@ import (
 )
 
 // Select implements the db.Query interface
-func (q *TransactionByHash) Select(ctx context.Context, dest interface{}) error {
-	sql := sq.Select("ctxh.*").
-		From("txhistory ctxh").
+func (q *TransactionFeeByHash) Select(ctx context.Context, dest interface{}) error {
+	sql := sq.Select("ctxfh.*").
+		From("txfeehistory ctxfh").
 		Limit(1).
-		Where("ctxh.txid = ?", q.Hash)
+		Where("ctxfh.txid = ?", q.Hash)
 
 	return q.DB.Select(ctx, sql, dest)
 }

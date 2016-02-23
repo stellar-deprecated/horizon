@@ -21,15 +21,18 @@ func (is *Session) Run() {
 	}
 	for seq := is.FirstLedger; seq <= is.LastLedger; seq++ {
 		is.Ingester.Metrics.TotalTimer.Time(func() {
+			// Do the actual work
 			is.ingestSingle(seq)
 		})
 
+		// Check and handle failure
 		if is.Err != nil {
 			is.Ingester.Metrics.FailedMeter.Mark(1)
 			is.TX.Rollback()
 			return
 		}
 
+		// Record success
 		is.Ingester.Metrics.SuccessfulMeter.Mark(1)
 		is.Ingested++
 	}
