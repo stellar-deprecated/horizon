@@ -9,6 +9,7 @@ import (
 
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/core"
 )
 
 const (
@@ -22,6 +23,15 @@ const (
 	// transition when the ingested data's structure changes.
 	CurrentVersion = 5
 )
+
+// LedgerBundle represents a single ledger's worth of novelty created by one
+// ledger close
+type LedgerBundle struct {
+	Sequence        int32
+	Header          core.LedgerHeader
+	TransactionFees []core.TransactionFee
+	Transactions    []core.Transaction
+}
 
 // Ingester represents the data ingestion subsystem of horizon.
 type Ingester struct {

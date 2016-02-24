@@ -39,8 +39,17 @@ func (is *Session) Run() {
 }
 
 func (is *Session) ingestSingle(seq int32) {
+	if is.Err != nil {
+		return
+	}
+
 	log.Debugf("ingesting ledger %d", seq)
 	// TODO: load a history bundle for this sequence
+	data := &LedgerBundle{Sequence: seq}
+	is.Err = data.Load(is.Ingester.CoreDB)
+	if is.Err != nil {
+		return
+	}
 
 	ib := is.TX.Insert("history_ledgers").Columns(
 		"importer_version", "sequence", "ledger_hash", "previous_ledger_hash",

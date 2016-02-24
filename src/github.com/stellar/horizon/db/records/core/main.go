@@ -21,13 +21,12 @@ type Account struct {
 
 // LedgerHeader is row of data from the `ledgerheaders` table
 type LedgerHeader struct {
-	Hash           string `db:"ledgerhash"`
-	PrevHash       string `db:"prevhash"`
-	BucketListHash string `db:"bucketlisthash"`
-	Sequence       uint32 `db:"ledgerseq"`
-	EnvelopeXDR    string `db:"txbody"`
-	ResultXDR      string `db:"txresult"`
-	ResultMetaXDR  string `db:"txmeta"`
+	LedgerHash     string           `db:"ledgerhash"`
+	PrevHash       string           `db:"prevhash"`
+	BucketListHash string           `db:"bucketlisthash"`
+	CloseTime      int64            `db:"closetime"`
+	Sequence       uint32           `db:"ledgerseq"`
+	Data           xdr.LedgerHeader `db:"data"`
 }
 
 // Offer is row of data from the `offers` table from stellar-core

@@ -18,10 +18,6 @@ var CoreAccountRecordSelect sq.SelectBuilder = sq.Select(
 	"a.flags",
 ).From("accounts a")
 
-var CoreLedgerHeaderRecordSelect = sq.Select(
-	"clh.*",
-).From("ledgerheaders clh")
-
 var CoreOfferRecordSelect = sq.Select("co.*").From("offers co")
 
 var CoreSignerRecordSelect sq.SelectBuilder = sq.Select(

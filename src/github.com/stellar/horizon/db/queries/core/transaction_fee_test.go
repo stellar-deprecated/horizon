@@ -29,3 +29,19 @@ func TestTransactionFeeByHash(t *testing.T) {
 	err = db.Get(tt.Ctx, &q, &fee)
 	tt.Assert.Equal(db.ErrNoResults, err)
 }
+
+func TestTransactionFeeByLedger(t *testing.T) {
+	tt := test.Start(t).Scenario("base")
+	defer tt.Finish()
+
+	var fees []core.TransactionFee
+
+	err := db.Select(tt.Ctx, &TransactionFeeByLedger{
+		DB:       db.SqlQuery{DB: tt.CoreDB},
+		Sequence: 2,
+	}, &fees)
+
+	if tt.Assert.NoError(err) {
+		tt.Assert.Len(fees, 3)
+	}
+}

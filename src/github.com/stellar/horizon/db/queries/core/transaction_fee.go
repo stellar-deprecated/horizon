@@ -14,3 +14,13 @@ func (q *TransactionFeeByHash) Select(ctx context.Context, dest interface{}) err
 
 	return q.DB.Select(ctx, sql, dest)
 }
+
+// Select implements the db.Query interface
+func (q *TransactionFeeByLedger) Select(ctx context.Context, dest interface{}) error {
+	sql := sq.Select("ctxfh.*").
+		From("txfeehistory ctxfh").
+		OrderBy("ctxfh.txindex ASC").
+		Where("ctxfh.ledgerseq = ?", q.Sequence)
+
+	return q.DB.Select(ctx, sql, dest)
+}

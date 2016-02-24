@@ -30,3 +30,19 @@ func TestTransactionByHash(t *testing.T) {
 	err = db.Get(tt.Ctx, &q, &tx)
 	tt.Assert.Equal(db.ErrNoResults, err)
 }
+
+func TestTransactionByLedger(t *testing.T) {
+	tt := test.Start(t).Scenario("base")
+	defer tt.Finish()
+
+	var txs []core.Transaction
+
+	err := db.Select(tt.Ctx, &TransactionByLedger{
+		DB:       db.SqlQuery{DB: tt.CoreDB},
+		Sequence: 2,
+	}, &txs)
+
+	if tt.Assert.NoError(err) {
+		tt.Assert.Len(txs, 3)
+	}
+}
