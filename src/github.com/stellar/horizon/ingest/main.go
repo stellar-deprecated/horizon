@@ -4,7 +4,6 @@
 package ingest
 
 import (
-	"sync"
 	"time"
 
 	"github.com/rcrowley/go-metrics"
@@ -35,8 +34,6 @@ type LedgerBundle struct {
 
 // Ingester represents the data ingestion subsystem of horizon.
 type Ingester struct {
-	initializer sync.Once
-
 	// HorizonDB is the connection to the horizon database that ingested data will
 	// be written to.
 	HorizonDB db.SqlQuery
@@ -88,4 +85,18 @@ type Session struct {
 	// Ingested is the number of ledgers that were successfully ingested during
 	// this session.
 	Ingested int
+}
+
+// New initializes the ingester, causing it to begin polling the stellar-core
+// database for now ledgers and ingesting data into the horizon database.
+func New(core, horizon db.SqlQuery) *Ingester {
+	i := &Ingester{
+		HorizonDB: horizon,
+		CoreDB:    core,
+	}
+	i.tick = time.NewTicker(1 * time.Second)
+	i.Metrics.TotalTimer = metrics.NewTimer()
+	i.Metrics.SuccessfulMeter = metrics.NewMeter()
+	i.Metrics.FailedMeter = metrics.NewMeter()
+	return i
 }

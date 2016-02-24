@@ -6,6 +6,19 @@ import (
 	"os/exec"
 )
 
+func loadScenario(scenarioName string, includeHorizon bool) {
+	scenarioBasePath := "scenarios/" + scenarioName
+	stellarCorePath := scenarioBasePath + "-core.sql"
+	horizonPath := scenarioBasePath + "-horizon.sql"
+
+	if !includeHorizon {
+		horizonPath = "scenarios/blank-horizon.sql"
+	}
+
+	loadSQLFile(StellarCoreDatabaseUrl(), stellarCorePath)
+	loadSQLFile(DatabaseUrl(), horizonPath)
+}
+
 func loadSQLFile(url string, path string) {
 	sql, err := Asset(path)
 

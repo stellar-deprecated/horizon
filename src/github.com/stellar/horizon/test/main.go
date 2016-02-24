@@ -27,8 +27,13 @@ var (
 )
 
 const (
-	DefaultTestDatabaseUrl            = "postgres://localhost:5432/horizon_test?sslmode=disable"
-	DefaultTestStellarCoreDatabaseUrl = "postgres://localhost:5432/stellar-core_test?sslmode=disable"
+	// DefaultTestDatabaseURL is the default postgres connection string for
+	// horizon's test database.
+	DefaultTestDatabaseURL = "postgres://localhost:5432/horizon_test?sslmode=disable"
+
+	// DefaultTestStellarCoreDatabaseURL is the default postgres connection string
+	// for horizon's test stellar core database.
+	DefaultTestStellarCoreDatabaseURL = "postgres://localhost:5432/stellar-core_test?sslmode=disable"
 )
 
 // StaticMockServer is a test helper that records it's last request
@@ -86,7 +91,7 @@ func DatabaseUrl() string {
 	databaseURL := os.Getenv("DATABASE_URL")
 
 	if databaseURL == "" {
-		databaseURL = DefaultTestDatabaseUrl
+		databaseURL = DefaultTestDatabaseURL
 	}
 
 	return databaseURL
@@ -96,12 +101,13 @@ func DatabaseUrl() string {
 // scenario is in the scenarios subfolder of this package and are a pair of
 // sql files, one per database.
 func LoadScenario(scenarioName string) {
-	scenarioBasePath := "scenarios/" + scenarioName
-	horizonPath := scenarioBasePath + "-horizon.sql"
-	stellarCorePath := scenarioBasePath + "-core.sql"
+	loadScenario(scenarioName, true)
+}
 
-	loadSQLFile(DatabaseUrl(), horizonPath)
-	loadSQLFile(StellarCoreDatabaseUrl(), stellarCorePath)
+// LoadScenarioWithoutHorizon populates the test Stellar core database a with
+// pre-created scenario.  Unlike `LoadScenario`, this
+func LoadScenarioWithoutHorizon(scenarioName string) {
+	loadScenario(scenarioName, false)
 }
 
 // OpenDatabase opens a database, panicing if it cannot
@@ -150,7 +156,7 @@ func StellarCoreDatabaseUrl() string {
 	databaseURL := os.Getenv("STELLAR_CORE_DATABASE_URL")
 
 	if databaseURL == "" {
-		databaseURL = DefaultTestStellarCoreDatabaseUrl
+		databaseURL = DefaultTestStellarCoreDatabaseURL
 	}
 
 	return databaseURL

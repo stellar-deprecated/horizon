@@ -1,9 +1,6 @@
 package ingest
 
 import (
-	"time"
-
-	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
@@ -15,18 +12,12 @@ func (i *Ingester) Close() {
 	i.tick.Stop()
 }
 
-// Init initializes the ingester, causing it to begin polling the stellar-core
-// database for now ledgers and ingesting data into the horizon database.
-func (i *Ingester) Init() error {
-	i.initializer.Do(func() {
-		i.tick = time.NewTicker(1 * time.Second)
-		i.Metrics.TotalTimer = metrics.NewTimer()
-		i.Metrics.SuccessfulMeter = metrics.NewMeter()
-		i.Metrics.FailedMeter = metrics.NewMeter()
-		go i.run()
-	})
-	return nil
+// Start causes the ingester to begin polling the stellar-core database for now
+// ledgers and ingesting data into the horizon database.
+func (i *Ingester) Start() {
+	go i.run()
 }
+
 func (i *Ingester) run() {
 	for _ = range i.tick.C {
 		log.Debug("ticking ingester")
