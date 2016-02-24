@@ -14,7 +14,7 @@ func (t *T) Scenario(name string) *T {
 	return t
 }
 
-// Scenario loads the named sql scenario into the database
+// ScenarioWithoutHorizon loads the named sql scenario into the database
 func (t *T) ScenarioWithoutHorizon(name string) *T {
 	LoadScenarioWithoutHorizon(name)
 	return t

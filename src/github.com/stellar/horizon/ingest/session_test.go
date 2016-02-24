@@ -21,10 +21,9 @@ func TestIngestBaseScenario(t *testing.T) {
 	}
 
 	s.Run()
-	if tt.Assert.NoError(s.Err) {
-		tt.Assert.Equal(3, s.Ingested)
-	}
+	tt.Require.NoError(s.Err)
 
+	tt.Assert.Equal(3, s.Ingested)
 	// Ensure the root account was created
 
 }

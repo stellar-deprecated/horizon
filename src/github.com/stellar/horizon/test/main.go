@@ -15,6 +15,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	hlog "github.com/stellar/horizon/log"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/net/context"
 )
 
@@ -46,6 +47,7 @@ type StaticMockServer struct {
 type T struct {
 	T          *testing.T
 	Assert     *assert.Assertions
+	Require    *require.Assertions
 	Ctx        context.Context
 	HorizonDB  *sqlx.DB
 	CoreDB     *sqlx.DB
@@ -137,6 +139,7 @@ func Start(t *testing.T) *T {
 	result.HorizonDB = Database()
 	result.CoreDB = StellarCoreDatabase()
 	result.Assert = assert.New(t)
+	result.Require = require.New(t)
 
 	return result
 }
