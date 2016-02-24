@@ -38,5 +38,5 @@ deploy:
     go: '1.6'
 cache:
   directories:
-  - vendor
+  - vendor/src
   - pkg
