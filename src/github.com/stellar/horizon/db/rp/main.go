@@ -29,8 +29,8 @@ func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.R
 	// query history database
 	var hr history.Transaction
 	hq := &hqs.TransactionByHash{
-		SqlQuery: db.SqlQuery{DB: rp.History},
-		Hash:     hash,
+		DB:   db.SqlQuery{DB: rp.History},
+		Hash: hash,
 	}
 
 	err := db.Get(ctx, hq, &hr)

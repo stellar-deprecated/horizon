@@ -6,8 +6,15 @@ import (
 	"github.com/stellar/horizon/db"
 )
 
-// TransactionByHash is a query that loads a single
+// AccountByID loads a row from `history_accounts`, by id
+type AccountByID struct {
+	DB db.SqlQuery
+	ID int64
+}
+
+// TransactionByHash is a query that loads a single row from the
+// `history_transactions` table based upon the provided hash.
 type TransactionByHash struct {
-	db.SqlQuery
+	DB   db.SqlQuery
 	Hash string
 }

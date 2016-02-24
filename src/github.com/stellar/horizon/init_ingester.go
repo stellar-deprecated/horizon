@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/ingest"
+	"log"
 )
 
 func initIngester(app *App) {
@@ -9,10 +10,14 @@ func initIngester(app *App) {
 		return
 	}
 
-	app.ingester = ingest.New(app.CoreQuery(), app.HorizonQuery())
+	if app.networkPassphrase == "" {
+		log.Fatal("Cannot start ingestion without network passphrase.  Please confirm connectivity with stellar-core.")
+	}
+
+	app.ingester = ingest.New(app.networkPassphrase, app.CoreQuery(), app.HorizonQuery())
 	app.ingester.Start()
 }
 
 func init() {
-	appInit.Add("ingester", initIngester, "app-context", "log", "horizon-db", "core-db")
+	appInit.Add("ingester", initIngester, "app-context", "log", "horizon-db", "core-db", "stellarCoreInfo")
 }

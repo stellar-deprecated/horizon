@@ -41,6 +41,9 @@ type Ingester struct {
 	// CoreDB is the stellar-core db that data is ingested from.
 	CoreDB db.SqlQuery
 
+	// Network is the passphrase for the network being imported
+	Network string
+
 	// Metrics provides the metrics for this ingester.
 	Metrics struct {
 		// TotalTimer exposes timing metrics about the rate and latency of
@@ -89,8 +92,9 @@ type Session struct {
 
 // New initializes the ingester, causing it to begin polling the stellar-core
 // database for now ledgers and ingesting data into the horizon database.
-func New(core, horizon db.SqlQuery) *Ingester {
+func New(network string, core, horizon db.SqlQuery) *Ingester {
 	i := &Ingester{
+		Network:   network,
 		HorizonDB: horizon,
 		CoreDB:    core,
 	}

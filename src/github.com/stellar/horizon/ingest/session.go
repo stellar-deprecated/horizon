@@ -4,6 +4,7 @@ import (
 	// "fmt"
 	"time"
 
+	"github.com/stellar/go-stellar-base/keypair"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
 	// "golang.org/x/net/context"
@@ -52,7 +53,7 @@ func (is *Session) ingestSingle(seq int32) {
 	}
 
 	is.do(
-		func() { is.createMasterAccountIfNeeded(data) },
+		func() { is.createRootAccountIfNeeded(data) },
 		func() { is.validateLedgerChain(data) },
 		func() { is.clearExistingDataIfNeeded(data) },
 		func() { is.ingestHistoryLedger(data) },
@@ -69,12 +70,17 @@ func (is *Session) clearExistingDataIfNeeded(data *LedgerBundle) {
 	// TODO: add re-import support
 }
 
-func (is *Session) createMasterAccountIfNeeded(data *LedgerBundle) {
+func (is *Session) createRootAccountIfNeeded(data *LedgerBundle) {
 	if data.Sequence != 1 {
 		return
 	}
 
-	// TODO: import master account
+	ib := is.TX.Insert("history_accounts").
+		Columns("id", "address").
+		Values(1, keypair.Master(is.Ingester.Network).Address())
+
+	is.TX.ExecInsert(ib)
+	is.Err = is.TX.Err
 }
 
 func (is *Session) do(steps ...func()) {

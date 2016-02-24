@@ -11,7 +11,7 @@ func (q *TransactionByHash) Select(ctx context.Context, dest interface{}) error 
 		Limit(1).
 		Where("ht.transaction_hash = ?", q.Hash)
 
-	return q.SqlQuery.Select(ctx, sql, dest)
+	return q.DB.Select(ctx, sql, dest)
 }
 
 var selectTransaction = sq.Select(

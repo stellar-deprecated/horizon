@@ -99,8 +99,8 @@ type TransactionShowAction struct {
 
 func (action *TransactionShowAction) loadQuery() {
 	action.Query = hq.TransactionByHash{
-		SqlQuery: action.App.HorizonQuery(),
-		Hash:     action.GetString("id"),
+		DB:   action.App.HorizonQuery(),
+		Hash: action.GetString("id"),
 	}
 }
 
