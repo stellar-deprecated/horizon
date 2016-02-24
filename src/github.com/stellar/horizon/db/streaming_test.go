@@ -10,7 +10,7 @@ import (
 func TestStreaming(t *testing.T) {
 	ctx := test.Context()
 	ctx, cancel := context.WithCancel(ctx)
-	db := test.OpenDatabase(test.DatabaseUrl())
+	db := test.OpenDatabase(test.DatabaseURL())
 
 	Convey("LedgerClosePump", t, func() {
 

@@ -25,7 +25,7 @@ func TestOrderBook(t *testing.T) {
 
 		Convey("Cost from paths scenario", func() {
 			test.LoadScenario("paths")
-			conn := test.OpenDatabase(test.StellarCoreDatabaseUrl())
+			conn := test.OpenDatabase(test.StellarCoreDatabaseURL())
 			defer conn.Close()
 			ob.DB = db.SqlQuery{conn}
 
@@ -54,7 +54,7 @@ func TestOrderBook(t *testing.T) {
 
 		Convey("Cost from bad_cost scenario", func() {
 			test.LoadScenario("bad_cost")
-			conn := test.OpenDatabase(test.StellarCoreDatabaseUrl())
+			conn := test.OpenDatabase(test.StellarCoreDatabaseURL())
 			defer conn.Close()
 			ob.DB = db.SqlQuery{conn}
 

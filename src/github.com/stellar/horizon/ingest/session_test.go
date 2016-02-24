@@ -24,4 +24,7 @@ func TestIngestBaseScenario(t *testing.T) {
 	if tt.Assert.NoError(s.Err) {
 		tt.Assert.Equal(3, s.Ingested)
 	}
+
+	// Ensure the root account was created
+
 }

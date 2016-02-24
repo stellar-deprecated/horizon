@@ -15,8 +15,8 @@ func loadScenario(scenarioName string, includeHorizon bool) {
 		horizonPath = "scenarios/blank-horizon.sql"
 	}
 
-	loadSQLFile(StellarCoreDatabaseUrl(), stellarCorePath)
-	loadSQLFile(DatabaseUrl(), horizonPath)
+	loadSQLFile(StellarCoreDatabaseURL(), stellarCorePath)
+	loadSQLFile(DatabaseURL(), horizonPath)
 }
 
 func loadSQLFile(url string, path string) {

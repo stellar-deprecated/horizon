@@ -81,13 +81,13 @@ func Database() *sqlx.DB {
 	if horizonDB != nil {
 		return horizonDB
 	}
-	horizonDB = OpenDatabase(DatabaseUrl())
+	horizonDB = OpenDatabase(DatabaseURL())
 	return horizonDB
 }
 
-// DatabaseUrl returns the database connection the url any test
+// DatabaseURL returns the database connection the url any test
 // use when connecting to the history/horizon database
-func DatabaseUrl() string {
+func DatabaseURL() string {
 	databaseURL := os.Getenv("DATABASE_URL")
 
 	if databaseURL == "" {
@@ -146,13 +146,13 @@ func StellarCoreDatabase() *sqlx.DB {
 	if coreDB != nil {
 		return coreDB
 	}
-	coreDB = OpenDatabase(StellarCoreDatabaseUrl())
+	coreDB = OpenDatabase(StellarCoreDatabaseURL())
 	return coreDB
 }
 
-// StellarCoreDatabaseUrl returns the database connection the url any test
+// StellarCoreDatabaseURL returns the database connection the url any test
 // use when connecting to the stellar-core database
-func StellarCoreDatabaseUrl() string {
+func StellarCoreDatabaseURL() string {
 	databaseURL := os.Getenv("STELLAR_CORE_DATABASE_URL")
 
 	if databaseURL == "" {

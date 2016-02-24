@@ -11,7 +11,7 @@ import (
 func initSubmissionSystem(app *App) {
 	app.submitter = &txsub.System{
 		Pending:         txsub.NewDefaultSubmissionList(),
-		Submitter:       txsub.NewDefaultSubmitter(http.DefaultClient, app.config.StellarCoreUrl),
+		Submitter:       txsub.NewDefaultSubmitter(http.DefaultClient, app.config.StellarCoreURL),
 		SubmissionQueue: sequence.NewManager(),
 		Results: &rp.ResultProvider{
 			Core:    app.coreDb,

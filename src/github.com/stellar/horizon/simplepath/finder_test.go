@@ -14,7 +14,7 @@ func TestFinder(t *testing.T) {
 
 	Convey("Finder", t, func() {
 		test.LoadScenario("paths")
-		conn := test.OpenDatabase(test.StellarCoreDatabaseUrl())
+		conn := test.OpenDatabase(test.StellarCoreDatabaseURL())
 		defer conn.Close()
 
 		finder := &Finder{

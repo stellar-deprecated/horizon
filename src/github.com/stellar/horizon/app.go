@@ -175,7 +175,7 @@ func (a *App) UpdateLedgerState() {
 // UpdateStellarCoreInfo updates the value of coreVersion and networkPassphrase
 // from the Stellar core API.
 func (a *App) UpdateStellarCoreInfo() {
-	if a.config.StellarCoreUrl == "" {
+	if a.config.StellarCoreURL == "" {
 		return
 	}
 
@@ -183,7 +183,7 @@ func (a *App) UpdateStellarCoreInfo() {
 		log.Warnf("could not load stellar-core info: %s", err)
 	}
 
-	resp, err := http.Get(fmt.Sprint(a.config.StellarCoreUrl, "/info"))
+	resp, err := http.Get(fmt.Sprint(a.config.StellarCoreURL, "/info"))
 
 	if err != nil {
 		fail(err)

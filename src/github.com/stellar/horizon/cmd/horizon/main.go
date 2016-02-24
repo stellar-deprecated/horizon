@@ -100,12 +100,6 @@ func init() {
 	)
 
 	rootCmd.Flags().String(
-		"ruby-horizon-url",
-		"",
-		"proxy yet-to-be-implemented actions through to ruby horizon server",
-	)
-
-	rootCmd.Flags().String(
 		"log-level",
 		"info",
 		"Minimum log severity (debug, info, warn, error) to log",
@@ -183,14 +177,13 @@ func initApp(cmd *cobra.Command, args []string) {
 	}
 
 	config := horizon.Config{
-		DatabaseUrl:            viper.GetString("db-url"),
-		StellarCoreDatabaseUrl: viper.GetString("stellar-core-db-url"),
-		StellarCoreUrl:         viper.GetString("stellar-core-url"),
+		DatabaseURL:            viper.GetString("db-url"),
+		StellarCoreDatabaseURL: viper.GetString("stellar-core-db-url"),
+		StellarCoreURL:         viper.GetString("stellar-core-url"),
 		Autopump:               viper.GetBool("autopump"),
 		Port:                   viper.GetInt("port"),
 		RateLimit:              throttled.PerHour(viper.GetInt("per-hour-rate-limit")),
-		RedisUrl:               viper.GetString("redis-url"),
-		RubyHorizonUrl:         viper.GetString("ruby-horizon-url"),
+		RedisURL:               viper.GetString("redis-url"),
 		LogLevel:               ll,
 		SentryDSN:              viper.GetString("sentry-dsn"),
 		LogglyToken:            viper.GetString("loggly-token"),

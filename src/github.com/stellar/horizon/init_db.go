@@ -6,7 +6,7 @@ import (
 )
 
 func initHorizonDb(app *App) {
-	horizonDb, err := db.Open(app.config.DatabaseUrl)
+	horizonDb, err := db.Open(app.config.DatabaseURL)
 
 	if err != nil {
 		log.Panic(err)
@@ -17,7 +17,7 @@ func initHorizonDb(app *App) {
 }
 
 func initCoreDb(app *App) {
-	coreDb, err := db.Open(app.config.StellarCoreDatabaseUrl)
+	coreDb, err := db.Open(app.config.StellarCoreDatabaseURL)
 
 	if err != nil {
 		log.Panic(err)

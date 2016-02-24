@@ -21,7 +21,7 @@ func TestRootAction(t *testing.T) {
 		defer server.Close()
 		app := NewTestApp()
 		app.horizonVersion = "test-horizon"
-		app.config.StellarCoreUrl = server.URL
+		app.config.StellarCoreURL = server.URL
 
 		defer app.Close()
 		rh := NewRequestHelper(app)
