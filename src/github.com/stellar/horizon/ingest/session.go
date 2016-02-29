@@ -1,26 +1,28 @@
 package ingest
 
 import (
-	// "fmt"
+	"fmt"
 	"time"
 
 	"github.com/stellar/go-stellar-base/keypair"
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/toid"
 	// "golang.org/x/net/context"
 )
 
 // Run starts an attempt to ingest the range of ledgers specified in this
 // session.
 func (is *Session) Run() {
-	// 1. start transaction
-	is.TX, is.Err = db.Begin(is.Ingester.HorizonDB)
-	defer is.TX.Commit()
-
-	if is.Err != nil {
-		return
-	}
 	for seq := is.FirstLedger; seq <= is.LastLedger; seq++ {
+
+		// 1. start transaction
+		is.TX, is.Err = db.Begin(is.Ingester.HorizonDB)
+
+		if is.Err != nil {
+			return
+		}
+
 		is.Ingester.Metrics.TotalTimer.Time(func() {
 			// Do the actual work
 			is.ingestSingle(seq)
@@ -30,6 +32,12 @@ func (is *Session) Run() {
 		if is.Err != nil {
 			is.Ingester.Metrics.FailedMeter.Mark(1)
 			is.TX.Rollback()
+			return
+		}
+
+		is.Err = is.TX.Commit()
+		if is.Err != nil {
+			is.Ingester.Metrics.FailedMeter.Mark(1)
 			return
 		}
 
@@ -53,9 +61,9 @@ func (is *Session) ingestSingle(seq int32) {
 	}
 
 	is.do(
+		func() { is.clearExistingDataIfNeeded(data) },
 		func() { is.createRootAccountIfNeeded(data) },
 		func() { is.validateLedgerChain(data) },
-		func() { is.clearExistingDataIfNeeded(data) },
 		func() { is.ingestHistoryLedger(data) },
 		func() { is.ingestHistoryAccounts(data) },
 		func() { is.ingestHistoryTransactions(data) },
@@ -67,7 +75,37 @@ func (is *Session) ingestSingle(seq int32) {
 }
 
 func (is *Session) clearExistingDataIfNeeded(data *LedgerBundle) {
-	// TODO: add re-import support
+	if !is.ClearExisting {
+		return
+	}
+	log.Infof("clearing ledger data: %d", data.Sequence)
+
+	if data.Sequence == 1 {
+		del := is.TX.Delete("history_accounts").Where("id = 1")
+		is.TX.ExecDelete(del)
+	}
+
+	is.clearLedgerData(data.Sequence, "history_effects", "history_operation_id")
+	is.clearLedgerData(data.Sequence, "history_operation_participants", "history_operation_id")
+	is.clearLedgerData(data.Sequence, "history_operations", "id")
+	is.clearLedgerData(data.Sequence, "history_transaction_participants", "history_transaction_id")
+	is.clearLedgerData(data.Sequence, "history_transactions", "id")
+	is.clearLedgerData(data.Sequence, "history_accounts", "id")
+	is.clearLedgerData(data.Sequence, "history_ledgers", "id")
+	is.Err = is.TX.Err
+}
+
+func (is *Session) clearLedgerData(seq int32, table string, idCol string) {
+
+	start := toid.ID{LedgerSequence: seq}
+	end := toid.ID{LedgerSequence: seq + 1}
+
+	del := is.TX.Delete(table).Where(
+		fmt.Sprintf("%s >= ? AND %s < ?", idCol, idCol),
+		start.ToInt64(),
+		end.ToInt64(),
+	)
+	is.TX.ExecDelete(del)
 }
 
 func (is *Session) createRootAccountIfNeeded(data *LedgerBundle) {
@@ -97,6 +135,7 @@ func (is *Session) ingestHistoryLedger(data *LedgerBundle) {
 
 	ib := is.TX.Insert("history_ledgers").Columns(
 		"importer_version",
+		"id",
 		"sequence",
 		"ledger_hash",
 		"previous_ledger_hash",
@@ -110,6 +149,7 @@ func (is *Session) ingestHistoryLedger(data *LedgerBundle) {
 		"updated_at",
 	).Values(
 		CurrentVersion,
+		toid.New(data.Sequence, 0, 0).ToInt64(),
 		data.Sequence,
 		data.Header.LedgerHash,
 		data.Header.PrevHash,
@@ -129,7 +169,18 @@ func (is *Session) ingestHistoryLedger(data *LedgerBundle) {
 }
 
 func (is *Session) ingestHistoryAccounts(data *LedgerBundle) {
+	na := data.NewAccounts()
 
+	if len(na) == 0 {
+		return
+	}
+
+	ib := is.TX.Insert("history_accounts").Columns("id", "address")
+	for _, account := range na {
+		ib = ib.Values(account.ID, account.Address)
+	}
+	is.TX.ExecInsert(ib)
+	is.Err = is.TX.Err
 }
 
 func (is *Session) ingestHistoryTransactions(data *LedgerBundle) {

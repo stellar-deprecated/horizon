@@ -78,6 +78,10 @@ type Session struct {
 	// database.
 	TX *db.Tx
 
+	// ClearExisting causes the session to clear existing data from the horizon db
+	// when the session is run.
+	ClearExisting bool
+
 	//
 	// Results fields
 	//

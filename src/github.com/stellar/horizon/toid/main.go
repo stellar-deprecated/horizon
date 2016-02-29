@@ -97,6 +97,15 @@ func (id *ID) IncOperationOrder() {
 	}
 }
 
+// New creates a new total order ID
+func New(ledger int32, tx int32, op int32) *ID {
+	return &ID{
+		LedgerSequence:   ledger,
+		TransactionOrder: tx,
+		OperationOrder:   op,
+	}
+}
+
 // ToInt64 converts this struct back into an int64
 func (id *ID) ToInt64() (result int64) {
 

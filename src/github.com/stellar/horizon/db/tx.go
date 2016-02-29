@@ -16,6 +16,11 @@ func (tx *Tx) Commit() error {
 	return nil
 }
 
+// Delete returns a new delete builder
+func (tx *Tx) Delete(from string) sq.DeleteBuilder {
+	return sq.Delete(from)
+}
+
 // Exec executes a single query within the transaction, recording the
 // result and error on the TX itself.
 //
@@ -31,6 +36,24 @@ func (tx *Tx) Exec(query string, args ...interface{}) {
 	if err != nil {
 		tx.Err = errors.Wrap(err, 1)
 	}
+}
+
+// ExecDelete executes the provided delete builder
+func (tx *Tx) ExecDelete(del sq.DeleteBuilder) {
+	if tx.Err != nil {
+		return
+	}
+
+	sql, args, err := del.
+		PlaceholderFormat(sq.Dollar).
+		ToSql()
+
+	if err != nil {
+		tx.Err = errors.Wrap(err, 1)
+		return
+	}
+
+	tx.Exec(sql, args...)
 }
 
 // ExecInsert executes the provided insert builder

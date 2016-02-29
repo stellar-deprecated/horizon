@@ -11,53 +11,48 @@ SET client_min_messages = warning;
 
 SET search_path = public, pg_catalog;
 
-DROP INDEX public.unique_schema_migrations;
-DROP INDEX public.trade_effects_by_order_book;
-DROP INDEX public.index_history_transactions_on_id;
-DROP INDEX public.index_history_transaction_statuses_lc_on_all;
-DROP INDEX public.index_history_transaction_participants_on_transaction_hash;
-DROP INDEX public.index_history_transaction_participants_on_account;
-DROP INDEX public.index_history_operations_on_type;
-DROP INDEX public.index_history_operations_on_transaction_id;
-DROP INDEX public.index_history_operations_on_id;
-DROP INDEX public.index_history_ledgers_on_sequence;
-DROP INDEX public.index_history_ledgers_on_previous_ledger_hash;
-DROP INDEX public.index_history_ledgers_on_ledger_hash;
-DROP INDEX public.index_history_ledgers_on_importer_version;
-DROP INDEX public.index_history_ledgers_on_id;
-DROP INDEX public.index_history_ledgers_on_closed_at;
-DROP INDEX public.index_history_effects_on_type;
-DROP INDEX public.index_history_accounts_on_id;
-DROP INDEX public.index_history_accounts_on_address;
-DROP INDEX public.hs_transaction_by_id;
-DROP INDEX public.hs_ledger_by_id;
-DROP INDEX public.hist_op_p_id;
-DROP INDEX public.hist_e_id;
-DROP INDEX public.hist_e_by_order;
-DROP INDEX public.by_ledger;
-DROP INDEX public.by_hash;
-DROP INDEX public.by_account;
-ALTER TABLE ONLY public.history_transaction_statuses DROP CONSTRAINT history_transaction_statuses_pkey;
-ALTER TABLE ONLY public.history_transaction_participants DROP CONSTRAINT history_transaction_participants_pkey;
-ALTER TABLE ONLY public.history_operation_participants DROP CONSTRAINT history_operation_participants_pkey;
-ALTER TABLE public.history_transaction_statuses ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.history_transaction_participants ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.history_operation_participants ALTER COLUMN id DROP DEFAULT;
-DROP TABLE public.schema_migrations;
-DROP TABLE public.history_transactions;
-DROP SEQUENCE public.history_transaction_statuses_id_seq;
-DROP TABLE public.history_transaction_statuses;
-DROP SEQUENCE public.history_transaction_participants_id_seq;
-DROP TABLE public.history_transaction_participants;
-DROP TABLE public.history_operations;
-DROP SEQUENCE public.history_operation_participants_id_seq;
-DROP TABLE public.history_operation_participants;
-DROP TABLE public.history_ledgers;
-DROP TABLE public.history_effects;
-DROP TABLE public.history_accounts;
-DROP EXTENSION hstore;
-DROP EXTENSION plpgsql;
-DROP SCHEMA public;
+DROP INDEX IF EXISTS public.trade_effects_by_order_book;
+DROP INDEX IF EXISTS public.index_history_transactions_on_id;
+DROP INDEX IF EXISTS public.index_history_transaction_participants_on_transaction_hash;
+DROP INDEX IF EXISTS public.index_history_transaction_participants_on_account;
+DROP INDEX IF EXISTS public.index_history_operations_on_type;
+DROP INDEX IF EXISTS public.index_history_operations_on_transaction_id;
+DROP INDEX IF EXISTS public.index_history_operations_on_id;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_sequence;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_previous_ledger_hash;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_ledger_hash;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_importer_version;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_id;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_closed_at;
+DROP INDEX IF EXISTS public.index_history_effects_on_type;
+DROP INDEX IF EXISTS public.index_history_accounts_on_id;
+DROP INDEX IF EXISTS public.index_history_accounts_on_address;
+DROP INDEX IF EXISTS public.hs_transaction_by_id;
+DROP INDEX IF EXISTS public.hs_ledger_by_id;
+DROP INDEX IF EXISTS public.hist_op_p_id;
+DROP INDEX IF EXISTS public.hist_e_id;
+DROP INDEX IF EXISTS public.hist_e_by_order;
+DROP INDEX IF EXISTS public.by_ledger;
+DROP INDEX IF EXISTS public.by_hash;
+DROP INDEX IF EXISTS public.by_account;
+ALTER TABLE IF EXISTS ONLY public.history_transaction_participants DROP CONSTRAINT IF EXISTS history_transaction_participants_pkey;
+ALTER TABLE IF EXISTS ONLY public.history_operation_participants DROP CONSTRAINT IF EXISTS history_operation_participants_pkey;
+ALTER TABLE IF EXISTS ONLY public.gorp_migrations DROP CONSTRAINT IF EXISTS gorp_migrations_pkey;
+ALTER TABLE IF EXISTS public.history_transaction_participants ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.history_operation_participants ALTER COLUMN id DROP DEFAULT;
+DROP TABLE IF EXISTS public.history_transactions;
+DROP SEQUENCE IF EXISTS public.history_transaction_participants_id_seq;
+DROP TABLE IF EXISTS public.history_transaction_participants;
+DROP TABLE IF EXISTS public.history_operations;
+DROP SEQUENCE IF EXISTS public.history_operation_participants_id_seq;
+DROP TABLE IF EXISTS public.history_operation_participants;
+DROP TABLE IF EXISTS public.history_ledgers;
+DROP TABLE IF EXISTS public.history_effects;
+DROP TABLE IF EXISTS public.history_accounts;
+DROP TABLE IF EXISTS public.gorp_migrations;
+DROP EXTENSION IF EXISTS hstore;
+DROP EXTENSION IF EXISTS plpgsql;
+DROP SCHEMA IF EXISTS public;
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: -
 --
@@ -107,7 +102,17 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: history_accounts; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: gorp_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE gorp_migrations (
+    id text NOT NULL,
+    applied_at timestamp with time zone
+);
+
+
+--
+-- Name: history_accounts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE history_accounts (
@@ -117,7 +122,7 @@ CREATE TABLE history_accounts (
 
 
 --
--- Name: history_effects; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: history_effects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE history_effects (
@@ -130,7 +135,7 @@ CREATE TABLE history_effects (
 
 
 --
--- Name: history_ledgers; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: history_ledgers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE history_ledgers (
@@ -153,7 +158,7 @@ CREATE TABLE history_ledgers (
 
 
 --
--- Name: history_operation_participants; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: history_operation_participants; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE history_operation_participants (
@@ -183,7 +188,7 @@ ALTER SEQUENCE history_operation_participants_id_seq OWNED BY history_operation_
 
 
 --
--- Name: history_operations; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: history_operations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE history_operations (
@@ -197,7 +202,7 @@ CREATE TABLE history_operations (
 
 
 --
--- Name: history_transaction_participants; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: history_transaction_participants; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE history_transaction_participants (
@@ -205,7 +210,8 @@ CREATE TABLE history_transaction_participants (
     transaction_hash character varying(64) NOT NULL,
     account character varying(64) NOT NULL,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    history_transaction_id bigint
 );
 
 
@@ -229,37 +235,7 @@ ALTER SEQUENCE history_transaction_participants_id_seq OWNED BY history_transact
 
 
 --
--- Name: history_transaction_statuses; Type: TABLE; Schema: public; Owner: -; Tablespace:
---
-
-CREATE TABLE history_transaction_statuses (
-    id integer NOT NULL,
-    result_code_s character varying NOT NULL,
-    result_code integer NOT NULL
-);
-
-
---
--- Name: history_transaction_statuses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE history_transaction_statuses_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: history_transaction_statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE history_transaction_statuses_id_seq OWNED BY history_transaction_statuses.id;
-
-
---
--- Name: history_transactions; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: history_transactions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE history_transactions (
@@ -285,15 +261,6 @@ CREATE TABLE history_transactions (
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace:
---
-
-CREATE TABLE schema_migrations (
-    version character varying NOT NULL
-);
-
-
---
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -308,41 +275,79 @@ ALTER TABLE ONLY history_transaction_participants ALTER COLUMN id SET DEFAULT ne
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Data for Name: gorp_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY history_transaction_statuses ALTER COLUMN id SET DEFAULT nextval('history_transaction_statuses_id_seq'::regclass);
-
-
---
--- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY schema_migrations (version) FROM stdin;
-20150310224849
-20150313225945
-20150313225955
-20150501160031
-20150508003829
-20150508175821
-20150508183542
-20150508215546
-20150609230237
-20150629181921
-20150825180131
-20150825223417
-20150902224148
-20150929205440
-20151006205250
-20151011210811
-20151020211921
-20151020225251
-20151020235257
-\.
+INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-02-29 12:51:06.199224-08');
+INSERT INTO gorp_migrations VALUES ('2_add_toid_to_transaction_participants.sql', '2016-02-29 12:51:06.20187-08');
 
 
 --
--- Name: history_operation_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Data for Name: history_accounts; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: history_effects; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: history_ledgers; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: history_operation_participants; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: history_operation_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('history_operation_participants_id_seq', 1, false);
+
+
+--
+-- Data for Name: history_operations; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: history_transaction_participants; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: history_transaction_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('history_transaction_participants_id_seq', 1, false);
+
+
+--
+-- Data for Name: history_transactions; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: gorp_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY gorp_migrations
+    ADD CONSTRAINT gorp_migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: history_operation_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY history_operation_participants
@@ -350,7 +355,7 @@ ALTER TABLE ONLY history_operation_participants
 
 
 --
--- Name: history_transaction_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: history_transaction_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY history_transaction_participants
@@ -358,205 +363,174 @@ ALTER TABLE ONLY history_transaction_participants
 
 
 --
--- Name: history_transaction_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
---
-
-ALTER TABLE ONLY history_transaction_statuses
-    ADD CONSTRAINT history_transaction_statuses_pkey PRIMARY KEY (id);
-
-
---
--- Name: by_account; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: by_account; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX by_account ON history_transactions USING btree (account, account_sequence);
 
 
 --
--- Name: by_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: by_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX by_hash ON history_transactions USING btree (transaction_hash);
 
 
 --
--- Name: by_ledger; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: by_ledger; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX by_ledger ON history_transactions USING btree (ledger_sequence, application_order);
 
 
 --
--- Name: hist_e_by_order; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: hist_e_by_order; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX hist_e_by_order ON history_effects USING btree (history_operation_id, "order");
 
 
 --
--- Name: hist_e_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: hist_e_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX hist_e_id ON history_effects USING btree (history_account_id, history_operation_id, "order");
 
 
 --
--- Name: hist_op_p_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: hist_op_p_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX hist_op_p_id ON history_operation_participants USING btree (history_account_id, history_operation_id);
 
 
 --
--- Name: hs_ledger_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: hs_ledger_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX hs_ledger_by_id ON history_ledgers USING btree (id);
 
 
 --
--- Name: hs_transaction_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: hs_transaction_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX hs_transaction_by_id ON history_transactions USING btree (id);
 
 
 --
--- Name: index_history_accounts_on_address; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_accounts_on_address; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_history_accounts_on_address ON history_accounts USING btree (address);
 
 
 --
--- Name: index_history_accounts_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_accounts_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_history_accounts_on_id ON history_accounts USING btree (id);
 
 
 --
--- Name: index_history_effects_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_effects_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_effects_on_type ON history_effects USING btree (type);
 
 
 --
--- Name: index_history_ledgers_on_closed_at; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_ledgers_on_closed_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_ledgers_on_closed_at ON history_ledgers USING btree (closed_at);
 
 
 --
--- Name: index_history_ledgers_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_ledgers_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_history_ledgers_on_id ON history_ledgers USING btree (id);
 
 
 --
--- Name: index_history_ledgers_on_importer_version; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_ledgers_on_importer_version; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_ledgers_on_importer_version ON history_ledgers USING btree (importer_version);
 
 
 --
--- Name: index_history_ledgers_on_ledger_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_ledgers_on_ledger_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_history_ledgers_on_ledger_hash ON history_ledgers USING btree (ledger_hash);
 
 
 --
--- Name: index_history_ledgers_on_previous_ledger_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_ledgers_on_previous_ledger_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_history_ledgers_on_previous_ledger_hash ON history_ledgers USING btree (previous_ledger_hash);
 
 
 --
--- Name: index_history_ledgers_on_sequence; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_ledgers_on_sequence; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_history_ledgers_on_sequence ON history_ledgers USING btree (sequence);
 
 
 --
--- Name: index_history_operations_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_operations_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_history_operations_on_id ON history_operations USING btree (id);
 
 
 --
--- Name: index_history_operations_on_transaction_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_operations_on_transaction_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_operations_on_transaction_id ON history_operations USING btree (transaction_id);
 
 
 --
--- Name: index_history_operations_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_operations_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_operations_on_type ON history_operations USING btree (type);
 
 
 --
--- Name: index_history_transaction_participants_on_account; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_transaction_participants_on_account; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_transaction_participants_on_account ON history_transaction_participants USING btree (account);
 
 
 --
--- Name: index_history_transaction_participants_on_transaction_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_transaction_participants_on_transaction_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_transaction_participants_on_transaction_hash ON history_transaction_participants USING btree (transaction_hash);
 
 
 --
--- Name: index_history_transaction_statuses_lc_on_all; Type: INDEX; Schema: public; Owner: -; Tablespace:
---
-
-CREATE UNIQUE INDEX index_history_transaction_statuses_lc_on_all ON history_transaction_statuses USING btree (id, result_code, result_code_s);
-
-
---
--- Name: index_history_transactions_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_history_transactions_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_history_transactions_on_id ON history_transactions USING btree (id);
 
 
 --
--- Name: trade_effects_by_order_book; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: trade_effects_by_order_book; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX trade_effects_by_order_book ON history_effects USING btree (((details ->> 'sold_asset_type'::text)), ((details ->> 'sold_asset_code'::text)), ((details ->> 'sold_asset_issuer'::text)), ((details ->> 'bought_asset_type'::text)), ((details ->> 'bought_asset_code'::text)), ((details ->> 'bought_asset_issuer'::text))) WHERE (type = 33);
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace:
---
-
-CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: -
---
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM nullstyle;
-GRANT ALL ON SCHEMA public TO nullstyle;
-GRANT ALL ON SCHEMA public TO PUBLIC;
-
-
---
 -- PostgreSQL database dump complete
 --
+
