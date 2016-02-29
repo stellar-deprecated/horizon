@@ -1,11 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/stellar/horizon/db/schema"
 )
 
@@ -19,7 +21,15 @@ var dbInitCmd = &cobra.Command{
 	Short: "install schema",
 	Long:  "init initializes the postgres database used by horizon.",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("initializing schema")
+		db, err := sql.Open("postgres", viper.GetString("db-url"))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = schema.Init(db)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
@@ -50,15 +60,14 @@ var dbMigrateCmd = &cobra.Command{
 			}
 		}
 
-		// HACK: getting the raw *sql.DB value through HorizonQuery()
-		// TODO: refactor app such that horizonDb is exported
-		db := app.HorizonQuery().DB.DB
-
-		_, err := schema.Migrate(db, dir, count)
+		db, err := sql.Open("postgres", viper.GetString("db-url"))
 		if err != nil {
-			log.Println(err)
-			cmd.Usage()
-			os.Exit(1)
+			log.Fatal(err)
+		}
+
+		_, err = schema.Migrate(db, dir, count)
+		if err != nil {
+			log.Fatal(err)
 		}
 	},
 }
