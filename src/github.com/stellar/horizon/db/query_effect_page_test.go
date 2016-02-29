@@ -9,6 +9,7 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/toid"
 )
 
 func TestEffectPageQuery(t *testing.T) {
@@ -112,7 +113,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 2)
 
 			for _, r := range records {
-				toid := ParseTotalOrderID(r.HistoryOperationID)
+				toid := toid.Parse(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 3)
 			}
 		})
@@ -125,7 +126,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderID(r.HistoryOperationID)
+				toid := toid.Parse(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 				So(toid.TransactionOrder, ShouldEqual, 1)
 				So(toid.OperationOrder, ShouldEqual, 1)
@@ -141,7 +142,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderID(r.HistoryOperationID)
+				toid := toid.Parse(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 				So(toid.TransactionOrder, ShouldEqual, 1)
 			}

@@ -4,6 +4,7 @@ import (
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/toid"
 	"golang.org/x/net/context"
 )
 
@@ -69,8 +70,8 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 		if err != nil {
 			return err
 		}
-		start := TotalOrderID{LedgerSequence: q.LedgerSequence}
-		end := TotalOrderID{LedgerSequence: q.LedgerSequence + 1}
+		start := toid.ID{LedgerSequence: q.LedgerSequence}
+		end := toid.ID{LedgerSequence: q.LedgerSequence + 1}
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())
 	}
 
@@ -83,7 +84,7 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 			return err
 		}
 
-		start := ParseTotalOrderID(tx.ID)
+		start := toid.Parse(tx.ID)
 		end := start
 		end.TransactionOrder++
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())

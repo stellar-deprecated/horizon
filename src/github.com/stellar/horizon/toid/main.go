@@ -1,11 +1,11 @@
-package db
+package toid
 
 import (
 	"fmt"
 )
 
 //
-// A TotalOrderID expressed the total order of Ledgers, Transactions and
+// ID represents the total order of Ledgers, Transactions and
 // Operations.
 //
 // Operations within the stellar network have a total order, expressed by three
@@ -59,75 +59,75 @@ import (
 // single type of object, the sharing of ids across object types seems
 // acceptable.
 //
-type TotalOrderID struct {
+type ID struct {
 	LedgerSequence   int32
 	TransactionOrder int32
 	OperationOrder   int32
 }
 
 const (
-	// TotalOrderLedgerMask is the bitmask to mask out ledger sequences in a
+	// LedgerMask is the bitmask to mask out ledger sequences in a
 	// TotalOrderID
-	TotalOrderLedgerMask = (1 << 32) - 1
-	// TotalOrderTransactionMask is the bitmask to mask out transaction indexes
-	TotalOrderTransactionMask = (1 << 20) - 1
-	// TotalOrderOperationMask is the bitmask to mask out operation indexes
-	TotalOrderOperationMask = (1 << 12) - 1
+	LedgerMask = (1 << 32) - 1
+	// TransactionMask is the bitmask to mask out transaction indexes
+	TransactionMask = (1 << 20) - 1
+	// OperationMask is the bitmask to mask out operation indexes
+	OperationMask = (1 << 12) - 1
 
-	// TotalOrderLedgerShift is the number of bits to shift an int64 to target the
+	// LedgerShift is the number of bits to shift an int64 to target the
 	// ledger component
-	TotalOrderLedgerShift = 32
-	// TotalOrderTransactionShift is the number of bits to shift an int64 to
+	LedgerShift = 32
+	// TransactionShift is the number of bits to shift an int64 to
 	// target the transaction component
-	TotalOrderTransactionShift = 12
-	// TotalOrderOperationShift is the number of bits to shift an int64 to target
+	TransactionShift = 12
+	// OperationShift is the number of bits to shift an int64 to target
 	// the operation component
-	TotalOrderOperationShift = 0
+	OperationShift = 0
 )
 
 // IncOperationOrder increments the operation order, rolling over to the next
 // ledger if overflow occurs.  This allows queries to easily advance a cursor to
 // the next operation.
-func (id *TotalOrderID) IncOperationOrder() {
+func (id *ID) IncOperationOrder() {
 	id.OperationOrder++
 
-	if id.OperationOrder > TotalOrderOperationMask {
+	if id.OperationOrder > OperationMask {
 		id.OperationOrder = 0
 		id.LedgerSequence++
 	}
 }
 
 // ToInt64 converts this struct back into an int64
-func (id *TotalOrderID) ToInt64() (result int64) {
+func (id *ID) ToInt64() (result int64) {
 
 	if id.LedgerSequence < 0 {
 		panic("invalid ledger sequence")
 	}
 
-	if id.TransactionOrder > TotalOrderTransactionMask {
+	if id.TransactionOrder > TransactionMask {
 		panic("transaction order overflow")
 	}
 
-	if id.OperationOrder > TotalOrderOperationMask {
+	if id.OperationOrder > OperationMask {
 		panic("operation order overflow")
 	}
 
-	result = result | ((int64(id.LedgerSequence) & TotalOrderLedgerMask) << TotalOrderLedgerShift)
-	result = result | ((int64(id.TransactionOrder) & TotalOrderTransactionMask) << TotalOrderTransactionShift)
-	result = result | ((int64(id.OperationOrder) & TotalOrderOperationMask) << TotalOrderOperationShift)
+	result = result | ((int64(id.LedgerSequence) & LedgerMask) << LedgerShift)
+	result = result | ((int64(id.TransactionOrder) & TransactionMask) << TransactionShift)
+	result = result | ((int64(id.OperationOrder) & OperationMask) << OperationShift)
 	return
 }
 
 // String returns a string representation of this id
-func (id *TotalOrderID) String() string {
+func (id *ID) String() string {
 	return fmt.Sprintf("%d", id.ToInt64())
 }
 
-// ParseTotalOrderID parses an int64 into a TotalOrderID struct
-func ParseTotalOrderID(id int64) (result TotalOrderID) {
-	result.LedgerSequence = int32((id >> TotalOrderLedgerShift) & TotalOrderLedgerMask)
-	result.TransactionOrder = int32((id >> TotalOrderTransactionShift) & TotalOrderTransactionMask)
-	result.OperationOrder = int32((id >> TotalOrderOperationShift) & TotalOrderOperationMask)
+// Parse parses an int64 into a TotalOrderID struct
+func Parse(id int64) (result ID) {
+	result.LedgerSequence = int32((id >> LedgerShift) & LedgerMask)
+	result.TransactionOrder = int32((id >> TransactionShift) & TransactionMask)
+	result.OperationOrder = int32((id >> OperationShift) & OperationMask)
 
 	return
 }

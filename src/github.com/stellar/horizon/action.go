@@ -8,6 +8,7 @@ import (
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/toid"
 	"github.com/zenazn/goji/web"
 )
 
@@ -46,10 +47,10 @@ func (action *Action) GetPagingParams() (cursor string, order string, limit int3
 	cursor, order, limit = action.Base.GetPagingParams()
 
 	if cursor == "now" {
-		tid := db.TotalOrderID{
+		tid := toid.ID{
 			LedgerSequence:   action.App.latestLedgerState.HorizonSequence,
-			TransactionOrder: db.TotalOrderTransactionMask,
-			OperationOrder:   db.TotalOrderOperationMask,
+			TransactionOrder: toid.TransactionMask,
+			OperationOrder:   toid.OperationMask,
 		}
 		cursor = tid.String()
 	}

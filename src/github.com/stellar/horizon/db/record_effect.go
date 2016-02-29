@@ -5,6 +5,7 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/toid"
 	"golang.org/x/net/context"
 )
 
@@ -50,8 +51,8 @@ type EffectLedgerFilter struct {
 }
 
 func (f *EffectLedgerFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
-	start := TotalOrderID{LedgerSequence: f.LedgerSequence}
-	end := TotalOrderID{LedgerSequence: f.LedgerSequence + 1}
+	start := toid.ID{LedgerSequence: f.LedgerSequence}
+	end := toid.ID{LedgerSequence: f.LedgerSequence + 1}
 	return sql.Where(
 		"(heff.history_operation_id >= ? AND heff.history_operation_id < ?)",
 		start.ToInt64(),
@@ -74,7 +75,7 @@ func (f *EffectTransactionFilter) Apply(ctx context.Context, sql sq.SelectBuilde
 		return sql, nil
 	}
 
-	start := ParseTotalOrderID(tx.ID)
+	start := toid.Parse(tx.ID)
 	end := start
 	end.TransactionOrder++
 	return sql.Where(
@@ -91,7 +92,7 @@ type EffectOperationFilter struct {
 }
 
 func (f *EffectOperationFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
-	start := ParseTotalOrderID(f.OperationID)
+	start := toid.Parse(f.OperationID)
 	end := start
 	end.IncOperationOrder()
 	return sql.Where(

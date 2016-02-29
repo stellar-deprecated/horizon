@@ -7,6 +7,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/toid"
 )
 
 func TestOperationPageQuery(t *testing.T) {
@@ -91,7 +92,7 @@ func TestOperationPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderID(r.TransactionID)
+				toid := toid.Parse(r.TransactionID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 			}
 		})
