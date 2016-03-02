@@ -108,3 +108,22 @@ func New(network string, core, horizon db.SqlQuery) *Ingester {
 	i.Metrics.FailedMeter = metrics.NewMeter()
 	return i
 }
+
+// RunOnce runs a single ingestion session
+func RunOnce(network string, core, horizon db.SqlQuery) error {
+	i := New(network, core, horizon)
+	err := i.updateLedgerState()
+	if err != nil {
+		return err
+	}
+
+	is := Session{
+		Ingester:    i,
+		FirstLedger: i.lastState.HorizonSequence + 1,
+		LastLedger:  i.lastState.StellarCoreSequence,
+	}
+
+	is.Run()
+
+	return is.Err
+}

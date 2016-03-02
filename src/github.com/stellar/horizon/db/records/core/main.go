@@ -82,11 +82,8 @@ type Transaction struct {
 	TransactionHash string                    `db:"txid"`
 	LedgerSequence  int32                     `db:"ledgerseq"`
 	Index           int32                     `db:"txindex"`
-	EnvelopeXDR     string                    `db:"txbody"`
 	Envelope        xdr.TransactionEnvelope   `db:"txbody"`
-	ResultXDR       string                    `db:"txresult"`
 	Result          xdr.TransactionResultPair `db:"txresult"`
-	ResultMetaXDR   string                    `db:"txmeta"`
 	ResultMeta      xdr.TransactionMeta       `db:"txmeta"`
 }
 

@@ -1,6 +1,8 @@
 package ingest
 
 import (
+	"fmt"
+
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
@@ -28,17 +30,12 @@ func (i *Ingester) run() {
 // run causes the importer to check stellar-core to see if we can import new
 // data.
 func (i *Ingester) runOnce() {
-	q := db.LedgerStateQuery{
-		Horizon: i.HorizonDB,
-		Core:    i.CoreDB,
-	}
-
 	// 1. find the latest ledger
 	// 2. if any available, import until none available
 	// 3. if any were imported, go to 1
 	for {
 		// 1.
-		err := db.Get(context.Background(), q, &i.lastState)
+		err := i.updateLedgerState()
 
 		if err != nil {
 			log.Errorf("could not load ledger state: %s", err)
@@ -69,4 +66,18 @@ func (i *Ingester) runOnce() {
 		}
 	}
 
+}
+
+func (i *Ingester) updateLedgerState() error {
+	q := db.LedgerStateQuery{
+		Horizon: i.HorizonDB,
+		Core:    i.CoreDB,
+	}
+	err := db.Get(context.Background(), q, &i.lastState)
+
+	if err != nil {
+		return fmt.Errorf("could not load ledger state: %s", err)
+	}
+
+	return nil
 }

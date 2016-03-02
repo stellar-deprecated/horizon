@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"time"
 
+	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/keypair"
+	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/records/core"
+	"github.com/stellar/horizon/db/sqx"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/toid"
-	// "golang.org/x/net/context"
 )
 
 // Run starts an attempt to ingest the range of ledgers specified in this
@@ -131,6 +134,14 @@ func (is *Session) do(steps ...func()) {
 	}
 }
 
+func (is *Session) formatTimeBounds(bounds *xdr.TimeBounds) interface{} {
+	if bounds == nil {
+		return nil
+	}
+
+	return sq.Expr("?::int8range", fmt.Sprintf("[%d,%d]", bounds.MinTime, bounds.MaxTime))
+}
+
 func (is *Session) ingestHistoryLedger(data *LedgerBundle) {
 
 	ib := is.TX.Insert("history_ledgers").Columns(
@@ -184,7 +195,60 @@ func (is *Session) ingestHistoryAccounts(data *LedgerBundle) {
 }
 
 func (is *Session) ingestHistoryTransactions(data *LedgerBundle) {
+	for i := range data.Transactions {
+		is.ingestHistoryTransaction(&data.Transactions[i], &data.TransactionFees[i])
+		if is.Err != nil {
+			return
+		}
+	}
+}
 
+func (is *Session) ingestHistoryTransaction(tx *core.Transaction, fee *core.TransactionFee) {
+
+	ib := is.TX.Insert("history_transactions").Columns(
+		"id",
+		"transaction_hash",
+		"ledger_sequence",
+		"application_order",
+		"account",
+		"account_sequence",
+		"fee_paid",
+		"operation_count",
+		"tx_envelope",
+		"tx_result",
+		"tx_meta",
+		"tx_fee_meta",
+		"signatures",
+		"time_bounds",
+		"memo_type",
+		"memo",
+		"created_at",
+		"updated_at",
+	).Values(
+		toid.New(tx.LedgerSequence, tx.Index, 0).ToInt64(),
+		tx.TransactionHash,
+		tx.LedgerSequence,
+		tx.Index,
+		tx.SourceAddress(),
+		tx.Sequence(),
+		tx.Fee(),
+		len(tx.Envelope.Tx.Operations),
+		tx.EnvelopeXDR(),
+		tx.ResultXDR(),
+		tx.ResultMetaXDR(),
+		fee.ChangesXDR(),
+		sqx.StringArray(tx.Base64Signatures()),
+		is.formatTimeBounds(tx.Envelope.Tx.TimeBounds),
+		tx.MemoType(),
+		tx.Memo(),
+		time.Now().UTC(),
+		time.Now().UTC(),
+	)
+
+	is.TX.ExecInsert(ib)
+	is.Err = is.TX.Err
+
+	// TODO: import transaction participants
 }
 
 func (is *Session) ingestHistoryOperations(data *LedgerBundle) {
