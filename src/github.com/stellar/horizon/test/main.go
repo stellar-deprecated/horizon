@@ -13,6 +13,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	hlog "github.com/stellar/horizon/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
