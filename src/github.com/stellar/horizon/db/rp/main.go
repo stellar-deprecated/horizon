@@ -75,7 +75,7 @@ func txResultFromHistory(tx history.Transaction) txsub.Result {
 func txResultFromCore(tx core.Transaction) txsub.Result {
 	//decode the result xdr, extract TransactionResult
 	var trp xdr.TransactionResultPair
-	err := xdr.SafeUnmarshalBase64(tx.ResultXDR, &trp)
+	err := xdr.SafeUnmarshalBase64(tx.ResultXDR(), &trp)
 
 	if err != nil {
 		return txsub.Result{Err: err}
@@ -98,9 +98,9 @@ func txResultFromCore(tx core.Transaction) txsub.Result {
 		return txsub.Result{
 			Hash:           tx.TransactionHash,
 			LedgerSequence: tx.LedgerSequence,
-			EnvelopeXDR:    tx.EnvelopeXDR,
+			EnvelopeXDR:    tx.EnvelopeXDR(),
 			ResultXDR:      trx,
-			ResultMetaXDR:  tx.ResultMetaXDR,
+			ResultMetaXDR:  tx.ResultMetaXDR(),
 		}
 	}
 
@@ -111,8 +111,8 @@ func txResultFromCore(tx core.Transaction) txsub.Result {
 		},
 		Hash:           tx.TransactionHash,
 		LedgerSequence: tx.LedgerSequence,
-		EnvelopeXDR:    tx.EnvelopeXDR,
+		EnvelopeXDR:    tx.EnvelopeXDR(),
 		ResultXDR:      trx,
-		ResultMetaXDR:  tx.ResultMetaXDR,
+		ResultMetaXDR:  tx.ResultMetaXDR(),
 	}
 }
