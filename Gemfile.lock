@@ -1,0 +1,73 @@
+GIT
+  remote: git://github.com/stellar/stellar_core_commander.git
+  revision: 41b782ae737ee13385b4d04d74da9e28e55d3d53
+  branch: manage-data
+  specs:
+    stellar_core_commander (0.0.12)
+      activesupport (>= 4.0.0)
+      contracts (~> 0.9)
+      faraday (~> 0.9.1)
+      faraday_middleware (~> 0.9.1)
+      pg (~> 0.18.1)
+      sequel (~> 4.21.0)
+      slop (~> 3.6.0)
+      stellar-base (>= 0.11.0)
+      typhoeus (~> 0.8.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (4.2.5.2)
+      activesupport (= 4.2.5.2)
+      builder (~> 3.1)
+    activesupport (4.2.5.2)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
+    backports (3.6.8)
+    base32 (0.3.2)
+    builder (3.2.2)
+    contracts (0.13.0)
+    digest-crc (0.4.1)
+    ethon (0.8.1)
+      ffi (>= 1.3.0)
+    faraday (0.9.2)
+      multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.9.2)
+      faraday (>= 0.7.4, < 0.10)
+    ffi (1.9.10)
+    i18n (0.7.0)
+    json (1.8.3)
+    minitest (5.8.4)
+    multipart-post (2.0.0)
+    pg (0.18.4)
+    rbnacl (3.3.0)
+      ffi
+    rbnacl-libsodium (1.0.8)
+      rbnacl (~> 3.0, >= 3.0.1)
+    sequel (4.21.0)
+    slop (3.6.0)
+    stellar-base (0.11.0)
+      activesupport (~> 4)
+      base32
+      digest-crc
+      rbnacl
+      rbnacl-libsodium (~> 1.0.3)
+      xdr (~> 1.0.0)
+    thread_safe (0.3.5)
+    typhoeus (0.8.0)
+      ethon (>= 0.8.0)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
+    xdr (1.0.0)
+      activemodel (~> 4)
+      activesupport (~> 4)
+      backports (~> 3.6)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  stellar_core_commander!
