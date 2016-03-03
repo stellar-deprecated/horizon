@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-func TestIngestAccountMerge(t *testing.T) {
-	tt := test.Start(t).ScenarioWithoutHorizon("account_merge")
+func TestIngest(t *testing.T) {
+	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
 
 	err := ingest(tt)
