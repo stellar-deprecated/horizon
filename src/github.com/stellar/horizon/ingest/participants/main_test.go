@@ -96,6 +96,15 @@ func TestForOperation(t *testing.T) {
 	tt.Assert.Len(p, 0)
 
 	// test allow trust
+	lb.Sequence = 38
+	err = lb.Load(db.SqlQuery{tt.CoreDB})
+	tt.Require.NoError(err)
+	op = lb.Transactions[0].Envelope.Tx.Operations[0]
+	p, err = ForOperation(&op)
+	tt.Require.NoError(err)
+	tt.Require.Len(p, 1)
+	tt.Assert.Equal("GCVW5LCRZFP7PENXTAGOVIQXADDNUXXZJCNKF4VQB2IK7W2LPJWF73UG", p[0].Address())
+
 	// test account merge
 	// test inflation
 	// test manage data

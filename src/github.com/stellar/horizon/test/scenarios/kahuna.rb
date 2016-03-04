@@ -217,10 +217,51 @@ close_ledger #2
 
 
 # change trust
-# TODO
+  # Secret seed: SCCNDKYXPFSHP3IPOQ2DGNJ6TKJY5KPRMB4JDMLISICHBMPMBF42ZEQU
+  # Public: GCJKJXPKBFIHOO3455WXWG5CDBZXQNYFRRGICYMPUQ35CPQ4WVS3KZLG
+  account :change_trustor, KP.from_seed("SCCNDKYXPFSHP3IPOQ2DGNJ6TKJY5KPRMB4JDMLISICHBMPMBF42ZEQU")
+  create_account :change_trustor
+  close_ledger #31
+
+
+  trust :change_trustor,  :master, "USD"
+  close_ledger #32
+
+  change_trust :change_trustor,  :master, "USD", 100
+  close_ledger #33
+
+  change_trust :change_trustor,  :master, "USD", 0
+  close_ledger #34
+
 
 # allow trust
-# TODO
+
+  # Secret seed: SCSV7463UPUPU5T2WJVT7TUK3V3IC4AMQTR6QSRAP2J2XS37JSEDY2J4
+  # Public: GCVW5LCRZFP7PENXTAGOVIQXADDNUXXZJCNKF4VQB2IK7W2LPJWF73UG
+  account :allow_trustor, KP.from_seed("SCSV7463UPUPU5T2WJVT7TUK3V3IC4AMQTR6QSRAP2J2XS37JSEDY2J4")
+  # Secret seed: SAJTZHT2P73SI3U7VPYZTXVWRXKWUPTW2Q4GDUT56NTJ5PXAYUYNVQ3Q
+  # Public: GD4SMOE3VPSF7ZR3CTEQ3P5UNTBMEJDA2GLXTHR7MMARANKKJDZ7RPGF
+  account :allow_trustee, KP.from_seed("SAJTZHT2P73SI3U7VPYZTXVWRXKWUPTW2Q4GDUT56NTJ5PXAYUYNVQ3Q")
+  create_account :allow_trustor
+  create_account :allow_trustee
+  close_ledger #35
+
+  set_flags :allow_trustee, [:auth_required_flag, :auth_revocable_flag]
+  close_ledger #36
+
+  # start trust
+  trust :allow_trustor, :allow_trustee, "USD"
+  trust :allow_trustor, :allow_trustee, "EUR"
+  close_ledger #37
+
+  # allow trust
+  allow_trust :allow_trustee, :allow_trustor, "USD"
+  allow_trust :allow_trustee, :allow_trustor, "EUR"
+  close_ledger #38
+
+  # revoke trust
+  allow_trust :allow_trustee, :allow_trustor, "EUR", false
+  close_ledger #39
 
 # account merge
 # TODO
