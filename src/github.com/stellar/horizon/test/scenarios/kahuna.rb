@@ -189,7 +189,32 @@ close_ledger #2
 
 
 # set options
-# TODO
+  # Secret seed: SDTS7HKJ4TON3G66U4PN2P6QPHMCFYDQHXDZ5BPCZSZQ62OGZDGPO3TX
+  # Public: GCIFFRQKHMH6JD7CK5OI4XVCYCMNRNF6PYA7JTCR3FPHPJZQTYYFB5ES
+  account :optioneer, KP.from_seed("SDTS7HKJ4TON3G66U4PN2P6QPHMCFYDQHXDZ5BPCZSZQ62OGZDGPO3TX")
+  # Secret seed: SBLKCWLFDZUF2F7WK43DZFPBHXA3N33LCNJ2U7UDSWG6NIUVV35TTLIY
+  # Public: GB6J3WOLKYQE6KVDZEA4JDMFTTONUYP3PUHNDNZRWIKA6JQWIMJZATFE
+  option_kp = KP.from_seed("SBLKCWLFDZUF2F7WK43DZFPBHXA3N33LCNJ2U7UDSWG6NIUVV35TTLIY")
+
+  create_account :optioneer
+  close_ledger #27
+
+  set_inflation_dest        :optioneer, :master
+  set_flags                 :optioneer, [:auth_required_flag]
+  set_flags                 :optioneer, [:auth_revocable_flag]
+  set_master_signer_weight  :optioneer, 2
+  set_thresholds            :optioneer, low: 0, medium: 2, high: 2
+  set_home_domain           :optioneer, "example.com"
+  add_signer                :optioneer, option_kp, 1
+  close_ledger #28
+
+  add_signer                :optioneer, option_kp, 5
+  close_ledger #29
+
+  clear_flags               :optioneer, [:auth_required_flag, :auth_revocable_flag]
+  remove_signer             :optioneer, option_kp
+  close_ledger #30
+
 
 # change trust
 # TODO

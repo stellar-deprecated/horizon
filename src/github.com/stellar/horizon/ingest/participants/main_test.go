@@ -77,4 +77,27 @@ func TestForOperation(t *testing.T) {
 	tt.Require.NoError(err)
 	tt.Assert.Len(p, 0)
 
+	// test set options
+	lb.Sequence = 28
+	err = lb.Load(db.SqlQuery{tt.CoreDB})
+	tt.Require.NoError(err)
+	op = lb.Transactions[0].Envelope.Tx.Operations[0]
+	p, err = ForOperation(&op)
+	tt.Require.NoError(err)
+	tt.Assert.Len(p, 0)
+
+	// test change trust
+	lb.Sequence = 17
+	err = lb.Load(db.SqlQuery{tt.CoreDB})
+	tt.Require.NoError(err)
+	op = lb.Transactions[0].Envelope.Tx.Operations[0]
+	p, err = ForOperation(&op)
+	tt.Require.NoError(err)
+	tt.Assert.Len(p, 0)
+
+	// test allow trust
+	// test account merge
+	// test inflation
+	// test manage data
+
 }

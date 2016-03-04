@@ -48,6 +48,7 @@ func ForOperation(
 	case xdr.OperationTypeAllowTrust:
 		result = append(result, op.Body.MustAllowTrustOp().Trustor)
 	case xdr.OperationTypeAccountMerge:
+		result = append(result, op.Body.MustDestination())
 	case xdr.OperationTypeInflation:
 		// the only direct participant is the source_account
 	case xdr.OperationTypeManageData:
