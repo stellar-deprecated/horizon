@@ -264,13 +264,32 @@ close_ledger #2
   close_ledger #39
 
 # account merge
-# TODO
+  # Secret seed: SCCLMTKRVHN2GSPJ7IP3VXI2NATH6QQTE5ZDMJCIZYWMZESSF5RKKBHT
+  # Public: GCHPXGVDKPF5KT4CNAT7X77OXYZ7YVE4JHKFDUHCGCVWCL4K4PQ67KKZ
+  account :merger, KP.from_seed("SCCLMTKRVHN2GSPJ7IP3VXI2NATH6QQTE5ZDMJCIZYWMZESSF5RKKBHT")
+  create_account :merger
+  close_ledger #40
+
+  merge_account :merger, :master
+  close_ledger #41
 
 # inflation
-# TODO
+  inflation
+  close_ledger #42
 
 # manage_data
-# TODO
+  # Secret seed: SCHZL45S64JBNP7V6K7IM35PM7MFJ3REWRVMDRSJIH63JIYSW44VUOLN
+  # Public: GAYSCMKQY6EYLXOPTT6JPPOXDMVNBWITPTSZIVWW4LWARVBOTH5RTLAD
+  account :dataman, KP.from_seed("SCHZL45S64JBNP7V6K7IM35PM7MFJ3REWRVMDRSJIH63JIYSW44VUOLN")
+  create_account :dataman
+  close_ledger #43
+
+  set_data :dataman, "name1", "1234"
+  set_data :dataman, "name2", "5678"
+  close_ledger #44
+
+  clear_data :dataman, "name2"
+  close_ledger #45
 
 # different source account
 # TODO

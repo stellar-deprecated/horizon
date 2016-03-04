@@ -106,7 +106,31 @@ func TestForOperation(t *testing.T) {
 	tt.Assert.Equal("GCVW5LCRZFP7PENXTAGOVIQXADDNUXXZJCNKF4VQB2IK7W2LPJWF73UG", p[0].Address())
 
 	// test account merge
+	lb.Sequence = 41
+	err = lb.Load(db.SqlQuery{tt.CoreDB})
+	tt.Require.NoError(err)
+	op = lb.Transactions[0].Envelope.Tx.Operations[0]
+	p, err = ForOperation(&op)
+	tt.Require.NoError(err)
+	tt.Require.Len(p, 1)
+	tt.Assert.Equal("GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", p[0].Address())
+
 	// test inflation
+	lb.Sequence = 42
+	err = lb.Load(db.SqlQuery{tt.CoreDB})
+	tt.Require.NoError(err)
+	op = lb.Transactions[0].Envelope.Tx.Operations[0]
+	p, err = ForOperation(&op)
+	tt.Require.NoError(err)
+	tt.Assert.Len(p, 0)
+
 	// test manage data
+	lb.Sequence = 44
+	err = lb.Load(db.SqlQuery{tt.CoreDB})
+	tt.Require.NoError(err)
+	op = lb.Transactions[0].Envelope.Tx.Operations[0]
+	p, err = ForOperation(&op)
+	tt.Require.NoError(err)
+	tt.Assert.Len(p, 0)
 
 }
