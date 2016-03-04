@@ -8,16 +8,58 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
-// ForFeeMeta returns all the participating accounts from the provided
-// transaction fee meta.
-func ForFeeMeta(meta *xdr.LedgerEntryChanges) ([]string, error) {
-	return nil, nil
+// ForChanges returns all the participating accounts from the provided
+// ledger changes.
+func ForChanges(
+	changes *xdr.LedgerEntryChanges,
+) (result []xdr.AccountId, err error) {
+
+	for _, c := range *changes {
+		var account *xdr.AccountId
+
+		switch c.Type {
+		case xdr.LedgerEntryChangeTypeLedgerEntryCreated:
+			account = forLedgerEntry(c.MustCreated())
+		case xdr.LedgerEntryChangeTypeLedgerEntryRemoved:
+			account = forLedgerKey(c.MustRemoved())
+		case xdr.LedgerEntryChangeTypeLedgerEntryUpdated:
+			account = forLedgerEntry(c.MustUpdated())
+		case xdr.LedgerEntryChangeTypeLedgerEntryState:
+			account = forLedgerEntry(c.MustState())
+		default:
+			err = fmt.Errorf("Unknown change type: %s", c.Type)
+			return
+		}
+
+		if account != nil {
+			result = append(result, *account)
+		}
+	}
+
+	return
 }
 
 // ForMeta returns all the participating accounts from the provided
 // transaction meta.
-func ForMeta(meta *xdr.TransactionMeta) ([]string, error) {
-	return nil, nil
+func ForMeta(
+	meta *xdr.TransactionMeta,
+) (result []xdr.AccountId, err error) {
+
+	if meta.Operations == nil {
+		return
+	}
+
+	for _, op := range *meta.Operations {
+		var acc []xdr.AccountId
+		acc, err = ForChanges(&op.Changes)
+		if err != nil {
+			return
+		}
+
+		result = append(result, acc...)
+	}
+
+	return
 }
 
 // ForOperation returns all the participating accounts from the
@@ -54,7 +96,7 @@ func ForOperation(
 	case xdr.OperationTypeManageData:
 		// the only direct participant is the source_account
 	default:
-		panic(fmt.Errorf("Unknown operation type: %s", op.Body.Type))
+		err = fmt.Errorf("Unknown operation type: %s", op.Body.Type)
 	}
 
 	return
@@ -64,4 +106,20 @@ func ForOperation(
 // transaction.
 func ForTransaction(tx *xdr.TransactionEnvelope) ([]string, error) {
 	return nil, nil
+}
+
+func forLedgerEntry(le xdr.LedgerEntry) *xdr.AccountId {
+	if le.Data.Type != xdr.LedgerEntryTypeAccount {
+		return nil
+	}
+	aid := le.Data.MustAccount().AccountId
+	return &aid
+}
+
+func forLedgerKey(lk xdr.LedgerKey) *xdr.AccountId {
+	if lk.Type != xdr.LedgerEntryTypeAccount {
+		return nil
+	}
+	aid := lk.MustAccount().AccountId
+	return &aid
 }
