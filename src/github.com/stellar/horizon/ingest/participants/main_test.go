@@ -59,4 +59,13 @@ func TestForOperation(t *testing.T) {
 	tt.Require.Len(p, 1)
 	tt.Assert.Equal("GACAR2AEYEKITE2LKI5RMXF5MIVZ6Q7XILROGDT22O7JX4DSWFS7FDDP", p[0].Address())
 
+	// test manage offer
+	lb.Sequence = 18
+	err = lb.Load(db.SqlQuery{tt.CoreDB})
+	tt.Require.NoError(err)
+	op = lb.Transactions[2].Envelope.Tx.Operations[0]
+	p, err = ForOperation(&op)
+	tt.Require.NoError(err)
+	tt.Assert.Len(p, 0)
+
 }

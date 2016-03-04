@@ -153,7 +153,27 @@ close_ledger #2
   close_ledger #20
 
 # manage offer
-# TODO
+
+  # Secret seed: SDK24P4CD2ILEMNEDAWEZIJS6TZYTQQH7VQRPNVXXIJVYDI7IBUSUG2K
+  # Public: GBOK7BOUSOWPHBANBYM6MIRYZJIDIPUYJPXHTHADF75UEVIVYWHHONQC
+  account :manage_trader, KP.from_seed("SDK24P4CD2ILEMNEDAWEZIJS6TZYTQQH7VQRPNVXXIJVYDI7IBUSUG2K")
+  # Secret seed: SCPIDWDRQCS2CNEXDQBJ7WLXJKG2D3WMPWZ74YXDHGBKX2BZZL625UE7
+  # Public: GB2QIYT2IAUFMRXKLSLLPRECC6OCOGJMADSPTRK7TGNT2SFR2YGWDARD
+  account :manage_gateway, KP.from_seed("SCPIDWDRQCS2CNEXDQBJ7WLXJKG2D3WMPWZ74YXDHGBKX2BZZL625UE7")
+  create_account :manage_trader
+  create_account :manage_gateway
+  close_ledger #21
+
+  trust :manage_trader,  :manage_gateway, "USD"
+  close_ledger #22
+
+  # make offer
+  offer :manage_trader, {buy:["USD", :manage_gateway], with: :native}, "20.0", "1.0"
+  close_ledger #23
+
+  # offer that consumes another
+  offer :manage_gateway, {sell:["USD", :manage_gateway], for: :native}, "30.0", "1.0"
+  close_ledger #24
 
 # create passive offer
 # TODO
