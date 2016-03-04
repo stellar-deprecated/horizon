@@ -68,4 +68,13 @@ func TestForOperation(t *testing.T) {
 	tt.Require.NoError(err)
 	tt.Assert.Len(p, 0)
 
+	// test passive offer
+	lb.Sequence = 26
+	err = lb.Load(db.SqlQuery{tt.CoreDB})
+	tt.Require.NoError(err)
+	op = lb.Transactions[0].Envelope.Tx.Operations[0]
+	p, err = ForOperation(&op)
+	tt.Require.NoError(err)
+	tt.Assert.Len(p, 0)
+
 }

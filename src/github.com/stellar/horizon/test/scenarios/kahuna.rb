@@ -176,7 +176,17 @@ close_ledger #2
   close_ledger #24
 
 # create passive offer
-# TODO
+
+  # Secret seed: SDLEIPR3JYEPVGISRN7WK5NRK667Q3HHXUYVBSSIIV46AHQ7QOEOP7XY
+  # Public: GB6GN3LJUW6JYR7EDOJ47VBH7D45M4JWHXGK6LHJRAEI5JBSN2DBQY7Q
+  account :passive_trader, KP.from_seed("SDLEIPR3JYEPVGISRN7WK5NRK667Q3HHXUYVBSSIIV46AHQ7QOEOP7XY")
+  create_account :passive_trader
+  close_ledger #25
+
+  passive_offer :passive_trader, {sell:["USD", :passive_trader], for: :native}, "200.0", "1.0"
+  passive_offer :passive_trader, {buy:["USD", :passive_trader], with: :native}, "200.0", "1.0"
+  close_ledger #26
+
 
 # set options
 # TODO
