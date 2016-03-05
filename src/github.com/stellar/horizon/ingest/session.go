@@ -1,10 +1,12 @@
 package ingest
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/keypair"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db"
@@ -51,30 +53,21 @@ func (is *Session) Run() {
 	}
 }
 
-func (is *Session) ingestSingle(seq int32) {
-	if is.Err != nil {
-		return
-	}
-
-	log.Debugf("ingesting ledger %d", seq)
-	data := &LedgerBundle{Sequence: seq}
-	is.Err = data.Load(is.Ingester.CoreDB)
-	if is.Err != nil {
-		return
-	}
-
-	is.do(
-		func() { is.clearExistingDataIfNeeded(data) },
-		func() { is.createRootAccountIfNeeded(data) },
-		func() { is.validateLedgerChain(data) },
-		func() { is.ingestHistoryLedger(data) },
-		func() { is.ingestHistoryAccounts(data) },
-		func() { is.ingestHistoryTransactions(data) },
-		func() { is.ingestHistoryOperations(data) },
-		func() { is.ingestHistoryEffects(data) },
+// assetDetails sets the details for `a` on `result` using keys with `prefix`
+func (is *Session) assetDetails(result map[string]interface{}, a xdr.Asset, prefix string) {
+	var (
+		t string
+		c string
+		i string
 	)
+	is.Err = a.Extract(&t, &c, &i)
+	result[prefix+"asset_type"] = t
 
-	return
+	if a.Type == xdr.AssetTypeAssetTypeNative {
+		return
+	}
+	result[prefix+"asset_code"] = c
+	result[prefix+"asset_issuer"] = i
 }
 
 func (is *Session) clearExistingDataIfNeeded(data *LedgerBundle) {
@@ -132,6 +125,63 @@ func (is *Session) do(steps ...func()) {
 
 		step()
 	}
+}
+
+func (is *Session) extractDetails(o xdr.Operation, resolvedSource xdr.AccountId) interface{} {
+	details := map[string]interface{}{}
+
+	switch o.Body.Type {
+	case xdr.OperationTypeCreateAccount:
+		op := o.Body.MustCreateAccountOp()
+		details["funder"] = resolvedSource.Address()
+		details["account"] = op.Destination.Address()
+		details["starting_balance"] = amount.String(op.StartingBalance)
+	case xdr.OperationTypePayment:
+		op := o.Body.MustPaymentOp()
+		details["from"] = resolvedSource.Address()
+		details["to"] = op.Destination.Address()
+		details["amount"] = amount.String(op.Amount)
+		is.assetDetails(details, op.Asset, "")
+	case xdr.OperationTypePathPayment:
+		//TODO
+	case xdr.OperationTypeManageOffer:
+		//TODO
+	case xdr.OperationTypeCreatePassiveOffer:
+		//TODO
+	case xdr.OperationTypeSetOptions:
+		//TODO
+	case xdr.OperationTypeChangeTrust:
+		op := o.Body.MustChangeTrustOp()
+		is.assetDetails(details, op.Line, "")
+		details["trustor"] = resolvedSource.Address()
+		details["trustee"] = details["asset_issuer"]
+		details["limit"] = amount.String(op.Limit)
+	case xdr.OperationTypeAllowTrust:
+		op := o.Body.MustAllowTrustOp()
+		is.assetDetails(details, op.Asset.ToAsset(resolvedSource), "")
+		details["trustee"] = resolvedSource.Address()
+		details["trustor"] = op.Trustor.Address()
+		details["authorize"] = op.Authorize
+	case xdr.OperationTypeAccountMerge:
+		aid := o.Body.MustDestination()
+		details["account"] = resolvedSource.Address()
+		details["into"] = aid.Address()
+	case xdr.OperationTypeInflation:
+		// no inflation details, presently
+	case xdr.OperationTypeManageData:
+		op := o.Body.MustManageDataOp()
+		details["name"] = string(op.DataName)
+		if op.DataValue != nil {
+			details["value"], is.Err = xdr.MarshalBase64(*op.DataValue)
+		} else {
+
+			details["value"] = nil
+		}
+	default:
+		is.Err = fmt.Errorf("Unknown operation type: %s", o.Body.Type)
+	}
+
+	return details
 }
 
 func (is *Session) formatTimeBounds(bounds *xdr.TimeBounds) interface{} {
@@ -252,11 +302,89 @@ func (is *Session) ingestHistoryTransaction(tx *core.Transaction, fee *core.Tran
 }
 
 func (is *Session) ingestHistoryOperations(data *LedgerBundle) {
+	shouldExec := false
+	ib := is.TX.Insert("history_operations").Columns(
+		"id",
+		"transaction_id",
+		"application_order",
+		"source_account",
+		"type",
+		"details",
+	)
+
+	for txi, tx := range data.Transactions {
+		for opi, op := range tx.Envelope.Tx.Operations {
+			var (
+				id      int64
+				txid    int64
+				source  xdr.AccountId
+				optype  int
+				details []byte
+			)
+
+			id = toid.New(data.Sequence, int32(txi), int32(opi)).ToInt64()
+			txid = toid.New(data.Sequence, int32(txi), 0).ToInt64()
+
+			if op.SourceAccount != nil {
+				source = *op.SourceAccount
+			} else {
+				source = tx.Envelope.Tx.SourceAccount
+			}
+			optype = int(op.Body.Type)
+			d := is.extractDetails(op, source)
+			if is.Err != nil {
+				return
+			}
+
+			details, is.Err = json.Marshal(d)
+			if is.Err != nil {
+				return
+			}
+
+			shouldExec = true
+			ib = ib.Values(id, txid, opi, source.Address(), optype, details)
+		}
+	}
+
+	// Only try to insert rows if this ledger actually had content
+	if shouldExec {
+		is.TX.ExecInsert(ib)
+		is.Err = is.TX.Err
+	}
+
+	// TODO: import operation participants
 
 }
 
 func (is *Session) ingestHistoryEffects(data *LedgerBundle) {
 
+}
+
+// injestSingle imports a single ledger (at `seq`) of data.
+func (is *Session) ingestSingle(seq int32) {
+	if is.Err != nil {
+		return
+	}
+
+	log.Debugf("ingesting ledger %d", seq)
+	data := &LedgerBundle{Sequence: seq}
+	is.Err = data.Load(is.Ingester.CoreDB)
+	if is.Err != nil {
+		return
+	}
+
+	is.do(
+		func() { is.clearExistingDataIfNeeded(data) },
+		func() { is.createRootAccountIfNeeded(data) },
+		func() { is.validateLedgerChain(data) },
+		func() { is.ingestHistoryLedger(data) },
+		func() { is.ingestHistoryAccounts(data) },
+		func() { is.ingestHistoryTransactions(data) },
+		func() { is.ingestHistoryOperations(data) },
+		func() { is.ingestHistoryEffects(data) },
+	)
+
+	return
 }
 
 func (is *Session) validateLedgerChain(data *LedgerBundle) {
