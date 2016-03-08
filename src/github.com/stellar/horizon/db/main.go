@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	stderr "errors"
 	"reflect"
 
@@ -47,9 +46,7 @@ type Record interface{}
 
 // Tx represents a single db transaction
 type Tx struct {
-	TX     *sqlx.Tx
-	Result sql.Result
-	Err    error
+	tx *sqlx.Tx
 }
 
 // Begin start a transaction
@@ -59,7 +56,7 @@ func Begin(q SqlQuery) (*Tx, error) {
 		return nil, err
 	}
 
-	return &Tx{TX: tx}, nil
+	return &Tx{tx: tx}, nil
 }
 
 // Open the postgres database at the provided url and performing an initial

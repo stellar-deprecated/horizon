@@ -48,9 +48,14 @@ func (i *Ingester) runOnce() {
 		}
 
 		is := Session{
-			Ingester:    i,
-			FirstLedger: i.lastState.HorizonSequence + 1,
-			LastLedger:  i.lastState.StellarCoreSequence,
+			Ingestion: &Ingestion{
+				Ingester: i,
+			},
+			Cursor: &Cursor{
+				FirstLedger: i.lastState.HorizonSequence + 1,
+				LastLedger:  i.lastState.StellarCoreSequence,
+				CoreDB:      i.CoreDB,
+			},
 		}
 
 		is.Run()
