@@ -139,11 +139,9 @@ CREATE TABLE history_operations (
 --
 
 CREATE TABLE history_transaction_participants (
-    id integer NOT NULL,
-    transaction_hash character varying(64) NOT NULL,
-    account character varying(64) NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+  id integer NOT NULL,
+  history_transaction_id bigint NOT NULL,
+  history_account_id bigint NOT NULL
 );
 
 
@@ -362,19 +360,10 @@ CREATE INDEX index_history_operations_on_type ON history_operations USING btree 
 
 
 --
--- Name: index_history_transaction_participants_on_account; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: hist_tx_p_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
-CREATE INDEX index_history_transaction_participants_on_account ON history_transaction_participants USING btree (account);
-
-
---
--- Name: index_history_transaction_participants_on_transaction_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
---
-
-CREATE INDEX index_history_transaction_participants_on_transaction_hash ON history_transaction_participants USING btree (transaction_hash);
-
-
+CREATE UNIQUE INDEX hist_tx_p_id ON history_transaction_participants USING btree (history_account_id, history_transaction_id);
 
 --
 -- Name: index_history_transactions_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
