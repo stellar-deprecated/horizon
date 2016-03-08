@@ -46,6 +46,7 @@ func init() {
 	viper.BindEnv("tls-cert", "TLS_CERT")
 	viper.BindEnv("tls-key", "TLS_KEY")
 	viper.BindEnv("ingest", "INGEST")
+	viper.BindEnv("network-passphrase", "NETWORK_PASSPHRASE")
 
 	rootCmd = &cobra.Command{
 		Use:   "horizon",
@@ -139,6 +140,18 @@ func init() {
 		"tls-key",
 		"",
 		"The TLS private key file to use for securing connections to horizon",
+	)
+
+	rootCmd.Flags().Bool(
+		"ingest",
+		false,
+		"causes this horizon process to ingest data from stellar-core into horizon's db",
+	)
+
+	rootCmd.Flags().String(
+		"network-passphrase",
+		"",
+		"Override the network passphrase",
 	)
 
 	rootCmd.AddCommand(dbCmd)
