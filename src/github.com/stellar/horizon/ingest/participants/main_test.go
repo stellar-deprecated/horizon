@@ -11,7 +11,7 @@ import (
 func TestForOperation(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
-	err := ingest.RunOnce(
+	_, err := ingest.RunOnce(
 		network.TestNetworkPassphrase,
 		db.SqlQuery{tt.CoreDB},
 		db.SqlQuery{tt.HorizonDB},
