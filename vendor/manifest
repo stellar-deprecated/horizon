@@ -96,19 +96,6 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/jteeuwen/go-bindata",
-			"repository": "https://github.com/jteeuwen/go-bindata",
-			"revision": "a0ff2567cfb70903282db057e799fd826784d41d",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/jteeuwen/go-bindata/go-bindata",
-			"repository": "https://github.com/jteeuwen/go-bindata",
-			"revision": "91db54b0401d0679b3cf743142e4f3c86b4aaa4e",
-			"branch": "master",
-			"path": "/go-bindata"
-		},
-		{
 			"importpath": "github.com/jtolds/gls",
 			"repository": "https://github.com/jtolds/gls",
 			"revision": "9a4a02dbe491bef4bab3c24fd9f3087d6c4c6690",

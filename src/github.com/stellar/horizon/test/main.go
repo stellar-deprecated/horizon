@@ -5,37 +5,17 @@ package test
 
 import (
 	"bytes"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	hlog "github.com/stellar/horizon/log"
+	tdb "github.com/stellar/horizon/test/db"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/net/context"
-)
-
-//go:generate go get github.com/jteeuwen/go-bindata/go-bindata
-//go:generate go-bindata -pkg test scenarios
-
-var (
-	coreDB    *sqlx.DB
-	horizonDB *sqlx.DB
-)
-
-const (
-	// DefaultTestDatabaseURL is the default postgres connection string for
-	// horizon's test database.
-	DefaultTestDatabaseURL = "postgres://localhost:5432/horizon_test?sslmode=disable"
-
-	// DefaultTestStellarCoreDatabaseURL is the default postgres connection string
-	// for horizon's test stellar core database.
-	DefaultTestStellarCoreDatabaseURL = "postgres://localhost:5432/stellar-core_test?sslmode=disable"
 )
 
 // StaticMockServer is a test helper that records it's last request
@@ -80,24 +60,18 @@ func ContextWithLogBuffer() (context.Context, *bytes.Buffer) {
 }
 
 // Database returns a connection to the horizon test database
+//
+// DEPRECATED:  use `Horizon()` from test/db package
 func Database() *sqlx.DB {
-	if horizonDB != nil {
-		return horizonDB
-	}
-	horizonDB = OpenDatabase(DatabaseURL())
-	return horizonDB
+	return tdb.Horizon()
 }
 
 // DatabaseURL returns the database connection the url any test
 // use when connecting to the history/horizon database
+//
+// DEPRECATED:  use `HorizonURL()` from test/db package
 func DatabaseURL() string {
-	databaseURL := os.Getenv("DATABASE_URL")
-
-	if databaseURL == "" {
-		databaseURL = DefaultTestDatabaseURL
-	}
-
-	return databaseURL
+	return tdb.HorizonURL()
 }
 
 // LoadScenario populates the test databases with pre-created scenarios.  Each
@@ -111,17 +85,6 @@ func LoadScenario(scenarioName string) {
 // pre-created scenario.  Unlike `LoadScenario`, this
 func LoadScenarioWithoutHorizon(scenarioName string) {
 	loadScenario(scenarioName, false)
-}
-
-// OpenDatabase opens a database, panicing if it cannot
-func OpenDatabase(dsn string) *sqlx.DB {
-	db, err := sqlx.Open("postgres", dsn)
-
-	if err != nil {
-		log.Panic(err)
-	}
-
-	return db
 }
 
 // Start initializes a new test helper object and conceptually "starts" a new
@@ -146,22 +109,17 @@ func Start(t *testing.T) *T {
 }
 
 // StellarCoreDatabase returns a connection to the stellar core test database
+//
+// DEPRECATED:  use `StellarCore()` from test/db package
 func StellarCoreDatabase() *sqlx.DB {
-	if coreDB != nil {
-		return coreDB
-	}
-	coreDB = OpenDatabase(StellarCoreDatabaseURL())
-	return coreDB
+	return tdb.StellarCore()
 }
 
 // StellarCoreDatabaseURL returns the database connection the url any test
 // use when connecting to the stellar-core database
+//
+// DEPRECATED:  use `StellarCoreURL()` from test/db package
 func StellarCoreDatabaseURL() string {
-	databaseURL := os.Getenv("STELLAR_CORE_DATABASE_URL")
+	return tdb.StellarCoreURL()
 
-	if databaseURL == "" {
-		databaseURL = DefaultTestStellarCoreDatabaseURL
-	}
-
-	return databaseURL
 }
