@@ -13,6 +13,7 @@ import (
 type Conn interface {
 	Exec(query string, args ...interface{}) (sql.Result, error)
 	Get(dest interface{}, query string, args ...interface{}) error
+	Rebind(sql string) string
 	Select(dest interface{}, query string, args ...interface{}) error
 }
 

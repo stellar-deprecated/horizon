@@ -5,12 +5,11 @@ import (
 )
 
 func loadScenario(scenarioName string, includeHorizon bool) {
-	scenarioBasePath := "scenarios/" + scenarioName
-	stellarCorePath := scenarioBasePath + "-core.sql"
-	horizonPath := scenarioBasePath + "-horizon.sql"
+	stellarCorePath := scenarioName + "-core.sql"
+	horizonPath := scenarioName + "-horizon.sql"
 
 	if !includeHorizon {
-		horizonPath = "scenarios/blank-horizon.sql"
+		horizonPath = "blank-horizon.sql"
 	}
 
 	scenarios.Load(StellarCoreDatabaseURL(), stellarCorePath)

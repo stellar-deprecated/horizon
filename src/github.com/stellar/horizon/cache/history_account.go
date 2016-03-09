@@ -1,12 +1,6 @@
 // Package cache provides various caches used in horizon.
 package cache
 
-import (
-	"github.com/stellar/horizon/db"
-	hq "github.com/stellar/horizon/db/queries/history"
-	"golang.org/x/net/context"
-)
-
 // Get looks up the History Account ID (i.e. the ID of the operation that
 // created the account) for the given strkey encoded address.
 func (c *HistoryAccount) Get(address string) (result int64, err error) {
@@ -17,12 +11,13 @@ func (c *HistoryAccount) Get(address string) (result int64, err error) {
 		return
 	}
 
-	q := hq.LatestAccountForAddress{
-		DB:      c.db,
-		Address: address,
-	}
+	err = c.db.GetRaw(&result, `
+		SELECT id
+		FROM history_accounts
+		WHERE address = $1
+		ORDER BY id DESC
+	`, address)
 
-	err = db.Get(context.Background(), &q, &result)
 	if err != nil {
 		return
 	}
