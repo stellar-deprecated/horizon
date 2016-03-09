@@ -24,7 +24,16 @@ func (r *Repo) Get(dest interface{}, query sq.Sqlizer) error {
 func (r *Repo) GetRaw(dest interface{}, query string, args ...interface{}) error {
 	r.log("get", query, args)
 	query = r.Conn.Rebind(query)
-	return r.Conn.Get(dest, query, args...)
+	err := r.Conn.Get(dest, query, args...)
+	if err == nil {
+		return nil
+	}
+
+	if r.NoRows(err) {
+		return err
+	}
+
+	return errors.Wrap(err, 1)
 }
 
 // Exec runs `query`
@@ -40,7 +49,16 @@ func (r *Repo) Exec(query sq.Sqlizer) (sql.Result, error) {
 func (r *Repo) ExecRaw(query string, args ...interface{}) (sql.Result, error) {
 	r.log("exec", query, args)
 	query = r.Conn.Rebind(query)
-	return r.Conn.Exec(query, args...)
+	result, err := r.Conn.Exec(query, args...)
+	if err == nil {
+		return result, nil
+	}
+
+	if r.NoRows(err) {
+		return nil, err
+	}
+
+	return nil, errors.Wrap(err, 1)
 }
 
 // NoRows returns true if the provided error resulted from a query that found
@@ -62,7 +80,16 @@ func (r *Repo) Select(dest interface{}, query sq.Sqlizer) error {
 func (r *Repo) SelectRaw(dest interface{}, query string, args ...interface{}) error {
 	r.log("get", query, args)
 	query = r.Conn.Rebind(query)
-	return r.Conn.Select(dest, query, args...)
+	err := r.Conn.Select(dest, query, args...)
+	if err == nil {
+		return nil
+	}
+
+	if r.NoRows(err) {
+		return err
+	}
+
+	return errors.Wrap(err, 1)
 }
 
 // build converts the provided sql builder `b` into the sql and args to execute
