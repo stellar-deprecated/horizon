@@ -12,6 +12,14 @@ type AccountByID struct {
 	ID int64
 }
 
+// LatestAccountForAddress looks up `id` from the `history_accounts` table
+// by strkey-encoded address.  Will return the latest ID found in the case that
+// the provided address has been created, merged, then created again.
+type LatestAccountForAddress struct {
+	DB      db.SqlQuery
+	Address string
+}
+
 // TransactionByHash is a query that loads a single row from the
 // `history_transactions` table based upon the provided hash.
 type TransactionByHash struct {
