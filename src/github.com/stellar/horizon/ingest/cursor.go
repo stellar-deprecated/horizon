@@ -10,6 +10,25 @@ import (
 	"github.com/stellar/horizon/toid"
 )
 
+// InLedger returns true if the cursor is on a ledger.
+func (c *Cursor) InLedger() bool {
+	return c.lg != 0
+}
+
+// InOperation returns true if the cursor is on a operation. Will return false
+// after advancing to a new transaction but before advancing on to the
+// transaciton's first operation.
+func (c *Cursor) InOperation() bool {
+	return c.InLedger() && c.op != -1
+}
+
+// InTransaction returns true if the cursor is pointing to a transaction.  This
+// will return false after advancing to a new ledger but prior to advancing into
+// the ledger's first transaction.
+func (c *Cursor) InTransaction() bool {
+	return c.InLedger() && c.tx != -1
+}
+
 // Ledger returns the current ledger
 func (c *Cursor) Ledger() *core.LedgerHeader {
 	return &c.data.Header
