@@ -65,11 +65,14 @@ func ForMeta(
 // ForOperation returns all the participating accounts from the
 // provided operation.
 func ForOperation(
+	tx *xdr.Transaction,
 	op *xdr.Operation,
 ) (result []xdr.AccountId, err error) {
 
 	if op.SourceAccount != nil {
 		result = append(result, *op.SourceAccount)
+	} else {
+		result = append(result, tx.SourceAccount)
 	}
 
 	switch op.Body.Type {
