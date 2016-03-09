@@ -10,7 +10,7 @@ func TestHistoryAccount(t *testing.T) {
 	tt := test.Start(t).Scenario("base")
 	defer tt.Finish()
 
-	c := NewHistoryAccount(tt.HorizonQuery())
+	c := NewHistoryAccount(db.SqlQuery{DB: tt.HorizonDB})
 	tt.Assert.Equal(0, c.cached.Len())
 
 	id, err := c.Get("GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H")

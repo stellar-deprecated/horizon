@@ -13,7 +13,7 @@ func TestLatestAccountByAddress(t *testing.T) {
 
 	var found int64
 	q := LatestAccountForAddress{
-		DB:      tt.HorizonQuery(),
+		DB:      db.SqlQuery{DB:tt.HorizonDB},
 		Address: "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
 	}
 
