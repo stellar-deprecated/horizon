@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db"
 	cq "github.com/stellar/horizon/db/queries/core"
 	cr "github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
@@ -13,13 +12,12 @@ import (
 func TestForOperation(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
+	q := &cq.Q{tt.CoreRepo()}
 
 	load := func(lg int32, tx int, op int) []xdr.AccountId {
 		var txs []cr.Transaction
-		err := db.Select(tt.Ctx, &cq.TransactionByLedger{
-			DB:       db.SqlQuery{tt.CoreDB},
-			Sequence: lg,
-		}, &txs)
+
+		err := q.TransactionsByLedger(&txs, lg)
 		tt.Require.NoError(err, "failed to load transaction data")
 		xtx := txs[tx].Envelope.Tx
 		xop := xtx.Operations[op]
@@ -87,4 +85,25 @@ func TestForOperation(t *testing.T) {
 	p = load(44, 0, 0)
 	tt.Assert.Len(p, 1)
 	tt.Assert.Equal("GAYSCMKQY6EYLXOPTT6JPPOXDMVNBWITPTSZIVWW4LWARVBOTH5RTLAD", p[0].Address())
+}
+
+func TestForTransaction(t *testing.T) {
+	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
+	defer tt.Finish()
+	q := &cq.Q{tt.CoreRepo()}
+
+	load := func(lg int32, tx int, op int) []xdr.AccountId {
+		var txs []cr.Transaction
+		err := q.TransactionsByLedger(&txs, lg)
+		tt.Require.NoError(err, "failed to load transaction data")
+		xtx := txs[tx].Envelope
+		// TODO: fee :=
+		ret, err := ForTransaction(&xtx, nil)
+		tt.Require.NoError(err, "ForOperation() errored")
+		return ret
+	}
+
+	// TODO:
+	_ = load
+
 }

@@ -107,7 +107,7 @@ func ForOperation(
 
 // ForTransaction returns all the participating accounts from the provided
 // transaction.
-func ForTransaction(tx *xdr.TransactionEnvelope) ([]string, error) {
+func ForTransaction(tx *xdr.TransactionEnvelope, feeMeta *xdr.LedgerEntryChanges) ([]xdr.AccountId, error) {
 	return nil, nil
 }
 

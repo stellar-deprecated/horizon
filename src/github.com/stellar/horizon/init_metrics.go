@@ -45,7 +45,7 @@ func initLogMetrics(app *App) {
 }
 
 func initTxSubMetrics(app *App) {
-	app.submitter.Init(app.ctx)
+	app.submitter.Init()
 	app.metrics.Register("txsub.buffered", app.submitter.Metrics.BufferedSubmissionsGauge)
 	app.metrics.Register("txsub.open", app.submitter.Metrics.OpenSubmissionsGauge)
 	app.metrics.Register("txsub.succeeded", app.submitter.Metrics.SuccessfulSubmissionsMeter)

@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/db/queries/core"
 	"github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db/rp"
@@ -11,17 +10,17 @@ import (
 )
 
 func initSubmissionSystem(app *App) {
+	cq := &core.Q{Repo: app.CoreRepo(nil)}
+
 	app.submitter = &txsub.System{
 		Pending:         txsub.NewDefaultSubmissionList(),
 		Submitter:       txsub.NewDefaultSubmitter(http.DefaultClient, app.config.StellarCoreURL),
 		SubmissionQueue: sequence.NewManager(),
 		Results: &rp.ResultProvider{
-			Core:    &core.Q{Repo: app.CoreRepo(nil)},
+			Core:    cq,
 			History: &history.Q{Repo: app.HorizonRepo(nil)},
 		},
-		Sequences: db.SequenceByAddressQuery{
-			SqlQuery: app.CoreQuery(),
-		},
+		Sequences:         cq.SequenceProvider(),
 		NetworkPassphrase: app.networkPassphrase,
 	}
 

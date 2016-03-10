@@ -77,7 +77,7 @@ func (bot *Bot) refreshSequence(ctx context.Context) error {
 	addy := bot.address()
 	sp := bot.Submitter.Sequences
 
-	seqs, err := sp.Get(ctx, []string{addy})
+	seqs, err := sp.Get([]string{addy})
 	if err != nil {
 		return err
 	}

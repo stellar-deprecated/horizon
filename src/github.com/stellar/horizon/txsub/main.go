@@ -20,7 +20,7 @@ type ResultProvider interface {
 // sequence number of an account.  It is used by the SequenceLock to
 type SequenceProvider interface {
 	// Look up a sequence by address
-	Get(ctx context.Context, addresses []string) (map[string]uint64, error)
+	Get(addresses []string) (map[string]uint64, error)
 }
 
 // Listener represents some client who is interested in retrieving the result
