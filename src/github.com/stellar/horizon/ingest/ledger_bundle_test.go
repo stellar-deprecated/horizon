@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestTransactionFeeByHash(t *testing.T) {
+func TestLedgerBundleLoad(t *testing.T) {
 	tt := test.Start(t).Scenario("base")
 	defer tt.Finish()
 

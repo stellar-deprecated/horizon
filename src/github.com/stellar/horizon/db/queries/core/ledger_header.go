@@ -2,15 +2,15 @@ package core
 
 import (
 	sq "github.com/lann/squirrel"
-	"golang.org/x/net/context"
 )
 
-// Select implements the db.Query interface
-func (q *LedgerHeaderBySequence) Select(ctx context.Context, dest interface{}) error {
+// LedgerHeaderBySequence is a query that loads a single row from the
+// `ledgerheaders` table.
+func (q *Q) LedgerHeaderBySequence(dest interface{}, seq int) error {
 	sql := sq.Select("clh.*").
 		From("ledgerheaders clh").
 		Limit(1).
-		Where("clh.ledgerseq = ?", q.Sequence)
+		Where("clh.ledgerseq = ?", seq)
 
-	return q.DB.Select(ctx, sql, dest)
+	return q.Get(dest, sql)
 }

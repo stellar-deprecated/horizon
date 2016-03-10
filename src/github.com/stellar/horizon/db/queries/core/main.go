@@ -4,12 +4,13 @@ package core
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
 )
 
-// LedgerHeaderBySequence is a query that loads a single row from the `ledgerheaders`.
-type LedgerHeaderBySequence struct {
-	DB       db.SqlQuery
-	Sequence int32
+// Q is a helper struct on which to hang common queries against a stellar
+// core database.
+type Q struct {
+	*db2.Repo
 }
 
 // TransactionByHash is a query that loads a single row from the `txhistory`.
@@ -21,20 +22,6 @@ type TransactionByHash struct {
 // TransactionByLedger is a query that loads all rows from `txhistory` where
 // ledgerseq matches `Sequence.`
 type TransactionByLedger struct {
-	DB       db.SqlQuery
-	Sequence int32
-}
-
-// TransactionFeeByHash is a query that loads a single row from the
-// `txfeehistory`.
-type TransactionFeeByHash struct {
-	DB   db.SqlQuery
-	Hash string
-}
-
-// TransactionFeeByLedger is a query that loads all rows from `txfeehistory`
-// where ledgerseq matches `Sequence.`
-type TransactionFeeByLedger struct {
 	DB       db.SqlQuery
 	Sequence int32
 }

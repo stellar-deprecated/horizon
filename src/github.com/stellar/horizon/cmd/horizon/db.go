@@ -8,8 +8,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/db/schema"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/ingest"
 )
 
@@ -79,12 +79,12 @@ var dbReingestCmd = &cobra.Command{
 	Short: "imports all data",
 	Long:  "reingest runs the ingestion pipeline over every ledger",
 	Run: func(cmd *cobra.Command, args []string) {
-		hdb, err := db.Open(viper.GetString("db-url"))
+		hdb, err := db2.Open(viper.GetString("db-url"))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		cdb, err := db.Open(viper.GetString("stellar-core-db-url"))
+		cdb, err := db2.Open(viper.GetString("stellar-core-db-url"))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -94,11 +94,7 @@ var dbReingestCmd = &cobra.Command{
 			log.Fatal("network-passphrase is blank: reingestion requires manually setting passphrase")
 		}
 
-		_, err = ingest.RunOnce(
-			passphrase,
-			db.SqlQuery{cdb},
-			db.SqlQuery{hdb},
-		)
+		_, err = ingest.RunOnce(passphrase, cdb, hdb)
 
 		if err != nil {
 			log.Fatal(err)

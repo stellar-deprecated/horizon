@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/test"
 	"testing"
 )
@@ -9,8 +8,8 @@ import (
 func TestHistoryAccount(t *testing.T) {
 	tt := test.Start(t).Scenario("base")
 	defer tt.Finish()
-
-	c := NewHistoryAccount(tt.HorizonRepo())
+	db := tt.HorizonRepo()
+	c := NewHistoryAccount(db)
 	tt.Assert.Equal(0, c.cached.Len())
 
 	id, err := c.Get("GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H")
@@ -20,6 +19,6 @@ func TestHistoryAccount(t *testing.T) {
 	}
 
 	id, err = c.Get("NOT_REAL")
-	tt.Assert.Equal(db.ErrNoResults, err)
+	tt.Assert.True(db.NoRows(err))
 	tt.Assert.Equal(int64(0), id)
 }

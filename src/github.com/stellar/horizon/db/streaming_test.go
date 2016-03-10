@@ -2,15 +2,14 @@ package db
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/horizon/test"
+	tdb "github.com/stellar/horizon/test/db"
 	"golang.org/x/net/context"
 	"testing"
 )
 
 func TestStreaming(t *testing.T) {
-	ctx := test.Context()
-	ctx, cancel := context.WithCancel(ctx)
-	db := test.OpenDatabase(test.DatabaseURL())
+	ctx, cancel := context.WithCancel(context.Background())
+	db := tdb.Horizon()
 
 	Convey("LedgerClosePump", t, func() {
 

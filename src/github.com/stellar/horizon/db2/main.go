@@ -5,6 +5,7 @@ package db2
 import (
 	"database/sql"
 
+	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/net/context"
 )
@@ -27,6 +28,16 @@ type Repo struct {
 	Ctx context.Context
 
 	tx *sqlx.Tx
+}
+
+// Open the postgres database at `url` and returns a new *Repo using it.
+func Open(url string) (*Repo, error) {
+	db, err := sqlx.Connect("postgres", url)
+	if err != nil {
+		return nil, errors.Wrap(err, 1)
+	}
+
+	return &Repo{DB: db}, nil
 }
 
 // ensure various types conform to Conn interface
