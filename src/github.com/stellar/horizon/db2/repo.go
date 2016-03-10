@@ -24,6 +24,16 @@ func (r *Repo) Begin() error {
 	return nil
 }
 
+// Clone clones the receiver, returning a new instance backed by the same
+// context and db. The result will not be bound to any transaction that the
+// source is currently within.
+func (r *Repo) Clone() *Repo {
+	return &Repo{
+		DB:  r.DB,
+		Ctx: r.Ctx,
+	}
+}
+
 // Commit commits the current transaction
 func (r *Repo) Commit() error {
 	if r.tx == nil {

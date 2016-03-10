@@ -45,8 +45,8 @@ func TestIngest(t *testing.T) {
 func ingest(tt *test.T) *Session {
 	s, _ := RunOnce(
 		network.TestNetworkPassphrase,
-		db.SqlQuery{tt.CoreDB},
-		db.SqlQuery{tt.HorizonDB},
+		tt.CoreRepo(),
+		tt.HorizonRepo(),
 	)
 	return s
 }

@@ -1,11 +1,7 @@
 package ingest
 
 import (
-	"fmt"
-
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/log"
-	"golang.org/x/net/context"
 )
 
 // Close causes the ingester to shut down.
@@ -46,17 +42,11 @@ func (i *Ingester) runOnce() {
 		if i.lastState.UpToDate() {
 			return
 		}
-
-		is := Session{
-			Ingestion: &Ingestion{
-				Ingester: i,
-			},
-			Cursor: &Cursor{
-				FirstLedger: i.lastState.HorizonSequence + 1,
-				LastLedger:  i.lastState.StellarCoreSequence,
-				CoreDB:      i.CoreDB,
-			},
-		}
+		is := NewSession(
+			i.lastState.HorizonSequence+1,
+			i.lastState.StellarCoreSequence,
+			i,
+		)
 
 		is.Run()
 
@@ -74,14 +64,20 @@ func (i *Ingester) runOnce() {
 }
 
 func (i *Ingester) updateLedgerState() error {
-	q := db.LedgerStateQuery{
-		Horizon: i.HorizonDB,
-		Core:    i.CoreDB,
-	}
-	err := db.Get(context.Background(), q, &i.lastState)
-
+	err := i.CoreDB.GetRaw(
+		&i.lastState.StellarCoreSequence,
+		`SELECT COALESCE(MAX(ledgerseq), 0) FROM ledgerheaders`,
+	)
 	if err != nil {
-		return fmt.Errorf("could not load ledger state: %s", err)
+		return err
+	}
+
+	err = i.HorizonDB.GetRaw(
+		&i.lastState.HorizonSequence,
+		`SELECT COALESCE(MAX(sequence), 0) FROM history_ledgers`,
+	)
+	if err != nil {
+		return err
 	}
 
 	return nil

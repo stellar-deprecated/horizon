@@ -15,8 +15,8 @@ func (t *T) Finish() {
 // HorizonRepo returns a db2.Repo instance pointing at the horizon test database
 func (t *T) HorizonRepo() *db2.Repo {
 	return &db2.Repo{
-		Conn: t.HorizonDB,
-		Ctx:  t.Ctx,
+		DB:  t.HorizonDB,
+		Ctx: t.Ctx,
 	}
 }
 
@@ -35,7 +35,7 @@ func (t *T) ScenarioWithoutHorizon(name string) *T {
 // CoreRepo returns a db2.Repo instance pointing at the stellar core test database
 func (t *T) CoreRepo() *db2.Repo {
 	return &db2.Repo{
-		Conn: t.CoreDB,
-		Ctx:  t.Ctx,
+		DB:  t.CoreDB,
+		Ctx: t.Ctx,
 	}
 }

@@ -85,7 +85,7 @@ func (c *Cursor) NextLedger() bool {
 	}
 
 	c.data = &LedgerBundle{Sequence: c.lg}
-	c.Err = c.data.Load(c.CoreDB)
+	c.Err = c.data.Load(c.DB)
 	if c.Err != nil {
 		return false
 	}

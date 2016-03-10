@@ -1,38 +1,36 @@
 package ingest
 
 import (
-	"github.com/stellar/horizon/db"
-	cq "github.com/stellar/horizon/db/queries/core"
-	"golang.org/x/net/context"
+	"github.com/stellar/horizon/db2"
 )
 
 // Load runs queries against `core` to fill in the records of the bundle.
-func (lb *LedgerBundle) Load(core db.SqlQuery) error {
-	ctx := context.Background()
-
+func (lb *LedgerBundle) Load(db *db2.Repo) error {
 	// Load Header
-	err := db.Get(ctx, &cq.LedgerHeaderBySequence{
-		DB:       core,
-		Sequence: lb.Sequence,
-	}, &lb.Header)
+	err := db.GetRaw(
+		&lb.Header,
+		`SELECT * FROM ledgerheaders WHERE ledgerseq = ?`,
+		lb.Sequence,
+	)
 	if err != nil {
 		return err
 	}
 
 	// Load transactions
-	err = db.Select(ctx, &cq.TransactionByLedger{
-		DB:       core,
-		Sequence: lb.Sequence,
-	}, &lb.Transactions)
+	err = db.SelectRaw(
+		&lb.Transactions,
+		`SELECT * FROM txhistory WHERE ledgerseq = ? ORDER BY txindex ASC`,
+		lb.Sequence,
+	)
 	if err != nil {
 		return err
 	}
 
-	// Load fees
-	err = db.Select(ctx, &cq.TransactionFeeByLedger{
-		DB:       core,
-		Sequence: lb.Sequence,
-	}, &lb.TransactionFees)
+	err = db.SelectRaw(
+		&lb.TransactionFees,
+		`SELECT * FROM txfeehistory WHERE ledgerseq = ? ORDER BY txindex ASC`,
+		lb.Sequence,
+	)
 	if err != nil {
 		return err
 	}

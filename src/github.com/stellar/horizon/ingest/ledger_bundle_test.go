@@ -1,7 +1,6 @@
 package ingest
 
 import (
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/test"
 	"testing"
 )
@@ -11,7 +10,7 @@ func TestTransactionFeeByHash(t *testing.T) {
 	defer tt.Finish()
 
 	bundle := &LedgerBundle{Sequence: 2}
-	err := bundle.Load(db.SqlQuery{tt.CoreDB})
+	err := bundle.Load(tt.CoreRepo())
 
 	if tt.Assert.NoError(err) {
 		tt.Assert.Equal(uint32(2), bundle.Header.Sequence)

@@ -1,7 +1,6 @@
 package ingest
 
 import (
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/test"
 	"testing"
 )
@@ -14,7 +13,7 @@ func TestCursor(t *testing.T) {
 	c := Cursor{
 		FirstLedger: 7,
 		LastLedger:  10,
-		CoreDB:      db.SqlQuery{tt.CoreDB},
+		DB:          tt.CoreRepo(),
 	}
 
 	// Ledger 7
