@@ -5,7 +5,6 @@ import (
 
 	"github.com/stellar/go-stellar-base/keypair"
 	"github.com/stellar/go-stellar-base/network"
-	"github.com/stellar/horizon/db"
 	hq "github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/test"
@@ -19,12 +18,12 @@ func TestIngest(t *testing.T) {
 	tt.Require.NoError(s.Err)
 	tt.Assert.Equal(46, s.Ingested)
 
+	hq := &hq.Q{tt.HorizonRepo()}
+
 	// Ensure the root account was created
 	var root history.Account
-	err := db.Get(tt.Ctx, &hq.AccountByID{
-		DB: db.SqlQuery{tt.HorizonDB},
-		ID: 1,
-	}, &root)
+	err := hq.AccountByID(&root, 1)
+
 	tt.Assert.NoError(err)
 	tt.Assert.Equal(int64(1), root.ID)
 	tt.Assert.Equal(keypair.Master(network.TestNetworkPassphrase).Address(), root.Address)

@@ -4,6 +4,14 @@ import (
 	"github.com/stellar/horizon/db2"
 )
 
+// CoreRepo returns a db2.Repo instance pointing at the stellar core test database
+func (t *T) CoreRepo() *db2.Repo {
+	return &db2.Repo{
+		DB:  t.CoreDB,
+		Ctx: t.Ctx,
+	}
+}
+
 // Finish finishes the test, logging any accumulated horizon logs to the logs
 // output
 func (t *T) Finish() {
@@ -30,12 +38,4 @@ func (t *T) Scenario(name string) *T {
 func (t *T) ScenarioWithoutHorizon(name string) *T {
 	LoadScenarioWithoutHorizon(name)
 	return t
-}
-
-// CoreRepo returns a db2.Repo instance pointing at the stellar core test database
-func (t *T) CoreRepo() *db2.Repo {
-	return &db2.Repo{
-		DB:  t.CoreDB,
-		Ctx: t.Ctx,
-	}
 }

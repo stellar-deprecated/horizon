@@ -13,6 +13,7 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/friendbot"
 	"github.com/stellar/horizon/ingest"
 	"github.com/stellar/horizon/log"
@@ -143,10 +144,18 @@ func (a *App) Close() {
 	a.coreDb.Close()
 }
 
+func (a *App) HorizonRepo(ctx context.Context) *db2.Repo {
+	return &db2.Repo{DB: a.horizonDb, Ctx: ctx}
+}
+
 // HorizonQuery returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the horizon database
 func (a *App) HorizonQuery() db.SqlQuery {
 	return db.SqlQuery{DB: a.horizonDb}
+}
+
+func (a *App) CoreRepo(ctx context.Context) *db2.Repo {
+	return &db2.Repo{DB: a.coreDb, Ctx: ctx}
 }
 
 // CoreQuery returns a SqlQuery that can be embedded in a parent query

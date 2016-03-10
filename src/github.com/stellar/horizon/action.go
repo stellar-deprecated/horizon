@@ -6,6 +6,8 @@ import (
 
 	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/queries/core"
+	"github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/toid"
@@ -22,19 +24,18 @@ type Action struct {
 	actions.Base
 	App *App
 	Log *log.Entry
+
+	hq *history.Q
+	cq *core.Q
 }
 
-// Prepare sets the action's App field based upon the goji context
-func (action *Action) Prepare(c web.C, w http.ResponseWriter, r *http.Request) {
-	base := &action.Base
-	base.Prepare(c, w, r)
-	action.App = action.GojiCtx.Env["app"].(*App)
-
-	if action.Ctx != nil {
-		action.Log = log.Ctx(action.Ctx)
-	} else {
-		action.Log = log.DefaultLogger
+// CoreQ provides access to queries that access the stellar core database.
+func (action *Action) CoreQ() *core.Q {
+	if action.cq == nil {
+		action.cq = &core.Q{action.App.CoreRepo(action.Ctx)}
 	}
+
+	return action.cq
 }
 
 // GetPagingParams modifies the base GetPagingParams method to replace
@@ -72,6 +73,29 @@ func (action *Action) GetPageQuery() db.PageQuery {
 	}
 
 	return r
+}
+
+// HistoryQ provides access to queries that access the history portion of
+// horizon's database.
+func (action *Action) HistoryQ() *history.Q {
+	if action.hq == nil {
+		action.hq = &history.Q{action.App.HorizonRepo(action.Ctx)}
+	}
+
+	return action.hq
+}
+
+// Prepare sets the action's App field based upon the goji context
+func (action *Action) Prepare(c web.C, w http.ResponseWriter, r *http.Request) {
+	base := &action.Base
+	base.Prepare(c, w, r)
+	action.App = action.GojiCtx.Env["app"].(*App)
+
+	if action.Ctx != nil {
+		action.Log = log.Ctx(action.Ctx)
+	} else {
+		action.Log = log.DefaultLogger
+	}
 }
 
 func (action *Action) ValidateCursorAsDefault() {

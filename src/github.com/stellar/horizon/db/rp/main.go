@@ -5,11 +5,9 @@ package rp
 import (
 	"bytes"
 	"encoding/base64"
-	"github.com/jmoiron/sqlx"
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db"
-	cqs "github.com/stellar/horizon/db/queries/core"
-	hqs "github.com/stellar/horizon/db/queries/history"
+	cq "github.com/stellar/horizon/db/queries/core"
+	hq "github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/txsub"
@@ -19,8 +17,8 @@ import (
 // ResultProvider provides transactio submission results by querying the
 // connected horizon and stellar core databases.
 type ResultProvider struct {
-	Core    *sqlx.DB
-	History *sqlx.DB
+	Core    *cq.Q
+	History *hq.Q
 }
 
 // ResultByHash implements txsub.ResultProvider
@@ -28,33 +26,23 @@ func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.R
 
 	// query history database
 	var hr history.Transaction
-	hq := &hqs.TransactionByHash{
-		DB:   db.SqlQuery{DB: rp.History},
-		Hash: hash,
-	}
-
-	err := db.Get(ctx, hq, &hr)
+	err := rp.History.TransactionByHash(&hr, hash)
 	if err == nil {
 		return txResultFromHistory(hr)
 	}
 
-	if err != db.ErrNoResults {
+	if rp.History.NoRows(err) {
 		return txsub.Result{Err: err}
 	}
 
 	// query core database
 	var cr core.Transaction
-	cq := &cqs.TransactionByHash{
-		DB:   db.SqlQuery{DB: rp.Core},
-		Hash: hash,
-	}
-
-	err = db.Get(ctx, cq, &cr)
+	err = rp.Core.TransactionByHash(&cr, hash)
 	if err == nil {
 		return txResultFromCore(cr)
 	}
 
-	if err != db.ErrNoResults {
+	if rp.Core.NoRows(err) {
 		return txsub.Result{Err: err}
 	}
 

@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/stellar/horizon/db"
-	hq "github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
@@ -92,20 +91,17 @@ func (action *TransactionIndexAction) SSE(stream sse.Stream) {
 // TransactionShowAction renders a ledger found by its sequence number.
 type TransactionShowAction struct {
 	Action
-	Query    hq.TransactionByHash
+	Hash     string
 	Record   history.Transaction
 	Resource resource.Transaction
 }
 
-func (action *TransactionShowAction) loadQuery() {
-	action.Query = hq.TransactionByHash{
-		DB:   action.App.HorizonQuery(),
-		Hash: action.GetString("id"),
-	}
+func (action *TransactionShowAction) loadParams() {
+	action.Hash = action.GetString("id")
 }
 
 func (action *TransactionShowAction) loadRecord() {
-	action.Err = db.Get(action.Ctx, &action.Query, &action.Record)
+	action.Err = action.HistoryQ().TransactionByHash(&action.Record, action.Hash)
 }
 
 func (action *TransactionShowAction) loadResource() {
@@ -115,7 +111,7 @@ func (action *TransactionShowAction) loadResource() {
 // JSON is a method for actions.JSON
 func (action *TransactionShowAction) JSON() {
 	action.Do(
-		action.loadQuery,
+		action.loadParams,
 		action.loadRecord,
 		action.loadResource,
 		func() { hal.Render(action.W, action.Resource) },

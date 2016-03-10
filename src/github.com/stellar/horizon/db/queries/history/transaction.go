@@ -2,16 +2,16 @@ package history
 
 import (
 	sq "github.com/lann/squirrel"
-	"golang.org/x/net/context"
 )
 
-// Select implements the db.Query interface
-func (q *TransactionByHash) Select(ctx context.Context, dest interface{}) error {
+// TransactionByHash is a query that loads a single row from the
+// `history_transactions` table based upon the provided hash.
+func (q *Q) TransactionByHash(dest interface{}, hash string) error {
 	sql := selectTransaction.
 		Limit(1).
-		Where("ht.transaction_hash = ?", q.Hash)
+		Where("ht.transaction_hash = ?", hash)
 
-	return q.DB.Select(ctx, sql, dest)
+	return q.Get(dest, sql)
 }
 
 var selectTransaction = sq.Select(
