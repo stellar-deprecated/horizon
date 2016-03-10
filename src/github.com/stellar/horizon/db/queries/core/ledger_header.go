@@ -6,7 +6,7 @@ import (
 
 // LedgerHeaderBySequence is a query that loads a single row from the
 // `ledgerheaders` table.
-func (q *Q) LedgerHeaderBySequence(dest interface{}, seq int) error {
+func (q *Q) LedgerHeaderBySequence(dest interface{}, seq int32) error {
 	sql := sq.Select("clh.*").
 		From("ledgerheaders clh").
 		Limit(1).

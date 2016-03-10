@@ -1,36 +1,28 @@
 package ingest
 
 import (
+	cq "github.com/stellar/horizon/db/queries/core"
 	"github.com/stellar/horizon/db2"
 )
 
 // Load runs queries against `core` to fill in the records of the bundle.
 func (lb *LedgerBundle) Load(db *db2.Repo) error {
+	q := cq.Q{db}
+
 	// Load Header
-	err := db.GetRaw(
-		&lb.Header,
-		`SELECT * FROM ledgerheaders WHERE ledgerseq = ?`,
-		lb.Sequence,
-	)
+	err := q.LedgerHeaderBySequence(&lb.Header, lb.Sequence)
 	if err != nil {
 		return err
 	}
 
 	// Load transactions
-	err = db.SelectRaw(
-		&lb.Transactions,
-		`SELECT * FROM txhistory WHERE ledgerseq = ? ORDER BY txindex ASC`,
-		lb.Sequence,
-	)
+	err = q.TransactionsByLedger(&lb.Transactions, lb.Sequence)
+
 	if err != nil {
 		return err
 	}
 
-	err = db.SelectRaw(
-		&lb.TransactionFees,
-		`SELECT * FROM txfeehistory WHERE ledgerseq = ? ORDER BY txindex ASC`,
-		lb.Sequence,
-	)
+	err = q.TransactionFeesByLedger(&lb.TransactionFees, lb.Sequence)
 	if err != nil {
 		return err
 	}
