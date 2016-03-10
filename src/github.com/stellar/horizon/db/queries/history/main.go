@@ -11,3 +11,8 @@ import (
 type Q struct {
 	*db2.Repo
 }
+
+// LatestLedger loads the latest known ledger
+func (q *Q) LatestLedger(dest interface{}) error {
+	return q.GetRaw(dest, `SELECT COALESCE(MAX(sequence), 0) FROM history_ledgers`)
+}

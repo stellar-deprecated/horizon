@@ -1,6 +1,8 @@
 package ingest
 
 import (
+	"github.com/stellar/horizon/db/queries/core"
+	"github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/log"
 )
 
@@ -64,18 +66,15 @@ func (i *Ingester) runOnce() {
 }
 
 func (i *Ingester) updateLedgerState() error {
-	err := i.CoreDB.GetRaw(
-		&i.lastState.StellarCoreSequence,
-		`SELECT COALESCE(MAX(ledgerseq), 0) FROM ledgerheaders`,
-	)
+	cq := &core.Q{i.CoreDB}
+	hq := &history.Q{i.HorizonDB}
+
+	err := cq.LatestLedger(&i.lastState.StellarCoreSequence)
 	if err != nil {
 		return err
 	}
 
-	err = i.HorizonDB.GetRaw(
-		&i.lastState.HorizonSequence,
-		`SELECT COALESCE(MAX(sequence), 0) FROM history_ledgers`,
-	)
+	err = hq.LatestLedger(&i.lastState.HorizonSequence)
 	if err != nil {
 		return err
 	}

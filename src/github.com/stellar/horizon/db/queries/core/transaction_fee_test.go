@@ -1,7 +1,6 @@
 package core
 
 import (
-	_ "github.com/lib/pq"
 	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
 	"testing"
