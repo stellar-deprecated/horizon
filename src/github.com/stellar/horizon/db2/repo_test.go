@@ -6,12 +6,14 @@ import (
 	tdb "github.com/stellar/horizon/test/db"
 	"github.com/stellar/horizon/test/scenarios"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRepo(t *testing.T) {
 	scenarios.Load(tdb.StellarCoreURL(), "base-core.sql")
 	assert := assert.New(t)
-	repo := &Repo{Conn: tdb.StellarCore()}
+	require := require.New(t)
+	repo := &Repo{DB: tdb.StellarCore()}
 
 	var count int
 	err := repo.GetRaw(&count, "SELECT COUNT(*) FROM txhistory")
@@ -38,5 +40,25 @@ func TestRepo(t *testing.T) {
 	// Test NoRows
 	err = repo.GetRaw(&hash, "SELECT prevhash FROM ledgerheaders WHERE ledgerseq = ?", 100)
 	assert.True(repo.NoRows(err))
+
+	// Test transactions
+	require.NoError(repo.Begin(), "begin failed")
+	err = repo.GetRaw(&count, "SELECT COUNT(*) FROM ledgerheaders")
+	assert.NoError(err)
+	assert.Equal(3, count)
+	_, err = repo.ExecRaw("DELETE FROM ledgerheaders")
+	assert.NoError(err)
+	err = repo.GetRaw(&count, "SELECT COUNT(*) FROM ledgerheaders")
+	assert.NoError(err)
+	assert.Equal(0, count, "Ledgers did not appear deleted inside transaction")
+	assert.NoError(repo.Rollback(), "rollback failed")
+
+	// Ensure commit works
+	require.NoError(repo.Begin(), "begin failed")
+	repo.ExecRaw("DELETE FROM ledgerheaders")
+	assert.NoError(repo.Commit(), "commit failed")
+	err = repo.GetRaw(&count, "SELECT COUNT(*) FROM ledgerheaders")
+	assert.NoError(err)
+	assert.Equal(0, count)
 
 }

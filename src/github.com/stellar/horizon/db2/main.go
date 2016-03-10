@@ -21,10 +21,12 @@ type Conn interface {
 // logging.
 type Repo struct {
 	// Conn is the database connection that queries should be executed against.
-	Conn
+	DB *sqlx.DB
 
 	// Ctx is the optional context in which the repo is operating under.
 	Ctx context.Context
+
+	tx *sqlx.Tx
 }
 
 // ensure various types conform to Conn interface
