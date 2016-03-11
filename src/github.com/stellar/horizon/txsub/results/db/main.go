@@ -1,6 +1,6 @@
-// Package rp provides an implementation of the txsub.ResultProvider interface
+// Package results provides an implementation of the txsub.ResultProvider interface
 // backed using the SQL databases used by both stellar core and horizon
-package rp
+package results
 
 import (
 	"bytes"
@@ -12,15 +12,15 @@ import (
 	"golang.org/x/net/context"
 )
 
-// ResultProvider provides transactio submission results by querying the
+// DB provides transactio submission results by querying the
 // connected horizon and stellar core databases.
-type ResultProvider struct {
+type DB struct {
 	Core    *core.Q
 	History *history.Q
 }
 
 // ResultByHash implements txsub.ResultProvider
-func (rp *ResultProvider) ResultByHash(ctx context.Context, hash string) txsub.Result {
+func (rp *DB) ResultByHash(ctx context.Context, hash string) txsub.Result {
 
 	// query history database
 	var hr history.Transaction
