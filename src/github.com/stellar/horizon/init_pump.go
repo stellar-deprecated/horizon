@@ -12,7 +12,7 @@ func initPump(app *App) {
 	if app.config.Autopump {
 		trigger = pump.Tick(1 * time.Second)
 	} else {
-		trigger = db.NewLedgerClosePump(app.ctx, app.horizonDb)
+		trigger = db.NewLedgerClosePump(app.ctx, app.HorizonRepo(nil).DB)
 	}
 
 	app.pump = pump.NewPump(trigger)

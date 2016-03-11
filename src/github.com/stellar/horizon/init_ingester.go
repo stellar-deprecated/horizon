@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/ingest"
 	"log"
 )
@@ -15,9 +14,7 @@ func initIngester(app *App) {
 		log.Fatal("Cannot start ingestion without network passphrase.  Please confirm connectivity with stellar-core.")
 	}
 
-	core := &db2.Repo{DB: app.coreDb}
-	horz := &db2.Repo{DB: app.horizonDb}
-	app.ingester = ingest.New(app.networkPassphrase, core, horz)
+	app.ingester = ingest.New(app.networkPassphrase, app.CoreRepo(nil), app.HorizonRepo(nil))
 	app.ingester.Start()
 }
 

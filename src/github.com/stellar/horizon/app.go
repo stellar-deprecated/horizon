@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/jmoiron/sqlx"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
@@ -37,8 +36,8 @@ var version = ""
 type App struct {
 	config            Config
 	web               *Web
-	horizonDb         *sqlx.DB
-	coreDb            *sqlx.DB
+	historyQ          *history.Q
+	coreQ             *core.Q
 	ctx               context.Context
 	cancel            func()
 	redis             *redis.Pool
@@ -145,38 +144,44 @@ func (a *App) Close() {
 		a.ingester.Close()
 	}
 
-	a.horizonDb.Close()
-	a.coreDb.Close()
+	a.historyQ.Repo.DB.Close()
+	a.coreQ.Repo.DB.Close()
 }
 
+// HistoryQ returns a helper object for performing sql queries against the
+// history portion of horizon's database.
 func (a *App) HistoryQ() *history.Q {
-	// TODO: store a *history.Q on app
-	return &history.Q{a.HorizonRepo(nil)}
+	return a.historyQ
 }
 
+// HorizonRepo returns a new repo that loads data from the horizon database. The
+// returned repo is bound to `ctx`.
 func (a *App) HorizonRepo(ctx context.Context) *db2.Repo {
-	return &db2.Repo{DB: a.horizonDb, Ctx: ctx}
+	return &db2.Repo{DB: a.historyQ.Repo.DB, Ctx: ctx}
 }
 
 // HorizonQuery returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the horizon database
 func (a *App) HorizonQuery() db.SqlQuery {
-	return db.SqlQuery{DB: a.horizonDb}
+	return db.SqlQuery{DB: a.historyQ.Repo.DB}
 }
 
+// CoreRepo returns a new repo that loads data from the stellar core
+// database. The returned repo is bound to `ctx`.
 func (a *App) CoreRepo(ctx context.Context) *db2.Repo {
-	return &db2.Repo{DB: a.coreDb, Ctx: ctx}
+	return &db2.Repo{DB: a.coreQ.Repo.DB, Ctx: ctx}
 }
 
+// CoreQ returns a helper object for performing sql queries aginst the
+// stellar core database.
 func (a *App) CoreQ() *core.Q {
-	// TODO: store a *core.Q on app
-	return &core.Q{a.CoreRepo(nil)}
+	return a.coreQ
 }
 
 // CoreQuery returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the connected stellar core database
 func (a *App) CoreQuery() db.SqlQuery {
-	return db.SqlQuery{DB: a.coreDb}
+	return db.SqlQuery{DB: a.coreQ.Repo.DB}
 }
 
 // UpdateLedgerState triggers a refresh of several metrics gauges, such as open
@@ -257,6 +262,6 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 	a.horizonLedgerGauge.Update(int64(a.latestLedgerState.Horizon))
 	a.stellarCoreLedgerGauge.Update(int64(a.latestLedgerState.Core))
 
-	a.horizonConnGauge.Update(int64(a.horizonDb.Stats().OpenConnections))
-	a.stellarCoreConnGauge.Update(int64(a.coreDb.Stats().OpenConnections))
+	a.horizonConnGauge.Update(int64(a.historyQ.Repo.DB.Stats().OpenConnections))
+	a.stellarCoreConnGauge.Update(int64(a.coreQ.Repo.DB.Stats().OpenConnections))
 }
