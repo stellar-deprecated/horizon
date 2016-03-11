@@ -2,7 +2,7 @@ package log
 
 import (
 	"github.com/Sirupsen/logrus"
-	"github.com/go-errors/errors"
+	"github.com/stellar/horizon/errors"
 )
 
 type Entry struct {
@@ -17,14 +17,8 @@ func (e *Entry) WithFields(fields F) *Entry {
 	return &Entry{*e.Entry.WithFields(logrus.Fields(fields))}
 }
 
-func (e *Entry) WithStack(stackProvider interface{}) *Entry {
-	stack := "unknown"
-
-	if stackProvider, ok := stackProvider.(*errors.Error); ok {
-		stack = string(stackProvider.Stack())
-	}
-
-	return e.WithField("stack", stack)
+func (e *Entry) WithStack(err error) *Entry {
+	return e.WithField("stack", errors.Stack(err))
 }
 
 // Debugf logs a message at the debug severity.
