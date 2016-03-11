@@ -5,6 +5,7 @@ package core
 import (
 	"github.com/guregu/null"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
 )
 
 // Account is a row of data from the `accounts` table
@@ -61,6 +62,12 @@ type OrderBookSummaryPriceLevel struct {
 // counter currency
 type OrderBookSummary []OrderBookSummaryPriceLevel
 
+// Q is a helper struct on which to hang common queries against a stellar
+// core database.
+type Q struct {
+	*db2.Repo
+}
+
 // PriceLevel represents an aggregation of offers to trade at a certain
 // price.
 type PriceLevel struct {
@@ -68,6 +75,11 @@ type PriceLevel struct {
 	Priced int32   `db:"priced"`
 	Pricef float64 `db:"pricef"`
 	Amount int64   `db:"amount"`
+}
+
+// SequenceProvider implements `txsub.SequenceProvider`
+type SequenceProvider struct {
+	Q *Q
 }
 
 // Signer is a row of data from the `signers` table from stellar-core
@@ -104,4 +116,9 @@ type Trustline struct {
 	Tlimit    xdr.Int64
 	Balance   xdr.Int64
 	Flags     int32
+}
+
+// LatestLedger loads the latest known ledger
+func (q *Q) LatestLedger(dest interface{}) error {
+	return q.GetRaw(dest, `SELECT COALESCE(MAX(ledgerseq), 0) FROM ledgerheaders`)
 }

@@ -4,18 +4,17 @@ import (
 	"testing"
 
 	"github.com/stellar/go-stellar-base/xdr"
-	cq "github.com/stellar/horizon/db/queries/core"
-	cr "github.com/stellar/horizon/db/records/core"
+	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/test"
 )
 
 func TestForOperation(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
-	q := &cq.Q{tt.CoreRepo()}
+	q := &core.Q{tt.CoreRepo()}
 
 	load := func(lg int32, tx int, op int) []xdr.AccountId {
-		var txs []cr.Transaction
+		var txs []core.Transaction
 
 		err := q.TransactionsByLedger(&txs, lg)
 		tt.Require.NoError(err, "failed to load transaction data")
@@ -90,10 +89,10 @@ func TestForOperation(t *testing.T) {
 func TestForTransaction(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
-	q := &cq.Q{tt.CoreRepo()}
+	q := &core.Q{tt.CoreRepo()}
 
 	load := func(lg int32, tx int, op int) []xdr.AccountId {
-		var txs []cr.Transaction
+		var txs []core.Transaction
 		err := q.TransactionsByLedger(&txs, lg)
 		tt.Require.NoError(err, "failed to load transaction data")
 		xtx := txs[tx].Envelope

@@ -3,7 +3,7 @@ package db
 import (
 	"github.com/go-errors/errors"
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db/records/core"
+	"github.com/stellar/horizon/db2/core"
 	"golang.org/x/net/context"
 )
 

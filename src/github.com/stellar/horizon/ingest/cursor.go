@@ -6,7 +6,7 @@ import (
 
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db/records/core"
+	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/toid"
 )
 

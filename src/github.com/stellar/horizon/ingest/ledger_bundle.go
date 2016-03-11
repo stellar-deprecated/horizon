@@ -1,13 +1,13 @@
 package ingest
 
 import (
-	cq "github.com/stellar/horizon/db/queries/core"
 	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/core"
 )
 
 // Load runs queries against `core` to fill in the records of the bundle.
 func (lb *LedgerBundle) Load(db *db2.Repo) error {
-	q := cq.Q{db}
+	q := &core.Q{db}
 
 	// Load Header
 	err := q.LedgerHeaderBySequence(&lb.Header, lb.Sequence)

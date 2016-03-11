@@ -6,10 +6,9 @@ import (
 	"bytes"
 	"encoding/base64"
 	"github.com/stellar/go-stellar-base/xdr"
-	cq "github.com/stellar/horizon/db/queries/core"
 	hq "github.com/stellar/horizon/db/queries/history"
-	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 )
@@ -17,7 +16,7 @@ import (
 // ResultProvider provides transactio submission results by querying the
 // connected horizon and stellar core databases.
 type ResultProvider struct {
-	Core    *cq.Q
+	Core    *core.Q
 	History *hq.Q
 }
 

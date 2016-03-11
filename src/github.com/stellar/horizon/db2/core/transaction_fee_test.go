@@ -1,7 +1,6 @@
 package core
 
 import (
-	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/test"
 	"testing"
 )
@@ -11,7 +10,7 @@ func TestTransactionFeesByLedger(t *testing.T) {
 	defer tt.Finish()
 	q := &Q{tt.CoreRepo()}
 
-	var fees []core.TransactionFee
+	var fees []TransactionFee
 	err := q.TransactionFeesByLedger(&fees, 2)
 
 	if tt.Assert.NoError(err) {

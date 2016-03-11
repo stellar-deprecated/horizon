@@ -6,7 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db/records/core"
+	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/test"
 )
 
