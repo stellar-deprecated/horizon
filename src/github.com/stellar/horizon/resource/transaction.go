@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/guregu/null"
-	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"

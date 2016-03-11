@@ -2,8 +2,7 @@ package db
 
 import "golang.org/x/net/context"
 
-// TransactionByHashQuery is deprecated, please use horizon/db/queries/history/TransactionByHash instead.
-// TODO: remove this when we have moved effect filters into their own package
+// TransactionByHashQuery is deprecated, please use `*history.Q` instead.
 type TransactionByHashQuery struct {
 	SqlQuery
 	Hash string

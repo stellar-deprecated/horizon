@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/test"
 )
 

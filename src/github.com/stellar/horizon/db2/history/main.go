@@ -7,6 +7,7 @@ import (
 
 	"github.com/guregu/null"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
 )
 
 const (
@@ -88,6 +89,12 @@ type Operation struct {
 	SourceAccount    string            `db:"source_account"`
 }
 
+// Q is a helper struct on which to hang common queries against a history
+// portion of the horizon database.
+type Q struct {
+	*db2.Repo
+}
+
 // TotalOrderID represents the ID portion of rows that are identified by the
 // "TotalOrderID".  See total_order_id.go in the `db` package for details.
 type TotalOrderID struct {
@@ -116,4 +123,9 @@ type Transaction struct {
 	ValidBefore      null.Int    `db:"valid_before"`
 	CreatedAt        time.Time   `db:"created_at"`
 	UpdatedAt        time.Time   `db:"updated_at"`
+}
+
+// LatestLedger loads the latest known ledger
+func (q *Q) LatestLedger(dest interface{}) error {
+	return q.GetRaw(dest, `SELECT COALESCE(MAX(sequence), 0) FROM history_ledgers`)
 }

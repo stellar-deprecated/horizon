@@ -6,9 +6,8 @@ import (
 	"bytes"
 	"encoding/base64"
 	"github.com/stellar/go-stellar-base/xdr"
-	hq "github.com/stellar/horizon/db/queries/history"
-	"github.com/stellar/horizon/db/records/history"
 	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 )
@@ -17,7 +16,7 @@ import (
 // connected horizon and stellar core databases.
 type ResultProvider struct {
 	Core    *core.Q
-	History *hq.Q
+	History *history.Q
 }
 
 // ResultByHash implements txsub.ResultProvider

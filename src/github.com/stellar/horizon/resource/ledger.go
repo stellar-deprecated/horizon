@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"

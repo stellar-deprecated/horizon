@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/history"
 	"golang.org/x/net/context"
 )
 

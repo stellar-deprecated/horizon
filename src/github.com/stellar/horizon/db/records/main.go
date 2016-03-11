@@ -5,7 +5,7 @@ package records
 
 import (
 	"github.com/stellar/horizon/db2/core"
-	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/history"
 )
 
 // Account represents account data loaded from both the history db AND

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/stellar/horizon/db"
-	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"

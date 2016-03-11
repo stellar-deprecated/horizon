@@ -1,9 +1,9 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db2/core"
-	"github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/log"
 )
 

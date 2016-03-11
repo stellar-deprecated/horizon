@@ -5,7 +5,7 @@ package resource
 import (
 	"time"
 
-	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
 	"github.com/stellar/horizon/resource/effects"

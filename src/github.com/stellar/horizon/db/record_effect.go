@@ -4,7 +4,7 @@ import (
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
-	"github.com/stellar/horizon/db/records/history"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/toid"
 	"golang.org/x/net/context"
 )

@@ -6,8 +6,8 @@ import (
 
 	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db"
-	"github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/toid"
