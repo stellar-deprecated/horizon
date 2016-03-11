@@ -1,6 +1,9 @@
 package db
 
-import "golang.org/x/net/context"
+import (
+	sq "github.com/lann/squirrel"
+	"golang.org/x/net/context"
+)
 
 // CoreOfferPageByAddressQuery loads a page of active offers for the given
 // address.
@@ -11,7 +14,8 @@ type CoreOfferPageByAddressQuery struct {
 }
 
 func (q CoreOfferPageByAddressQuery) Select(ctx context.Context, dest interface{}) error {
-	sql := CoreOfferRecordSelect.
+	sql := sq.Select("co.*").
+		From("offers co").
 		Where("co.sellerid = ?", q.Address).
 		Limit(uint64(q.Limit))
 

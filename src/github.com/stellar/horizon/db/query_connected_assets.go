@@ -4,6 +4,7 @@ import (
 	"github.com/go-errors/errors"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2/core"
 	"golang.org/x/net/context"
 )
 
@@ -61,7 +62,7 @@ func (q ConnectedAssetsQuery) Select(ctx context.Context, dest interface{}) erro
 	*assets = results
 
 	for i, r := range rows {
-		results[i], err = assetFromDB(r.Type, r.Code, r.Issuer)
+		results[i], err = core.AssetFromDB(r.Type, r.Code, r.Issuer)
 		if err != nil {
 			return err
 		}

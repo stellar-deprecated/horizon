@@ -1,6 +1,7 @@
 package db
 
 import (
+	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"golang.org/x/net/context"
 )
@@ -19,7 +20,8 @@ type CoreOfferPageByCurrencyQuery struct {
 }
 
 func (q CoreOfferPageByCurrencyQuery) Select(ctx context.Context, dest interface{}) error {
-	sql := CoreOfferRecordSelect.
+	sql := sq.Select("co.*").
+		From("offers co").
 		Limit(uint64(q.Limit)).
 		Where("co.buyingassettype = ?", q.BuyingAssetType).
 		Where("co.sellingassettype = ?", q.SellingAssetType)
