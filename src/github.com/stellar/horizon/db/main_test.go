@@ -2,13 +2,11 @@ package db
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/test"
 	"golang.org/x/net/context"
 )
@@ -99,44 +97,4 @@ func TestDBPackage(t *testing.T) {
 			So(Get(ctx, query, &result).Error(), ShouldEqual, "Some error")
 		})
 	})
-}
-
-func ExampleGet() {
-	db := OpenStellarCoreTestDatabase()
-	defer db.Close()
-
-	q := CoreAccountByAddressQuery{
-		SqlQuery{db},
-		"GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
-	}
-
-	var account core.Account
-	err := Get(context.Background(), q, &account)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("%s", account.Accountid)
-	// Output: GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H
-}
-
-func ExampleSelect() {
-	db := OpenStellarCoreTestDatabase()
-	defer db.Close()
-
-	q := CoreAccountByAddressQuery{
-		SqlQuery{db},
-		"GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
-	}
-
-	var records []core.Account
-	err := Select(context.Background(), q, &records)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("%d", len(records))
-	// Output: 1
 }

@@ -17,6 +17,13 @@ func (ac Account) IsAuthRevocable() bool {
 	return (ac.Flags & xdr.AccountFlagsAuthRevocableFlag) != 0
 }
 
+// AccountByAddress loads a row from `accounts`, by address
+func (q *Q) AccountByAddress(dest interface{}, addy string) error {
+	sql := selectAccount.Limit(1).Where("accountid = ?", addy)
+
+	return q.Get(dest, sql)
+}
+
 // SequencesForAddresses loads the current sequence number for every accountid
 // specified in `addys`
 func (q *Q) SequencesForAddresses(dest interface{}, addys []string) error {
@@ -51,3 +58,14 @@ func (sp *SequenceProvider) Get(addys []string) (map[string]uint64, error) {
 	}
 	return results, nil
 }
+
+var selectAccount = sq.Select(
+	"a.accountid",
+	"a.balance",
+	"a.seqnum",
+	"a.numsubentries",
+	"a.inflationdest",
+	"a.homedomain",
+	"a.thresholds",
+	"a.flags",
+).From("accounts a")
