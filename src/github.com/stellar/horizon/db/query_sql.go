@@ -4,6 +4,8 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
 )
@@ -81,7 +83,13 @@ func (q SqlQuery) QueryRaw(ctx context.Context, query string, args []interface{}
 	if err != nil {
 		err = errors.Wrap(err, 1)
 	}
+
 	return rows, err
+}
+
+func (q SqlQuery) HistoryQ(ctx context.Context) *history.Q {
+	r := &db2.Repo{DB: q.DB, Ctx: ctx}
+	return &history.Q{r}
 }
 
 func (q SqlQuery) logQuery(ctx context.Context, query string, args []interface{}) {

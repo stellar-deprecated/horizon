@@ -93,7 +93,7 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 	// filter by account address
 	if q.AccountAddress != "" {
 		var account history.Account
-		err := Get(ctx, HistoryAccountByAddressQuery{q.SqlQuery, q.AccountAddress}, &account)
+		err := q.HistoryQ(ctx).AccountByAddress(&account, q.AccountAddress)
 
 		if err != nil {
 			return err

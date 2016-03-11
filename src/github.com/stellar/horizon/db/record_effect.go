@@ -35,7 +35,7 @@ type EffectAccountFilter struct {
 
 func (f *EffectAccountFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
 	var account history.Account
-	err := Get(ctx, HistoryAccountByAddressQuery{f.SqlQuery, f.AccountAddress}, &account)
+	err := f.HistoryQ(ctx).AccountByAddress(&account, f.AccountAddress)
 
 	if err != nil {
 		return sql, err
