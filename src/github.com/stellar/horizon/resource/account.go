@@ -52,7 +52,7 @@ func (this *Account) Populate(ctx context.Context, row db.AccountRecord) (err er
 	this.Links.Operations = lb.PagedLink(self, "operations")
 	this.Links.Payments = lb.PagedLink(self, "payments")
 	this.Links.Effects = lb.PagedLink(self, "effects")
-	this.Links.Offers = lb.PagedLink(self, "Offers")
+	this.Links.Offers = lb.PagedLink(self, "offers")
 
 	return
 }

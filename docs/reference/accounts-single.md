@@ -71,7 +71,7 @@ This endpoint responds with the details of a single account for a given ID. See 
       "templated": true
     },
     "offers": {
-      "href": "https://horizon-testnet.stellar.org/accounts/GD42RQNXTRIW6YR3E2HXV5T2AI27LBRHOERV2JIYNFMXOBA234SWLQQB/Offers{?cursor,limit,order}",
+      "href": "https://horizon-testnet.stellar.org/accounts/GD42RQNXTRIW6YR3E2HXV5T2AI27LBRHOERV2JIYNFMXOBA234SWLQQB/offers{?cursor,limit,order}",
       "templated": true
     }
   },
