@@ -41,12 +41,12 @@ func (i *Ingester) runOnce() {
 		}
 
 		// 2.
-		if i.lastState.UpToDate() {
+		if i.historySequence >= i.coreSequence {
 			return
 		}
 		is := NewSession(
-			i.lastState.HorizonSequence+1,
-			i.lastState.StellarCoreSequence,
+			i.historySequence+1,
+			i.coreSequence,
 			i,
 		)
 
@@ -69,12 +69,12 @@ func (i *Ingester) updateLedgerState() error {
 	cq := &core.Q{i.CoreDB}
 	hq := &history.Q{i.HorizonDB}
 
-	err := cq.LatestLedger(&i.lastState.StellarCoreSequence)
+	err := cq.LatestLedger(&i.coreSequence)
 	if err != nil {
 		return err
 	}
 
-	err = hq.LatestLedger(&i.lastState.HorizonSequence)
+	err = hq.LatestLedger(&i.historySequence)
 	if err != nil {
 		return err
 	}

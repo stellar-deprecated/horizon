@@ -8,7 +8,6 @@ import (
 
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/horizon/cache"
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/db/records/core"
 	"github.com/stellar/horizon/db2"
 )
@@ -75,8 +74,9 @@ type Ingester struct {
 	// Network is the passphrase for the network being imported
 	Network string
 
-	tick      *time.Ticker
-	lastState db.LedgerState
+	tick            *time.Ticker
+	historySequence int32
+	coreSequence    int32
 }
 
 type Ingestion struct {
@@ -159,8 +159,8 @@ func RunOnce(network string, core, horizon *db2.Repo) (*Session, error) {
 	}
 
 	is := NewSession(
-		i.lastState.HorizonSequence+1,
-		i.lastState.StellarCoreSequence,
+		i.historySequence+1,
+		i.coreSequence,
 		i,
 	)
 

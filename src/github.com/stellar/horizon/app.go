@@ -13,6 +13,8 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db/queries/core"
+	"github.com/stellar/horizon/db/queries/history"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/friendbot"
 	"github.com/stellar/horizon/ingest"
@@ -58,7 +60,10 @@ type App struct {
 	goroutineGauge         metrics.Gauge
 
 	// cached state
-	latestLedgerState db.LedgerState
+	latestLedgerState struct {
+		Core    int32
+		Horizon int32
+	}
 }
 
 // SetVersion records the provided version string in the package level `version`
@@ -144,6 +149,11 @@ func (a *App) Close() {
 	a.coreDb.Close()
 }
 
+func (a *App) HistoryQ() *history.Q {
+	// TODO: store a *history.Q on app
+	return &history.Q{a.HorizonRepo(nil)}
+}
+
 func (a *App) HorizonRepo(ctx context.Context) *db2.Repo {
 	return &db2.Repo{DB: a.horizonDb, Ctx: ctx}
 }
@@ -158,6 +168,11 @@ func (a *App) CoreRepo(ctx context.Context) *db2.Repo {
 	return &db2.Repo{DB: a.coreDb, Ctx: ctx}
 }
 
+func (a *App) CoreQ() *core.Q {
+	// TODO: store a *core.Q on app
+	return &core.Q{a.CoreRepo(nil)}
+}
+
 // CoreQuery returns a SqlQuery that can be embedded in a parent query
 // to specify the query should run against the connected stellar core database
 func (a *App) CoreQuery() db.SqlQuery {
@@ -167,18 +182,25 @@ func (a *App) CoreQuery() db.SqlQuery {
 // UpdateLedgerState triggers a refresh of several metrics gauges, such as open
 // db connections and ledger state
 func (a *App) UpdateLedgerState() {
-	var ls db.LedgerState
-	q := db.LedgerStateQuery{a.HorizonQuery(), a.CoreQuery()}
-	err := db.Get(context.Background(), q, &ls)
+	var err error
 
+	err = a.CoreQ().LatestLedger(&a.latestLedgerState.Core)
 	if err != nil {
-		log.WithStack(err).
-			WithField("err", err.Error()).
-			Error("failed to load ledger state")
-		return
+		goto Failed
 	}
 
-	a.latestLedgerState = ls
+	err = a.HistoryQ().LatestLedger(&a.latestLedgerState.Horizon)
+	if err != nil {
+		goto Failed
+	}
+
+	return
+
+Failed:
+	log.WithStack(err).
+		WithField("err", err.Error()).
+		Error("failed to load ledger state")
+
 }
 
 // UpdateStellarCoreInfo updates the value of coreVersion and networkPassphrase
@@ -232,8 +254,8 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 
 	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
 
-	a.horizonLedgerGauge.Update(int64(a.latestLedgerState.HorizonSequence))
-	a.stellarCoreLedgerGauge.Update(int64(a.latestLedgerState.StellarCoreSequence))
+	a.horizonLedgerGauge.Update(int64(a.latestLedgerState.Horizon))
+	a.stellarCoreLedgerGauge.Update(int64(a.latestLedgerState.Core))
 
 	a.horizonConnGauge.Update(int64(a.horizonDb.Stats().OpenConnections))
 	a.stellarCoreConnGauge.Update(int64(a.coreDb.Stats().OpenConnections))
