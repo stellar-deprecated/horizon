@@ -9,7 +9,7 @@ import (
 	"github.com/stellar/go-stellar-base/strkey"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/render/problem"
 )
 
@@ -121,12 +121,12 @@ func (base *Base) GetPagingParams() (cursor string, order string, limit int32) {
 
 // GetPageQuery is a helper that returns a new db.PageQuery struct initialized
 // using the results from a call to GetPagingParams()
-func (base *Base) GetPageQuery() db.PageQuery {
+func (base *Base) GetPageQuery() db2.PageQuery {
 	if base.Err != nil {
-		return db.PageQuery{}
+		return db2.PageQuery{}
 	}
 
-	r, err := db.NewPageQuery(base.GetPagingParams())
+	r, err := db2.NewPageQuery(base.GetPagingParams())
 
 	if err != nil {
 		base.Err = err

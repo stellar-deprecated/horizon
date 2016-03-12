@@ -2,6 +2,7 @@ package db
 
 import (
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/horizon/db2"
 	"golang.org/x/net/context"
 	"math"
 )
@@ -10,7 +11,7 @@ import (
 // of operations in the history database.
 type EffectPageQuery struct {
 	SqlQuery
-	PageQuery
+	db2.PageQuery
 	Filter SQLFilter
 }
 
@@ -21,7 +22,7 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 		PlaceholderFormat(sq.Dollar).
 		RunWith(q.DB)
 
-	op, idx, err := q.CursorInt64Pair(DefaultPairSep)
+	op, idx, err := q.CursorInt64Pair(db2.DefaultPairSep)
 	if err != nil {
 		return
 	}
@@ -34,7 +35,7 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 	case "asc":
 		sql = sql.
 			Where(`(
-					 heff.history_operation_id > ? 
+					 heff.history_operation_id > ?
 				OR (
 							heff.history_operation_id = ?
 					AND heff.order > ?
@@ -43,7 +44,7 @@ func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err erro
 	case "desc":
 		sql = sql.
 			Where(`(
-					 heff.history_operation_id < ? 
+					 heff.history_operation_id < ?
 				OR (
 							heff.history_operation_id = ?
 					AND heff.order < ?

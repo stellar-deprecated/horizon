@@ -1,4 +1,4 @@
-package db
+package db2
 
 import (
 	"fmt"
@@ -39,14 +39,6 @@ var (
 	// PageQuery.GetContinuations cannot be cast to Pageable
 	ErrNotPageable = errors.New("Records provided are not Pageable")
 )
-
-// PageQuery represents a portion of a Query struct concerned with paging
-// through a large dataset.
-type PageQuery struct {
-	Cursor string
-	Order  string
-	Limit  int32
-}
 
 // Invert returns a new PageQuery whose order is reversed
 func (p PageQuery) Invert() PageQuery {

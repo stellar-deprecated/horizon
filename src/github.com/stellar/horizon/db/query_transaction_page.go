@@ -1,13 +1,14 @@
 package db
 
 import (
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"golang.org/x/net/context"
 )
 
 type TransactionPageQuery struct {
 	SqlQuery
-	PageQuery
+	db2.PageQuery
 	AccountAddress string
 	LedgerSequence int32
 }

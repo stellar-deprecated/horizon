@@ -18,6 +18,20 @@ type Conn interface {
 	Select(dest interface{}, query string, args ...interface{}) error
 }
 
+// Pageable records have a defined order, and the place withing that order
+// is determined by the paging token
+type Pageable interface {
+	PagingToken() string
+}
+
+// PageQuery represents a portion of a Query struct concerned with paging
+// through a large dataset.
+type PageQuery struct {
+	Cursor string
+	Order  string
+	Limit  int32
+}
+
 // Repo provides helper methods for making queries against `Conn`, such as
 // logging.
 type Repo struct {

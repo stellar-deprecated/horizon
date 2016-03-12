@@ -7,6 +7,7 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/test"
 	"github.com/stellar/horizon/toid"
@@ -19,7 +20,7 @@ func TestEffectPageQuery(t *testing.T) {
 		var records []history.Effect
 
 		makeQuery := func(c string, o string, l int32) EffectPageQuery {
-			pq := MustPageQuery(c, o, l)
+			pq := db2.MustPageQuery(c, o, l)
 
 			return EffectPageQuery{
 				SqlQuery:  SqlQuery{horizonDb},
@@ -160,7 +161,7 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 		Convey("restricts to order book properly", func() {
 			q := EffectPageQuery{
 				SqlQuery:  SqlQuery{horizonDb},
-				PageQuery: MustPageQuery("", "asc", 0),
+				PageQuery: db2.MustPageQuery("", "asc", 0),
 				Filter: &EffectOrderBookFilter{
 					SellingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,
 					SellingCode:   "EUR",
@@ -191,7 +192,7 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 		Convey("regression: does not crash when using a native asset", func() {
 			q := EffectPageQuery{
 				SqlQuery:  SqlQuery{horizonDb},
-				PageQuery: MustPageQuery("", "asc", 0),
+				PageQuery: db2.MustPageQuery("", "asc", 0),
 				Filter: &EffectOrderBookFilter{
 					SellingType:  xdr.AssetTypeAssetTypeNative,
 					BuyingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,

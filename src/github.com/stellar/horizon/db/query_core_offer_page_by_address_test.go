@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/test"
 )
@@ -14,7 +15,7 @@ func TestCoreOfferPageByAddressQuery(t *testing.T) {
 	Convey("CoreOfferPageByAddressQuery", t, func() {
 
 		makeQuery := func(c string, o string, l int32, a string) CoreOfferPageByAddressQuery {
-			pq, err := NewPageQuery(c, o, l)
+			pq, err := db2.NewPageQuery(c, o, l)
 
 			So(err, ShouldBeNil)
 

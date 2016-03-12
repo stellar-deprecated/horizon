@@ -36,12 +36,6 @@ type Query interface {
 	Select(context.Context, interface{}) error
 }
 
-// Pageable records have a defined order, and the place withing that order
-// is determined by the paging token
-type Pageable interface {
-	PagingToken() string
-}
-
 type Record interface{}
 
 // Tx represents a single db transaction

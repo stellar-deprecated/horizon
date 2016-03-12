@@ -2,6 +2,7 @@ package db
 
 import (
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/horizon/db2"
 	"golang.org/x/net/context"
 )
 
@@ -9,7 +10,7 @@ import (
 // address.
 type CoreOfferPageByAddressQuery struct {
 	SqlQuery
-	PageQuery
+	db2.PageQuery
 	Address string
 }
 

@@ -3,6 +3,7 @@ package db
 import (
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/toid"
 	"golang.org/x/net/context"
@@ -26,7 +27,7 @@ var operationFilterMap = map[string][]xdr.OperationType{
 // of operations in the history database.
 type OperationPageQuery struct {
 	SqlQuery
-	PageQuery
+	db2.PageQuery
 	AccountAddress  string
 	LedgerSequence  int32
 	TransactionHash string

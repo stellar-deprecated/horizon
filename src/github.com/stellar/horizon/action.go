@@ -5,7 +5,7 @@ import (
 	"net/url"
 
 	"github.com/stellar/horizon/actions"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
@@ -61,12 +61,12 @@ func (action *Action) GetPagingParams() (cursor string, order string, limit int3
 
 // GetPageQuery is a helper that returns a new db.PageQuery struct initialized
 // using the results from a call to GetPagingParams()
-func (action *Action) GetPageQuery() db.PageQuery {
+func (action *Action) GetPageQuery() db2.PageQuery {
 	if action.Err != nil {
-		return db.PageQuery{}
+		return db2.PageQuery{}
 	}
 
-	r, err := db.NewPageQuery(action.GetPagingParams())
+	r, err := db2.NewPageQuery(action.GetPagingParams())
 
 	if err != nil {
 		action.Err = err

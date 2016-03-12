@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/test"
 )
@@ -16,7 +17,7 @@ func TestTransactionPageQuery(t *testing.T) {
 		var records []history.Transaction
 
 		makeQuery := func(c string, o string, l int32) TransactionPageQuery {
-			pq, err := NewPageQuery(c, o, l)
+			pq, err := db2.NewPageQuery(c, o, l)
 
 			So(err, ShouldBeNil)
 
