@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/go-errors/errors"
+	"github.com/jmoiron/sqlx"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
@@ -101,6 +102,31 @@ func (r *Repo) ExecRaw(query string, args ...interface{}) (sql.Result, error) {
 // no results.
 func (r *Repo) NoRows(err error) bool {
 	return err == sql.ErrNoRows
+}
+
+// Query runs `query`, returns a *sqlx.Rows instance
+func (r *Repo) Query(query sq.Sqlizer) (*sqlx.Rows, error) {
+	sql, args, err := r.build(query)
+	if err != nil {
+		return nil, err
+	}
+	return r.QueryRaw(sql, args...)
+}
+
+// QueryRaw runs `query` with `args`
+func (r *Repo) QueryRaw(query string, args ...interface{}) (*sqlx.Rows, error) {
+	r.log("query", query, args)
+	query = r.conn().Rebind(query)
+	result, err := r.conn().Queryx(query, args...)
+	if err == nil {
+		return result, nil
+	}
+
+	if r.NoRows(err) {
+		return nil, err
+	}
+
+	return nil, errors.Wrap(err, 1)
 }
 
 // Rollback rolls back the current transaction

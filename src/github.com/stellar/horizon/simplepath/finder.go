@@ -2,10 +2,9 @@ package simplepath
 
 import (
 	"github.com/go-errors/errors"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
-	"golang.org/x/net/context"
 )
 
 // Finder implements the paths.Finder interface and searchs for
@@ -14,8 +13,7 @@ import (
 // This implementation is not meant to be fast or to provide the lowest costs paths, but
 // rather is meant to be a simple implementation that gives usable paths.
 type Finder struct {
-	db.SqlQuery
-	Ctx context.Context
+	Q *core.Q
 }
 
 // ensure the struct is paths.Finder compliant

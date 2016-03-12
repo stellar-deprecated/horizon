@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/paths"
 )
 
@@ -14,7 +14,7 @@ import (
 type pathNode struct {
 	Asset xdr.Asset
 	Tail  *pathNode
-	DB    db.SqlQuery
+	Q     *core.Q
 }
 
 // check interface compatibility
@@ -122,6 +122,6 @@ func (p *pathNode) OrderBook() *orderBook {
 	return &orderBook{
 		Selling: p.Tail.Asset,
 		Buying:  p.Asset,
-		DB:      p.DB,
+		Q:       p.Q,
 	}
 }
