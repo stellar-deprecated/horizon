@@ -312,10 +312,10 @@ func (c *Cursor) Transaction() *core.Transaction {
 	return &c.data.Transactions[c.tx]
 }
 
-// TransactionAndFee returns the txhistory and txfeehistory rows for the current
+// TransactionFee returns the txfeehistory row for the current
 // transaction.
-func (c *Cursor) TransactionAndFee() (*core.Transaction, *core.TransactionFee) {
-	return &c.data.Transactions[c.tx], &c.data.TransactionFees[c.tx]
+func (c *Cursor) TransactionFee() *core.TransactionFee {
+	return &c.data.TransactionFees[c.tx]
 }
 
 // TransactionCount returns the count of transactions in the current ledger

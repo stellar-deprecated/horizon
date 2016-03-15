@@ -105,19 +105,6 @@ func ShouldBeOrderedDescending(actual interface{}, options ...interface{}) strin
 	return ShouldBeOrdered(actual, cmp)
 }
 
-// Mock Dump Query
-
-type mockDumpQuery struct{}
-
-func (q mockDumpQuery) Get(ctx context.Context) ([]interface{}, error) {
-	return []interface{}{
-		"hello",
-		"world",
-		"from",
-		"go",
-	}, nil
-}
-
 // Mock Query
 
 type mockQuery struct {

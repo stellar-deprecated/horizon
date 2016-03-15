@@ -195,7 +195,8 @@ func (ingest *Ingestion) Start() (err error) {
 // Transaction ingests the provided transaction data into a new row in the
 // `history_transactions` table
 func (ingest *Ingestion) Transaction(c *Cursor) error {
-	tx, fee := c.TransactionAndFee()
+	tx := c.Transaction()
+	fee := c.TransactionFee()
 
 	sql := ingest.transactions.Values(
 		c.TransactionID(),
@@ -217,6 +218,24 @@ func (ingest *Ingestion) Transaction(c *Cursor) error {
 		time.Now().UTC(),
 		time.Now().UTC(),
 	)
+
+	_, err := ingest.DB.Exec(sql)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// TransactionParticipants ingests the provided account ids as participants of
+// transaction with id `tx`, creating a new row in the
+// `history_transaction_participants` table.
+func (ingest *Ingestion) TransactionParticipants(tx int64, aids []int64) error {
+	sql := ingest.transaction_participants
+
+	for _, aid := range aids {
+		sql = sql.Values(tx, aid)
+	}
 
 	_, err := ingest.DB.Exec(sql)
 	if err != nil {

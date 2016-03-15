@@ -8,60 +8,6 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
-// ForChanges returns all the participating accounts from the provided
-// ledger changes.
-func ForChanges(
-	changes *xdr.LedgerEntryChanges,
-) (result []xdr.AccountId, err error) {
-
-	for _, c := range *changes {
-		var account *xdr.AccountId
-
-		switch c.Type {
-		case xdr.LedgerEntryChangeTypeLedgerEntryCreated:
-			account = forLedgerEntry(c.MustCreated())
-		case xdr.LedgerEntryChangeTypeLedgerEntryRemoved:
-			account = forLedgerKey(c.MustRemoved())
-		case xdr.LedgerEntryChangeTypeLedgerEntryUpdated:
-			account = forLedgerEntry(c.MustUpdated())
-		case xdr.LedgerEntryChangeTypeLedgerEntryState:
-			account = forLedgerEntry(c.MustState())
-		default:
-			err = fmt.Errorf("Unknown change type: %s", c.Type)
-			return
-		}
-
-		if account != nil {
-			result = append(result, *account)
-		}
-	}
-
-	return
-}
-
-// ForMeta returns all the participating accounts from the provided
-// transaction meta.
-func ForMeta(
-	meta *xdr.TransactionMeta,
-) (result []xdr.AccountId, err error) {
-
-	if meta.Operations == nil {
-		return
-	}
-
-	for _, op := range *meta.Operations {
-		var acc []xdr.AccountId
-		acc, err = ForChanges(&op.Changes)
-		if err != nil {
-			return
-		}
-
-		result = append(result, acc...)
-	}
-
-	return
-}
-
 // ForOperation returns all the participating accounts from the
 // provided operation.
 func ForOperation(
@@ -107,8 +53,64 @@ func ForOperation(
 
 // ForTransaction returns all the participating accounts from the provided
 // transaction.
-func ForTransaction(tx *xdr.TransactionEnvelope, feeMeta *xdr.LedgerEntryChanges) ([]xdr.AccountId, error) {
-	return nil, nil
+func ForTransaction(
+	tx *xdr.Transaction,
+	meta *xdr.TransactionMeta,
+	feeMeta *xdr.LedgerEntryChanges,
+) (ret []xdr.AccountId, err error) {
+
+	ret = append(ret, tx.SourceAccount)
+
+	p, err := forMeta(meta)
+	if err != nil {
+		return
+	}
+	ret = append(ret, p...)
+
+	p, err = forChanges(feeMeta)
+	if err != nil {
+		return
+	}
+	ret = append(ret, p...)
+
+	for i := range tx.Operations {
+		p, err = ForOperation(tx, &tx.Operations[i])
+		if err != nil {
+			return
+		}
+		ret = append(ret, p...)
+	}
+
+	return
+}
+
+func forChanges(
+	changes *xdr.LedgerEntryChanges,
+) (result []xdr.AccountId, err error) {
+
+	for _, c := range *changes {
+		var account *xdr.AccountId
+
+		switch c.Type {
+		case xdr.LedgerEntryChangeTypeLedgerEntryCreated:
+			account = forLedgerEntry(c.MustCreated())
+		case xdr.LedgerEntryChangeTypeLedgerEntryRemoved:
+			account = forLedgerKey(c.MustRemoved())
+		case xdr.LedgerEntryChangeTypeLedgerEntryUpdated:
+			account = forLedgerEntry(c.MustUpdated())
+		case xdr.LedgerEntryChangeTypeLedgerEntryState:
+			account = forLedgerEntry(c.MustState())
+		default:
+			err = fmt.Errorf("Unknown change type: %s", c.Type)
+			return
+		}
+
+		if account != nil {
+			result = append(result, *account)
+		}
+	}
+
+	return
 }
 
 func forLedgerEntry(le xdr.LedgerEntry) *xdr.AccountId {
@@ -125,4 +127,25 @@ func forLedgerKey(lk xdr.LedgerKey) *xdr.AccountId {
 	}
 	aid := lk.MustAccount().AccountId
 	return &aid
+}
+
+func forMeta(
+	meta *xdr.TransactionMeta,
+) (result []xdr.AccountId, err error) {
+
+	if meta.Operations == nil {
+		return
+	}
+
+	for _, op := range *meta.Operations {
+		var acc []xdr.AccountId
+		acc, err = forChanges(&op.Changes)
+		if err != nil {
+			return
+		}
+
+		result = append(result, acc...)
+	}
+
+	return
 }

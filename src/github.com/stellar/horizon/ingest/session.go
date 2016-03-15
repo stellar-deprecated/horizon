@@ -33,7 +33,6 @@ func (is *Session) Run() {
 	// TODO: metrics
 	// TODO: validate ledger chain
 	// TODO: clear data
-	// TODO: flush inserts
 	// TODO: record success
 
 }
@@ -145,7 +144,6 @@ func (is *Session) ingestOperation() {
 		is.Err = is.Ingestion.Account(is.Cursor.OperationID(), op.Destination.Address())
 	}
 
-	// TODO: import operation participants
 	is.ingestOperationParticipants()
 	is.ingestEffects()
 }
@@ -188,7 +186,36 @@ func (is *Session) ingestTransaction() {
 		is.ingestOperation()
 	}
 
-	// TODO: import transaction participants
+	is.ingestTransactionParticipants()
+}
+
+func (is *Session) ingestTransactionParticipants() {
+	if is.Err != nil {
+		return
+	}
+
+	// Find the participants
+	var p []xdr.AccountId
+	p, is.Err = participants.ForTransaction(
+		&is.Cursor.Transaction().Envelope.Tx,
+		&is.Cursor.Transaction().ResultMeta,
+		&is.Cursor.TransactionFee().Changes,
+	)
+	if is.Err != nil {
+		return
+	}
+
+	var aids []int64
+	aids, is.Err = is.lookupParticipantIDs(p)
+	if is.Err != nil {
+		return
+	}
+
+	is.Err = is.Ingestion.TransactionParticipants(is.Cursor.TransactionID(), aids)
+	if is.Err != nil {
+		return
+	}
+
 }
 
 func (is *Session) lookupParticipantIDs(aids []xdr.AccountId) (ret []int64, err error) {
