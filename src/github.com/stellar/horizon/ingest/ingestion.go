@@ -138,20 +138,21 @@ func (ingest *Ingestion) Ledger(
 
 // Operation ingests the provided operation data into a new row in the
 // `history_operations` table
-func (ingest *Ingestion) Operation(c *Cursor, details map[string]interface{}) error {
+func (ingest *Ingestion) Operation(
+	id int64,
+	txid int64,
+	order int32,
+	source xdr.AccountId,
+	typ xdr.OperationType,
+	details map[string]interface{},
+
+) error {
 	djson, err := json.Marshal(details)
 	if err != nil {
 		return err
 	}
 
-	sql := ingest.operations.Values(
-		c.OperationID(),
-		c.TransactionID(),
-		c.OperationOrder(),
-		c.OperationSourceAddress(),
-		c.OperationType(),
-		djson,
-	)
+	sql := ingest.operations.Values(id, txid, order, source.Address(), typ, djson)
 	_, err = ingest.DB.Exec(sql)
 	if err != nil {
 		return err
@@ -198,19 +199,21 @@ func (ingest *Ingestion) Start() (err error) {
 
 // Transaction ingests the provided transaction data into a new row in the
 // `history_transactions` table
-func (ingest *Ingestion) Transaction(c *Cursor) error {
-	tx := c.Transaction()
-	fee := c.TransactionFee()
+func (ingest *Ingestion) Transaction(
+	id int64,
+	tx *core.Transaction,
+	fee *core.TransactionFee,
+) error {
 
 	sql := ingest.transactions.Values(
-		c.TransactionID(),
+		id,
 		tx.TransactionHash,
 		tx.LedgerSequence,
 		tx.Index,
 		tx.SourceAddress(),
 		tx.Sequence(),
 		tx.Fee(),
-		c.OperationCount(),
+		len(tx.Envelope.Tx.Operations),
 		tx.EnvelopeXDR(),
 		tx.ResultXDR(),
 		tx.ResultMetaXDR(),

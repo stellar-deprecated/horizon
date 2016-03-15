@@ -140,7 +140,14 @@ func (is *Session) ingestOperation() {
 		return
 	}
 
-	is.Err = is.Ingestion.Operation(is.Cursor, is.operationDetails())
+	is.Err = is.Ingestion.Operation(
+		is.Cursor.OperationID(),
+		is.Cursor.TransactionID(),
+		is.Cursor.OperationOrder(),
+		is.Cursor.OperationSourceAccount(),
+		is.Cursor.OperationType(),
+		is.operationDetails(),
+	)
 	if is.Err != nil {
 		return
 	}
@@ -187,7 +194,11 @@ func (is *Session) ingestTransaction() {
 		return
 	}
 
-	is.Ingestion.Transaction(is.Cursor)
+	is.Ingestion.Transaction(
+		is.Cursor.TransactionID(),
+		is.Cursor.Transaction(),
+		is.Cursor.TransactionFee(),
+	)
 
 	for is.Cursor.NextOp() {
 		is.ingestOperation()
