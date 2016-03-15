@@ -34,86 +34,72 @@ func New(
 	row history.Effect,
 ) (result hal.Pageable, err error) {
 
+	base := Base{}
+	base.Populate(ctx, row)
+
 	switch row.Type {
 	case history.EffectAccountCreated:
-		e := AccountCreated{}
-		e.Populate(ctx, row)
+		e := AccountCreated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountCredited:
-		e := AccountCredited{}
-		e.Populate(ctx, row)
+		e := AccountCredited{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountDebited:
-		e := AccountDebited{}
-		e.Populate(ctx, row)
+		e := AccountDebited{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountThresholdsUpdated:
-		e := AccountThresholdsUpdated{}
-		e.Populate(ctx, row)
+		e := AccountThresholdsUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountHomeDomainUpdated:
-		e := AccountHomeDomainUpdated{}
-		e.Populate(ctx, row)
+		e := AccountHomeDomainUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountFlagsUpdated:
-		e := AccountFlagsUpdated{}
-		e.Populate(ctx, row)
+		e := AccountFlagsUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectSignerCreated:
-		e := SignerCreated{}
-		e.Populate(ctx, row)
+		e := SignerCreated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectSignerUpdated:
-		e := SignerUpdated{}
-		e.Populate(ctx, row)
+		e := SignerUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectSignerRemoved:
-		e := SignerRemoved{}
-		e.Populate(ctx, row)
+		e := SignerRemoved{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineCreated:
-		e := TrustlineCreated{}
-		e.Populate(ctx, row)
+		e := TrustlineCreated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineUpdated:
-		e := TrustlineUpdated{}
-		e.Populate(ctx, row)
+		e := TrustlineUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineRemoved:
-		e := TrustlineRemoved{}
-		e.Populate(ctx, row)
+		e := TrustlineRemoved{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineAuthorized:
-		e := TrustlineAuthorized{}
-		e.Populate(ctx, row)
+		e := TrustlineAuthorized{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineDeauthorized:
-		e := TrustlineDeauthorized{}
-		e.Populate(ctx, row)
+		e := TrustlineDeauthorized{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrade:
-		e := Trade{}
-		e.Populate(ctx, row)
+		e := Trade{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	default:
-		e := Base{}
-		e.Populate(ctx, row)
-		result = e
+		result = base
 	}
 
 	return

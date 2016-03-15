@@ -178,12 +178,6 @@ func (a *App) CoreQ() *core.Q {
 	return a.coreQ
 }
 
-// CoreQuery returns a SqlQuery that can be embedded in a parent query
-// to specify the query should run against the connected stellar core database
-func (a *App) CoreQuery() db.SqlQuery {
-	return db.SqlQuery{DB: a.coreQ.Repo.DB}
-}
-
 // UpdateLedgerState triggers a refresh of several metrics gauges, such as open
 // db connections and ledger state
 func (a *App) UpdateLedgerState() {

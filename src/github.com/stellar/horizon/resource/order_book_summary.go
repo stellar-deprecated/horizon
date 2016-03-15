@@ -1,33 +1,25 @@
 package resource
 
 import (
-	"github.com/stellar/horizon/assets"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db2/core"
 	"golang.org/x/net/context"
 )
 
-func (this *OrderBookSummary) Populate(ctx context.Context, query *db.OrderBookSummaryQuery, row core.OrderBookSummary) error {
+func (this *OrderBookSummary) Populate(
+	ctx context.Context,
+	selling xdr.Asset,
+	buying xdr.Asset,
+	row core.OrderBookSummary,
+) error {
 
-	st, err := assets.String(query.SellingType)
+	err := this.Selling.Populate(ctx, selling)
 	if err != nil {
 		return err
 	}
-
-	bt, err := assets.String(query.BuyingType)
+	err = this.Buying.Populate(ctx, buying)
 	if err != nil {
 		return err
-	}
-
-	this.Selling = Asset{
-		Type:   st,
-		Code:   query.SellingCode,
-		Issuer: query.SellingIssuer,
-	}
-	this.Buying = Asset{
-		Type:   bt,
-		Code:   query.BuyingCode,
-		Issuer: query.BuyingIssuer,
 	}
 
 	this.populateLevels(&this.Bids, row.Bids())
