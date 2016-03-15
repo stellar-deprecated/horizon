@@ -7,6 +7,7 @@ import (
 	"github.com/go-errors/errors"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
 )
 
 // PagingToken returns a suitable paging token for the Offer
@@ -75,4 +76,27 @@ func (q *Q) ConnectedAssets(dest interface{}, selling xdr.Asset) error {
 	}
 
 	return nil
+}
+
+// OffersByAddress loads a page of active offers for the given
+// address.
+func (q *Q) OffersByAddress(dest interface{}, addy string, pq db2.PageQuery) error {
+	sql := sq.Select("co.*").
+		From("offers co").
+		Where("co.sellerid = ?", addy).
+		Limit(uint64(pq.Limit))
+
+	cursor, err := pq.CursorInt64()
+	if err != nil {
+		return err
+	}
+
+	switch pq.Order {
+	case "asc":
+		sql = sql.Where("co.offerid > ?", cursor).OrderBy("co.offerid asc")
+	case "desc":
+		sql = sql.Where("co.offerid < ?", cursor).OrderBy("co.offerid desc")
+	}
+
+	return q.Select(dest, sql)
 }

@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/stellar/horizon/test"
 	"testing"
+
+	"github.com/stellar/horizon/test"
 )
 
 func TestTransactionsQueries(t *testing.T) {

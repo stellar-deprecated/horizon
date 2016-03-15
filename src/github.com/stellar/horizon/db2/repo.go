@@ -151,7 +151,7 @@ func (r *Repo) Select(dest interface{}, query sq.Sqlizer) error {
 
 // SelectRaw runs `query` with `args`, setting the results found on `dest`.
 func (r *Repo) SelectRaw(dest interface{}, query string, args ...interface{}) error {
-	r.log("get", query, args)
+	r.log("select", query, args)
 	query = r.conn().Rebind(query)
 	err := r.conn().Select(dest, query, args...)
 	if err == nil {
