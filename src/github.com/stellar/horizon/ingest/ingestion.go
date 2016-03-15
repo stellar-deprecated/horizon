@@ -8,6 +8,7 @@ import (
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db/sqx"
+	"github.com/stellar/horizon/db2/core"
 )
 
 type effectFactory struct {
@@ -103,12 +104,16 @@ func (ingest *Ingestion) Flush() error {
 }
 
 // Ledger adds a ledger to the current ingestion
-func (ingest *Ingestion) Ledger(c *Cursor) error {
-	header := c.Ledger()
+func (ingest *Ingestion) Ledger(
+	id int64,
+	header *core.LedgerHeader,
+	txs int,
+	ops int,
+) error {
 	sql := ingest.ledgers.Values(
 		CurrentVersion,
-		c.LedgerID(),
-		c.LedgerSequence(),
+		id,
+		header.Sequence,
 		header.LedgerHash,
 		header.PrevHash,
 		header.Data.TotalCoins,
@@ -119,8 +124,8 @@ func (ingest *Ingestion) Ledger(c *Cursor) error {
 		time.Unix(header.CloseTime, 0).UTC(),
 		time.Now().UTC(),
 		time.Now().UTC(),
-		c.TransactionCount(),
-		c.LedgerOperationCount(),
+		txs,
+		ops,
 	)
 
 	_, err := ingest.DB.Exec(sql)

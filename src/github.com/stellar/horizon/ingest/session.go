@@ -114,7 +114,12 @@ func (is *Session) ingestLedger() {
 		return
 	}
 
-	is.Ingestion.Ledger(is.Cursor)
+	is.Ingestion.Ledger(
+		is.Cursor.LedgerID(),
+		is.Cursor.Ledger(),
+		is.Cursor.TransactionCount(),
+		is.Cursor.LedgerOperationCount(),
+	)
 
 	// If this is ledger 1, create the root account
 	if is.Cursor.LedgerSequence() == 1 {
