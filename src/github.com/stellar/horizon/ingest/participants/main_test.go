@@ -93,16 +93,24 @@ func TestForTransaction(t *testing.T) {
 
 	load := func(lg int32, tx int, op int) []xdr.AccountId {
 		var txs []core.Transaction
+		var fees []core.TransactionFee
 		err := q.TransactionsByLedger(&txs, lg)
 		tt.Require.NoError(err, "failed to load transaction data")
-		xtx := txs[tx].Envelope
-		// TODO: fee :=
-		ret, err := ForTransaction(&xtx, nil)
+		err = q.TransactionFeesByLedger(&fees, lg)
+		tt.Require.NoError(err, "failed to load transaction fee data")
+
+		xtx := txs[tx].Envelope.Tx
+		meta := txs[tx].ResultMeta
+		fee := fees[tx].Changes
+
+		ret, err := ForTransaction(&xtx, &meta, &fee)
 		tt.Require.NoError(err, "ForOperation() errored")
 		return ret
 	}
 
-	// TODO:
-	_ = load
+	p := load(3, 0, 0)
+	tt.Require.Len(p, 2)
+	tt.Assert.Equal("GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", p[0].Address())
+	tt.Assert.Equal("GAXI33UCLQTCKM2NMRBS7XYBR535LLEVAHL5YBN4FTCB4HZHT7ZA5CVK", p[1].Address())
 
 }

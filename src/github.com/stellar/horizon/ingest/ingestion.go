@@ -133,9 +133,8 @@ func (ingest *Ingestion) Ledger(c *Cursor) error {
 
 // Operation ingests the provided operation data into a new row in the
 // `history_operations` table
-func (ingest *Ingestion) Operation(c *Cursor) error {
-	dets := c.OperationDetails()
-	djson, err := json.Marshal(dets)
+func (ingest *Ingestion) Operation(c *Cursor, details map[string]interface{}) error {
+	djson, err := json.Marshal(details)
 	if err != nil {
 		return err
 	}

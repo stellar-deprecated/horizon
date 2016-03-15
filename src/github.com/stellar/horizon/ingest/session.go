@@ -1,10 +1,12 @@
 package ingest
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/stellar/horizon/ingest/participants"
 	// "github.com/stellar/go-stellar-base/amount"
+	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/keypair"
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -133,7 +135,7 @@ func (is *Session) ingestOperation() {
 		return
 	}
 
-	is.Err = is.Ingestion.Operation(is.Cursor)
+	is.Err = is.Ingestion.Operation(is.Cursor, is.operationDetails())
 	if is.Err != nil {
 		return
 	}
@@ -238,4 +240,136 @@ func (is *Session) lookupParticipantIDs(aids []xdr.AccountId) (ret []int64, err 
 	}
 
 	return
+}
+
+// operationDetails returns the details regarding the current operation, suitable
+// for ingestion into a history_operation row
+func (is *Session) operationDetails() map[string]interface{} {
+	details := map[string]interface{}{}
+	c := is.Cursor
+	source := c.OperationSourceAccount()
+
+	switch c.OperationType() {
+	case xdr.OperationTypeCreateAccount:
+		op := c.Operation().Body.MustCreateAccountOp()
+		details["funder"] = source.Address()
+		details["account"] = op.Destination.Address()
+		details["starting_balance"] = amount.String(op.StartingBalance)
+	case xdr.OperationTypePayment:
+		op := c.Operation().Body.MustPaymentOp()
+		details["from"] = source.Address()
+		details["to"] = op.Destination.Address()
+		details["amount"] = amount.String(op.Amount)
+		c.assetDetails(details, op.Asset, "")
+	case xdr.OperationTypePathPayment:
+		op := c.Operation().Body.MustPathPaymentOp()
+		details["from"] = source.Address()
+		details["to"] = op.Destination.Address()
+
+		result := c.OperationResult().MustTr().MustPathPaymentResult()
+
+		details["amount"] = amount.String(op.DestAmount)
+		details["source_amount"] = amount.String(result.SendAmount())
+		details["source_max"] = amount.String(op.SendMax)
+		c.assetDetails(details, op.DestAsset, "")
+		c.assetDetails(details, op.SendAsset, "source_")
+
+		var path = make([]map[string]interface{}, len(op.Path))
+		for i := range op.Path {
+			path[i] = make(map[string]interface{})
+			c.assetDetails(path[i], op.Path[i], "")
+		}
+		details["path"] = path
+	case xdr.OperationTypeManageOffer:
+		op := c.Operation().Body.MustManageOfferOp()
+		details["offer_id"] = op.OfferId
+		details["amount"] = amount.String(op.Amount)
+		details["price"] = op.Price.String()
+		details["price_r"] = map[string]interface{}{
+			"n": op.Price.N,
+			"d": op.Price.D,
+		}
+		c.assetDetails(details, op.Buying, "buying_")
+		c.assetDetails(details, op.Selling, "selling_")
+
+	case xdr.OperationTypeCreatePassiveOffer:
+		op := c.Operation().Body.MustCreatePassiveOfferOp()
+		details["amount"] = amount.String(op.Amount)
+		details["price"] = op.Price.String()
+		details["price_r"] = map[string]interface{}{
+			"n": op.Price.N,
+			"d": op.Price.D,
+		}
+		c.assetDetails(details, op.Buying, "buying_")
+		c.assetDetails(details, op.Selling, "selling_")
+	case xdr.OperationTypeSetOptions:
+		op := c.Operation().Body.MustSetOptionsOp()
+
+		if op.InflationDest != nil {
+			details["inflation_dest"] = op.InflationDest.Address()
+		}
+
+		if op.SetFlags != nil && *op.SetFlags > 0 {
+			c.flagDetails(details, int32(*op.SetFlags), "set")
+		}
+
+		if op.ClearFlags != nil && *op.ClearFlags > 0 {
+			c.flagDetails(details, int32(*op.ClearFlags), "clear")
+		}
+
+		if op.MasterWeight != nil {
+			details["master_key_weight"] = *op.MasterWeight
+		}
+
+		if op.LowThreshold != nil {
+			details["low_threshold"] = *op.LowThreshold
+		}
+
+		if op.MedThreshold != nil {
+			details["med_threshold"] = *op.MedThreshold
+		}
+
+		if op.HighThreshold != nil {
+			details["high_threshold"] = *op.HighThreshold
+		}
+
+		if op.HomeDomain != nil {
+			details["home_domain"] = *op.HomeDomain
+		}
+
+		if op.Signer != nil {
+			details["signer_key"] = op.Signer.PubKey.Address()
+			details["signer_weight"] = op.Signer.Weight
+		}
+	case xdr.OperationTypeChangeTrust:
+		op := c.Operation().Body.MustChangeTrustOp()
+		c.assetDetails(details, op.Line, "")
+		details["trustor"] = source.Address()
+		details["trustee"] = details["asset_issuer"]
+		details["limit"] = amount.String(op.Limit)
+	case xdr.OperationTypeAllowTrust:
+		op := c.Operation().Body.MustAllowTrustOp()
+		c.assetDetails(details, op.Asset.ToAsset(source), "")
+		details["trustee"] = source.Address()
+		details["trustor"] = op.Trustor.Address()
+		details["authorize"] = op.Authorize
+	case xdr.OperationTypeAccountMerge:
+		aid := c.Operation().Body.MustDestination()
+		details["account"] = source.Address()
+		details["into"] = aid.Address()
+	case xdr.OperationTypeInflation:
+		// no inflation details, presently
+	case xdr.OperationTypeManageData:
+		op := c.Operation().Body.MustManageDataOp()
+		details["name"] = string(op.DataName)
+		if op.DataValue != nil {
+			details["value"] = base64.StdEncoding.EncodeToString(*op.DataValue)
+		} else {
+			details["value"] = nil
+		}
+	default:
+		panic(fmt.Errorf("Unknown operation type: %s", c.OperationType()))
+	}
+
+	return details
 }

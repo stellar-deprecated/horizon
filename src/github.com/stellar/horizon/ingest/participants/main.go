@@ -59,26 +59,39 @@ func ForTransaction(
 	feeMeta *xdr.LedgerEntryChanges,
 ) (ret []xdr.AccountId, err error) {
 
-	ret = append(ret, tx.SourceAccount)
+	alreadyAdded := map[string]bool{}
+	add := func(aids ...xdr.AccountId) {
+		for _, aid := range aids {
+			_, found := alreadyAdded[aid.Address()]
+			if found {
+				continue
+			}
+
+			ret = append(ret, aid)
+			alreadyAdded[aid.Address()] = true
+		}
+	}
+
+	add(tx.SourceAccount)
 
 	p, err := forMeta(meta)
 	if err != nil {
 		return
 	}
-	ret = append(ret, p...)
+	add(p...)
 
 	p, err = forChanges(feeMeta)
 	if err != nil {
 		return
 	}
-	ret = append(ret, p...)
+	add(p...)
 
 	for i := range tx.Operations {
 		p, err = ForOperation(tx, &tx.Operations[i])
 		if err != nil {
 			return
 		}
-		ret = append(ret, p...)
+		add(p...)
 	}
 
 	return
