@@ -19,7 +19,7 @@ var EffectRecordSelect sq.SelectBuilder = sq.
 // EffectTypeFilter represents a filter that excludes all rows that do not match the
 // type specified by the filter
 type EffectTypeFilter struct {
-	Type int32
+	Type history.EffectType
 }
 
 func (f *EffectTypeFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {

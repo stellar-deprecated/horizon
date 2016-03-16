@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-var TypeNames = map[int32]string{
+var TypeNames = map[history.EffectType]string{
 	history.EffectAccountCreated:           "account_created",
 	history.EffectAccountRemoved:           "account_removed",
 	history.EffectAccountCredited:          "account_credited",

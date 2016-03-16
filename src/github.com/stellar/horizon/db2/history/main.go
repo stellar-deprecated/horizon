@@ -55,7 +55,7 @@ type Effect struct {
 	Account            string      `db:"address"`
 	HistoryOperationID int64       `db:"history_operation_id"`
 	Order              int32       `db:"order"`
-	Type               int32       `db:"type"`
+	Type               EffectType  `db:"type"`
 	DetailsString      null.String `db:"details"`
 }
 
