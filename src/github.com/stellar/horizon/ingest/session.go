@@ -116,12 +116,22 @@ func (is *Session) ingestEffects() {
 		dets = map[string]interface{}{"amount": amount.String(result.SendAmount())}
 		is.assetDetails(dets, op.SendAsset, "")
 		effects.Add(source, history.EffectAccountDebited, dets)
-
-		// TODO: trades
+		is.ingestTrades(effects, source, result.MustSuccess().Offers)
 	case xdr.OperationTypeManageOffer:
-		// TODO: trades
+		result := is.Cursor.OperationResult().MustManageOfferResult().MustSuccess()
+		is.ingestTrades(effects, source, result.OffersClaimed)
 	case xdr.OperationTypeCreatePassiveOffer:
-		// TODO: trades
+		claims := []xdr.ClaimOfferAtom{}
+		result := is.Cursor.OperationResult()
+
+		// KNOWN ISSUE:  stellar-core creates
+		if result.Type == xdr.OperationTypeManageOffer {
+			claims = result.MustManageOfferResult().MustSuccess().OffersClaimed
+		} else {
+			claims = result.MustCreatePassiveOfferResult().MustSuccess().OffersClaimed
+		}
+
+		is.ingestTrades(effects, source, claims)
 	case xdr.OperationTypeSetOptions:
 		// TODO: account_home_domain_updated
 		// TODO: account_thresholds_updated
@@ -133,11 +143,25 @@ func (is *Session) ingestEffects() {
 	case xdr.OperationTypeAllowTrust:
 		// TODO: trustline_authorized,trustline_deauthorized
 	case xdr.OperationTypeAccountMerge:
-		// TODO: account_credited
-		// TODO: account_debited
-		// TODO: account_removed
+		dest := opbody.MustDestination()
+		result := is.Cursor.OperationResult().MustAccountMergeResult()
+		dets := map[string]interface{}{
+			"amount":     amount.String(result.MustSourceAccountBalance()),
+			"asset_type": "native",
+		}
+		effects.Add(source, history.EffectAccountDebited, dets)
+		effects.Add(dest, history.EffectAccountCredited, dets)
+		effects.Add(source, history.EffectAccountRemoved, map[string]interface{}{})
 	case xdr.OperationTypeInflation:
-		// TODO: account_credited for each account that got inflation funds
+		payouts := is.Cursor.OperationResult().MustInflationResult().MustPayouts()
+		for _, payout := range payouts {
+			effects.Add(payout.Destination, history.EffectAccountCredited,
+				map[string]interface{}{
+					"amount":     amount.String(payout.Amount),
+					"asset_type": "native",
+				},
+			)
+		}
 	case xdr.OperationTypeManageData:
 		// TODO: data_added,data_removed,data_updated
 	default:
@@ -227,6 +251,37 @@ func (is *Session) ingestOperationParticipants() {
 	if is.Err != nil {
 		return
 	}
+}
+
+func (is *Session) ingestTrades(effects *EffectIngestion, buyer xdr.AccountId, claims []xdr.ClaimOfferAtom) {
+	for _, claim := range claims {
+		seller := claim.SellerId
+		bd, sd := is.tradeDetails(buyer, seller, claim)
+		effects.Add(buyer, history.EffectTrade, bd)
+		effects.Add(seller, history.EffectTrade, sd)
+	}
+}
+
+func (is *Session) tradeDetails(buyer, seller xdr.AccountId, claim xdr.ClaimOfferAtom) (bd map[string]interface{}, sd map[string]interface{}) {
+	bd = map[string]interface{}{
+		"offer_id":      claim.OfferId,
+		"seller":        seller.Address(),
+		"bought_amount": amount.String(claim.AmountSold),
+		"sold_amount":   amount.String(claim.AmountBought),
+	}
+	is.assetDetails(bd, claim.AssetSold, "bought_")
+	is.assetDetails(bd, claim.AssetBought, "sold_")
+
+	sd = map[string]interface{}{
+		"offer_id":      claim.OfferId,
+		"seller":        buyer.Address(),
+		"bought_amount": amount.String(claim.AmountBought),
+		"sold_amount":   amount.String(claim.AmountSold),
+	}
+	is.assetDetails(sd, claim.AssetBought, "bought_")
+	is.assetDetails(sd, claim.AssetSold, "sold_")
+
+	return
 }
 
 func (is *Session) ingestTransaction() {
