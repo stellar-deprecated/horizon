@@ -8,8 +8,8 @@ import (
 
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/horizon/cache"
-	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/core"
 )
 
 const (
@@ -50,6 +50,7 @@ type Cursor struct {
 type EffectIngestion struct {
 	Dest        *Ingestion
 	OperationID int64
+	Accounts    *cache.HistoryAccount
 	added       int
 }
 

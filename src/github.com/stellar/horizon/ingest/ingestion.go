@@ -9,6 +9,7 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db/sqx"
 	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/db2/history"
 )
 
 type effectFactory struct {
@@ -76,7 +77,7 @@ func (ingest *Ingestion) Close() error {
 }
 
 // Effect adds a new row into the `history_effects` table.
-func (ingest *Ingestion) Effect(aid int64, opid int64, order int, typ string, details interface{}) error {
+func (ingest *Ingestion) Effect(aid int64, opid int64, order int, typ history.EffectType, details interface{}) error {
 	djson, err := json.Marshal(details)
 	if err != nil {
 		return err
@@ -329,7 +330,7 @@ func (ingest *Ingestion) createInsertBuilders() {
 	ingest.effects = sq.Insert("history_effects").Columns(
 		"history_account_id",
 		"history_operation_id",
-		"order",
+		"\"order\"",
 		"type",
 		"details",
 	)

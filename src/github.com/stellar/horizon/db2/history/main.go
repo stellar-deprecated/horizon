@@ -13,34 +13,34 @@ import (
 const (
 	// account effects
 
-	EffectAccountCreated           = 0 // from create_account
-	EffectAccountRemoved           = 1 // from merge_account
-	EffectAccountCredited          = 2 // from create_account, payment, path_payment, merge_account
-	EffectAccountDebited           = 3 // from create_account, payment, path_payment, create_account
-	EffectAccountThresholdsUpdated = 4 // from set_options
-	EffectAccountHomeDomainUpdated = 5 // from set_options
-	EffectAccountFlagsUpdated      = 6 // from set_options
+	EffectAccountCreated           EffectType = 0 // from create_account
+	EffectAccountRemoved           EffectType = 1 // from merge_account
+	EffectAccountCredited          EffectType = 2 // from create_account, payment, path_payment, merge_account
+	EffectAccountDebited           EffectType = 3 // from create_account, payment, path_payment, create_account
+	EffectAccountThresholdsUpdated EffectType = 4 // from set_options
+	EffectAccountHomeDomainUpdated EffectType = 5 // from set_options
+	EffectAccountFlagsUpdated      EffectType = 6 // from set_options
 
 	// signer effects
 
-	EffectSignerCreated = 10 // from set_options
-	EffectSignerRemoved = 11 // from set_options
-	EffectSignerUpdated = 12 // from set_options
+	EffectSignerCreated EffectType = 10 // from set_options
+	EffectSignerRemoved EffectType = 11 // from set_options
+	EffectSignerUpdated EffectType = 12 // from set_options
 
 	// trustline effects
 
-	EffectTrustlineCreated      = 20 // from change_trust
-	EffectTrustlineRemoved      = 21 // from change_trust
-	EffectTrustlineUpdated      = 22 // from change_trust, allow_trust
-	EffectTrustlineAuthorized   = 23 // from allow_trust
-	EffectTrustlineDeauthorized = 24 // from allow_trust
+	EffectTrustlineCreated      EffectType = 20 // from change_trust
+	EffectTrustlineRemoved      EffectType = 21 // from change_trust
+	EffectTrustlineUpdated      EffectType = 22 // from change_trust, allow_trust
+	EffectTrustlineAuthorized   EffectType = 23 // from allow_trust
+	EffectTrustlineDeauthorized EffectType = 24 // from allow_trust
 
 	// trading effects
 
-	EffectOfferCreated = 30 // from manage_offer, creat_passive_offer
-	EffectOfferRemoved = 31 // from manage_offer, creat_passive_offer, path_payment
-	EffectOfferUpdated = 32 // from manage_offer, creat_passive_offer, path_payment
-	EffectTrade        = 33 // from manage_offer, creat_passive_offer, path_payment
+	EffectOfferCreated EffectType = 30 // from manage_offer, creat_passive_offer
+	EffectOfferRemoved EffectType = 31 // from manage_offer, creat_passive_offer, path_payment
+	EffectOfferUpdated EffectType = 32 // from manage_offer, creat_passive_offer, path_payment
+	EffectTrade        EffectType = 33 // from manage_offer, creat_passive_offer, path_payment
 )
 
 // Account is a row of data from the `history_accounts` table
@@ -58,6 +58,10 @@ type Effect struct {
 	Type               int32       `db:"type"`
 	DetailsString      null.String `db:"details"`
 }
+
+// EffectType is the numeric type for an effect, used as the `type` field in the
+// `history_effects` table.
+type EffectType int
 
 // Ledger is a row of data from the `history_ledgers` table
 type Ledger struct {

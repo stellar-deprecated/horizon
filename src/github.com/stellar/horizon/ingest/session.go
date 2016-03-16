@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/ingest/participants"
 	// "github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/amount"
@@ -20,6 +21,10 @@ func (is *Session) Run() {
 	}
 
 	for is.Cursor.NextLedger() {
+		if is.Err != nil {
+			return
+		}
+
 		is.clearLedger()
 		is.ingestLedger()
 		is.flush()
@@ -62,15 +67,20 @@ func (is *Session) ingestEffects() {
 	if is.Err != nil {
 		return
 	}
-	// effects := is.Ingestion.Effects(is.Cursor.OperationID())
+
+	effects := &EffectIngestion{
+		Dest:        is.Ingestion,
+		Accounts:    is.accountCache,
+		OperationID: is.Cursor.OperationID(),
+	}
 
 	switch is.Cursor.OperationType() {
 	case xdr.OperationTypeCreateAccount:
 		op := is.Cursor.Operation().Body.MustCreateAccountOp()
-		_ = op
-		// effects.Add("account_created", op.Destination, map[string]interface{}{
-		// 	"starting_balance": amount.String(op.StartingBalance),
-		// })
+
+		is.Err = effects.Add(op.Destination, history.EffectAccountCreated, map[string]interface{}{
+			"starting_balance": amount.String(op.StartingBalance),
+		})
 
 		// TODO: account_debited
 		// TODO: signer_created
