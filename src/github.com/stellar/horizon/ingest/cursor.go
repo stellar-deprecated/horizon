@@ -135,9 +135,10 @@ func (c *Cursor) OperationOrder() int32 {
 }
 
 // OperationResult returns the current operation's result record
-func (c *Cursor) OperationResult() *xdr.OperationResult {
+func (c *Cursor) OperationResult() *xdr.OperationResultTr {
 	txr := &c.data.Transactions[c.tx].Result.Result
-	return &txr.Result.MustResults()[c.op]
+	tr := txr.Result.MustResults()[c.op].MustTr()
+	return &tr
 }
 
 // OperationSourceAccount returns the current operation's effective source
@@ -149,17 +150,6 @@ func (c *Cursor) OperationSourceAccount() xdr.AccountId {
 	}
 
 	return c.TransactionSourceAccount()
-}
-
-// OperationSourceAddress returns the current operation's effective source
-// address (i.e. default's to the transaction's source account).
-func (c *Cursor) OperationSourceAddress() string {
-	op := c.Operation().SourceAccount
-	if op != nil {
-		return op.Address()
-	}
-	tx := c.TransactionSourceAccount()
-	return tx.Address()
 }
 
 // OperationType returns the current operation type
@@ -197,28 +187,6 @@ func (c *Cursor) TransactionID() int64 {
 // TransactionSourceAccount returns the current transaction's source account id
 func (c *Cursor) TransactionSourceAccount() xdr.AccountId {
 	return c.Transaction().Envelope.Tx.SourceAccount
-}
-
-// assetDetails sets the details for `a` on `result` using keys with `prefix`
-func (c *Cursor) assetDetails(result map[string]interface{}, a xdr.Asset, prefix string) error {
-	var (
-		t    string
-		code string
-		i    string
-	)
-	err := a.Extract(&t, &code, &i)
-	if err != nil {
-		return err
-	}
-	result[prefix+"asset_type"] = t
-
-	if a.Type == xdr.AssetTypeAssetTypeNative {
-		return nil
-	}
-
-	result[prefix+"asset_code"] = code
-	result[prefix+"asset_issuer"] = i
-	return nil
 }
 
 // flagDetails sets the account flag details for `f` on `result`.

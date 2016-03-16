@@ -5,13 +5,28 @@ import (
 	"github.com/stellar/horizon/db2/history"
 )
 
-func (ei *EffectIngestion) Add(aid xdr.AccountId, typ history.EffectType, details interface{}) error {
-	ei.added++
-
-	haid, err := ei.Accounts.Get(aid.Address())
-	if err != nil {
-		return err
+func (ei *EffectIngestion) Add(aid xdr.AccountId, typ history.EffectType, details interface{}) bool {
+	if ei.err != nil {
+		return false
 	}
 
-	return ei.Dest.Effect(haid, ei.OperationID, ei.added, typ, details)
+	ei.added++
+	var haid int64
+	haid, ei.err = ei.Accounts.Get(aid.Address())
+	if ei.err != nil {
+		return false
+	}
+
+	ei.err = ei.Dest.Effect(haid, ei.OperationID, ei.added, typ, details)
+	if ei.err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (ei *EffectIngestion) Finish() error {
+	err := ei.err
+	ei.err = nil
+	return err
 }

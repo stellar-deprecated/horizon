@@ -73,23 +73,50 @@ func (is *Session) ingestEffects() {
 		Accounts:    is.accountCache,
 		OperationID: is.Cursor.OperationID(),
 	}
+	source := is.Cursor.TransactionSourceAccount()
+	opbody := is.Cursor.Operation().Body
 
 	switch is.Cursor.OperationType() {
 	case xdr.OperationTypeCreateAccount:
-		op := is.Cursor.Operation().Body.MustCreateAccountOp()
+		op := opbody.MustCreateAccountOp()
 
-		is.Err = effects.Add(op.Destination, history.EffectAccountCreated, map[string]interface{}{
-			"starting_balance": amount.String(op.StartingBalance),
-		})
+		effects.Add(op.Destination, history.EffectAccountCreated,
+			map[string]interface{}{
+				"starting_balance": amount.String(op.StartingBalance),
+			},
+		)
 
-		// TODO: account_debited
-		// TODO: signer_created
+		effects.Add(source, history.EffectAccountDebited,
+			map[string]interface{}{
+				"asset_type": "native",
+				"amount":     amount.String(op.StartingBalance),
+			},
+		)
+
+		effects.Add(op.Destination, history.EffectSignerCreated,
+			map[string]interface{}{
+				"public_key": op.Destination.Address(),
+				"weight":     keypair.DefaultSignerWeight,
+			},
+		)
+
 	case xdr.OperationTypePayment:
-		// TODO: account_credited
-		// TODO: account_debited
+		op := opbody.MustPaymentOp()
+		dets := map[string]interface{}{"amount": amount.String(op.Amount)}
+		is.assetDetails(dets, op.Asset, "")
+		effects.Add(op.Destination, history.EffectAccountCredited, dets)
+		effects.Add(source, history.EffectAccountDebited, dets)
 	case xdr.OperationTypePathPayment:
-		// TODO: account_credited
-		// TODO: account_debited
+		op := opbody.MustPathPaymentOp()
+		dets := map[string]interface{}{"amount": amount.String(op.DestAmount)}
+		is.assetDetails(dets, op.DestAsset, "")
+		effects.Add(op.Destination, history.EffectAccountCredited, dets)
+
+		result := is.Cursor.OperationResult().MustPathPaymentResult()
+		dets = map[string]interface{}{"amount": amount.String(result.SendAmount())}
+		is.assetDetails(dets, op.SendAsset, "")
+		effects.Add(source, history.EffectAccountDebited, dets)
+
 		// TODO: trades
 	case xdr.OperationTypeManageOffer:
 		// TODO: trades
@@ -115,7 +142,10 @@ func (is *Session) ingestEffects() {
 		// TODO: data_added,data_removed,data_updated
 	default:
 		is.Err = fmt.Errorf("Unknown operation type: %s", is.Cursor.OperationType())
+		return
 	}
+
+	is.Err = effects.Finish()
 }
 
 // ingestLedger ingests the current ledger
@@ -268,6 +298,28 @@ func (is *Session) lookupParticipantIDs(aids []xdr.AccountId) (ret []int64, err 
 	return
 }
 
+// assetDetails sets the details for `a` on `result` using keys with `prefix`
+func (is *Session) assetDetails(result map[string]interface{}, a xdr.Asset, prefix string) error {
+	var (
+		t    string
+		code string
+		i    string
+	)
+	err := a.Extract(&t, &code, &i)
+	if err != nil {
+		return err
+	}
+	result[prefix+"asset_type"] = t
+
+	if a.Type == xdr.AssetTypeAssetTypeNative {
+		return nil
+	}
+
+	result[prefix+"asset_code"] = code
+	result[prefix+"asset_issuer"] = i
+	return nil
+}
+
 // operationDetails returns the details regarding the current operation, suitable
 // for ingestion into a history_operation row
 func (is *Session) operationDetails() map[string]interface{} {
@@ -286,24 +338,24 @@ func (is *Session) operationDetails() map[string]interface{} {
 		details["from"] = source.Address()
 		details["to"] = op.Destination.Address()
 		details["amount"] = amount.String(op.Amount)
-		c.assetDetails(details, op.Asset, "")
+		is.assetDetails(details, op.Asset, "")
 	case xdr.OperationTypePathPayment:
 		op := c.Operation().Body.MustPathPaymentOp()
 		details["from"] = source.Address()
 		details["to"] = op.Destination.Address()
 
-		result := c.OperationResult().MustTr().MustPathPaymentResult()
+		result := c.OperationResult().MustPathPaymentResult()
 
 		details["amount"] = amount.String(op.DestAmount)
 		details["source_amount"] = amount.String(result.SendAmount())
 		details["source_max"] = amount.String(op.SendMax)
-		c.assetDetails(details, op.DestAsset, "")
-		c.assetDetails(details, op.SendAsset, "source_")
+		is.assetDetails(details, op.DestAsset, "")
+		is.assetDetails(details, op.SendAsset, "source_")
 
 		var path = make([]map[string]interface{}, len(op.Path))
 		for i := range op.Path {
 			path[i] = make(map[string]interface{})
-			c.assetDetails(path[i], op.Path[i], "")
+			is.assetDetails(path[i], op.Path[i], "")
 		}
 		details["path"] = path
 	case xdr.OperationTypeManageOffer:
@@ -315,8 +367,8 @@ func (is *Session) operationDetails() map[string]interface{} {
 			"n": op.Price.N,
 			"d": op.Price.D,
 		}
-		c.assetDetails(details, op.Buying, "buying_")
-		c.assetDetails(details, op.Selling, "selling_")
+		is.assetDetails(details, op.Buying, "buying_")
+		is.assetDetails(details, op.Selling, "selling_")
 
 	case xdr.OperationTypeCreatePassiveOffer:
 		op := c.Operation().Body.MustCreatePassiveOfferOp()
@@ -326,8 +378,8 @@ func (is *Session) operationDetails() map[string]interface{} {
 			"n": op.Price.N,
 			"d": op.Price.D,
 		}
-		c.assetDetails(details, op.Buying, "buying_")
-		c.assetDetails(details, op.Selling, "selling_")
+		is.assetDetails(details, op.Buying, "buying_")
+		is.assetDetails(details, op.Selling, "selling_")
 	case xdr.OperationTypeSetOptions:
 		op := c.Operation().Body.MustSetOptionsOp()
 
@@ -369,13 +421,13 @@ func (is *Session) operationDetails() map[string]interface{} {
 		}
 	case xdr.OperationTypeChangeTrust:
 		op := c.Operation().Body.MustChangeTrustOp()
-		c.assetDetails(details, op.Line, "")
+		is.assetDetails(details, op.Line, "")
 		details["trustor"] = source.Address()
 		details["trustee"] = details["asset_issuer"]
 		details["limit"] = amount.String(op.Limit)
 	case xdr.OperationTypeAllowTrust:
 		op := c.Operation().Body.MustAllowTrustOp()
-		c.assetDetails(details, op.Asset.ToAsset(source), "")
+		is.assetDetails(details, op.Asset.ToAsset(source), "")
 		details["trustee"] = source.Address()
 		details["trustor"] = op.Trustor.Address()
 		details["authorize"] = op.Authorize

@@ -51,6 +51,7 @@ type EffectIngestion struct {
 	Dest        *Ingestion
 	OperationID int64
 	Accounts    *cache.HistoryAccount
+	err         error
 	added       int
 }
 
