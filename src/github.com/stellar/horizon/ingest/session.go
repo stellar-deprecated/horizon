@@ -124,7 +124,8 @@ func (is *Session) ingestEffects() {
 		claims := []xdr.ClaimOfferAtom{}
 		result := is.Cursor.OperationResult()
 
-		// KNOWN ISSUE:  stellar-core creates
+		// KNOWN ISSUE:  stellar-core creates results for CreatePassiveOffer operations
+		// with the wrong result arm set.
 		if result.Type == xdr.OperationTypeManageOffer {
 			claims = result.MustManageOfferResult().MustSuccess().OffersClaimed
 		} else {
@@ -133,9 +134,66 @@ func (is *Session) ingestEffects() {
 
 		is.ingestTrades(effects, source, claims)
 	case xdr.OperationTypeSetOptions:
-		// TODO: account_home_domain_updated
-		// TODO: account_thresholds_updated
-		// TODO: account_flags_updated
+		op := opbody.MustSetOptionsOp()
+
+		if op.HomeDomain != nil {
+			effects.Add(source, history.EffectAccountHomeDomainUpdated,
+				map[string]interface{}{
+					"home_domain": string(*op.HomeDomain),
+				},
+			)
+		}
+
+		thresholdDetails := map[string]interface{}{}
+
+		if op.LowThreshold != nil {
+			thresholdDetails["low_threshold"] = *op.LowThreshold
+		}
+
+		if op.MedThreshold != nil {
+			thresholdDetails["med_threshold"] = *op.MedThreshold
+		}
+
+		if op.HighThreshold != nil {
+			thresholdDetails["high_threshold"] = *op.HighThreshold
+		}
+
+		if len(thresholdDetails) > 0 {
+			effects.Add(source, history.EffectAccountThresholdsUpdated, thresholdDetails)
+		}
+
+		flagDetails := map[string]bool{}
+
+		if op.SetFlags != nil {
+			set := xdr.AccountFlags(*op.SetFlags)
+			if set&xdr.AccountFlagsAuthRequiredFlag != 0 {
+				flagDetails["auth_required"] = true
+			}
+			if set&xdr.AccountFlagsAuthRevocableFlag != 0 {
+				flagDetails["auth_revocable"] = true
+			}
+			if set&xdr.AccountFlagsAuthImmutableFlag != 0 {
+				flagDetails["auth_immutable"] = true
+			}
+		}
+
+		if op.ClearFlags != nil {
+			set := xdr.AccountFlags(*op.ClearFlags)
+			if set&xdr.AccountFlagsAuthRequiredFlag != 0 {
+				flagDetails["auth_required"] = false
+			}
+			if set&xdr.AccountFlagsAuthRevocableFlag != 0 {
+				flagDetails["auth_revocable"] = false
+			}
+			if set&xdr.AccountFlagsAuthImmutableFlag != 0 {
+				flagDetails["auth_immutable"] = false
+			}
+		}
+
+		if len(flagDetails) > 0 {
+			effects.Add(source, history.EffectAccountFlagsUpdated, flagDetails)
+		}
+
 		// TODO: signer_added,signer_removed,signer_updated for master
 		// TODO: signer_added,signer_removed,signer_updated for non-master
 	case xdr.OperationTypeChangeTrust:
