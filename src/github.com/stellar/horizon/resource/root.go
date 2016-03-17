@@ -8,11 +8,12 @@ import (
 )
 
 // Populate fills in the details
-func (res *Root) Populate(ctx context.Context, row db.LedgerState, hVersion string, cVersion string) {
+func (res *Root) Populate(ctx context.Context, row db.LedgerState, hVersion string, cVersion string, passphrase string) {
 	res.HorizonSequence = row.HorizonSequence
 	res.StellarCoreSequence = row.StellarCoreSequence
 	res.HorizonVersion = hVersion
 	res.StellarCoreVersion = cVersion
+	res.NetworkPassphrase = passphrase
 
 	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	res.Links.Account = lb.Link("/accounts/{account_id}")

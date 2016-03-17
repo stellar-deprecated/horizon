@@ -3,13 +3,14 @@
 package resource
 
 import (
+	"time"
+
 	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
 	"github.com/stellar/horizon/resource/effects"
 	"github.com/stellar/horizon/resource/operations"
 	"golang.org/x/net/context"
-	"time"
 )
 
 // Account is the summary of an account
@@ -155,6 +156,7 @@ type Root struct {
 	StellarCoreVersion  string `json:"core_version"`
 	HorizonSequence     int32  `json:"horizon_latest_ledger"`
 	StellarCoreSequence int32  `json:"core_latest_ledger"`
+	NetworkPassphrase   string `json:"network_passphrase"`
 }
 
 // Signer represents one of an account's signers.

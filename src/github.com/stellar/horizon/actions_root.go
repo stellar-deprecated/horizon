@@ -21,6 +21,7 @@ func (action *RootAction) JSON() {
 		action.App.latestLedgerState,
 		action.App.horizonVersion,
 		action.App.coreVersion,
+		action.App.networkPassphrase,
 	)
 
 	hal.Render(action.W, res)
