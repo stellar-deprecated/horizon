@@ -199,7 +199,19 @@ func (is *Session) ingestEffects() {
 	case xdr.OperationTypeChangeTrust:
 		// TODO: trustline_added,trustline_removed,trustline_updated
 	case xdr.OperationTypeAllowTrust:
-		// TODO: trustline_authorized,trustline_deauthorized
+		op := opbody.MustAllowTrustOp()
+		asset := op.Asset.ToAsset(source)
+		dets := map[string]interface{}{
+			"trustor": op.Trustor.Address(),
+		}
+		is.assetDetails(dets, asset, "")
+
+		if op.Authorize {
+			effects.Add(source, history.EffectTrustlineAuthorized, dets)
+		} else {
+			effects.Add(source, history.EffectTrustlineDeauthorized, dets)
+		}
+
 	case xdr.OperationTypeAccountMerge:
 		dest := opbody.MustDestination()
 		result := is.Cursor.OperationResult().MustAccountMergeResult()
@@ -221,7 +233,40 @@ func (is *Session) ingestEffects() {
 			)
 		}
 	case xdr.OperationTypeManageData:
-		// TODO: data_added,data_removed,data_updated
+		op := opbody.MustManageDataOp()
+		dets := map[string]interface{}{
+			"name": op.DataName,
+		}
+		var change *xdr.LedgerEntryChange
+		var effect history.EffectType
+
+		for _, c := range is.Cursor.OperationChanges() {
+			if c.EntryType() == xdr.LedgerEntryTypeData {
+				change = &c
+				break
+			}
+		}
+
+		if change == nil {
+			panic("failed to find meta entry when ingesting effects for ManageDataOp")
+		}
+
+		switch change.Type {
+		case xdr.LedgerEntryChangeTypeLedgerEntryCreated:
+			effect = history.EffectDataCreated
+			dets["value"] = *op.DataValue
+		case xdr.LedgerEntryChangeTypeLedgerEntryRemoved:
+			effect = history.EffectDataRemoved
+		case xdr.LedgerEntryChangeTypeLedgerEntryUpdated:
+			effect = history.EffectDataUpdated
+			dets["value"] = *op.DataValue
+		case xdr.LedgerEntryChangeTypeLedgerEntryState:
+			effect = history.EffectDataUpdated
+			dets["value"] = *op.DataValue
+		}
+
+		effects.Add(source, effect, dets)
+
 	default:
 		is.Err = fmt.Errorf("Unknown operation type: %s", is.Cursor.OperationType())
 		return

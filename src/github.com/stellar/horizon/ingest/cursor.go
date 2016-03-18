@@ -110,6 +110,10 @@ func (c *Cursor) Operation() *xdr.Operation {
 	return &c.data.Transactions[c.tx].Envelope.Tx.Operations[c.op]
 }
 
+func (c *Cursor) OperationChanges() xdr.LedgerEntryChanges {
+	return c.data.Transactions[c.tx].ResultMeta.MustOperations()[c.op].Changes
+}
+
 // OperationCount returns the count of operations in the current transaction
 func (c *Cursor) OperationCount() int {
 	return len(c.data.Transactions[c.tx].Envelope.Tx.Operations)

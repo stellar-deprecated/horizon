@@ -15,7 +15,7 @@ func TestIngest(t *testing.T) {
 
 	s := ingest(tt)
 	tt.Require.NoError(s.Err)
-	tt.Assert.Equal(46, s.Ingested)
+	tt.Assert.Equal(47, s.Ingested)
 
 	hq := &history.Q{tt.HorizonRepo()}
 
@@ -37,7 +37,6 @@ func TestIngest(t *testing.T) {
 	s.ClearExisting = true
 	s.Run()
 	tt.Require.NoError(s.Err, "Couldn't re-import, even with clear allowed")
-
 }
 
 func ingest(tt *test.T) *Session {

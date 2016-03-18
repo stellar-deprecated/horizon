@@ -291,5 +291,8 @@ close_ledger #2
   clear_data :dataman, "name2"
   close_ledger #45
 
+  set_data :dataman, "name1", "0000"
+  close_ledger #46
+
 # different source account
 # TODO

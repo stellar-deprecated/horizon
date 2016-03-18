@@ -27,6 +27,9 @@ var TypeNames = map[history.EffectType]string{
 	history.EffectOfferRemoved:             "offer_removed",
 	history.EffectOfferUpdated:             "offer_updated",
 	history.EffectTrade:                    "trade",
+	history.EffectDataCreated:              "data_created",
+	history.EffectDataRemoved:              "data_removed",
+	history.EffectDataUpdated:              "data_updated",
 }
 
 func New(

@@ -41,6 +41,12 @@ const (
 	EffectOfferRemoved EffectType = 31 // from manage_offer, creat_passive_offer, path_payment
 	EffectOfferUpdated EffectType = 32 // from manage_offer, creat_passive_offer, path_payment
 	EffectTrade        EffectType = 33 // from manage_offer, creat_passive_offer, path_payment
+
+	// data effects
+	EffectDataCreated EffectType = 40 // from manage_data
+	EffectDataRemoved EffectType = 41 // from manage_data
+	EffectDataUpdated EffectType = 42 // from manage_data
+
 )
 
 // Account is a row of data from the `history_accounts` table
