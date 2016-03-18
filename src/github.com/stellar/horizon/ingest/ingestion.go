@@ -21,9 +21,23 @@ type effectFactory struct {
 // Account ingests the provided account data into a new row in the
 // `history_accounts` table
 func (ingest *Ingestion) Account(id int64, address string) error {
+
+	q := history.Q{ingest.DB}
+	var existing history.Account
+	err := q.AccountByAddress(&existing, address)
+
+	if err != nil && !q.NoRows(err) {
+		return err
+	}
+
+	// already imported
+	if !q.NoRows(err) {
+		return nil
+	}
+
 	sql := ingest.accounts.Values(id, address)
 
-	_, err := ingest.DB.Exec(sql)
+	_, err = ingest.DB.Exec(sql)
 	if err != nil {
 		return err
 	}

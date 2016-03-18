@@ -13,8 +13,6 @@ SET search_path = public, pg_catalog;
 
 DROP INDEX IF EXISTS public.trade_effects_by_order_book;
 DROP INDEX IF EXISTS public.index_history_transactions_on_id;
-DROP INDEX IF EXISTS public.index_history_transaction_participants_on_transaction_hash;
-DROP INDEX IF EXISTS public.index_history_transaction_participants_on_account;
 DROP INDEX IF EXISTS public.index_history_operations_on_type;
 DROP INDEX IF EXISTS public.index_history_operations_on_transaction_id;
 DROP INDEX IF EXISTS public.index_history_operations_on_id;
@@ -29,6 +27,7 @@ DROP INDEX IF EXISTS public.index_history_accounts_on_id;
 DROP INDEX IF EXISTS public.index_history_accounts_on_address;
 DROP INDEX IF EXISTS public.hs_transaction_by_id;
 DROP INDEX IF EXISTS public.hs_ledger_by_id;
+DROP INDEX IF EXISTS public.hist_tx_p_id;
 DROP INDEX IF EXISTS public.hist_op_p_id;
 DROP INDEX IF EXISTS public.hist_e_id;
 DROP INDEX IF EXISTS public.hist_e_by_order;
@@ -207,11 +206,8 @@ CREATE TABLE history_operations (
 
 CREATE TABLE history_transaction_participants (
     id integer NOT NULL,
-    transaction_hash character varying(64) NOT NULL,
-    account character varying(64) NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    history_transaction_id bigint
+    history_transaction_id bigint NOT NULL,
+    history_account_id bigint NOT NULL
 );
 
 
@@ -278,8 +274,7 @@ ALTER TABLE ONLY history_transaction_participants ALTER COLUMN id SET DEFAULT ne
 -- Data for Name: gorp_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-02-29 12:51:06.199224-08');
-INSERT INTO gorp_migrations VALUES ('2_add_toid_to_transaction_participants.sql', '2016-02-29 12:51:06.20187-08');
+INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-03-17 15:01:27.057034-07');
 
 
 --
@@ -405,6 +400,13 @@ CREATE UNIQUE INDEX hist_op_p_id ON history_operation_participants USING btree (
 
 
 --
+-- Name: hist_tx_p_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX hist_tx_p_id ON history_transaction_participants USING btree (history_account_id, history_transaction_id);
+
+
+--
 -- Name: hs_ledger_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -500,20 +502,6 @@ CREATE INDEX index_history_operations_on_transaction_id ON history_operations US
 --
 
 CREATE INDEX index_history_operations_on_type ON history_operations USING btree (type);
-
-
---
--- Name: index_history_transaction_participants_on_account; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_history_transaction_participants_on_account ON history_transaction_participants USING btree (account);
-
-
---
--- Name: index_history_transaction_participants_on_transaction_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_history_transaction_participants_on_transaction_hash ON history_transaction_participants USING btree (transaction_hash);
 
 
 --

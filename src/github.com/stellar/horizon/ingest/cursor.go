@@ -35,14 +35,6 @@ func (c *Cursor) LedgerID() int64 {
 	return toid.New(c.lg, 0, 0).ToInt64()
 }
 
-// LedgerOperationCount returns the count of operations in the current ledger
-func (c *Cursor) LedgerOperationCount() (ret int) {
-	for i := range c.data.Transactions {
-		ret += len(c.data.Transactions[i].Envelope.Tx.Operations)
-	}
-	return
-}
-
 // LedgerRange returns the beginning and end of id values that map to the
 // current ledger.  Useful for clearing a ledgers worth of data.
 func (c *Cursor) LedgerRange() (start int64, end int64) {
@@ -173,9 +165,26 @@ func (c *Cursor) TransactionFee() *core.TransactionFee {
 	return &c.data.TransactionFees[c.tx]
 }
 
-// TransactionCount returns the count of transactions in the current ledger
-func (c *Cursor) TransactionCount() int {
-	return len(c.data.Transactions)
+// SuccessfulLedgerOperationCount returns the count of operations in the current ledger
+func (c *Cursor) SuccessfulLedgerOperationCount() (ret int) {
+	for i := range c.data.Transactions {
+		if !c.data.Transactions[i].IsSuccessful() {
+			continue
+		}
+		ret += len(c.data.Transactions[i].Envelope.Tx.Operations)
+	}
+	return
+}
+
+// SuccessfulTransactionCount returns the count of transactions in the current
+// ledger that succeeded.
+func (c *Cursor) SuccessfulTransactionCount() (ret int) {
+	for i := range c.data.Transactions {
+		if c.data.Transactions[i].IsSuccessful() {
+			ret++
+		}
+	}
+	return
 }
 
 // TransactionID returns the current tranaction's id, as used by the history

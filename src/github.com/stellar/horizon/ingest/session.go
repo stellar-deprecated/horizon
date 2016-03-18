@@ -239,8 +239,8 @@ func (is *Session) ingestLedger() {
 	is.Ingestion.Ledger(
 		is.Cursor.LedgerID(),
 		is.Cursor.Ledger(),
-		is.Cursor.TransactionCount(),
-		is.Cursor.LedgerOperationCount(),
+		is.Cursor.SuccessfulTransactionCount(),
+		is.Cursor.SuccessfulLedgerOperationCount(),
 	)
 
 	// If this is ledger 1, create the root account
@@ -344,6 +344,11 @@ func (is *Session) tradeDetails(buyer, seller xdr.AccountId, claim xdr.ClaimOffe
 
 func (is *Session) ingestTransaction() {
 	if is.Err != nil {
+		return
+	}
+
+	// skip ingesting failed transactions
+	if !is.Cursor.Transaction().IsSuccessful() {
 		return
 	}
 

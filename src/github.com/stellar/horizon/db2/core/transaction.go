@@ -37,6 +37,11 @@ func (tx *Transaction) Fee() int32 {
 	return int32(tx.Envelope.Tx.Fee)
 }
 
+// IsSuccessful returns true when the transaction was successful.
+func (tx *Transaction) IsSuccessful() bool {
+	return tx.Result.Result.Result.Code == xdr.TransactionResultCodeTxSuccess
+}
+
 // Memo returns the memo for this transaction, if there is one.
 func (tx *Transaction) Memo() null.String {
 	var (
