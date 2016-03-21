@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db/sqx"
@@ -119,12 +120,13 @@ func (ingest *Ingestion) Ledger(
 	txs int,
 	ops int,
 ) error {
+
 	sql := ingest.ledgers.Values(
 		CurrentVersion,
 		id,
 		header.Sequence,
 		header.LedgerHash,
-		header.PrevHash,
+		null.NewString(header.PrevHash, header.Sequence >= 1),
 		header.Data.TotalCoins,
 		header.Data.FeePool,
 		header.Data.BaseFee,

@@ -61,13 +61,13 @@ func (is *Session) effectFlagDetails(flagDetails map[string]bool, flagPtr *xdr.U
 		flags := xdr.AccountFlags(*flagPtr)
 
 		if flags&xdr.AccountFlagsAuthRequiredFlag != 0 {
-			flagDetails["auth_required"] = setValue
+			flagDetails["auth_required_flag"] = setValue
 		}
 		if flags&xdr.AccountFlagsAuthRevocableFlag != 0 {
-			flagDetails["auth_revocable"] = setValue
+			flagDetails["auth_revocable_flag"] = setValue
 		}
 		if flags&xdr.AccountFlagsAuthImmutableFlag != 0 {
-			flagDetails["auth_immutable"] = setValue
+			flagDetails["auth_immutable_flag"] = setValue
 		}
 	}
 }
