@@ -121,13 +121,13 @@ func (c *Cursor) OperationCount() int {
 
 // OperationID returns the current operations id, as used by the history system.
 func (c *Cursor) OperationID() int64 {
-	return toid.New(c.lg, int32(c.tx), int32(c.op)).ToInt64()
+	return toid.New(c.lg, int32(c.tx+1), int32(c.op+1)).ToInt64()
 }
 
 // OperationOrder returns the order of the current operation amongst the
 // current transaction's operations.
 func (c *Cursor) OperationOrder() int32 {
-	return int32(c.op)
+	return int32(c.op + 1)
 }
 
 // OperationResult returns the current operation's result record
@@ -194,36 +194,10 @@ func (c *Cursor) SuccessfulTransactionCount() (ret int) {
 // TransactionID returns the current tranaction's id, as used by the history
 // system.
 func (c *Cursor) TransactionID() int64 {
-	return toid.New(c.lg, int32(c.tx), 0).ToInt64()
+	return toid.New(c.lg, int32(c.tx+1), 0).ToInt64()
 }
 
 // TransactionSourceAccount returns the current transaction's source account id
 func (c *Cursor) TransactionSourceAccount() xdr.AccountId {
 	return c.Transaction().Envelope.Tx.SourceAccount
-}
-
-// flagDetails sets the account flag details for `f` on `result`.
-func (c *Cursor) flagDetails(result map[string]interface{}, f int32, prefix string) {
-	var (
-		n []int32
-		s []string
-	)
-
-	if (f & int32(xdr.AccountFlagsAuthRequiredFlag)) > 0 {
-		n = append(n, int32(xdr.AccountFlagsAuthRequiredFlag))
-		s = append(s, "auth_required")
-	}
-
-	if (f & int32(xdr.AccountFlagsAuthRevocableFlag)) > 0 {
-		n = append(n, int32(xdr.AccountFlagsAuthRevocableFlag))
-		s = append(s, "auth_revocable")
-	}
-
-	if (f & int32(xdr.AccountFlagsAuthImmutableFlag)) > 0 {
-		n = append(n, int32(xdr.AccountFlagsAuthImmutableFlag))
-		s = append(s, "auth_immutable")
-	}
-
-	result[prefix+"_flag"] = n
-	result[prefix+"_flag_s"] = s
 }

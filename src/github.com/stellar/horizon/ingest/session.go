@@ -56,6 +56,22 @@ func (is *Session) clearLedger() {
 	is.Err = is.Ingestion.Clear(is.Cursor.LedgerRange())
 }
 
+func (is *Session) effectFlagDetails(flagDetails map[string]bool, flagPtr *xdr.Uint32, setValue bool) {
+	if flagPtr != nil {
+		flags := xdr.AccountFlags(*flagPtr)
+
+		if flags&xdr.AccountFlagsAuthRequiredFlag != 0 {
+			flagDetails["auth_required"] = setValue
+		}
+		if flags&xdr.AccountFlagsAuthRevocableFlag != 0 {
+			flagDetails["auth_revocable"] = setValue
+		}
+		if flags&xdr.AccountFlagsAuthImmutableFlag != 0 {
+			flagDetails["auth_immutable"] = setValue
+		}
+	}
+}
+
 func (is *Session) flush() {
 	if is.Err != nil {
 		return
@@ -163,32 +179,8 @@ func (is *Session) ingestEffects() {
 		}
 
 		flagDetails := map[string]bool{}
-
-		if op.SetFlags != nil {
-			set := xdr.AccountFlags(*op.SetFlags)
-			if set&xdr.AccountFlagsAuthRequiredFlag != 0 {
-				flagDetails["auth_required"] = true
-			}
-			if set&xdr.AccountFlagsAuthRevocableFlag != 0 {
-				flagDetails["auth_revocable"] = true
-			}
-			if set&xdr.AccountFlagsAuthImmutableFlag != 0 {
-				flagDetails["auth_immutable"] = true
-			}
-		}
-
-		if op.ClearFlags != nil {
-			set := xdr.AccountFlags(*op.ClearFlags)
-			if set&xdr.AccountFlagsAuthRequiredFlag != 0 {
-				flagDetails["auth_required"] = false
-			}
-			if set&xdr.AccountFlagsAuthRevocableFlag != 0 {
-				flagDetails["auth_revocable"] = false
-			}
-			if set&xdr.AccountFlagsAuthImmutableFlag != 0 {
-				flagDetails["auth_immutable"] = false
-			}
-		}
+		is.effectFlagDetails(flagDetails, op.SetFlags, true)
+		is.effectFlagDetails(flagDetails, op.ClearFlags, false)
 
 		if len(flagDetails) > 0 {
 			effects.Add(source, history.EffectAccountFlagsUpdated, flagDetails)
@@ -612,11 +604,11 @@ func (is *Session) operationDetails() map[string]interface{} {
 		}
 
 		if op.SetFlags != nil && *op.SetFlags > 0 {
-			c.flagDetails(details, int32(*op.SetFlags), "set")
+			is.operationFlagDetails(details, int32(*op.SetFlags), "set")
 		}
 
 		if op.ClearFlags != nil && *op.ClearFlags > 0 {
-			c.flagDetails(details, int32(*op.ClearFlags), "clear")
+			is.operationFlagDetails(details, int32(*op.ClearFlags), "clear")
 		}
 
 		if op.MasterWeight != nil {
@@ -674,4 +666,30 @@ func (is *Session) operationDetails() map[string]interface{} {
 	}
 
 	return details
+}
+
+// operationFlagDetails sets the account flag details for `f` on `result`.
+func (is *Session) operationFlagDetails(result map[string]interface{}, f int32, prefix string) {
+	var (
+		n []int32
+		s []string
+	)
+
+	if (f & int32(xdr.AccountFlagsAuthRequiredFlag)) > 0 {
+		n = append(n, int32(xdr.AccountFlagsAuthRequiredFlag))
+		s = append(s, "auth_required")
+	}
+
+	if (f & int32(xdr.AccountFlagsAuthRevocableFlag)) > 0 {
+		n = append(n, int32(xdr.AccountFlagsAuthRevocableFlag))
+		s = append(s, "auth_revocable")
+	}
+
+	if (f & int32(xdr.AccountFlagsAuthImmutableFlag)) > 0 {
+		n = append(n, int32(xdr.AccountFlagsAuthImmutableFlag))
+		s = append(s, "auth_immutable")
+	}
+
+	result[prefix+"_flag"] = n
+	result[prefix+"_flag_s"] = s
 }
