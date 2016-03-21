@@ -12,12 +12,6 @@ import (
 	"github.com/stellar/horizon/db2/history"
 )
 
-type effectFactory struct {
-	opid int64
-	idx  int
-	dest *Ingestion
-}
-
 // Account ingests the provided account data into a new row in the
 // `history_accounts` table
 func (ingest *Ingestion) Account(id int64, address string) error {

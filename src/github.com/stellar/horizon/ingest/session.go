@@ -194,10 +194,40 @@ func (is *Session) ingestEffects() {
 			effects.Add(source, history.EffectAccountFlagsUpdated, flagDetails)
 		}
 
-		// TODO: signer_added,signer_removed,signer_updated for master
-		// TODO: signer_added,signer_removed,signer_updated for non-master
+		is.ingestSignerEffects(effects, op)
+
 	case xdr.OperationTypeChangeTrust:
-		// TODO: trustline_added,trustline_removed,trustline_updated
+		op := opbody.MustChangeTrustOp()
+		dets := map[string]interface{}{
+			"limit": amount.String(op.Limit),
+		}
+		is.assetDetails(dets, op.Line, "")
+		var change *xdr.LedgerEntryChange
+		var effect history.EffectType
+
+		for _, c := range is.Cursor.OperationChanges() {
+			if c.EntryType() == xdr.LedgerEntryTypeTrustline {
+				change = &c
+				break
+			}
+		}
+
+		if change == nil {
+			panic("failed to find meta entry when ingesting effects for ChangeTrustOp")
+		}
+
+		switch change.Type {
+		case xdr.LedgerEntryChangeTypeLedgerEntryCreated:
+			effect = history.EffectTrustlineCreated
+		case xdr.LedgerEntryChangeTypeLedgerEntryRemoved:
+			effect = history.EffectTrustlineRemoved
+		case xdr.LedgerEntryChangeTypeLedgerEntryUpdated:
+			effect = history.EffectTrustlineUpdated
+		case xdr.LedgerEntryChangeTypeLedgerEntryState:
+			effect = history.EffectTrustlineUpdated
+		}
+
+		effects.Add(source, effect, dets)
 	case xdr.OperationTypeAllowTrust:
 		op := opbody.MustAllowTrustOp()
 		asset := op.Asset.ToAsset(source)
@@ -356,12 +386,43 @@ func (is *Session) ingestOperationParticipants() {
 	}
 }
 
+func (is *Session) ingestSignerEffects(effects *EffectIngestion, op xdr.SetOptionsOp) {
+	// TODO: differentiate added/update correctly
+
+	// ingest master signer effects
+	if op.MasterWeight != nil {
+		effect := history.EffectSignerCreated
+		if *op.MasterWeight == 0 {
+			effect = history.EffectSignerRemoved
+		}
+		source := is.Cursor.OperationSourceAccount()
+		effects.Add(source, effect, is.signerDetails(source, int32(*op.MasterWeight)))
+	}
+
+	// ingest non-master signer effects
+	if op.Signer != nil {
+		effect := history.EffectSignerCreated
+		if op.Signer.Weight == 0 {
+			effect = history.EffectSignerRemoved
+		}
+		source := is.Cursor.OperationSourceAccount()
+		effects.Add(source, effect, is.signerDetails(op.Signer.PubKey, int32(op.Signer.Weight)))
+	}
+}
+
 func (is *Session) ingestTrades(effects *EffectIngestion, buyer xdr.AccountId, claims []xdr.ClaimOfferAtom) {
 	for _, claim := range claims {
 		seller := claim.SellerId
 		bd, sd := is.tradeDetails(buyer, seller, claim)
 		effects.Add(buyer, history.EffectTrade, bd)
 		effects.Add(seller, history.EffectTrade, sd)
+	}
+}
+
+func (is *Session) signerDetails(key xdr.AccountId, weight int32) map[string]interface{} {
+	return map[string]interface{}{
+		"public_key": key.Address(),
+		"weight":     weight,
 	}
 }
 
