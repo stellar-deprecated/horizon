@@ -11,53 +11,53 @@ SET client_min_messages = warning;
 
 SET search_path = public, pg_catalog;
 
-DROP INDEX public.unique_schema_migrations;
-DROP INDEX public.trade_effects_by_order_book;
-DROP INDEX public.index_history_transactions_on_id;
-DROP INDEX public.index_history_transaction_statuses_lc_on_all;
-DROP INDEX public.index_history_transaction_participants_on_transaction_hash;
-DROP INDEX public.index_history_transaction_participants_on_account;
-DROP INDEX public.index_history_operations_on_type;
-DROP INDEX public.index_history_operations_on_transaction_id;
-DROP INDEX public.index_history_operations_on_id;
-DROP INDEX public.index_history_ledgers_on_sequence;
-DROP INDEX public.index_history_ledgers_on_previous_ledger_hash;
-DROP INDEX public.index_history_ledgers_on_ledger_hash;
-DROP INDEX public.index_history_ledgers_on_importer_version;
-DROP INDEX public.index_history_ledgers_on_id;
-DROP INDEX public.index_history_ledgers_on_closed_at;
-DROP INDEX public.index_history_effects_on_type;
-DROP INDEX public.index_history_accounts_on_id;
-DROP INDEX public.index_history_accounts_on_address;
-DROP INDEX public.hs_transaction_by_id;
-DROP INDEX public.hs_ledger_by_id;
-DROP INDEX public.hist_op_p_id;
-DROP INDEX public.hist_e_id;
-DROP INDEX public.hist_e_by_order;
-DROP INDEX public.by_ledger;
-DROP INDEX public.by_hash;
-DROP INDEX public.by_account;
-ALTER TABLE ONLY public.history_transaction_statuses DROP CONSTRAINT history_transaction_statuses_pkey;
-ALTER TABLE ONLY public.history_transaction_participants DROP CONSTRAINT history_transaction_participants_pkey;
-ALTER TABLE ONLY public.history_operation_participants DROP CONSTRAINT history_operation_participants_pkey;
-ALTER TABLE public.history_transaction_statuses ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.history_transaction_participants ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.history_operation_participants ALTER COLUMN id DROP DEFAULT;
-DROP TABLE public.schema_migrations;
-DROP TABLE public.history_transactions;
-DROP SEQUENCE public.history_transaction_statuses_id_seq;
-DROP TABLE public.history_transaction_statuses;
-DROP SEQUENCE public.history_transaction_participants_id_seq;
-DROP TABLE public.history_transaction_participants;
-DROP TABLE public.history_operations;
-DROP SEQUENCE public.history_operation_participants_id_seq;
-DROP TABLE public.history_operation_participants;
-DROP TABLE public.history_ledgers;
-DROP TABLE public.history_effects;
-DROP TABLE public.history_accounts;
-DROP EXTENSION hstore;
-DROP EXTENSION plpgsql;
-DROP SCHEMA public;
+DROP INDEX IF EXISTS public.unique_schema_migrations;
+DROP INDEX IF EXISTS public.trade_effects_by_order_book;
+DROP INDEX IF EXISTS public.index_history_transactions_on_id;
+DROP INDEX IF EXISTS public.index_history_transaction_statuses_lc_on_all;
+DROP INDEX IF EXISTS public.index_history_transaction_participants_on_transaction_hash;
+DROP INDEX IF EXISTS public.index_history_transaction_participants_on_account;
+DROP INDEX IF EXISTS public.index_history_operations_on_type;
+DROP INDEX IF EXISTS public.index_history_operations_on_transaction_id;
+DROP INDEX IF EXISTS public.index_history_operations_on_id;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_sequence;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_previous_ledger_hash;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_ledger_hash;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_importer_version;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_id;
+DROP INDEX IF EXISTS public.index_history_ledgers_on_closed_at;
+DROP INDEX IF EXISTS public.index_history_effects_on_type;
+DROP INDEX IF EXISTS public.index_history_accounts_on_id;
+DROP INDEX IF EXISTS public.index_history_accounts_on_address;
+DROP INDEX IF EXISTS public.hs_transaction_by_id;
+DROP INDEX IF EXISTS public.hs_ledger_by_id;
+DROP INDEX IF EXISTS public.hist_op_p_id;
+DROP INDEX IF EXISTS public.hist_e_id;
+DROP INDEX IF EXISTS public.hist_e_by_order;
+DROP INDEX IF EXISTS public.by_ledger;
+DROP INDEX IF EXISTS public.by_hash;
+DROP INDEX IF EXISTS public.by_account;
+ALTER TABLE IF EXISTS ONLY public.history_transaction_statuses DROP CONSTRAINT IF EXISTS history_transaction_statuses_pkey;
+ALTER TABLE IF EXISTS ONLY public.history_transaction_participants DROP CONSTRAINT IF EXISTS history_transaction_participants_pkey;
+ALTER TABLE IF EXISTS ONLY public.history_operation_participants DROP CONSTRAINT IF EXISTS history_operation_participants_pkey;
+ALTER TABLE IF EXISTS public.history_transaction_statuses ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.history_transaction_participants ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.history_operation_participants ALTER COLUMN id DROP DEFAULT;
+DROP TABLE IF EXISTS public.schema_migrations;
+DROP TABLE IF EXISTS public.history_transactions;
+DROP SEQUENCE IF EXISTS public.history_transaction_statuses_id_seq;
+DROP TABLE IF EXISTS public.history_transaction_statuses;
+DROP SEQUENCE IF EXISTS public.history_transaction_participants_id_seq;
+DROP TABLE IF EXISTS public.history_transaction_participants;
+DROP TABLE IF EXISTS public.history_operations;
+DROP SEQUENCE IF EXISTS public.history_operation_participants_id_seq;
+DROP TABLE IF EXISTS public.history_operation_participants;
+DROP TABLE IF EXISTS public.history_ledgers;
+DROP TABLE IF EXISTS public.history_effects;
+DROP TABLE IF EXISTS public.history_accounts;
+DROP EXTENSION IF EXISTS hstore;
+DROP EXTENSION IF EXISTS plpgsql;
+DROP SCHEMA IF EXISTS public;
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: -
 --
@@ -289,7 +289,7 @@ CREATE TABLE history_transactions (
 --
 
 CREATE TABLE schema_migrations (
-    version character varying NOT NULL
+    version character varying(255) NOT NULL
 );
 
 
@@ -318,88 +318,74 @@ ALTER TABLE ONLY history_transaction_statuses ALTER COLUMN id SET DEFAULT nextva
 -- Data for Name: history_accounts; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY history_accounts (id, address) FROM stdin;
-1	GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H
-8589938689	GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU
-\.
+INSERT INTO history_accounts VALUES (1, 'GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H');
+INSERT INTO history_accounts VALUES (8589938689, 'GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU');
 
 
 --
 -- Data for Name: history_effects; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY history_effects (history_account_id, history_operation_id, "order", type, details) FROM stdin;
-8589938689	8589938689	1	0	{"starting_balance": "100.0"}
-1	8589938689	2	3	{"amount": "100.0", "asset_type": "native"}
-8589938689	8589938689	3	10	{"weight": 1, "public_key": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU"}
-8589938689	12884905985	1	2	{"amount": "5.0", "asset_type": "native"}
-8589938689	12884905985	2	3	{"amount": "5.0", "asset_type": "native"}
-\.
+INSERT INTO history_effects VALUES (8589938689, 8589938689, 1, 0, '{"starting_balance": "100.0000000"}');
+INSERT INTO history_effects VALUES (1, 8589938689, 2, 3, '{"amount": "100.0000000", "asset_type": "native"}');
+INSERT INTO history_effects VALUES (8589938689, 8589938689, 3, 10, '{"weight": 1, "public_key": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU"}');
+INSERT INTO history_effects VALUES (8589938689, 12884905985, 1, 2, '{"amount": "5.0000000", "asset_type": "native"}');
+INSERT INTO history_effects VALUES (8589938689, 12884905985, 2, 3, '{"amount": "5.0000000", "asset_type": "native"}');
 
 
 --
 -- Data for Name: history_ledgers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY history_ledgers (sequence, ledger_hash, previous_ledger_hash, transaction_count, operation_count, closed_at, created_at, updated_at, id, importer_version, total_coins, fee_pool, base_fee, base_reserve, max_tx_set_size) FROM stdin;
-1	63d98f536ee68d1b27b5b89f23af5311b7569a24faf1403ad0b52b633b07be99	\N	0	0	1970-01-01 00:00:00	2015-12-07 21:25:54.391144	2015-12-07 21:25:54.391144	4294967296	4	1000000000000000000	0	100	100000000	100
-2	f09bdc96c062a4d7a00330173d8f49acbf4319728f1d9f06e204bb0f4bf0f142	63d98f536ee68d1b27b5b89f23af5311b7569a24faf1403ad0b52b633b07be99	1	1	2015-12-07 21:25:52	2015-12-07 21:25:54.402185	2015-12-07 21:25:54.402185	8589934592	4	1000000000000000000	100	100	100000000	50
-3	7a0fbaab92be3a63ab63d1737c9b3af71e668696b5989b740b54843a663a7d2e	f09bdc96c062a4d7a00330173d8f49acbf4319728f1d9f06e204bb0f4bf0f142	1	1	2015-12-07 21:25:53	2015-12-07 21:25:54.442851	2015-12-07 21:25:54.442851	12884901888	4	1000000000000000000	200	100	100000000	50
-\.
+INSERT INTO history_ledgers VALUES (1, '63d98f536ee68d1b27b5b89f23af5311b7569a24faf1403ad0b52b633b07be99', NULL, 0, 0, '1970-01-01 00:00:00', '2016-03-22 16:08:53.379877', '2016-03-22 16:08:53.379877', 4294967296, 5, 1000000000000000000, 0, 100, 100000000, 100);
+INSERT INTO history_ledgers VALUES (2, '1e3ddecde1e649ca8e4473e004613cc1d9cf4dc0916d2a32bc0db1d9ad4e8d9f', '63d98f536ee68d1b27b5b89f23af5311b7569a24faf1403ad0b52b633b07be99', 1, 1, '2016-03-22 16:08:51', '2016-03-22 16:08:53.392175', '2016-03-22 16:08:53.392175', 8589934592, 5, 1000000000000000000, 100, 100, 100000000, 10000);
+INSERT INTO history_ledgers VALUES (3, '9d2c362a6c4328229fff5f48a7456271e647fa7b47ad77bbad83ffa7366387c7', '1e3ddecde1e649ca8e4473e004613cc1d9cf4dc0916d2a32bc0db1d9ad4e8d9f', 1, 1, '2016-03-22 16:08:52', '2016-03-22 16:08:53.429246', '2016-03-22 16:08:53.429246', 12884901888, 5, 1000000000000000000, 200, 100, 100000000, 10000);
 
 
 --
 -- Data for Name: history_operation_participants; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY history_operation_participants (id, history_operation_id, history_account_id) FROM stdin;
-153	8589938689	1
-154	8589938689	8589938689
-155	12884905985	8589938689
-\.
+INSERT INTO history_operation_participants VALUES (969, 8589938689, 1);
+INSERT INTO history_operation_participants VALUES (970, 8589938689, 8589938689);
+INSERT INTO history_operation_participants VALUES (971, 12884905985, 8589938689);
 
 
 --
 -- Name: history_operation_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('history_operation_participants_id_seq', 155, true);
+SELECT pg_catalog.setval('history_operation_participants_id_seq', 971, true);
 
 
 --
 -- Data for Name: history_operations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY history_operations (id, transaction_id, application_order, type, details, source_account) FROM stdin;
-8589938689	8589938688	1	0	{"funder": "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", "account": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU", "starting_balance": "100.0"}	GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H
-12884905985	12884905984	1	1	{"to": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU", "from": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU", "amount": "5.0", "asset_type": "native"}	GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU
-\.
+INSERT INTO history_operations VALUES (8589938689, 8589938688, 1, 0, '{"funder": "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", "account": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU", "starting_balance": "100.0000000"}', 'GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H');
+INSERT INTO history_operations VALUES (12884905985, 12884905984, 1, 1, '{"to": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU", "from": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU", "amount": "5.0000000", "asset_type": "native"}', 'GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU');
 
 
 --
 -- Data for Name: history_transaction_participants; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY history_transaction_participants (id, transaction_hash, account, created_at, updated_at) FROM stdin;
-135	2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d	GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU	2015-12-07 21:25:54.409099	2015-12-07 21:25:54.409099
-136	2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d	GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H	2015-12-07 21:25:54.410241	2015-12-07 21:25:54.410241
-137	f5971def3ff08c05ce222e7d71bf43703bb98ea1f776ea73085265d35dfd42ab	GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU	2015-12-07 21:25:54.44991	2015-12-07 21:25:54.44991
-\.
+INSERT INTO history_transaction_participants VALUES (992, '2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d', 'GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H', '2016-03-22 16:08:53.399341', '2016-03-22 16:08:53.399341');
+INSERT INTO history_transaction_participants VALUES (993, '2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d', 'GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU', '2016-03-22 16:08:53.400543', '2016-03-22 16:08:53.400543');
+INSERT INTO history_transaction_participants VALUES (994, 'f5971def3ff08c05ce222e7d71bf43703bb98ea1f776ea73085265d35dfd42ab', 'GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU', '2016-03-22 16:08:53.43549', '2016-03-22 16:08:53.43549');
 
 
 --
 -- Name: history_transaction_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('history_transaction_participants_id_seq', 137, true);
+SELECT pg_catalog.setval('history_transaction_participants_id_seq', 994, true);
 
 
 --
 -- Data for Name: history_transaction_statuses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY history_transaction_statuses (id, result_code_s, result_code) FROM stdin;
-\.
 
 
 --
@@ -413,37 +399,33 @@ SELECT pg_catalog.setval('history_transaction_statuses_id_seq', 1, false);
 -- Data for Name: history_transactions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY history_transactions (transaction_hash, ledger_sequence, application_order, account, account_sequence, fee_paid, operation_count, created_at, updated_at, id, tx_envelope, tx_result, tx_meta, tx_fee_meta, signatures, memo_type, memo, time_bounds) FROM stdin;
-2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d	2	1	GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H	1	100	1	2015-12-07 21:25:54.406458	2015-12-07 21:25:54.406458	8589938688	AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAAZAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAECDzqvkQBQoNAJifPRXDoLhvtycT3lFPCQ51gkdsFHaBNWw05S/VhW0Xgkr0CBPE4NaFV2Kmcs3ZwLmib4TRrML	AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=	AAAAAAAAAAEAAAACAAAAAAAAAAIAAAAAAAAAAK6jei3jmoI8TGlD/egc37PXtHKKzWV8wViZBaCu5L5MAAAAADuaygAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAIAAAAAAAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3DeC2s2vJNZwAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA	AAAAAgAAAAMAAAABAAAAAAAAAABi/B0L0JGythwN1lY0aypo19NHxvLCyO5tBEcCVvwF9w3gtrOnZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAAAACAAAAAAAAAABi/B0L0JGythwN1lY0aypo19NHxvLCyO5tBEcCVvwF9w3gtrOnY/+cAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA==	{g86r5EAUKDQCYnz0Vw6C4b7cnE95RTwkOdYJHbBR2gTVsNOUv1YVtF4JK9AgTxODWhVdipnLN2cC5om+E0azCw==}	none	\N	\N
-f5971def3ff08c05ce222e7d71bf43703bb98ea1f776ea73085265d35dfd42ab	3	1	GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU	8589934593	100	1	2015-12-07 21:25:54.447944	2015-12-07 21:25:54.447944	12884905984	AAAAAK6jei3jmoI8TGlD/egc37PXtHKKzWV8wViZBaCu5L5MAAAAZAAAAAIAAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAAAAAAAL68IAAAAAAAAAAAa7kvkwAAABAsWrm6a8GQsiVWFe3lswEI88Cq56ij2ztlHnqIiRwWhNBR1YMXHlNwcuICXzJ+2Sux6LQpjpLabuwDUWhHWIZAA==	AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAA=	AAAAAAAAAAEAAAAA	AAAAAgAAAAMAAAACAAAAAAAAAACuo3ot45qCPExpQ/3oHN+z17Ryis1lfMFYmQWgruS+TAAAAAA7msoAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAAAADAAAAAAAAAACuo3ot45qCPExpQ/3oHN+z17Ryis1lfMFYmQWgruS+TAAAAAA7msmcAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA==	{sWrm6a8GQsiVWFe3lswEI88Cq56ij2ztlHnqIiRwWhNBR1YMXHlNwcuICXzJ+2Sux6LQpjpLabuwDUWhHWIZAA==}	none	\N	\N
-\.
+INSERT INTO history_transactions VALUES ('2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d', 2, 1, 'GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H', 1, 100, 1, '2016-03-22 16:08:53.396468', '2016-03-22 16:08:53.396468', 8589938688, 'AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAAZAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAECDzqvkQBQoNAJifPRXDoLhvtycT3lFPCQ51gkdsFHaBNWw05S/VhW0Xgkr0CBPE4NaFV2Kmcs3ZwLmib4TRrML', 'AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=', 'AAAAAAAAAAEAAAACAAAAAAAAAAIAAAAAAAAAAK6jei3jmoI8TGlD/egc37PXtHKKzWV8wViZBaCu5L5MAAAAADuaygAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAIAAAAAAAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3DeC2s2vJNZwAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA', 'AAAAAgAAAAMAAAABAAAAAAAAAABi/B0L0JGythwN1lY0aypo19NHxvLCyO5tBEcCVvwF9w3gtrOnZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAAAACAAAAAAAAAABi/B0L0JGythwN1lY0aypo19NHxvLCyO5tBEcCVvwF9w3gtrOnY/+cAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA==', '{g86r5EAUKDQCYnz0Vw6C4b7cnE95RTwkOdYJHbBR2gTVsNOUv1YVtF4JK9AgTxODWhVdipnLN2cC5om+E0azCw==}', 'none', NULL, NULL);
+INSERT INTO history_transactions VALUES ('f5971def3ff08c05ce222e7d71bf43703bb98ea1f776ea73085265d35dfd42ab', 3, 1, 'GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU', 8589934593, 100, 1, '2016-03-22 16:08:53.433244', '2016-03-22 16:08:53.433244', 12884905984, 'AAAAAK6jei3jmoI8TGlD/egc37PXtHKKzWV8wViZBaCu5L5MAAAAZAAAAAIAAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAAAAAAAL68IAAAAAAAAAAAa7kvkwAAABAsWrm6a8GQsiVWFe3lswEI88Cq56ij2ztlHnqIiRwWhNBR1YMXHlNwcuICXzJ+2Sux6LQpjpLabuwDUWhHWIZAA==', 'AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAA=', 'AAAAAAAAAAEAAAAA', 'AAAAAgAAAAMAAAACAAAAAAAAAACuo3ot45qCPExpQ/3oHN+z17Ryis1lfMFYmQWgruS+TAAAAAA7msoAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAAAADAAAAAAAAAACuo3ot45qCPExpQ/3oHN+z17Ryis1lfMFYmQWgruS+TAAAAAA7msmcAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA==', '{sWrm6a8GQsiVWFe3lswEI88Cq56ij2ztlHnqIiRwWhNBR1YMXHlNwcuICXzJ+2Sux6LQpjpLabuwDUWhHWIZAA==}', 'none', NULL, NULL);
 
 
 --
 -- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY schema_migrations (version) FROM stdin;
-20150310224849
-20150313225945
-20150313225955
-20150501160031
-20150508003829
-20150508175821
-20150508183542
-20150508215546
-20150609230237
-20150629181921
-20150825180131
-20150825223417
-20150902224148
-20150929205440
-20151006205250
-20151011210811
-20151020211921
-20151020225251
-20151020235257
-\.
+INSERT INTO schema_migrations VALUES ('20150310224849');
+INSERT INTO schema_migrations VALUES ('20150313225945');
+INSERT INTO schema_migrations VALUES ('20150313225955');
+INSERT INTO schema_migrations VALUES ('20150501160031');
+INSERT INTO schema_migrations VALUES ('20150508003829');
+INSERT INTO schema_migrations VALUES ('20150508175821');
+INSERT INTO schema_migrations VALUES ('20150508183542');
+INSERT INTO schema_migrations VALUES ('20150508215546');
+INSERT INTO schema_migrations VALUES ('20150609230237');
+INSERT INTO schema_migrations VALUES ('20150629181921');
+INSERT INTO schema_migrations VALUES ('20150825180131');
+INSERT INTO schema_migrations VALUES ('20150825223417');
+INSERT INTO schema_migrations VALUES ('20150902224148');
+INSERT INTO schema_migrations VALUES ('20150929205440');
+INSERT INTO schema_migrations VALUES ('20151006205250');
+INSERT INTO schema_migrations VALUES ('20151011210811');
+INSERT INTO schema_migrations VALUES ('20151020211921');
+INSERT INTO schema_migrations VALUES ('20151020225251');
+INSERT INTO schema_migrations VALUES ('20151020235257');
 
 
 --
@@ -650,16 +632,6 @@ CREATE INDEX trade_effects_by_order_book ON history_effects USING btree (((detai
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: -
---
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM nullstyle;
-GRANT ALL ON SCHEMA public TO nullstyle;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --

@@ -43,15 +43,15 @@ func TestGetOrderBookSummary(t *testing.T) {
 	tt.Assert.Equal(int32(50), asks[2].Pricen)
 	tt.Assert.Equal(int32(1), asks[2].Priced)
 
-	tt.Assert.Equal(int64(10000000), bids[0].Amount)
+	tt.Assert.Equal(int64(1000000000), bids[0].Amount)
 	tt.Assert.Equal(int32(10), bids[0].Pricen)
 	tt.Assert.Equal(int32(1), bids[0].Priced)
 
-	tt.Assert.Equal(int64(110000000), bids[1].Amount)
+	tt.Assert.Equal(int64(9000000000), bids[1].Amount)
 	tt.Assert.Equal(int32(9), bids[1].Pricen)
 	tt.Assert.Equal(int32(1), bids[1].Priced)
 
-	tt.Assert.Equal(int64(2000000000), bids[2].Amount)
+	tt.Assert.Equal(int64(50000000000), bids[2].Amount)
 	tt.Assert.Equal(int32(5), bids[2].Pricen)
 	tt.Assert.Equal(int32(1), bids[2].Priced)
 
