@@ -690,6 +690,6 @@ func (is *Session) operationFlagDetails(result map[string]interface{}, f int32, 
 		s = append(s, "auth_immutable")
 	}
 
-	result[prefix+"_flag"] = n
-	result[prefix+"_flag_s"] = s
+	result[prefix+"_flags"] = n
+	result[prefix+"_flags_s"] = s
 }

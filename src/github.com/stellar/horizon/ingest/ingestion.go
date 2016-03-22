@@ -126,7 +126,7 @@ func (ingest *Ingestion) Ledger(
 		id,
 		header.Sequence,
 		header.LedgerHash,
-		null.NewString(header.PrevHash, header.Sequence >= 1),
+		null.NewString(header.PrevHash, header.Sequence > 1),
 		header.Data.TotalCoins,
 		header.Data.FeePool,
 		header.Data.BaseFee,
