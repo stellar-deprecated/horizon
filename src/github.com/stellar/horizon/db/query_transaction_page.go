@@ -30,9 +30,16 @@ func (q TransactionPageQuery) Select(ctx context.Context, dest interface{}) erro
 	}
 
 	if q.AccountAddress != "" {
+		var account history.Account
+		err := q.HistoryQ(ctx).AccountByAddress(&account, q.AccountAddress)
+
+		if err != nil {
+			return err
+		}
+
 		sql = sql.
-			Join("history_transaction_participants htp USING(transaction_hash)").
-			Where("htp.account = ?", q.AccountAddress)
+			Join("history_transaction_participants htp ON htp.history_transaction_id = ht.id").
+			Where("htp.history_account_id = ?", account.ID)
 	}
 
 	if q.LedgerSequence != 0 {
