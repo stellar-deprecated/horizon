@@ -16,7 +16,7 @@ export NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
 # run all scenarios
 for i in $PACKAGES; do
   CORE_SQL="${i%.rb}-core.sql"
-  HORIZON_SQL="${i%.rb}-horizon2.sql"
+  HORIZON_SQL="${i%.rb}-horizon.sql"
   bundle exec scc -r $i --dump-root-db > $CORE_SQL
 
   # load the core scenario
@@ -32,4 +32,4 @@ done
 
 
 # commit new sql files to bindata
-gb generate github.com/stellar/horizon/test
+gb generate github.com/stellar/horizon/test/scenarios
