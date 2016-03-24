@@ -190,33 +190,29 @@ func (is *Session) ingestEffects() {
 
 	case xdr.OperationTypeChangeTrust:
 		op := opbody.MustChangeTrustOp()
-		dets := map[string]interface{}{
-			"limit": amount.String(op.Limit),
-		}
+		dets := map[string]interface{}{"limit": amount.String(op.Limit)}
+		key := xdr.LedgerKey{}
+		effect := history.EffectType(0)
+
 		is.assetDetails(dets, op.Line, "")
-		var change *xdr.LedgerEntryChange
-		var effect history.EffectType
 
-		for _, c := range is.Cursor.OperationChanges() {
-			if c.EntryType() == xdr.LedgerEntryTypeTrustline {
-				change = &c
-				break
-			}
+		key.SetTrustline(source, op.Line)
+
+		before, after, err := is.Cursor.BeforeAndAfter(key)
+		if err != nil {
+			is.Err = err
+			return
 		}
 
-		if change == nil {
-			panic("failed to find meta entry when ingesting effects for ChangeTrustOp")
-		}
-
-		switch change.Type {
-		case xdr.LedgerEntryChangeTypeLedgerEntryCreated:
+		switch {
+		case before == nil && after != nil:
 			effect = history.EffectTrustlineCreated
-		case xdr.LedgerEntryChangeTypeLedgerEntryRemoved:
+		case before != nil && after == nil:
 			effect = history.EffectTrustlineRemoved
-		case xdr.LedgerEntryChangeTypeLedgerEntryUpdated:
+		case before != nil && after != nil:
 			effect = history.EffectTrustlineUpdated
-		case xdr.LedgerEntryChangeTypeLedgerEntryState:
-			effect = history.EffectTrustlineUpdated
+		default:
+			panic("Invalid before-and-after state")
 		}
 
 		effects.Add(source, effect, dets)
@@ -255,39 +251,38 @@ func (is *Session) ingestEffects() {
 			)
 		}
 	case xdr.OperationTypeManageData:
-		op := opbody.MustManageDataOp()
-		dets := map[string]interface{}{
-			"name": op.DataName,
-		}
-		var change *xdr.LedgerEntryChange
-		var effect history.EffectType
-
-		for _, c := range is.Cursor.OperationChanges() {
-			if c.EntryType() == xdr.LedgerEntryTypeData {
-				change = &c
-				break
-			}
-		}
-
-		if change == nil {
-			panic("failed to find meta entry when ingesting effects for ManageDataOp")
-		}
-
-		switch change.Type {
-		case xdr.LedgerEntryChangeTypeLedgerEntryCreated:
-			effect = history.EffectDataCreated
-			dets["value"] = *op.DataValue
-		case xdr.LedgerEntryChangeTypeLedgerEntryRemoved:
-			effect = history.EffectDataRemoved
-		case xdr.LedgerEntryChangeTypeLedgerEntryUpdated:
-			effect = history.EffectDataUpdated
-			dets["value"] = *op.DataValue
-		case xdr.LedgerEntryChangeTypeLedgerEntryState:
-			effect = history.EffectDataUpdated
-			dets["value"] = *op.DataValue
-		}
-
-		effects.Add(source, effect, dets)
+		// op := opbody.MustManageDataOp()
+		// dets := map[string]interface{}{"name": op.DataName}
+		// key := xdr.LedgerKey{}
+		// effect := history.EffectType(0)
+		//
+		// key.SetData(source, string(op.DataName))
+		// log.Println("fee:", is.Cursor.TransactionFee().ChangesXDR())
+		// log.Println("txx:", is.Cursor.Transaction().ResultMetaXDR())
+		//
+		// before, after, err := is.Cursor.BeforeAndAfter(key)
+		// if err != nil {
+		// 	is.Err = err
+		// 	return
+		// }
+		//
+		// if after != nil {
+		// 	raw := after.Data.MustData().DataValue
+		// 	dets["value"] = base64.StdEncoding.EncodeToString(raw)
+		// }
+		//
+		// switch {
+		// case before == nil && after != nil:
+		// 	effect = history.EffectDataCreated
+		// case before != nil && after == nil:
+		// 	effect = history.EffectDataRemoved
+		// case before != nil && after != nil:
+		// 	effect = history.EffectDataUpdated
+		// default:
+		// 	panic("Invalid before-and-after state")
+		// }
+		//
+		// effects.Add(source, effect, dets)
 
 	default:
 		is.Err = fmt.Errorf("Unknown operation type: %s", is.Cursor.OperationType())
@@ -379,27 +374,46 @@ func (is *Session) ingestOperationParticipants() {
 }
 
 func (is *Session) ingestSignerEffects(effects *EffectIngestion, op xdr.SetOptionsOp) {
-	// TODO: differentiate added/update correctly
-
-	// ingest master signer effects
-	if op.MasterWeight != nil {
-		effect := history.EffectSignerCreated
-		if *op.MasterWeight == 0 {
-			effect = history.EffectSignerRemoved
-		}
-		source := is.Cursor.OperationSourceAccount()
-		effects.Add(source, effect, is.signerDetails(source, int32(*op.MasterWeight)))
+	source := is.Cursor.OperationSourceAccount()
+	be, ae, err := is.Cursor.BeforeAndAfter(source.LedgerKey())
+	if err != nil {
+		is.Err = err
+		return
 	}
 
-	// ingest non-master signer effects
-	if op.Signer != nil {
-		effect := history.EffectSignerCreated
-		if op.Signer.Weight == 0 {
-			effect = history.EffectSignerRemoved
+	beforeAccount := be.Data.MustAccount()
+	afterAccount := ae.Data.MustAccount()
+
+	before := beforeAccount.SignerSummary()
+	after := afterAccount.SignerSummary()
+
+	for addy := range before {
+		weight, ok := after[addy]
+		if !ok {
+			effects.Add(source, history.EffectSignerRemoved, map[string]interface{}{
+				"public_key": addy,
+			})
+			continue
 		}
-		source := is.Cursor.OperationSourceAccount()
-		effects.Add(source, effect, is.signerDetails(op.Signer.PubKey, int32(op.Signer.Weight)))
+		effects.Add(source, history.EffectSignerUpdated, map[string]interface{}{
+			"public_key": addy,
+			"weight":     weight,
+		})
 	}
+	// Add the "created" effects
+	for addy, weight := range after {
+		// if `addy` is in before, the previous for loop should have recorded
+		// the update, so skip this key
+		if _, ok := before[addy]; ok {
+			continue
+		}
+
+		effects.Add(source, history.EffectSignerCreated, map[string]interface{}{
+			"public_key": addy,
+			"weight":     weight,
+		})
+	}
+
 }
 
 func (is *Session) ingestTrades(effects *EffectIngestion, buyer xdr.AccountId, claims []xdr.ClaimOfferAtom) {
@@ -408,13 +422,6 @@ func (is *Session) ingestTrades(effects *EffectIngestion, buyer xdr.AccountId, c
 		bd, sd := is.tradeDetails(buyer, seller, claim)
 		effects.Add(buyer, history.EffectTrade, bd)
 		effects.Add(seller, history.EffectTrade, sd)
-	}
-}
-
-func (is *Session) signerDetails(key xdr.AccountId, weight int32) map[string]interface{} {
-	return map[string]interface{}{
-		"public_key": key.Address(),
-		"weight":     weight,
 	}
 }
 
