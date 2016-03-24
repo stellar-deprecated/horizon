@@ -1,10 +1,32 @@
 package ingest
 
 import (
+	"github.com/stellar/go-stellar-base/meta"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/toid"
 )
+
+// BeforeAndAfter loads the ledger entry for `target` before the current
+// operation was applied and after the operation was applied.
+func (c *Cursor) BeforeAndAfter(target xdr.LedgerKey) (
+	before *xdr.LedgerEntry,
+	after *xdr.LedgerEntry,
+	err error,
+) {
+	m := c.TransactionMetaBundle()
+	before, err = m.StateBefore(target, c.op)
+	if err != nil {
+		return
+	}
+
+	after, err = m.StateAfter(target, c.op)
+	if err != nil {
+		return
+	}
+
+	return
+}
 
 // InLedger returns true if the cursor is on a ledger.
 func (c *Cursor) InLedger() bool {
@@ -167,6 +189,13 @@ func (c *Cursor) Transaction() *core.Transaction {
 // transaction.
 func (c *Cursor) TransactionFee() *core.TransactionFee {
 	return &c.data.TransactionFees[c.tx]
+}
+
+func (c *Cursor) TransactionMetaBundle() *meta.Bundle {
+	return &meta.Bundle{
+		FeeMeta:         c.TransactionFee().Changes,
+		TransactionMeta: c.Transaction().ResultMeta,
+	}
 }
 
 // SuccessfulLedgerOperationCount returns the count of operations in the current ledger
