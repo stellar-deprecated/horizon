@@ -1,119 +1,108 @@
 package effects
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
 	"golang.org/x/net/context"
 )
 
-var TypeNames = map[int32]string{
-	db.EffectAccountCreated:           "account_created",
-	db.EffectAccountRemoved:           "account_removed",
-	db.EffectAccountCredited:          "account_credited",
-	db.EffectAccountDebited:           "account_debited",
-	db.EffectAccountThresholdsUpdated: "account_thresholds_updated",
-	db.EffectAccountHomeDomainUpdated: "account_home_domain_updated",
-	db.EffectAccountFlagsUpdated:      "account_flags_updated",
-	db.EffectSignerCreated:            "signer_created",
-	db.EffectSignerRemoved:            "signer_removed",
-	db.EffectSignerUpdated:            "signer_updated",
-	db.EffectTrustlineCreated:         "trustline_created",
-	db.EffectTrustlineRemoved:         "trustline_removed",
-	db.EffectTrustlineUpdated:         "trustline_updated",
-	db.EffectTrustlineAuthorized:      "trustline_authorized",
-	db.EffectTrustlineDeauthorized:    "trustline_deauthorized",
-	db.EffectOfferCreated:             "offer_created",
-	db.EffectOfferRemoved:             "offer_removed",
-	db.EffectOfferUpdated:             "offer_updated",
-	db.EffectTrade:                    "trade",
+var TypeNames = map[history.EffectType]string{
+	history.EffectAccountCreated:           "account_created",
+	history.EffectAccountRemoved:           "account_removed",
+	history.EffectAccountCredited:          "account_credited",
+	history.EffectAccountDebited:           "account_debited",
+	history.EffectAccountThresholdsUpdated: "account_thresholds_updated",
+	history.EffectAccountHomeDomainUpdated: "account_home_domain_updated",
+	history.EffectAccountFlagsUpdated:      "account_flags_updated",
+	history.EffectSignerCreated:            "signer_created",
+	history.EffectSignerRemoved:            "signer_removed",
+	history.EffectSignerUpdated:            "signer_updated",
+	history.EffectTrustlineCreated:         "trustline_created",
+	history.EffectTrustlineRemoved:         "trustline_removed",
+	history.EffectTrustlineUpdated:         "trustline_updated",
+	history.EffectTrustlineAuthorized:      "trustline_authorized",
+	history.EffectTrustlineDeauthorized:    "trustline_deauthorized",
+	history.EffectOfferCreated:             "offer_created",
+	history.EffectOfferRemoved:             "offer_removed",
+	history.EffectOfferUpdated:             "offer_updated",
+	history.EffectTrade:                    "trade",
+	history.EffectDataCreated:              "data_created",
+	history.EffectDataRemoved:              "data_removed",
+	history.EffectDataUpdated:              "data_updated",
 }
 
 func New(
 	ctx context.Context,
-	row db.EffectRecord,
+	row history.Effect,
 ) (result hal.Pageable, err error) {
 
+	base := Base{}
+	base.Populate(ctx, row)
+
 	switch row.Type {
-	case db.EffectAccountCreated:
-		e := AccountCreated{}
-		e.Populate(ctx, row)
+	case history.EffectAccountCreated:
+		e := AccountCreated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountCredited:
-		e := AccountCredited{}
-		e.Populate(ctx, row)
+	case history.EffectAccountCredited:
+		e := AccountCredited{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountDebited:
-		e := AccountDebited{}
-		e.Populate(ctx, row)
+	case history.EffectAccountDebited:
+		e := AccountDebited{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountThresholdsUpdated:
-		e := AccountThresholdsUpdated{}
-		e.Populate(ctx, row)
+	case history.EffectAccountThresholdsUpdated:
+		e := AccountThresholdsUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountHomeDomainUpdated:
-		e := AccountHomeDomainUpdated{}
-		e.Populate(ctx, row)
+	case history.EffectAccountHomeDomainUpdated:
+		e := AccountHomeDomainUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectAccountFlagsUpdated:
-		e := AccountFlagsUpdated{}
-		e.Populate(ctx, row)
+	case history.EffectAccountFlagsUpdated:
+		e := AccountFlagsUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectSignerCreated:
-		e := SignerCreated{}
-		e.Populate(ctx, row)
+	case history.EffectSignerCreated:
+		e := SignerCreated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectSignerUpdated:
-		e := SignerUpdated{}
-		e.Populate(ctx, row)
+	case history.EffectSignerUpdated:
+		e := SignerUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectSignerRemoved:
-		e := SignerRemoved{}
-		e.Populate(ctx, row)
+	case history.EffectSignerRemoved:
+		e := SignerRemoved{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineCreated:
-		e := TrustlineCreated{}
-		e.Populate(ctx, row)
+	case history.EffectTrustlineCreated:
+		e := TrustlineCreated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineUpdated:
-		e := TrustlineUpdated{}
-		e.Populate(ctx, row)
+	case history.EffectTrustlineUpdated:
+		e := TrustlineUpdated{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineRemoved:
-		e := TrustlineRemoved{}
-		e.Populate(ctx, row)
+	case history.EffectTrustlineRemoved:
+		e := TrustlineRemoved{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineAuthorized:
-		e := TrustlineAuthorized{}
-		e.Populate(ctx, row)
+	case history.EffectTrustlineAuthorized:
+		e := TrustlineAuthorized{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrustlineDeauthorized:
-		e := TrustlineDeauthorized{}
-		e.Populate(ctx, row)
+	case history.EffectTrustlineDeauthorized:
+		e := TrustlineDeauthorized{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
-	case db.EffectTrade:
-		e := Trade{}
-		e.Populate(ctx, row)
+	case history.EffectTrade:
+		e := Trade{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	default:
-		e := Base{}
-		e.Populate(ctx, row)
-		result = e
+		result = base
 	}
 
 	return

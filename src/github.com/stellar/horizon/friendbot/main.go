@@ -4,12 +4,12 @@ import (
 	"errors"
 	. "github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/go-stellar-base/keypair"
-	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 	"sync"
 )
 
+// Bot represents the friendbot subsystem.
 type Bot struct {
 	Submitter *txsub.System
 	Secret    string
@@ -19,6 +19,7 @@ type Bot struct {
 	lock     sync.Mutex
 }
 
+// Pay funds the account at `address`
 func (bot *Bot) Pay(ctx context.Context, address string) (result txsub.Result) {
 
 	// establish initial sequence if needed
@@ -54,7 +55,7 @@ func (bot *Bot) makeTx(address string) (string, error) {
 
 	tx := Transaction(
 		SourceAccount{bot.Secret},
-		Sequence{xdr.SequenceNumber(bot.sequence + 1)},
+		Sequence{bot.sequence + 1},
 		CreateAccount(
 			Destination{address},
 			NativeAmount{"10000.00"},
@@ -76,7 +77,7 @@ func (bot *Bot) refreshSequence(ctx context.Context) error {
 	addy := bot.address()
 	sp := bot.Submitter.Sequences
 
-	seqs, err := sp.Get(ctx, []string{addy})
+	seqs, err := sp.Get([]string{addy})
 	if err != nil {
 		return err
 	}

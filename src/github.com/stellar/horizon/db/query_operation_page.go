@@ -3,6 +3,9 @@ package db
 import (
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/toid"
 	"golang.org/x/net/context"
 )
 
@@ -24,7 +27,7 @@ var operationFilterMap = map[string][]xdr.OperationType{
 // of operations in the history database.
 type OperationPageQuery struct {
 	SqlQuery
-	PageQuery
+	db2.PageQuery
 	AccountAddress  string
 	LedgerSequence  int32
 	TransactionHash string
@@ -62,27 +65,27 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 
 	// filter by ledger sequence
 	if q.LedgerSequence != 0 {
-		var ledger LedgerRecord
+		var ledger history.Ledger
 		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
 
 		if err != nil {
 			return err
 		}
-		start := TotalOrderID{LedgerSequence: q.LedgerSequence}
-		end := TotalOrderID{LedgerSequence: q.LedgerSequence + 1}
+		start := toid.ID{LedgerSequence: q.LedgerSequence}
+		end := toid.ID{LedgerSequence: q.LedgerSequence + 1}
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())
 	}
 
 	// filter by transaction hash
 	if q.TransactionHash != "" {
-		var tx TransactionRecord
+		var tx history.Transaction
 		err := Get(ctx, TransactionByHashQuery{q.SqlQuery, q.TransactionHash}, &tx)
 
 		if err != nil {
 			return err
 		}
 
-		start := ParseTotalOrderID(tx.Id)
+		start := toid.Parse(tx.ID)
 		end := start
 		end.TransactionOrder++
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())
@@ -90,8 +93,8 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 
 	// filter by account address
 	if q.AccountAddress != "" {
-		var account HistoryAccountRecord
-		err := Get(ctx, HistoryAccountByAddressQuery{q.SqlQuery, q.AccountAddress}, &account)
+		var account history.Account
+		err := q.HistoryQ(ctx).AccountByAddress(&account, q.AccountAddress)
 
 		if err != nil {
 			return err
@@ -99,7 +102,7 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 
 		sql = sql.
 			Join("history_operation_participants hopp ON hopp.history_operation_id = hop.id").
-			Where("hopp.history_account_id = ?", account.Id)
+			Where("hopp.history_account_id = ?", account.ID)
 	}
 
 	if types, ok := operationFilterMap[q.TypeFilter]; ok {

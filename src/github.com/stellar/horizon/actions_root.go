@@ -18,7 +18,8 @@ func (action *RootAction) JSON() {
 	var res resource.Root
 	res.Populate(
 		action.Ctx,
-		action.App.latestLedgerState,
+		action.App.latestLedgerState.Horizon,
+		action.App.latestLedgerState.Core,
 		action.App.horizonVersion,
 		action.App.coreVersion,
 		action.App.networkPassphrase,

@@ -2,6 +2,8 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -17,7 +19,7 @@ import (
 type AccountIndexAction struct {
 	Action
 	Query   db.HistoryAccountPageQuery
-	Records []db.HistoryAccountRecord
+	Records []history.Account
 	Page    hal.Page
 }
 
@@ -25,7 +27,7 @@ type AccountIndexAction struct {
 func (action *AccountIndexAction) LoadQuery() {
 	action.ValidateCursorAsDefault()
 	action.Query = db.HistoryAccountPageQuery{
-		SqlQuery:  action.App.HistoryQuery(),
+		SqlQuery:  action.App.HorizonQuery(),
 		PageQuery: action.GetPageQuery(),
 	}
 }
@@ -79,17 +81,20 @@ func (action *AccountIndexAction) SSE(stream sse.Stream) {
 // AccountShowAction renders a account summary found by its address.
 type AccountShowAction struct {
 	Action
-	Query    db.AccountByAddressQuery
-	Record   db.AccountRecord
-	Resource resource.Account
+	Address        string
+	HistoryRecord  history.Account
+	CoreRecord     core.Account
+	CoreSigners    []core.Signer
+	CoreTrustlines []core.Trustline
+	Resource       resource.Account
 }
 
 // JSON is a method for actions.JSON
 func (action *AccountShowAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecord,
-		action.LoadResource,
+		action.loadParams,
+		action.loadRecord,
+		action.loadResource,
 		func() {
 			hal.Render(action.W, action.Resource)
 		},
@@ -99,9 +104,9 @@ func (action *AccountShowAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *AccountShowAction) SSE(stream sse.Stream) {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecord,
-		action.LoadResource,
+		action.loadParams,
+		action.loadRecord,
+		action.loadResource,
 		func() {
 			stream.SetLimit(10)
 			stream.Send(sse.Event{Data: action.Resource})
@@ -109,21 +114,42 @@ func (action *AccountShowAction) SSE(stream sse.Stream) {
 	)
 }
 
-// LoadQuery sets action.Query from the request params
-func (action *AccountShowAction) LoadQuery() {
-	action.Query = db.AccountByAddressQuery{
-		Core:    action.App.CoreQuery(),
-		History: action.App.HistoryQuery(),
-		Address: action.GetString("id"),
+func (action *AccountShowAction) loadParams() {
+	action.Address = action.GetString("id")
+}
+
+func (action *AccountShowAction) loadRecord() {
+	action.Err = action.CoreQ().
+		AccountByAddress(&action.CoreRecord, action.Address)
+	if action.Err != nil {
+		return
+	}
+
+	action.Err = action.CoreQ().
+		SignersByAddress(&action.CoreSigners, action.Address)
+	if action.Err != nil {
+		return
+	}
+
+	action.Err = action.CoreQ().
+		TrustlinesByAddress(&action.CoreTrustlines, action.Address)
+	if action.Err != nil {
+		return
+	}
+
+	action.Err = action.HistoryQ().
+		AccountByAddress(&action.HistoryRecord, action.Address)
+	if action.Err != nil {
+		return
 	}
 }
 
-// LoadRecord populates action.Record
-func (action *AccountShowAction) LoadRecord() {
-	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
-}
-
-// LoadResource populates action.Resource
-func (action *AccountShowAction) LoadResource() {
-	action.Err = action.Resource.Populate(action.Ctx, action.Record)
+func (action *AccountShowAction) loadResource() {
+	action.Err = action.Resource.Populate(
+		action.Ctx,
+		action.CoreRecord,
+		action.CoreSigners,
+		action.CoreTrustlines,
+		action.HistoryRecord,
+	)
 }

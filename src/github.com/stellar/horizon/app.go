@@ -9,11 +9,14 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/jmoiron/sqlx"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/friendbot"
+	"github.com/stellar/horizon/ingest"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/pump"
@@ -29,11 +32,12 @@ var appContextKey = 0
 // You can override this variable using: gb build -ldflags "-X main.version aabbccdd"
 var version = ""
 
+// App represents the root of the state of a horizon instance.
 type App struct {
 	config            Config
 	web               *Web
-	historyDb         *sqlx.DB
-	coreDb            *sqlx.DB
+	historyQ          *history.Q
+	coreQ             *core.Q
 	ctx               context.Context
 	cancel            func()
 	redis             *redis.Pool
@@ -44,6 +48,7 @@ type App struct {
 	pump              *pump.Pump
 	paths             paths.Finder
 	friendbot         *friendbot.Bot
+	ingester          *ingest.Ingester
 
 	// metrics
 	metrics                metrics.Registry
@@ -54,9 +59,14 @@ type App struct {
 	goroutineGauge         metrics.Gauge
 
 	// cached state
-	latestLedgerState db.LedgerState
+	latestLedgerState struct {
+		Core    int32
+		Horizon int32
+	}
 }
 
+// SetVersion records the provided version string in the package level `version`
+// var, which will be used for the reported horizon version.
 func SetVersion(v string) {
 	version = v
 }
@@ -129,42 +139,73 @@ func (a *App) Serve() {
 // Close cancels the app and forces the closure of db connections
 func (a *App) Close() {
 	a.cancel()
-	a.historyDb.Close()
-	a.coreDb.Close()
-}
 
-// HistoryQuery returns a SqlQuery that can be embedded in a parent query
-// to specify the query should run against the history database
-func (a *App) HistoryQuery() db.SqlQuery {
-	return db.SqlQuery{DB: a.historyDb}
-}
-
-// CoreQuery returns a SqlQuery that can be embedded in a parent query
-// to specify the query should run against the connected stellar core database
-func (a *App) CoreQuery() db.SqlQuery {
-	return db.SqlQuery{DB: a.coreDb}
-}
-
-// UpdateMetrics triggers a refresh of several metrics gauges, such as open
-// db connections and ledger state
-func (a *App) UpdateLedgerState() {
-	var ls db.LedgerState
-	q := db.LedgerStateQuery{a.HistoryQuery(), a.CoreQuery()}
-	err := db.Get(context.Background(), q, &ls)
-
-	if err != nil {
-		log.WithStack(err).
-			WithField("err", err.Error()).
-			Error("failed to load ledger state")
-		return
+	if a.ingester != nil {
+		a.ingester.Close()
 	}
 
-	a.latestLedgerState = ls
+	a.historyQ.Repo.DB.Close()
+	a.coreQ.Repo.DB.Close()
 }
 
-// UpdateCoreVersion updates the value of coreVersion from the Stellar core API
+// HistoryQ returns a helper object for performing sql queries against the
+// history portion of horizon's database.
+func (a *App) HistoryQ() *history.Q {
+	return a.historyQ
+}
+
+// HorizonRepo returns a new repo that loads data from the horizon database. The
+// returned repo is bound to `ctx`.
+func (a *App) HorizonRepo(ctx context.Context) *db2.Repo {
+	return &db2.Repo{DB: a.historyQ.Repo.DB, Ctx: ctx}
+}
+
+// HorizonQuery returns a SqlQuery that can be embedded in a parent query
+// to specify the query should run against the horizon database
+func (a *App) HorizonQuery() db.SqlQuery {
+	return db.SqlQuery{DB: a.historyQ.Repo.DB}
+}
+
+// CoreRepo returns a new repo that loads data from the stellar core
+// database. The returned repo is bound to `ctx`.
+func (a *App) CoreRepo(ctx context.Context) *db2.Repo {
+	return &db2.Repo{DB: a.coreQ.Repo.DB, Ctx: ctx}
+}
+
+// CoreQ returns a helper object for performing sql queries aginst the
+// stellar core database.
+func (a *App) CoreQ() *core.Q {
+	return a.coreQ
+}
+
+// UpdateLedgerState triggers a refresh of several metrics gauges, such as open
+// db connections and ledger state
+func (a *App) UpdateLedgerState() {
+	var err error
+
+	err = a.CoreQ().LatestLedger(&a.latestLedgerState.Core)
+	if err != nil {
+		goto Failed
+	}
+
+	err = a.HistoryQ().LatestLedger(&a.latestLedgerState.Horizon)
+	if err != nil {
+		goto Failed
+	}
+
+	return
+
+Failed:
+	log.WithStack(err).
+		WithField("err", err.Error()).
+		Error("failed to load ledger state")
+
+}
+
+// UpdateStellarCoreInfo updates the value of coreVersion and networkPassphrase
+// from the Stellar core API.
 func (a *App) UpdateStellarCoreInfo() {
-	if a.config.StellarCoreUrl == "" {
+	if a.config.StellarCoreURL == "" {
 		return
 	}
 
@@ -172,7 +213,7 @@ func (a *App) UpdateStellarCoreInfo() {
 		log.Warnf("could not load stellar-core info: %s", err)
 	}
 
-	resp, err := http.Get(fmt.Sprint(a.config.StellarCoreUrl, "/info"))
+	resp, err := http.Get(fmt.Sprint(a.config.StellarCoreURL, "/info"))
 
 	if err != nil {
 		fail(err)
@@ -186,15 +227,15 @@ func (a *App) UpdateStellarCoreInfo() {
 		return
 	}
 
-	var responseJson map[string]*json.RawMessage
-	err = json.Unmarshal(contents, &responseJson)
+	var responseJSON map[string]*json.RawMessage
+	err = json.Unmarshal(contents, &responseJSON)
 	if err != nil {
 		fail(err)
 		return
 	}
 
 	var serverInfo map[string]interface{}
-	err = json.Unmarshal(*responseJson["info"], &serverInfo)
+	err = json.Unmarshal(*responseJSON["info"], &serverInfo)
 	if err != nil {
 		fail(err)
 		return
@@ -212,9 +253,9 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 
 	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
 
-	a.horizonLedgerGauge.Update(int64(a.latestLedgerState.HorizonSequence))
-	a.stellarCoreLedgerGauge.Update(int64(a.latestLedgerState.StellarCoreSequence))
+	a.horizonLedgerGauge.Update(int64(a.latestLedgerState.Horizon))
+	a.stellarCoreLedgerGauge.Update(int64(a.latestLedgerState.Core))
 
-	a.horizonConnGauge.Update(int64(a.historyDb.Stats().OpenConnections))
-	a.stellarCoreConnGauge.Update(int64(a.coreDb.Stats().OpenConnections))
+	a.horizonConnGauge.Update(int64(a.historyQ.Repo.DB.Stats().OpenConnections))
+	a.stellarCoreConnGauge.Update(int64(a.coreQ.Repo.DB.Stats().OpenConnections))
 }

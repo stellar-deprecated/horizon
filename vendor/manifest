@@ -32,6 +32,13 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/davecgh/go-spew/spew",
+			"repository": "https://github.com/davecgh/go-spew",
+			"revision": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d",
+			"branch": "master",
+			"path": "/spew"
+		},
+		{
 			"importpath": "github.com/garyburd/redigo/internal",
 			"repository": "https://github.com/garyburd/redigo",
 			"revision": "8b1d80a45a732e6d95e22dcc2e067312c664936c",
@@ -87,19 +94,6 @@
 			"repository": "https://github.com/jmoiron/sqlx",
 			"revision": "ad7f2641d00865a3d5b860ccdade6f8e63dbdae6",
 			"branch": "master"
-		},
-		{
-			"importpath": "github.com/jteeuwen/go-bindata",
-			"repository": "https://github.com/jteeuwen/go-bindata",
-			"revision": "a0ff2567cfb70903282db057e799fd826784d41d",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/jteeuwen/go-bindata/go-bindata",
-			"repository": "https://github.com/jteeuwen/go-bindata",
-			"revision": "91db54b0401d0679b3cf743142e4f3c86b4aaa4e",
-			"branch": "master",
-			"path": "/go-bindata"
 		},
 		{
 			"importpath": "github.com/jtolds/gls",
@@ -167,6 +161,13 @@
 			"revision": "0ed230ab0856542e23b068fa253a67f57f2d01eb",
 			"branch": "master",
 			"path": "/xdr3"
+		},
+		{
+			"importpath": "github.com/pmezard/go-difflib/difflib",
+			"repository": "https://github.com/pmezard/go-difflib",
+			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+			"branch": "master",
+			"path": "/difflib"
 		},
 		{
 			"importpath": "github.com/rcrowley/go-metrics",
@@ -244,7 +245,19 @@
 		{
 			"importpath": "github.com/stellar/go-stellar-base",
 			"repository": "https://github.com/stellar/go-stellar-base",
-			"revision": "c8f1db727dfab151b053812d5bbdb584bf56e4af",
+			"revision": "00baeffce28ec008e34a1c71a7f1e533127aef1a",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/stretchr/objx",
+			"repository": "https://github.com/stretchr/objx",
+			"revision": "1a9d0bb9f541897e62256577b352fdbc1fb4fd94",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/stretchr/testify",
+			"repository": "https://github.com/stretchr/testify",
+			"revision": "1f4a1643a57e798696635ea4c126e9127adb7d3c",
 			"branch": "master"
 		},
 		{

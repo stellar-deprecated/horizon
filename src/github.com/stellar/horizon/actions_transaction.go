@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
@@ -21,7 +22,7 @@ import (
 type TransactionIndexAction struct {
 	Action
 	Query   db.TransactionPageQuery
-	Records []db.TransactionRecord
+	Records []history.Transaction
 	Page    hal.Page
 }
 
@@ -29,7 +30,7 @@ type TransactionIndexAction struct {
 func (action *TransactionIndexAction) LoadQuery() {
 	action.ValidateCursorAsDefault()
 	action.Query = db.TransactionPageQuery{
-		SqlQuery:       action.App.HistoryQuery(),
+		SqlQuery:       action.App.HorizonQuery(),
 		PageQuery:      action.GetPageQuery(),
 		AccountAddress: action.GetString("account_id"),
 		LedgerSequence: action.GetInt32("ledger_id"),
@@ -90,32 +91,29 @@ func (action *TransactionIndexAction) SSE(stream sse.Stream) {
 // TransactionShowAction renders a ledger found by its sequence number.
 type TransactionShowAction struct {
 	Action
-	Query    db.TransactionByHashQuery
-	Record   db.TransactionRecord
+	Hash     string
+	Record   history.Transaction
 	Resource resource.Transaction
 }
 
-func (action *TransactionShowAction) LoadQuery() {
-	action.Query = db.TransactionByHashQuery{
-		SqlQuery: action.App.HistoryQuery(),
-		Hash:     action.GetString("id"),
-	}
+func (action *TransactionShowAction) loadParams() {
+	action.Hash = action.GetString("id")
 }
 
-func (action *TransactionShowAction) LoadRecord() {
-	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+func (action *TransactionShowAction) loadRecord() {
+	action.Err = action.HistoryQ().TransactionByHash(&action.Record, action.Hash)
 }
 
-func (action *TransactionShowAction) LoadResource() {
+func (action *TransactionShowAction) loadResource() {
 	action.Resource.Populate(action.Ctx, action.Record)
 }
 
 // JSON is a method for actions.JSON
 func (action *TransactionShowAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecord,
-		action.LoadResource,
+		action.loadParams,
+		action.loadRecord,
+		action.loadResource,
 		func() { hal.Render(action.W, action.Resource) },
 	)
 }
@@ -132,21 +130,21 @@ type TransactionCreateAction struct {
 // JSON format action handler
 func (action *TransactionCreateAction) JSON() {
 	action.Do(
-		action.LoadTX,
-		action.LoadResult,
-		action.LoadResource,
+		action.loadTX,
+		action.loadResult,
+		action.loadResource,
 
 		func() {
 			hal.Render(action.W, action.Resource)
 		})
 }
 
-func (action *TransactionCreateAction) LoadTX() {
+func (action *TransactionCreateAction) loadTX() {
 	action.ValidateBodyType()
 	action.TX = action.GetString("tx")
 }
 
-func (action *TransactionCreateAction) LoadResult() {
+func (action *TransactionCreateAction) loadResult() {
 	submission := action.App.submitter.Submit(action.Ctx, action.TX)
 
 	select {
@@ -157,7 +155,7 @@ func (action *TransactionCreateAction) LoadResult() {
 	}
 }
 
-func (action *TransactionCreateAction) LoadResource() {
+func (action *TransactionCreateAction) loadResource() {
 	if action.Result.Err == nil {
 		action.Resource.Populate(action.Ctx, action.Result)
 		return

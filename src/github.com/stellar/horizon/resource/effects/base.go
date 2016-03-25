@@ -1,17 +1,19 @@
 package effects
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"
 )
 
+// PagingToken implements `db2.Pageable`
 func (this Base) PagingToken() string {
 	return this.PT
 }
 
-func (this *Base) Populate(ctx context.Context, row db.EffectRecord) {
+// Populate loads this resource from `row`
+func (this *Base) Populate(ctx context.Context, row history.Effect) {
 	this.ID = row.ID()
 	this.PT = row.PagingToken()
 	this.Account = row.Account
@@ -23,9 +25,9 @@ func (this *Base) Populate(ctx context.Context, row db.EffectRecord) {
 	this.Links.Precedes = lb.Linkf("/effects?order=asc&cursor=%s", this.PT)
 }
 
-func (this *Base) populateType(row db.EffectRecord) {
+func (this *Base) populateType(row history.Effect) {
 	var ok bool
-	this.TypeI = row.Type
+	this.TypeI = int32(row.Type)
 	this.Type, ok = TypeNames[row.Type]
 
 	if !ok {

@@ -8,6 +8,12 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+
+### Added
+
+- BREAKING: Horizon can now import data from stellar-core without the aid of the horizon-importer project.  This process is now known as "ingestion", and is enabled by either setting the `INGEST` environment variable to "true" or specifying "--ingest" on the launch arguments for the horizon process.  Only one process should be running in this mode for any given horizon database.
+- Add `horizon db init`, used to install the latest bundled schema for the horizon database. 
+
 ## [v0.4.0] - 2016-02-19
 
 ### Added

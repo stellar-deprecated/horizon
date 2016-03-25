@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/rubenv/sql-migrate"
+	"github.com/stellar/horizon/db/util"
 )
 
 //go:generate go-bindata -ignore .+\.go$ -pkg schema -o bindata.go ./...
@@ -13,8 +14,11 @@ import (
 type MigrateDir string
 
 const (
-	MigrateUp   MigrateDir = "up"
+	// MigrateUp causes migrations to be run in the "up" direction.
+	MigrateUp MigrateDir = "up"
+	// MigrateDown causes migrations to be run in the "down" direction.
 	MigrateDown MigrateDir = "down"
+	// MigrateRedo causes migrations to be run down, then up
 	MigrateRedo MigrateDir = "redo"
 )
 
@@ -23,6 +27,11 @@ var Migrations migrate.MigrationSource = &migrate.AssetMigrationSource{
 	Asset:    Asset,
 	AssetDir: AssetDir,
 	Dir:      "migrations",
+}
+
+// Init installs the latest schema into db after clearing it first
+func Init(db *sql.DB) error {
+	return util.RunAll(db, string(MustAsset("latest.sql")))
 }
 
 // Migrate performs schema migration.  Migrations can occur in one of three

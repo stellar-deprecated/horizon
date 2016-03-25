@@ -45,13 +45,15 @@ func init() {
 	viper.BindEnv("loggly-host", "LOGGLY_HOST")
 	viper.BindEnv("tls-cert", "TLS_CERT")
 	viper.BindEnv("tls-key", "TLS_KEY")
+	viper.BindEnv("ingest", "INGEST")
+	viper.BindEnv("network-passphrase", "NETWORK_PASSPHRASE")
 
 	rootCmd = &cobra.Command{
-		Use:              "horizon",
-		Short:            "client-facing api server for the stellar network",
-		Long:             "client-facing api server for the stellar network",
-		PersistentPreRun: initApp,
+		Use:   "horizon",
+		Short: "client-facing api server for the stellar network",
+		Long:  "client-facing api server for the stellar network",
 		Run: func(cmd *cobra.Command, args []string) {
+			initApp(cmd, args)
 			app.Serve()
 		},
 	}
@@ -99,12 +101,6 @@ func init() {
 	)
 
 	rootCmd.Flags().String(
-		"ruby-horizon-url",
-		"",
-		"proxy yet-to-be-implemented actions through to ruby horizon server",
-	)
-
-	rootCmd.Flags().String(
 		"log-level",
 		"info",
 		"Minimum log severity (debug, info, warn, error) to log",
@@ -146,6 +142,18 @@ func init() {
 		"The TLS private key file to use for securing connections to horizon",
 	)
 
+	rootCmd.Flags().Bool(
+		"ingest",
+		false,
+		"causes this horizon process to ingest data from stellar-core into horizon's db",
+	)
+
+	rootCmd.Flags().String(
+		"network-passphrase",
+		"",
+		"Override the network passphrase",
+	)
+
 	rootCmd.AddCommand(dbCmd)
 
 	viper.BindPFlags(rootCmd.Flags())
@@ -182,14 +190,13 @@ func initApp(cmd *cobra.Command, args []string) {
 	}
 
 	config := horizon.Config{
-		DatabaseUrl:            viper.GetString("db-url"),
-		StellarCoreDatabaseUrl: viper.GetString("stellar-core-db-url"),
-		StellarCoreUrl:         viper.GetString("stellar-core-url"),
+		DatabaseURL:            viper.GetString("db-url"),
+		StellarCoreDatabaseURL: viper.GetString("stellar-core-db-url"),
+		StellarCoreURL:         viper.GetString("stellar-core-url"),
 		Autopump:               viper.GetBool("autopump"),
 		Port:                   viper.GetInt("port"),
 		RateLimit:              throttled.PerHour(viper.GetInt("per-hour-rate-limit")),
-		RedisUrl:               viper.GetString("redis-url"),
-		RubyHorizonUrl:         viper.GetString("ruby-horizon-url"),
+		RedisURL:               viper.GetString("redis-url"),
 		LogLevel:               ll,
 		SentryDSN:              viper.GetString("sentry-dsn"),
 		LogglyToken:            viper.GetString("loggly-token"),
@@ -197,6 +204,7 @@ func initApp(cmd *cobra.Command, args []string) {
 		FriendbotSecret:        viper.GetString("friendbot-secret"),
 		TLSCert:                cert,
 		TLSKey:                 key,
+		Ingest:                 viper.GetBool("ingest"),
 	}
 
 	app, err = horizon.NewApp(config)

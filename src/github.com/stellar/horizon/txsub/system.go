@@ -49,7 +49,7 @@ type System struct {
 // Submit submits the provided base64 encoded transaction envelope to the
 // network using this submission system.
 func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result) {
-	sys.Init(ctx)
+	sys.Init()
 	response := make(chan Result, 1)
 	result = response
 
@@ -68,7 +68,7 @@ func (sys *System) Submit(ctx context.Context, env string) (result <-chan Result
 		return
 	}
 
-	curSeq, err := sys.Sequences.Get(ctx, []string{info.SourceAddress})
+	curSeq, err := sys.Sequences.Get([]string{info.SourceAddress})
 	if err != nil {
 		sys.finish(response, Result{Err: err, EnvelopeXDR: env})
 		return
@@ -159,9 +159,9 @@ func (sys *System) submitOnce(ctx context.Context, env string) SubmissionResult 
 	return sr
 }
 
-// Ticker triggers the system to update itself with any new data available.
+// Tick triggers the system to update itself with any new data available.
 func (sys *System) Tick(ctx context.Context) {
-	sys.Init(ctx)
+	sys.Init()
 	logger := log.Ctx(ctx)
 
 	logger.
@@ -170,7 +170,7 @@ func (sys *System) Tick(ctx context.Context) {
 
 	addys := sys.SubmissionQueue.Addresses()
 	if len(addys) > 0 {
-		curSeq, err := sys.Sequences.Get(ctx, addys)
+		curSeq, err := sys.Sequences.Get(addys)
 		if err != nil {
 			logger.WithStack(err).Error(err)
 		} else {
@@ -209,7 +209,8 @@ func (sys *System) Tick(ctx context.Context) {
 	sys.Metrics.BufferedSubmissionsGauge.Update(int64(sys.SubmissionQueue.Size()))
 }
 
-func (sys *System) Init(ctx context.Context) {
+// Init initializes `sys`
+func (sys *System) Init() {
 	sys.initializer.Do(func() {
 		sys.Metrics.FailedSubmissionsMeter = metrics.NewMeter()
 		sys.Metrics.SuccessfulSubmissionsMeter = metrics.NewMeter()

@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -10,7 +11,7 @@ import (
 type PaymentsIndexAction struct {
 	Action
 	Query   db.OperationPageQuery
-	Records []db.OperationRecord
+	Records []history.Operation
 	Page    hal.Page
 }
 
@@ -53,7 +54,7 @@ func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
 func (action *PaymentsIndexAction) LoadQuery() {
 	action.ValidateCursorAsDefault()
 	action.Query = db.OperationPageQuery{
-		SqlQuery:        action.App.HistoryQuery(),
+		SqlQuery:        action.App.HorizonQuery(),
 		PageQuery:       action.GetPageQuery(),
 		AccountAddress:  action.GetString("account_id"),
 		LedgerSequence:  action.GetInt32("ledger_id"),

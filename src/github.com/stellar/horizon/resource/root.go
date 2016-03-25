@@ -1,16 +1,15 @@
 package resource
 
 import (
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"
 )
 
 // Populate fills in the details
-func (res *Root) Populate(ctx context.Context, row db.LedgerState, hVersion string, cVersion string, passphrase string) {
-	res.HorizonSequence = row.HorizonSequence
-	res.StellarCoreSequence = row.StellarCoreSequence
+func (res *Root) Populate(ctx context.Context, hSeq, cSeq int32, hVersion, cVersion string, passphrase string) {
+	res.HorizonSequence = hSeq
+	res.StellarCoreSequence = cSeq
 	res.HorizonVersion = hVersion
 	res.StellarCoreVersion = cVersion
 	res.NetworkPassphrase = passphrase

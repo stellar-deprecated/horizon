@@ -106,9 +106,9 @@ func TestOrderBookActions(t *testing.T) {
 			So(len(result.Asks), ShouldEqual, 3)
 			So(len(result.Bids), ShouldEqual, 3)
 
-			So(result.Asks[0].Amount, ShouldEqual, "1.0000000")
-			So(result.Asks[1].Amount, ShouldEqual, "11.0000000")
-			So(result.Asks[2].Amount, ShouldEqual, "200.0000000")
+			So(result.Asks[0].Amount, ShouldEqual, "100.0000000")
+			So(result.Asks[1].Amount, ShouldEqual, "900.0000000")
+			So(result.Asks[2].Amount, ShouldEqual, "5000.0000000")
 
 			So(result.Bids[0].Amount, ShouldEqual, "10.0000000")
 			So(result.Bids[1].Amount, ShouldEqual, "100.0000000")

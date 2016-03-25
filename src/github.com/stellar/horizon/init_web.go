@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"database/sql"
 	"net/http"
 	"strings"
 
@@ -38,6 +39,7 @@ func initWeb(app *App) {
 
 	// register problems
 	problem.RegisterError(db.ErrNoResults, problem.NotFound)
+	problem.RegisterError(sql.ErrNoRows, problem.NotFound)
 	problem.RegisterError(sequence.ErrNoMoreRoom, problem.ServerOverCapacity)
 }
 

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"
 )
 
-func (this *Ledger) Populate(ctx context.Context, row db.LedgerRecord) {
+func (this *Ledger) Populate(ctx context.Context, row history.Ledger) {
 	this.ID = row.LedgerHash
 	this.PT = row.PagingToken()
 	this.Hash = row.LedgerHash

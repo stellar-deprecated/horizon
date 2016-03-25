@@ -2,7 +2,7 @@ package operations
 
 import (
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
 	"golang.org/x/net/context"
@@ -27,64 +27,57 @@ var TypeNames = map[xdr.OperationType]string{
 // based upon the row's type.
 func New(
 	ctx context.Context,
-	row db.OperationRecord,
+	row history.Operation,
 ) (result hal.Pageable, err error) {
+
+	base := Base{}
+	base.Populate(ctx, row)
 
 	switch row.Type {
 	case xdr.OperationTypeCreateAccount:
-		e := CreateAccount{}
-		e.Populate(ctx, row)
+		e := CreateAccount{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypePayment:
-		e := Payment{}
-		e.Populate(ctx, row)
+		e := Payment{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypePathPayment:
 		e := PathPayment{}
-		e.Populate(ctx, row)
+		e.Payment.Base = base
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeManageOffer:
-		e := ManageOffer{}
-		e.Populate(ctx, row)
+		e := ManageOffer{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeCreatePassiveOffer:
 		e := CreatePassiveOffer{}
-		e.Populate(ctx, row)
+		e.ManageOffer.Base = base
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeSetOptions:
-		e := SetOptions{}
-		e.Populate(ctx, row)
+		e := SetOptions{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeChangeTrust:
-		e := ChangeTrust{}
-		e.Populate(ctx, row)
+		e := ChangeTrust{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeAllowTrust:
-		e := AllowTrust{}
-		e.Populate(ctx, row)
+		e := AllowTrust{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeAccountMerge:
-		e := AccountMerge{}
-		e.Populate(ctx, row)
+		e := AccountMerge{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case xdr.OperationTypeInflation:
-		e := Inflation{}
-		e.Populate(ctx, row)
+		e := Inflation{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	default:
-		e := Base{}
-		e.Populate(ctx, row)
-		result = e
+		result = base
 	}
 
 	return

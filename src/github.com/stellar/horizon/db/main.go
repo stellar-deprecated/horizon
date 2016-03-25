@@ -2,7 +2,6 @@ package db
 
 import (
 	stderr "errors"
-	"fmt"
 	"reflect"
 
 	"golang.org/x/net/context"
@@ -37,20 +36,21 @@ type Query interface {
 	Select(context.Context, interface{}) error
 }
 
-// Pageable records have a defined order, and the place withing that order
-// is determined by the paging token
-type Pageable interface {
-	PagingToken() string
-}
-
 type Record interface{}
 
-type HistoryRecord struct {
-	Id int64 `db:"id"`
+// Tx represents a single db transaction
+type Tx struct {
+	tx *sqlx.Tx
 }
 
-func (r HistoryRecord) PagingToken() string {
-	return fmt.Sprintf("%d", r.Id)
+// Begin start a transaction
+func Begin(q SqlQuery) (*Tx, error) {
+	tx, err := q.DB.Beginx()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Tx{tx: tx}, nil
 }
 
 // Open the postgres database at the provided url and performing an initial

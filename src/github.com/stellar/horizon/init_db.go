@@ -1,34 +1,37 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/log"
 )
 
-func initHistoryDb(app *App) {
-	historyDb, err := db.Open(app.config.DatabaseUrl)
+func initHorizonDb(app *App) {
+	repo, err := db2.Open(app.config.DatabaseURL)
 
 	if err != nil {
 		log.Panic(err)
 	}
-	historyDb.SetMaxIdleConns(4)
-	historyDb.SetMaxOpenConns(12)
-	app.historyDb = historyDb
+	repo.DB.SetMaxIdleConns(4)
+	repo.DB.SetMaxOpenConns(12)
+
+	app.historyQ = &history.Q{repo}
 }
 
 func initCoreDb(app *App) {
-	coreDb, err := db.Open(app.config.StellarCoreDatabaseUrl)
+	repo, err := db2.Open(app.config.StellarCoreDatabaseURL)
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	coreDb.SetMaxIdleConns(4)
-	coreDb.SetMaxOpenConns(12)
-	app.coreDb = coreDb
+	repo.DB.SetMaxIdleConns(4)
+	repo.DB.SetMaxOpenConns(12)
+	app.coreQ = &core.Q{repo}
 }
 
 func init() {
-	appInit.Add("history-db", initHistoryDb, "app-context", "log")
+	appInit.Add("horizon-db", initHorizonDb, "app-context", "log")
 	appInit.Add("core-db", initCoreDb, "app-context", "log")
 }

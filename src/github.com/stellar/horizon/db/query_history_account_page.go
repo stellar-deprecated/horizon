@@ -1,12 +1,15 @@
 package db
 
-import "golang.org/x/net/context"
+import (
+	"github.com/stellar/horizon/db2"
+	"golang.org/x/net/context"
+)
 
 // HistoryAccountPageQuery queries for a single page of HitoryAccount objects,
 // in the normal collection paging style
 type HistoryAccountPageQuery struct {
 	SqlQuery
-	PageQuery
+	db2.PageQuery
 }
 
 // Get executes the query, returning any results

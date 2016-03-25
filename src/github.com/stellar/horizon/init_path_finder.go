@@ -5,7 +5,7 @@ import (
 )
 
 func initPathFinding(app *App) {
-	app.paths = &simplepath.Finder{app.CoreQuery(), app.ctx}
+	app.paths = &simplepath.Finder{app.CoreQ()}
 }
 
 func init() {

@@ -10,20 +10,25 @@ import (
 	"golang.org/x/net/context"
 )
 
+// MockSubmitter is a test helper that simplements the Submitter interface
 type MockSubmitter struct {
 	R              SubmissionResult
 	WasSubmittedTo bool
 }
 
+// Submit implements `txsub.Submitter`
 func (sub *MockSubmitter) Submit(ctx context.Context, env string) SubmissionResult {
 	sub.WasSubmittedTo = true
 	return sub.R
 }
 
+// MockResultProvider is a test helper that simplements the ResultProvider
+// interface
 type MockResultProvider struct {
 	Results []Result
 }
 
+// ResultByHash implements `txsub.ResultProvider`
 func (results *MockResultProvider) ResultByHash(ctx context.Context, hash string) (r Result) {
 	if len(results.Results) > 0 {
 		r = results.Results[0]
@@ -35,11 +40,14 @@ func (results *MockResultProvider) ResultByHash(ctx context.Context, hash string
 	return
 }
 
+// MockSequenceProvider is a test helper that simplements the SequenceProvider
+// interface
 type MockSequenceProvider struct {
 	Results map[string]uint64
 	Err     error
 }
 
-func (results *MockSequenceProvider) Get(ctx context.Context, addresses []string) (map[string]uint64, error) {
+// Get implements `txsub.SequenceProvider`
+func (results *MockSequenceProvider) Get(addresses []string) (map[string]uint64, error) {
 	return results.Results, results.Err
 }

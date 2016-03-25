@@ -2,14 +2,13 @@ package actions
 
 import (
 	"mime"
-	"net/http"
 	"strconv"
 
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/strkey"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/render/problem"
 )
 
@@ -21,17 +20,6 @@ const (
 	// ParamLimit is a query string param name
 	ParamLimit = "limit"
 )
-
-// OrderBookParams is a helper struct that encapsulates the specification for
-// an order book
-type OrderBookParams struct {
-	SellingType   xdr.AssetType
-	SellingIssuer string
-	SellingCode   string
-	BuyingType    xdr.AssetType
-	BuyingIssuer  string
-	BuyingCode    string
-}
 
 // GetString retrieves a string from either the URLParams, form or query string.
 // This method uses the priority (URLParams, Form, Query).
@@ -121,12 +109,12 @@ func (base *Base) GetPagingParams() (cursor string, order string, limit int32) {
 
 // GetPageQuery is a helper that returns a new db.PageQuery struct initialized
 // using the results from a call to GetPagingParams()
-func (base *Base) GetPageQuery() db.PageQuery {
+func (base *Base) GetPageQuery() db2.PageQuery {
 	if base.Err != nil {
-		return db.PageQuery{}
+		return db2.PageQuery{}
 	}
 
-	r, err := db.NewPageQuery(base.GetPagingParams())
+	r, err := db2.NewPageQuery(base.GetPagingParams())
 
 	if err != nil {
 		base.Err = err
@@ -213,63 +201,9 @@ func (base *Base) GetAssetType(name string) xdr.AssetType {
 	return r
 }
 
-// GetOrderBook returns an OrderBookParams from the url params
-func (base *Base) GetOrderBook() (result OrderBookParams) {
-	if base.Err != nil {
-		return
-	}
-
-	result = OrderBookParams{
-		SellingType:   base.GetAssetType("selling_asset_type"),
-		SellingIssuer: base.GetString("selling_asset_issuer"),
-		SellingCode:   base.GetString("selling_asset_code"),
-		BuyingType:    base.GetAssetType("buying_asset_type"),
-		BuyingIssuer:  base.GetString("buying_asset_issuer"),
-		BuyingCode:    base.GetString("buying_asset_code"),
-	}
-
-	if base.Err != nil {
-		goto InvalidOrderBook
-	}
-
-	if result.SellingType != xdr.AssetTypeAssetTypeNative {
-		if result.SellingCode == "" {
-			goto InvalidOrderBook
-		}
-
-		if result.SellingIssuer == "" {
-			goto InvalidOrderBook
-		}
-	}
-
-	if result.BuyingType != xdr.AssetTypeAssetTypeNative {
-		if result.BuyingCode == "" {
-			goto InvalidOrderBook
-		}
-
-		if result.BuyingIssuer == "" {
-			goto InvalidOrderBook
-		}
-	}
-
-	return
-
-InvalidOrderBook:
-	base.Err = &problem.P{
-		Type:   "invalid_order_book",
-		Title:  "Invalid Order Book Parameters",
-		Status: http.StatusBadRequest,
-		Detail: "The parameters that specify what order book to view are invalid in some way. " +
-			"Please ensure that your type parameters (selling_asset_type and buying_asset_type) are one the " +
-			"following valid values: native, credit_alphanum4, credit_alphanum12.  Also ensure that you " +
-			"have specified selling_asset_code and selling_issuer if selling_asset_type is not 'native', as well " +
-			"as buying_asset_code and buying_issuer if buying_asset_type is not 'native'",
-	}
-
-	return
-}
-
-// GetAsset
+// GetAsset decodes an asset from the request fields prefixed by `prefix`.  To
+// succeed, three prefixed fields must be present: asset_type, asset_code, and
+// asset_issuer.
 func (base *Base) GetAsset(prefix string) (result xdr.Asset) {
 	if base.Err != nil {
 		return

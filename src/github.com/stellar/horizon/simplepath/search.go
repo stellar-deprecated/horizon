@@ -2,7 +2,6 @@ package simplepath
 
 import (
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/paths"
 )
 
@@ -38,7 +37,7 @@ func (s *search) Init() {
 		&pathNode{
 			Asset: s.Query.DestinationAsset,
 			Tail:  nil,
-			DB:    s.Finder.SqlQuery,
+			Q:     s.Finder.Q,
 		},
 	}
 
@@ -133,8 +132,7 @@ func (s *search) runOnce() {
 func (s *search) extendSearch(cur *pathNode) {
 	// find connected assets
 	var connected []xdr.Asset
-	q := db.ConnectedAssetsQuery{s.Finder.SqlQuery, cur.Asset}
-	s.Err = db.Select(s.Finder.Ctx, q, &connected)
+	s.Err = s.Finder.Q.ConnectedAssets(&connected, cur.Asset)
 	if s.Err != nil {
 		return
 	}
@@ -143,7 +141,7 @@ func (s *search) extendSearch(cur *pathNode) {
 		newPath := &pathNode{
 			Asset: a,
 			Tail:  cur,
-			DB:    s.Finder.SqlQuery,
+			Q:     s.Finder.Q,
 		}
 
 		var hasEnough bool

@@ -2,6 +2,7 @@ package horizon
 
 import (
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -17,7 +18,7 @@ import (
 type LedgerIndexAction struct {
 	Action
 	Query   db.LedgerPageQuery
-	Records []db.LedgerRecord
+	Records []history.Ledger
 	Page    hal.Page
 }
 
@@ -53,7 +54,7 @@ func (action *LedgerIndexAction) SSE(stream sse.Stream) {
 func (action *LedgerIndexAction) LoadQuery() {
 	action.ValidateCursorAsDefault()
 	action.Query = db.LedgerPageQuery{
-		SqlQuery:  action.App.HistoryQuery(),
+		SqlQuery:  action.App.HorizonQuery(),
 		PageQuery: action.GetPageQuery(),
 	}
 }
@@ -83,7 +84,7 @@ func (action *LedgerIndexAction) LoadPage() {
 type LedgerShowAction struct {
 	Action
 	Query  db.LedgerBySequenceQuery
-	Record db.LedgerRecord
+	Record history.Ledger
 }
 
 // JSON is a method for actions.JSON
@@ -101,7 +102,7 @@ func (action *LedgerShowAction) JSON() {
 
 func (action *LedgerShowAction) LoadQuery() {
 	action.Query = db.LedgerBySequenceQuery{
-		SqlQuery: action.App.HistoryQuery(),
+		SqlQuery: action.App.HorizonQuery(),
 		Sequence: action.GetInt32("id"),
 	}
 }

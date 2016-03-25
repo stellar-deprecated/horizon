@@ -16,7 +16,7 @@ type OrderComparator func(idx int, l interface{}, r interface{}) string
 
 func OpenTestDatabase() *sqlx.DB {
 
-	result, err := sqlx.Open("postgres", test.DatabaseUrl())
+	result, err := sqlx.Open("postgres", test.DatabaseURL())
 
 	if err != nil {
 		log.Panic(err)
@@ -26,7 +26,7 @@ func OpenTestDatabase() *sqlx.DB {
 
 func OpenStellarCoreTestDatabase() *sqlx.DB {
 
-	result, err := sqlx.Open("postgres", test.StellarCoreDatabaseUrl())
+	result, err := sqlx.Open("postgres", test.StellarCoreDatabaseURL())
 
 	if err != nil {
 		log.Panic(err)
@@ -103,19 +103,6 @@ func ShouldBeOrderedDescending(actual interface{}, options ...interface{}) strin
 	}
 
 	return ShouldBeOrdered(actual, cmp)
-}
-
-// Mock Dump Query
-
-type mockDumpQuery struct{}
-
-func (q mockDumpQuery) Get(ctx context.Context) ([]interface{}, error) {
-	return []interface{}{
-		"hello",
-		"world",
-		"from",
-		"go",
-	}, nil
 }
 
 // Mock Query

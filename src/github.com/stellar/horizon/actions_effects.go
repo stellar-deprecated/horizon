@@ -3,6 +3,7 @@ package horizon
 import (
 	"errors"
 	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -19,7 +20,7 @@ import (
 type EffectIndexAction struct {
 	Action
 	Query   db.EffectPageQuery
-	Records []db.EffectRecord
+	Records []history.Effect
 	Page    hal.Page
 }
 
@@ -63,7 +64,7 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 func (action *EffectIndexAction) LoadQuery() {
 	action.ValidateCursor()
 	action.Query = db.EffectPageQuery{
-		SqlQuery:  action.App.HistoryQuery(),
+		SqlQuery:  action.App.HorizonQuery(),
 		PageQuery: action.GetPageQuery(),
 	}
 

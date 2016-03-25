@@ -1,12 +1,12 @@
 package resource
 
 import (
-	"database/sql"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/stellar/horizon/db"
+	"github.com/guregu/null"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"
@@ -15,7 +15,7 @@ import (
 // Populate fills out the details
 func (res *Transaction) Populate(
 	ctx context.Context,
-	row db.TransactionRecord,
+	row history.Transaction,
 ) (err error) {
 
 	res.ID = row.TransactionHash
@@ -51,7 +51,7 @@ func (res *Transaction) Populate(
 func (res Transaction) PagingToken() string {
 	return res.PT
 }
-func (res *Transaction) timeString(in sql.NullInt64) string {
+func (res *Transaction) timeString(in null.Int) string {
 	if !in.Valid {
 		return ""
 	}

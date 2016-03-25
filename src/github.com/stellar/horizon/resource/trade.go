@@ -3,15 +3,15 @@ package resource
 import (
 	"errors"
 
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"
 )
 
 // Populate fills out the details
-func (res *Trade) Populate(ctx context.Context, row db.EffectRecord) (err error) {
-	if row.Type != db.EffectTrade {
+func (res *Trade) Populate(ctx context.Context, row history.Effect) (err error) {
+	if row.Type != history.EffectTrade {
 		err = errors.New("invalid effect; not a trade")
 		return
 	}

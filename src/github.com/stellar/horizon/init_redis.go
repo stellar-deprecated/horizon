@@ -9,11 +9,11 @@ import (
 )
 
 func initRedis(app *App) {
-	if app.config.RedisUrl == "" {
+	if app.config.RedisURL == "" {
 		return
 	}
 
-	redisURL, err := url.Parse(app.config.RedisUrl)
+	redisURL, err := url.Parse(app.config.RedisURL)
 
 	if err != nil {
 		log.Panic(err)

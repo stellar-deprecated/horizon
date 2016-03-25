@@ -12,6 +12,8 @@ const (
 	MaxHistoryLedger = "SELECT MAX(sequence) FROM history_ledgers"
 )
 
+// TODO: replace with `App` managed services layer
+
 // NewLedgerClosePump starts a background proc that continually watches the
 // history database provided.  The watch is stopped after the provided context
 // is cancelled.

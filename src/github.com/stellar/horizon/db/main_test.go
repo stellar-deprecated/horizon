@@ -2,7 +2,6 @@ package db
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"testing"
 
@@ -13,15 +12,15 @@ import (
 )
 
 var ctx context.Context
-var core *sqlx.DB
-var history *sqlx.DB
+var coreDb *sqlx.DB
+var horizonDb *sqlx.DB
 
 func TestMain(m *testing.M) {
 	ctx = test.Context()
-	core = OpenStellarCoreTestDatabase()
-	history = OpenTestDatabase()
-	defer core.Close()
-	defer history.Close()
+	coreDb = OpenStellarCoreTestDatabase()
+	horizonDb = OpenTestDatabase()
+	defer coreDb.Close()
+	defer horizonDb.Close()
 
 	os.Exit(m.Run())
 
@@ -98,44 +97,4 @@ func TestDBPackage(t *testing.T) {
 			So(Get(ctx, query, &result).Error(), ShouldEqual, "Some error")
 		})
 	})
-}
-
-func ExampleGet() {
-	db := OpenStellarCoreTestDatabase()
-	defer db.Close()
-
-	q := CoreAccountByAddressQuery{
-		SqlQuery{db},
-		"GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
-	}
-
-	var account CoreAccountRecord
-	err := Get(context.Background(), q, &account)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("%s", account.Accountid)
-	// Output: GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H
-}
-
-func ExampleSelect() {
-	db := OpenStellarCoreTestDatabase()
-	defer db.Close()
-
-	q := CoreAccountByAddressQuery{
-		SqlQuery{db},
-		"GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
-	}
-
-	var records []CoreAccountRecord
-	err := Select(context.Background(), q, &records)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("%d", len(records))
-	// Output: 1
 }

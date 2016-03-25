@@ -3,13 +3,13 @@ package resource
 import (
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/horizon/assets"
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"
 )
 
-func (this *Offer) Populate(ctx context.Context, row db.CoreOfferRecord) {
+func (this *Offer) Populate(ctx context.Context, row core.Offer) {
 	this.ID = row.OfferID
 	this.PT = row.PagingToken()
 	this.Seller = row.SellerID

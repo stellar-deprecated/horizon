@@ -1,12 +1,16 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/stellar/horizon/db/schema"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/ingest"
 )
 
 var dbCmd = &cobra.Command{
@@ -19,7 +23,15 @@ var dbInitCmd = &cobra.Command{
 	Short: "install schema",
 	Long:  "init initializes the postgres database used by horizon.",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("initializing schema")
+		db, err := sql.Open("postgres", viper.GetString("db-url"))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = schema.Init(db)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
@@ -50,15 +62,42 @@ var dbMigrateCmd = &cobra.Command{
 			}
 		}
 
-		// HACK: getting the raw *sql.DB value through HistoryQuery()
-		// TODO: refactor app such that historyDB is exported
-		db := app.HistoryQuery().DB.DB
-
-		_, err := schema.Migrate(db, dir, count)
+		db, err := sql.Open("postgres", viper.GetString("db-url"))
 		if err != nil {
-			log.Println(err)
-			cmd.Usage()
-			os.Exit(1)
+			log.Fatal(err)
+		}
+
+		_, err = schema.Migrate(db, dir, count)
+		if err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
+var dbReingestCmd = &cobra.Command{
+	Use:   "reingest",
+	Short: "imports all data",
+	Long:  "reingest runs the ingestion pipeline over every ledger",
+	Run: func(cmd *cobra.Command, args []string) {
+		hdb, err := db2.Open(viper.GetString("db-url"))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		cdb, err := db2.Open(viper.GetString("stellar-core-db-url"))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		passphrase := viper.GetString("network-passphrase")
+		if passphrase == "" {
+			log.Fatal("network-passphrase is blank: reingestion requires manually setting passphrase")
+		}
+
+		_, err = ingest.RunOnce(passphrase, cdb, hdb)
+
+		if err != nil {
+			log.Fatal(err)
 		}
 	},
 }
@@ -66,4 +105,5 @@ var dbMigrateCmd = &cobra.Command{
 func init() {
 	dbCmd.AddCommand(dbInitCmd)
 	dbCmd.AddCommand(dbMigrateCmd)
+	dbCmd.AddCommand(dbReingestCmd)
 }

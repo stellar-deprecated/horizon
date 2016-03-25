@@ -24,6 +24,19 @@ func initDbMetrics(app *App) {
 	app.metrics.Register("goroutines", app.goroutineGauge)
 }
 
+func initIngesterMetrics(app *App) {
+	if app.ingester == nil {
+		return
+	}
+	// TODO
+	// app.metrics.Register("ingester.total",
+	// 	app.ingester.Metrics.TotalTimer)
+	// app.metrics.Register("ingester.succeeded",
+	// 	app.ingester.Metrics.SuccessfulMeter)
+	// app.metrics.Register("ingester.failed",
+	// 	app.ingester.Metrics.FailedMeter)
+}
+
 func initLogMetrics(app *App) {
 	for level, meter := range *log.DefaultMetrics {
 		key := fmt.Sprintf("logging.%s", level)
@@ -32,7 +45,7 @@ func initLogMetrics(app *App) {
 }
 
 func initTxSubMetrics(app *App) {
-	app.submitter.Init(app.ctx)
+	app.submitter.Init()
 	app.metrics.Register("txsub.buffered", app.submitter.Metrics.BufferedSubmissionsGauge)
 	app.metrics.Register("txsub.open", app.submitter.Metrics.OpenSubmissionsGauge)
 	app.metrics.Register("txsub.succeeded", app.submitter.Metrics.SuccessfulSubmissionsMeter)
@@ -51,7 +64,8 @@ func initWebMetrics(app *App) {
 func init() {
 	appInit.Add("metrics", initMetrics)
 	appInit.Add("log.metrics", initLogMetrics, "metrics")
-	appInit.Add("db-metrics", initDbMetrics, "metrics", "history-db", "core-db")
+	appInit.Add("db-metrics", initDbMetrics, "metrics", "horizon-db", "core-db")
 	appInit.Add("web.metrics", initWebMetrics, "web.init", "metrics")
 	appInit.Add("txsub.metrics", initTxSubMetrics, "txsub", "metrics")
+	appInit.Add("ingester.metrics", initIngesterMetrics, "ingester", "metrics")
 }

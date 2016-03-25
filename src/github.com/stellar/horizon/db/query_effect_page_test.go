@@ -7,20 +7,23 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/toid"
 )
 
 func TestEffectPageQuery(t *testing.T) {
 	test.LoadScenario("base")
 
 	Convey("EffectPageQuery", t, func() {
-		var records []EffectRecord
+		var records []history.Effect
 
 		makeQuery := func(c string, o string, l int32) EffectPageQuery {
-			pq := MustPageQuery(c, o, l)
+			pq := db2.MustPageQuery(c, o, l)
 
 			return EffectPageQuery{
-				SqlQuery:  SqlQuery{history},
+				SqlQuery:  SqlQuery{horizonDb},
 				PageQuery: pq,
 			}
 		}
@@ -29,8 +32,8 @@ func TestEffectPageQuery(t *testing.T) {
 			// asc orders ascending by operation_id, order
 			MustSelect(ctx, makeQuery("", "asc", 0), &records)
 			var cmp OrderComparator = func(idx int, l, r interface{}) string {
-				leff := l.(EffectRecord)
-				reff := r.(EffectRecord)
+				leff := l.(history.Effect)
+				reff := r.(history.Effect)
 
 				if leff.ID() > reff.ID() {
 					return fmt.Sprintf("effects are not in order: %s %s", leff.ID(), reff.ID())
@@ -44,8 +47,8 @@ func TestEffectPageQuery(t *testing.T) {
 			// desc orders descending by id
 			MustSelect(ctx, makeQuery("", "desc", 0), &records)
 			cmp = func(idx int, l, r interface{}) string {
-				leff := l.(EffectRecord)
-				reff := r.(EffectRecord)
+				leff := l.(history.Effect)
+				reff := r.(history.Effect)
 
 				if leff.ID() < reff.ID() {
 					return fmt.Sprintf("effects are not in order: %s %s", leff.ID(), reff.ID())
@@ -68,7 +71,7 @@ func TestEffectPageQuery(t *testing.T) {
 		})
 
 		Convey("cursor works properly", func() {
-			var record EffectRecord
+			var record history.Effect
 
 			// lowest id if ordered ascending and no cursor
 			MustGet(ctx, makeQuery("", "asc", 0), &record)
@@ -111,7 +114,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 2)
 
 			for _, r := range records {
-				toid := ParseTotalOrderID(r.HistoryOperationID)
+				toid := toid.Parse(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 3)
 			}
 		})
@@ -124,7 +127,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderID(r.HistoryOperationID)
+				toid := toid.Parse(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 				So(toid.TransactionOrder, ShouldEqual, 1)
 				So(toid.OperationOrder, ShouldEqual, 1)
@@ -140,7 +143,7 @@ func TestEffectPageQuery(t *testing.T) {
 			So(len(records), ShouldEqual, 3)
 
 			for _, r := range records {
-				toid := ParseTotalOrderID(r.HistoryOperationID)
+				toid := toid.Parse(r.HistoryOperationID)
 				So(toid.LedgerSequence, ShouldEqual, 2)
 				So(toid.TransactionOrder, ShouldEqual, 1)
 			}
@@ -153,12 +156,12 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 	test.LoadScenario("trades")
 
 	Convey("EffectOrderBookFilter", t, func() {
-		var records []EffectRecord
+		var records []history.Effect
 
 		Convey("restricts to order book properly", func() {
 			q := EffectPageQuery{
-				SqlQuery:  SqlQuery{history},
-				PageQuery: MustPageQuery("", "asc", 0),
+				SqlQuery:  SqlQuery{horizonDb},
+				PageQuery: db2.MustPageQuery("", "asc", 0),
 				Filter: &EffectOrderBookFilter{
 					SellingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,
 					SellingCode:   "EUR",
@@ -188,8 +191,8 @@ func TestEffectPageQueryByOrderBook(t *testing.T) {
 
 		Convey("regression: does not crash when using a native asset", func() {
 			q := EffectPageQuery{
-				SqlQuery:  SqlQuery{history},
-				PageQuery: MustPageQuery("", "asc", 0),
+				SqlQuery:  SqlQuery{horizonDb},
+				PageQuery: db2.MustPageQuery("", "asc", 0),
 				Filter: &EffectOrderBookFilter{
 					SellingType:  xdr.AssetTypeAssetTypeNative,
 					BuyingType:   xdr.AssetTypeAssetTypeCreditAlphanum4,

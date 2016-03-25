@@ -1,7 +1,8 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
@@ -14,17 +15,18 @@ import (
 // ledger.
 type OffersByAccountAction struct {
 	Action
-	Query   db.CoreOfferPageByAddressQuery
-	Records []db.CoreOfferRecord
-	Page    hal.Page
+	Address   string
+	PageQuery db2.PageQuery
+	Records   []core.Offer
+	Page      hal.Page
 }
 
 // JSON is a method for actions.JSON
 func (action *OffersByAccountAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecords,
-		action.LoadPage,
+		action.loadParams,
+		action.loadRecords,
+		action.loadPage,
 		func() {
 			hal.Render(action.W, action.Page)
 		},
@@ -34,10 +36,10 @@ func (action *OffersByAccountAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *OffersByAccountAction) SSE(stream sse.Stream) {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecords,
+		action.loadParams,
+		action.loadRecords,
 		func() {
-			stream.SetLimit(int(action.Query.Limit))
+			stream.SetLimit(int(action.PageQuery.Limit))
 			for _, record := range action.Records[stream.SentCount():] {
 				var res resource.Offer
 				res.Populate(action.Ctx, record)
@@ -47,22 +49,20 @@ func (action *OffersByAccountAction) SSE(stream sse.Stream) {
 	)
 }
 
-// LoadQuery sets action.Query from the request params
-func (action *OffersByAccountAction) LoadQuery() {
-	action.Query = db.CoreOfferPageByAddressQuery{
-		SqlQuery:  action.App.CoreQuery(),
-		PageQuery: action.GetPageQuery(),
-		Address:   action.GetString("account_id"),
-	}
+func (action *OffersByAccountAction) loadParams() {
+	action.PageQuery = action.GetPageQuery()
+	action.Address = action.GetString("account_id")
 }
 
-// LoadRecords populates action.Records
-func (action *OffersByAccountAction) LoadRecords() {
-	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
+func (action *OffersByAccountAction) loadRecords() {
+	action.Err = action.CoreQ().OffersByAddress(
+		&action.Records,
+		action.Address,
+		action.PageQuery,
+	)
 }
 
-// LoadPage populates action.Page
-func (action *OffersByAccountAction) LoadPage() {
+func (action *OffersByAccountAction) loadPage() {
 	for _, record := range action.Records {
 		var res resource.Offer
 		res.Populate(action.Ctx, record)
@@ -71,8 +71,8 @@ func (action *OffersByAccountAction) LoadPage() {
 
 	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = action.Path()
-	action.Page.Limit = action.Query.Limit
-	action.Page.Cursor = action.Query.Cursor
-	action.Page.Order = action.Query.Order
+	action.Page.Limit = action.PageQuery.Limit
+	action.Page.Cursor = action.PageQuery.Cursor
+	action.Page.Order = action.PageQuery.Order
 	action.Page.PopulateLinks()
 }

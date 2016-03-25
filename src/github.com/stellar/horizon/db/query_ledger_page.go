@@ -1,10 +1,13 @@
 package db
 
-import "golang.org/x/net/context"
+import (
+	"github.com/stellar/horizon/db2"
+	"golang.org/x/net/context"
+)
 
 type LedgerPageQuery struct {
 	SqlQuery
-	PageQuery
+	db2.PageQuery
 }
 
 func (q LedgerPageQuery) Select(ctx context.Context, dest interface{}) error {

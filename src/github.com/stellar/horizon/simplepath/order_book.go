@@ -5,8 +5,7 @@ import (
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/assets"
-	"github.com/stellar/horizon/db"
-	"golang.org/x/net/context"
+	"github.com/stellar/horizon/db2/core"
 	"math/big"
 )
 
@@ -18,7 +17,7 @@ var ErrNotEnough = errors.New("not enough depth")
 type orderBook struct {
 	Selling xdr.Asset
 	Buying  xdr.Asset
-	DB      db.SqlQuery
+	Q       *core.Q
 }
 
 func (ob *orderBook) Cost(source xdr.Asset, sourceAmount xdr.Int64) (result xdr.Int64, err error) {
@@ -47,13 +46,13 @@ func (ob *orderBook) Cost(source xdr.Asset, sourceAmount xdr.Int64) (result xdr.
 		Select("amount", "pricen", "priced", "offerid").
 		From("offers").
 		Where(sq.Eq{
-		"sellingassettype":               st,
-		"COALESCE(sellingassetcode, '')": sc,
-		"COALESCE(sellingissuer, '')":    si}).
+			"sellingassettype":               st,
+			"COALESCE(sellingassetcode, '')": sc,
+			"COALESCE(sellingissuer, '')":    si}).
 		Where(sq.Eq{
-		"buyingassettype":               bt,
-		"COALESCE(buyingassetcode, '')": bc,
-		"COALESCE(buyingissuer, '')":    bi})
+			"buyingassettype":               bt,
+			"COALESCE(buyingassetcode, '')": bc,
+			"COALESCE(buyingissuer, '')":    bi})
 
 	inverted := assets.Equals(source, ob.Buying)
 
@@ -63,7 +62,7 @@ func (ob *orderBook) Cost(source xdr.Asset, sourceAmount xdr.Int64) (result xdr.
 		sql = sql.OrderBy("price DESC")
 	}
 
-	rows, err := ob.DB.Query(context.TODO(), sql)
+	rows, err := ob.Q.Query(sql)
 	if err != nil {
 		return
 	}

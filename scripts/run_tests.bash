@@ -8,8 +8,8 @@ for i in $PACKAGES; do
 	has_tests=`ls -1 src/$i/*_test.go 2>/dev/null | wc -l`
 
 	if [ $has_tests != 0 ]; then
-		$GOPATH/bin/gb test $i
-	else 
+		gb test $i
+	else
 		echo "skipping $i, no tests"
 	fi
 done
