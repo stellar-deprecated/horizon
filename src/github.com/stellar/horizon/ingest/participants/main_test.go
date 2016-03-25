@@ -59,7 +59,7 @@ func TestForOperation(t *testing.T) {
 	tt.Assert.Equal("GCIFFRQKHMH6JD7CK5OI4XVCYCMNRNF6PYA7JTCR3FPHPJZQTYYFB5ES", p[0].Address())
 
 	// test change trust
-	p = load(17, 1, 0)
+	p = load(17, 0, 0)
 	tt.Assert.Len(p, 1)
 	tt.Assert.Equal("GDRW375MAYR46ODGF2WGANQC2RRZL7O246DYHHCGWTV2RE7IHE2QUQLD", p[0].Address())
 
