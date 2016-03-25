@@ -132,6 +132,8 @@ func (c *Cursor) Operation() *xdr.Operation {
 	return &c.data.Transactions[c.tx].Envelope.Tx.Operations[c.op]
 }
 
+// OperationChanges returns all of LedgerEntryChanges that occurred in the
+// course of applying the current operation.
 func (c *Cursor) OperationChanges() xdr.LedgerEntryChanges {
 	return c.data.Transactions[c.tx].ResultMeta.MustOperations()[c.op].Changes
 }
@@ -191,6 +193,8 @@ func (c *Cursor) TransactionFee() *core.TransactionFee {
 	return &c.data.TransactionFees[c.tx]
 }
 
+// TransactionMetaBundle provides easier access to the meta data regarding
+// the application of the current transaction.
 func (c *Cursor) TransactionMetaBundle() *meta.Bundle {
 	return &meta.Bundle{
 		FeeMeta:         c.TransactionFee().Changes,
