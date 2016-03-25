@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/rubenv/sql-migrate"
-	"github.com/stellar/horizon/db/util"
+	migrate "github.com/rubenv/sql-migrate"
+	"github.com/stellar/horizon/db2/util"
 )
 
 //go:generate go-bindata -ignore .+\.go$ -pkg schema -o bindata.go ./...

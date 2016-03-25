@@ -8,8 +8,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/stellar/horizon/db/schema"
 	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/db2/schema"
 	"github.com/stellar/horizon/ingest"
 )
 

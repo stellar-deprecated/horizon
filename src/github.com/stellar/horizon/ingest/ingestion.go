@@ -8,9 +8,9 @@ import (
 	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db/sqx"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/db2/sqx"
 )
 
 // Account ingests the provided account data into a new row in the
