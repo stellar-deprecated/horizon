@@ -89,7 +89,7 @@ func (is *Session) ingestEffects() {
 		Accounts:    is.accountCache,
 		OperationID: is.Cursor.OperationID(),
 	}
-	source := is.Cursor.TransactionSourceAccount()
+	source := is.Cursor.OperationSourceAccount()
 	opbody := is.Cursor.Operation().Body
 
 	switch is.Cursor.OperationType() {
