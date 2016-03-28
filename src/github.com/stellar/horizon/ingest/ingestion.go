@@ -17,7 +17,7 @@ import (
 // `history_accounts` table
 func (ingest *Ingestion) Account(id int64, address string) error {
 
-	q := history.Q{ingest.DB}
+	q := history.Q{Repo: ingest.DB}
 	var existing history.Account
 	err := q.AccountByAddress(&existing, address)
 

@@ -17,7 +17,7 @@ func TestIngest(t *testing.T) {
 	tt.Require.NoError(s.Err)
 	tt.Assert.Equal(47, s.Ingested)
 
-	hq := &history.Q{tt.HorizonRepo()}
+	hq := &history.Q{Repo: tt.HorizonRepo()}
 
 	// Ensure the root account was created
 	var root history.Account

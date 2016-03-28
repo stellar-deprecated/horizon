@@ -66,8 +66,8 @@ func (i *Ingester) runOnce() {
 }
 
 func (i *Ingester) updateLedgerState() error {
-	cq := &core.Q{i.CoreDB}
-	hq := &history.Q{i.HorizonDB}
+	cq := &core.Q{Repo: i.CoreDB}
+	hq := &history.Q{Repo: i.HorizonDB}
 
 	err := cq.LatestLedger(&i.coreSequence)
 	if err != nil {
