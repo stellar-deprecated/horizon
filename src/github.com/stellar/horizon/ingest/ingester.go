@@ -12,6 +12,26 @@ func (i *Ingester) Close() {
 	i.tick.Stop()
 }
 
+// ReingestAll re-ingests all ledgers
+func (i *Ingester) ReingestAll() (int, error) {
+	err := i.updateLedgerState()
+	if err != nil {
+		return 0, err
+	}
+	is := NewSession(1, i.coreSequence, i)
+	is.ClearExisting = true
+	is.Run()
+	return is.Ingested, is.Err
+}
+
+// ReingestSingle re-ingests a single ledger
+func (i *Ingester) ReingestSingle(sequence int32) error {
+	is := NewSession(sequence, sequence, i)
+	is.ClearExisting = true
+	is.Run()
+	return is.Err
+}
+
 // Start causes the ingester to begin polling the stellar-core database for now
 // ledgers and ingesting data into the horizon database.
 func (i *Ingester) Start() {

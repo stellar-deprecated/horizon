@@ -28,13 +28,10 @@ func initIngesterMetrics(app *App) {
 	if app.ingester == nil {
 		return
 	}
-	// TODO
-	// app.metrics.Register("ingester.total",
-	// 	app.ingester.Metrics.TotalTimer)
-	// app.metrics.Register("ingester.succeeded",
-	// 	app.ingester.Metrics.SuccessfulMeter)
-	// app.metrics.Register("ingester.failed",
-	// 	app.ingester.Metrics.FailedMeter)
+	app.metrics.Register("ingester.ingest_ledger",
+		app.ingester.Metrics.IngestLedgerTimer)
+	app.metrics.Register("ingester.clear_ledger",
+		app.ingester.Metrics.ClearLedgerTimer)
 }
 
 func initLogMetrics(app *App) {

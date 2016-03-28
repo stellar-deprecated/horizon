@@ -7,6 +7,7 @@ import (
 	"time"
 
 	sq "github.com/lann/squirrel"
+	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/horizon/cache"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
@@ -34,6 +35,8 @@ type Cursor struct {
 	LastLedger int32
 	// DB is the stellar-core db that data is ingested from.
 	DB *db2.Repo
+
+	Metrics *IngesterMetrics
 
 	// Err is the error that caused this iteration to fail, if any.
 	Err error
@@ -73,6 +76,8 @@ type Ingester struct {
 	// CoreDB is the stellar-core db that data is ingested from.
 	CoreDB *db2.Repo
 
+	Metrics IngesterMetrics
+
 	// Network is the passphrase for the network being imported
 	Network string
 
@@ -81,6 +86,14 @@ type Ingester struct {
 	coreSequence    int32
 }
 
+// IngesterMetrics tracks all the metrics for the ingestion subsystem
+type IngesterMetrics struct {
+	ClearLedgerTimer  metrics.Timer
+	IngestLedgerTimer metrics.Timer
+	LoadLedgerTimer   metrics.Timer
+}
+
+// Ingestion receives write requests from a Session
 type Ingestion struct {
 	// DB is the sql repo to be used for writing any rows into the horizon
 	// database.
@@ -107,6 +120,9 @@ type Session struct {
 	// when the session is run.
 	ClearExisting bool
 
+	// Metrics is a reference to where the session should record its metric information
+	Metrics *IngesterMetrics
+
 	//
 	// Results fields
 	//
@@ -129,6 +145,9 @@ func New(network string, core, horizon *db2.Repo) *Ingester {
 		HorizonDB: horizon,
 		CoreDB:    core,
 	}
+	i.Metrics.ClearLedgerTimer = metrics.NewTimer()
+	i.Metrics.IngestLedgerTimer = metrics.NewTimer()
+	i.Metrics.LoadLedgerTimer = metrics.NewTimer()
 	i.tick = time.NewTicker(1 * time.Second)
 	return i
 }
@@ -146,8 +165,10 @@ func NewSession(first, last int32, i *Ingester) *Session {
 			FirstLedger: first,
 			LastLedger:  last,
 			DB:          i.CoreDB,
+			Metrics:     &i.Metrics,
 		},
 		Network:      i.Network,
+		Metrics:      &i.Metrics,
 		accountCache: cache.NewHistoryAccount(hdb),
 	}
 }
@@ -155,23 +176,13 @@ func NewSession(first, last int32, i *Ingester) *Session {
 // ReingestAll re-ingests all data
 func ReingestAll(network string, core, horizon *db2.Repo) (int, error) {
 	i := New(network, core, horizon)
-	err := i.updateLedgerState()
-	if err != nil {
-		return 0, err
-	}
-	is := NewSession(1, i.coreSequence, i)
-	is.ClearExisting = true
-	is.Run()
-	return is.Ingested, is.Err
+	return i.ReingestAll()
 }
 
 // ReingestSingle re-ingests a single ledger
 func ReingestSingle(network string, core, horizon *db2.Repo, sequence int32) error {
 	i := New(network, core, horizon)
-	is := NewSession(sequence, sequence, i)
-	is.ClearExisting = true
-	is.Run()
-	return is.Err
+	return i.ReingestSingle(sequence)
 }
 
 // RunOnce runs a single ingestion session

@@ -3,13 +3,13 @@ package ingest
 import (
 	"encoding/base64"
 	"fmt"
+	"time"
 
-	"github.com/stellar/horizon/db2/history"
-	"github.com/stellar/horizon/ingest/participants"
-	// "github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/keypair"
 	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/ingest/participants"
 )
 
 // Run starts an attempt to ingest the range of ledgers specified in this
@@ -37,10 +37,7 @@ func (is *Session) Run() {
 
 	is.Err = is.Ingestion.Close()
 
-	// TODO: metrics
 	// TODO: validate ledger chain
-	// TODO: clear data
-	// TODO: record success
 
 }
 
@@ -52,8 +49,11 @@ func (is *Session) clearLedger() {
 	if !is.ClearExisting {
 		return
 	}
-
+	start := time.Now()
 	is.Err = is.Ingestion.Clear(is.Cursor.LedgerRange())
+	if is.Metrics != nil {
+		is.Metrics.ClearLedgerTimer.Update(time.Since(start))
+	}
 }
 
 func (is *Session) effectFlagDetails(flagDetails map[string]bool, flagPtr *xdr.Uint32, setValue bool) {
@@ -298,6 +298,7 @@ func (is *Session) ingestLedger() {
 		return
 	}
 
+	start := time.Now()
 	is.Ingestion.Ledger(
 		is.Cursor.LedgerID(),
 		is.Cursor.Ledger(),
@@ -315,6 +316,9 @@ func (is *Session) ingestLedger() {
 	}
 
 	is.Ingested++
+	if is.Metrics != nil {
+		is.Metrics.IngestLedgerTimer.Update(time.Since(start))
+	}
 
 	return
 }
