@@ -7,6 +7,7 @@ import (
 	"github.com/go-errors/errors"
 )
 
+// UnmarshalDetails unmarshals the details of this effect into `dest`
 func (r *Effect) UnmarshalDetails(dest interface{}) error {
 	if !r.DetailsString.Valid {
 		return nil
