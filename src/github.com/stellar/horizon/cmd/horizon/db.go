@@ -93,12 +93,28 @@ var dbReingestCmd = &cobra.Command{
 		if passphrase == "" {
 			log.Fatal("network-passphrase is blank: reingestion requires manually setting passphrase")
 		}
+		if len(args) == 0 {
+			count, err := ingest.ReingestAll(passphrase, cdb, hdb)
+			if err != nil {
+				log.Printf("ingested %d ledgers before erroring", count)
+				log.Fatal(err)
+			}
+			log.Printf("re-ingested %d ledgers", count)
+		} else {
+			for _, arg := range args {
+				log.Println("reingesting", arg)
+				seq, err := strconv.Atoi(arg)
+				if err != nil {
+					log.Fatalf("reingest: cannot parse %s", arg)
+				}
 
-		_, err = ingest.RunOnce(passphrase, cdb, hdb)
-
-		if err != nil {
-			log.Fatal(err)
+				err = ingest.ReingestSingle(passphrase, cdb, hdb, int32(seq))
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
 		}
+
 	},
 }
 

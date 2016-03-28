@@ -21,7 +21,7 @@ const (
 	// Scripts, that have yet to be ported to this codebase can then be leveraged
 	// to re-ingest old data with the new algorithm, providing a seamless
 	// transition when the ingested data's structure changes.
-	CurrentVersion = 5
+	CurrentVersion = 6
 )
 
 // Cursor iterates through a stellar core database's ledgers
@@ -150,6 +150,28 @@ func NewSession(first, last int32, i *Ingester) *Session {
 		Network:      i.Network,
 		accountCache: cache.NewHistoryAccount(hdb),
 	}
+}
+
+// ReingestAll re-ingests all data
+func ReingestAll(network string, core, horizon *db2.Repo) (int, error) {
+	i := New(network, core, horizon)
+	err := i.updateLedgerState()
+	if err != nil {
+		return 0, err
+	}
+	is := NewSession(1, i.coreSequence, i)
+	is.ClearExisting = true
+	is.Run()
+	return is.Ingested, is.Err
+}
+
+// ReingestSingle re-ingests a single ledger
+func ReingestSingle(network string, core, horizon *db2.Repo, sequence int32) error {
+	i := New(network, core, horizon)
+	is := NewSession(sequence, sequence, i)
+	is.ClearExisting = true
+	is.Run()
+	return is.Err
 }
 
 // RunOnce runs a single ingestion session
