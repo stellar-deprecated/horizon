@@ -29,6 +29,7 @@ GEM
     backports (3.6.8)
     base32 (0.3.2)
     builder (3.2.2)
+    coderay (1.1.0)
     contracts (0.13.0)
     digest-crc (0.4.1)
     ethon (0.8.1)
@@ -40,9 +41,14 @@ GEM
     ffi (1.9.10)
     i18n (0.7.0)
     json (1.8.3)
+    method_source (0.8.2)
     minitest (5.8.4)
     multipart-post (2.0.0)
     pg (0.18.4)
+    pry (0.10.2)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
     rbnacl (3.3.0)
       ffi
     rbnacl-libsodium (1.0.8)
@@ -70,4 +76,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  pry
   stellar_core_commander!
