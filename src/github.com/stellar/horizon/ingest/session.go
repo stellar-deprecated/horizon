@@ -379,6 +379,7 @@ func (is *Session) ingestOperationParticipants() {
 
 func (is *Session) ingestSignerEffects(effects *EffectIngestion, op xdr.SetOptionsOp) {
 	source := is.Cursor.OperationSourceAccount()
+
 	be, ae, err := is.Cursor.BeforeAndAfter(source.LedgerKey())
 	if err != nil {
 		is.Err = err

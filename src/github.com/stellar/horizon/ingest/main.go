@@ -179,6 +179,11 @@ func ReingestAll(network string, core, horizon *db2.Repo) (int, error) {
 	return i.ReingestAll()
 }
 
+func ReingestOutdated(network string, core, horizon *db2.Repo) (int, error) {
+	i := New(network, core, horizon)
+	return i.ReingestOutdated()
+}
+
 // ReingestSingle re-ingests a single ledger
 func ReingestSingle(network string, core, horizon *db2.Repo, sequence int32) error {
 	i := New(network, core, horizon)

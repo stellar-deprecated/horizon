@@ -18,7 +18,75 @@ func (i *Ingester) ReingestAll() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	is := NewSession(1, i.coreSequence, i)
+	return i.ReingestRange(1, i.coreSequence)
+}
+
+// ReingestOutdated finds old ledgers and reimports them.
+func (i *Ingester) ReingestOutdated() (n int, err error) {
+	q := history.Q{Repo: i.HorizonDB}
+
+	// NOTE: this loop will never terminate if some bug were cause a ledger
+	// reingestion to silently fail.
+	for {
+		outdated := []int32{}
+		err = q.OldestOutdatedLedgers(&outdated, CurrentVersion)
+		if err != nil {
+			return
+		}
+
+		if len(outdated) == 0 {
+			return
+		}
+
+		log.
+			WithField("lowest_sequence", outdated[0]).
+			WithField("batch_size", len(outdated)).
+			Info("reingest: outdated")
+
+		var start, end int32
+		flush := func() error {
+			ingested, ferr := i.ReingestRange(start, end)
+
+			if ferr != nil {
+				return ferr
+			}
+			n += ingested
+			return nil
+		}
+
+		for idx := range outdated {
+			seq := outdated[idx]
+
+			if start == 0 {
+				start = seq
+				end = seq
+				continue
+			}
+
+			if seq == end+1 {
+				end = seq
+				continue
+			}
+
+			err = flush()
+			if err != nil {
+				return
+			}
+
+			start = seq
+			end = seq
+		}
+
+		err = flush()
+		if err != nil {
+			return
+		}
+	}
+}
+
+// ReingestRange reingests a range of ledgers, from `start` to `end`, inclusive.
+func (i *Ingester) ReingestRange(start, end int32) (int, error) {
+	is := NewSession(start, end, i)
 	is.ClearExisting = true
 	is.Run()
 	return is.Ingested, is.Err
@@ -26,10 +94,8 @@ func (i *Ingester) ReingestAll() (int, error) {
 
 // ReingestSingle re-ingests a single ledger
 func (i *Ingester) ReingestSingle(sequence int32) error {
-	is := NewSession(sequence, sequence, i)
-	is.ClearExisting = true
-	is.Run()
-	return is.Err
+	_, err := i.ReingestRange(sequence, sequence)
+	return err
 }
 
 // Start causes the ingester to begin polling the stellar-core database for now

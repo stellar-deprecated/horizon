@@ -152,6 +152,11 @@ func reingest(i *ingest.Ingester, args []string) (int, error) {
 		return count, err
 	}
 
+	if len(args) == 1 && args[0] == "outdated" {
+		count, err := i.ReingestOutdated()
+		return count, err
+	}
+
 	for idx, arg := range args {
 		seq, err := strconv.Atoi(arg)
 		if err != nil {

@@ -170,3 +170,14 @@ type Transaction struct {
 func (q *Q) LatestLedger(dest interface{}) error {
 	return q.GetRaw(dest, `SELECT COALESCE(MAX(sequence), 0) FROM history_ledgers`)
 }
+
+// OldestOutdatedLedgers populates a slice of ints with the first million
+// outdated ledgers, based upon the provided `currentVersion` number
+func (q *Q) OldestOutdatedLedgers(dest interface{}, currentVersion int) error {
+	return q.SelectRaw(dest, `
+		SELECT sequence
+		FROM history_ledgers
+		WHERE importer_version < $1
+		ORDER BY sequence ASC
+		LIMIT 1000000`, currentVersion)
+}
