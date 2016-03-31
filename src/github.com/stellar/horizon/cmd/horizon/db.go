@@ -146,7 +146,7 @@ func init() {
 	dbCmd.AddCommand(dbReingestCmd)
 }
 
-func reingest(i *ingest.Ingester, args []string) (int, error) {
+func reingest(i *ingest.System, args []string) (int, error) {
 	if len(args) == 0 {
 		count, err := i.ReingestAll()
 		return count, err

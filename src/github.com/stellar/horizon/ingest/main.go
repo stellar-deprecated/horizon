@@ -67,8 +67,8 @@ type LedgerBundle struct {
 	Transactions    []core.Transaction
 }
 
-// Ingester represents the data ingestion subsystem of horizon.
-type Ingester struct {
+// System represents the data ingestion subsystem of horizon.
+type System struct {
 	// HorizonDB is the connection to the horizon database that ingested data will
 	// be written to.
 	HorizonDB *db2.Repo
@@ -139,8 +139,8 @@ type Session struct {
 
 // New initializes the ingester, causing it to begin polling the stellar-core
 // database for now ledgers and ingesting data into the horizon database.
-func New(network string, core, horizon *db2.Repo) *Ingester {
-	i := &Ingester{
+func New(network string, core, horizon *db2.Repo) *System {
+	i := &System{
 		Network:   network,
 		HorizonDB: horizon,
 		CoreDB:    core,
@@ -154,7 +154,7 @@ func New(network string, core, horizon *db2.Repo) *Ingester {
 
 // NewSession initialize a new ingestion session, from `first` to `last` using
 // `i`.
-func NewSession(first, last int32, i *Ingester) *Session {
+func NewSession(first, last int32, i *System) *Session {
 	hdb := i.HorizonDB.Clone()
 
 	return &Session{

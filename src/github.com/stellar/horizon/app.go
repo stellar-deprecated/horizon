@@ -48,7 +48,7 @@ type App struct {
 	pump              *pump.Pump
 	paths             paths.Finder
 	friendbot         *friendbot.Bot
-	ingester          *ingest.Ingester
+	ingester          *ingest.System
 
 	// metrics
 	metrics                metrics.Registry

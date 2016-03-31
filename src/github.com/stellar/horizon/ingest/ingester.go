@@ -7,13 +7,13 @@ import (
 )
 
 // Close causes the ingester to shut down.
-func (i *Ingester) Close() {
+func (i *System) Close() {
 	log.Info("canceling ingestion poller")
 	i.tick.Stop()
 }
 
 // ReingestAll re-ingests all ledgers
-func (i *Ingester) ReingestAll() (int, error) {
+func (i *System) ReingestAll() (int, error) {
 	err := i.updateLedgerState()
 	if err != nil {
 		return 0, err
@@ -22,7 +22,7 @@ func (i *Ingester) ReingestAll() (int, error) {
 }
 
 // ReingestOutdated finds old ledgers and reimports them.
-func (i *Ingester) ReingestOutdated() (n int, err error) {
+func (i *System) ReingestOutdated() (n int, err error) {
 	q := history.Q{Repo: i.HorizonDB}
 
 	// NOTE: this loop will never terminate if some bug were cause a ledger
@@ -85,7 +85,7 @@ func (i *Ingester) ReingestOutdated() (n int, err error) {
 }
 
 // ReingestRange reingests a range of ledgers, from `start` to `end`, inclusive.
-func (i *Ingester) ReingestRange(start, end int32) (int, error) {
+func (i *System) ReingestRange(start, end int32) (int, error) {
 	is := NewSession(start, end, i)
 	is.ClearExisting = true
 	is.Run()
@@ -93,18 +93,18 @@ func (i *Ingester) ReingestRange(start, end int32) (int, error) {
 }
 
 // ReingestSingle re-ingests a single ledger
-func (i *Ingester) ReingestSingle(sequence int32) error {
+func (i *System) ReingestSingle(sequence int32) error {
 	_, err := i.ReingestRange(sequence, sequence)
 	return err
 }
 
 // Start causes the ingester to begin polling the stellar-core database for now
 // ledgers and ingesting data into the horizon database.
-func (i *Ingester) Start() {
+func (i *System) Start() {
 	go i.run()
 }
 
-func (i *Ingester) run() {
+func (i *System) run() {
 	for _ = range i.tick.C {
 		log.Debug("ticking ingester")
 		i.runOnce()
@@ -113,7 +113,7 @@ func (i *Ingester) run() {
 
 // run causes the importer to check stellar-core to see if we can import new
 // data.
-func (i *Ingester) runOnce() {
+func (i *System) runOnce() {
 	// 1. find the latest ledger
 	// 2. if any available, import until none available
 	// 3. if any were imported, go to 1
@@ -151,7 +151,7 @@ func (i *Ingester) runOnce() {
 
 }
 
-func (i *Ingester) updateLedgerState() error {
+func (i *System) updateLedgerState() error {
 	cq := &core.Q{Repo: i.CoreDB}
 	hq := &history.Q{Repo: i.HorizonDB}
 
