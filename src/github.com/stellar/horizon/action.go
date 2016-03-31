@@ -40,7 +40,7 @@ func (action *Action) CoreQ() *core.Q {
 
 // GetPagingParams modifies the base GetPagingParams method to replace
 // cursors that are "now" with the last seen ledger's cursor.
-func (action *Action) GetPagingParams() (cursor string, order string, limit int32) {
+func (action *Action) GetPagingParams() (cursor string, order string, limit uint64) {
 	if action.Err != nil {
 		return
 	}
@@ -98,6 +98,9 @@ func (action *Action) Prepare(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ValidateCursorAsDefault ensures that the cursor parameter is valid in the way
+// it is normally used, i.e. it is either the string "now" or a string of
+// numerals that can be parsed as an int64.
 func (action *Action) ValidateCursorAsDefault() {
 	if action.Err != nil {
 		return
@@ -110,6 +113,8 @@ func (action *Action) ValidateCursorAsDefault() {
 	action.GetInt64(actions.ParamCursor)
 }
 
+// BaseURL returns the base url for this requestion, defined as a url containing
+// the Host and Scheme portions of the request uri.
 func (action *Action) BaseURL() *url.URL {
 	return httpx.BaseURL(action.Ctx)
 }

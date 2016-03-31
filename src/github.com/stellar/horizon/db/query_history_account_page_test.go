@@ -15,7 +15,7 @@ func TestHistoryPageQuery(t *testing.T) {
 	Convey("HistoryAccountPageQuery", t, func() {
 		var records []history.Account
 
-		makeQuery := func(c string, o string, l int32) HistoryAccountPageQuery {
+		makeQuery := func(c string, o string, l uint64) HistoryAccountPageQuery {
 			pq, err := db2.NewPageQuery(c, o, l)
 
 			So(err, ShouldBeNil)

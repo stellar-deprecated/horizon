@@ -30,7 +30,7 @@ type Pageable interface {
 type PageQuery struct {
 	Cursor string
 	Order  string
-	Limit  int32
+	Limit  uint64
 }
 
 // Repo provides helper methods for making queries against `Conn`, such as

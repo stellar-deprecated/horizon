@@ -19,7 +19,7 @@ func TestPageQuery(t *testing.T) {
 	require.NoError(err)
 	assert.Equal("10", p.Cursor)
 	assert.Equal("desc", p.Order)
-	assert.Equal(int32(15), p.Limit)
+	assert.Equal(uint64(15), p.Limit)
 
 	// Defaults
 	p, err = NewPageQuery("", "", 0)
@@ -28,7 +28,7 @@ func TestPageQuery(t *testing.T) {
 	c, err := p.CursorInt64()
 	require.NoError(err)
 	assert.Equal(int64(0), c)
-	assert.Equal(int32(10), p.Limit)
+	assert.Equal(uint64(10), p.Limit)
 	p, err = NewPageQuery("", "desc", 0)
 	require.NoError(err)
 	c, err = p.CursorInt64()
@@ -41,8 +41,6 @@ func TestPageQuery(t *testing.T) {
 
 	// Error states
 	_, err = NewPageQuery("", "foo", 0)
-	assert.Error(err)
-	_, err = NewPageQuery("", "", -1)
 	assert.Error(err)
 	_, err = NewPageQuery("", "", 201)
 	assert.Error(err)

@@ -2,11 +2,12 @@ package db2
 
 import (
 	"fmt"
-	"github.com/go-errors/errors"
 	"math"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/go-errors/errors"
 )
 
 const (
@@ -163,7 +164,7 @@ func (p PageQuery) CursorInt64Pair(sep string) (l int64, r int64, err error) {
 func NewPageQuery(
 	cursor string,
 	order string,
-	limit int32,
+	limit uint64,
 ) (result PageQuery, err error) {
 
 	// Set order
@@ -197,7 +198,7 @@ func NewPageQuery(
 }
 
 // MustPageQuery behaves as NewPageQuery, but panics upon error
-func MustPageQuery(cursor string, order string, limit int32) PageQuery {
+func MustPageQuery(cursor string, order string, limit uint64) PageQuery {
 	r, err := NewPageQuery(cursor, order, limit)
 	if err != nil {
 		panic(err)
