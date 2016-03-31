@@ -18,7 +18,7 @@ func (q HistoryAccountPageQuery) Select(ctx context.Context, dest interface{}) e
 	sql := sq.
 		Select("ha.*").
 		From("history_accounts ha").
-		Limit(uint64(q.Limit))
+		Limit(q.Limit)
 
 	cursor, err := q.CursorInt64()
 	if err != nil {

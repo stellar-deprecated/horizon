@@ -1,10 +1,11 @@
 package db
 
 import (
+	"math"
+
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/horizon/db2"
 	"golang.org/x/net/context"
-	"math"
 )
 
 // EffectPageQuery is the main query for paging through a collection
@@ -18,7 +19,7 @@ type EffectPageQuery struct {
 // Select executes the query and returns the results
 func (q EffectPageQuery) Select(ctx context.Context, dest interface{}) (err error) {
 	sql := EffectRecordSelect.
-		Limit(uint64(q.Limit)).
+		Limit(q.Limit).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(q.DB)
 

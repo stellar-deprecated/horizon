@@ -37,7 +37,7 @@ type OperationPageQuery struct {
 // Select executes the query and returns the results
 func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := OperationRecordSelect.
-		Limit(uint64(q.Limit)).
+		Limit(q.Limit).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(q.DB)
 

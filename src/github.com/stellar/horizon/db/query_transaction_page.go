@@ -15,7 +15,7 @@ type TransactionPageQuery struct {
 
 func (q TransactionPageQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := TransactionRecordSelect.
-		Limit(uint64(q.Limit))
+		Limit(q.Limit)
 
 	cursor, err := q.CursorInt64()
 	if err != nil {
