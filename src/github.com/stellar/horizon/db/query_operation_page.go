@@ -67,7 +67,7 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 	if q.LedgerSequence != 0 {
 		var ledger history.Ledger
 
-		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
+		err := q.HistoryQ(ctx).LedgerBySequence(&ledger, q.LedgerSequence)
 		if err != nil {
 			return err
 		}
