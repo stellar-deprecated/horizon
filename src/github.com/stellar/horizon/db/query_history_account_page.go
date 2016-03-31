@@ -1,6 +1,7 @@
 package db
 
 import (
+	sq "github.com/lann/squirrel"
 	"github.com/stellar/horizon/db2"
 	"golang.org/x/net/context"
 )
@@ -14,7 +15,9 @@ type HistoryAccountPageQuery struct {
 
 // Get executes the query, returning any results
 func (q HistoryAccountPageQuery) Select(ctx context.Context, dest interface{}) error {
-	sql := HistoryAccountRecordSelect.
+	sql := sq.
+		Select("ha.*").
+		From("history_accounts ha").
 		Limit(uint64(q.Limit))
 
 	cursor, err := q.CursorInt64()

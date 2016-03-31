@@ -69,8 +69,7 @@ type EffectTransactionFilter struct {
 
 func (f *EffectTransactionFilter) Apply(ctx context.Context, sql sq.SelectBuilder) (sq.SelectBuilder, error) {
 	var tx history.Transaction
-	err := Get(ctx, TransactionByHashQuery{f.SqlQuery, f.TransactionHash}, &tx)
-
+	err := f.HistoryQ(ctx).TransactionByHash(&tx, f.TransactionHash)
 	if err != nil {
 		return sql, nil
 	}

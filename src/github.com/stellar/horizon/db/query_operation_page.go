@@ -66,11 +66,12 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 	// filter by ledger sequence
 	if q.LedgerSequence != 0 {
 		var ledger history.Ledger
-		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
 
+		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
 		if err != nil {
 			return err
 		}
+
 		start := toid.ID{LedgerSequence: q.LedgerSequence}
 		end := toid.ID{LedgerSequence: q.LedgerSequence + 1}
 		sql = sql.Where("hop.id >= ? AND hop.id < ?", start.ToInt64(), end.ToInt64())
@@ -79,8 +80,8 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 	// filter by transaction hash
 	if q.TransactionHash != "" {
 		var tx history.Transaction
-		err := Get(ctx, TransactionByHashQuery{q.SqlQuery, q.TransactionHash}, &tx)
 
+		err := q.HistoryQ(ctx).TransactionByHash(&tx, q.TransactionHash)
 		if err != nil {
 			return err
 		}
@@ -94,8 +95,8 @@ func (q OperationPageQuery) Select(ctx context.Context, dest interface{}) error 
 	// filter by account address
 	if q.AccountAddress != "" {
 		var account history.Account
-		err := q.HistoryQ(ctx).AccountByAddress(&account, q.AccountAddress)
 
+		err := q.HistoryQ(ctx).AccountByAddress(&account, q.AccountAddress)
 		if err != nil {
 			return err
 		}
