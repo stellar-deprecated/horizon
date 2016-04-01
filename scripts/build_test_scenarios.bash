@@ -3,6 +3,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PACKAGES=$(find src/github.com/stellar/horizon/test/scenarios -iname '*.rb' -not -name '_common_accounts.rb')
+# PACKAGES=$(find src/github.com/stellar/horizon/test/scenarios -iname 'kahuna.rb' -not -name '_common_accounts.rb')
 
 dropdb hayashi_scenarios --if-exists
 createdb hayashi_scenarios
@@ -33,3 +34,4 @@ done
 
 # commit new sql files to bindata
 gb generate github.com/stellar/horizon/test/scenarios
+# gb test github.com/stellar/horizon/ingest

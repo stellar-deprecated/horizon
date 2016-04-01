@@ -59,29 +59,29 @@ func TestForOperation(t *testing.T) {
 	tt.Assert.Equal("GCIFFRQKHMH6JD7CK5OI4XVCYCMNRNF6PYA7JTCR3FPHPJZQTYYFB5ES", p[0].Address())
 
 	// test change trust
-	p = load(17, 0, 0)
+	p = load(22, 0, 0)
 	tt.Assert.Len(p, 1)
-	tt.Assert.Equal("GDRW375MAYR46ODGF2WGANQC2RRZL7O246DYHHCGWTV2RE7IHE2QUQLD", p[0].Address())
+	tt.Assert.Equal("GBOK7BOUSOWPHBANBYM6MIRYZJIDIPUYJPXHTHADF75UEVIVYWHHONQC", p[0].Address())
 
 	// test allow trust
-	p = load(38, 0, 0)
+	p = load(42, 0, 0)
 	tt.Require.Len(p, 2)
 	tt.Assert.Equal("GD4SMOE3VPSF7ZR3CTEQ3P5UNTBMEJDA2GLXTHR7MMARANKKJDZ7RPGF", p[0].Address())
 	tt.Assert.Equal("GCVW5LCRZFP7PENXTAGOVIQXADDNUXXZJCNKF4VQB2IK7W2LPJWF73UG", p[1].Address())
 
 	// test account merge
-	p = load(41, 0, 0)
+	p = load(44, 0, 0)
 	tt.Require.Len(p, 2)
 	tt.Assert.Equal("GCHPXGVDKPF5KT4CNAT7X77OXYZ7YVE4JHKFDUHCGCVWCL4K4PQ67KKZ", p[0].Address())
 	tt.Assert.Equal("GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", p[1].Address())
 
 	// test inflation
-	p = load(42, 0, 0)
+	p = load(47, 0, 0)
 	tt.Assert.Len(p, 1)
 	tt.Assert.Equal("GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", p[0].Address())
 
 	// test manage data
-	p = load(44, 0, 0)
+	p = load(49, 0, 0)
 	tt.Assert.Len(p, 1)
 	tt.Assert.Equal("GAYSCMKQY6EYLXOPTT6JPPOXDMVNBWITPTSZIVWW4LWARVBOTH5RTLAD", p[0].Address())
 }

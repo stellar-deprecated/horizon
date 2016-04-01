@@ -218,11 +218,11 @@ close_ledger #2
 
   # change weight
   add_signer                :optioneer, option_kp, 5
-  close_ledger
+  close_ledger #31
 
   clear_flags               :optioneer, [:auth_required_flag, :auth_revocable_flag]
   remove_signer             :optioneer, option_kp
-  close_ledger
+  close_ledger #32
 
 
 # change trust
@@ -230,21 +230,21 @@ close_ledger #2
   # Public: GCJKJXPKBFIHOO3455WXWG5CDBZXQNYFRRGICYMPUQ35CPQ4WVS3KZLG
   account :change_trustor, KP.from_seed("SCCNDKYXPFSHP3IPOQ2DGNJ6TKJY5KPRMB4JDMLISICHBMPMBF42ZEQU")
   create_account :change_trustor
-  close_ledger
+  close_ledger #33
 
 
   trust :change_trustor,  :master, "USD"
-  close_ledger
+  close_ledger #34
 
   change_trust :change_trustor,  :master, "USD", 100
-  close_ledger
+  close_ledger #35
 
   # change trust operation that doesn't change limit
   change_trust :change_trustor,  :master, "USD", 100
-  close_ledger
+  close_ledger #36
 
   change_trust :change_trustor,  :master, "USD", 0
-  close_ledger
+  close_ledger #37
 
 
 # allow trust
@@ -257,80 +257,78 @@ close_ledger #2
   account :allow_trustee, KP.from_seed("SAJTZHT2P73SI3U7VPYZTXVWRXKWUPTW2Q4GDUT56NTJ5PXAYUYNVQ3Q")
   create_account :allow_trustor
   create_account :allow_trustee
-  close_ledger
+  close_ledger #38
 
   set_flags :allow_trustee, [:auth_required_flag, :auth_revocable_flag]
-  close_ledger
+  close_ledger  #39
 
   # start trust
   trust :allow_trustor, :allow_trustee, "USD"
   trust :allow_trustor, :allow_trustee, "EUR"
-  close_ledger
+  close_ledger  #40
 
   # allow trust
   allow_trust :allow_trustee, :allow_trustor, "USD"
   allow_trust :allow_trustee, :allow_trustor, "EUR"
-  close_ledger
+  close_ledger  #41
 
   # revoke trust
   allow_trust :allow_trustee, :allow_trustor, "EUR", false
-  close_ledger
+  close_ledger #42
 
 # account merge
   # Secret seed: SCCLMTKRVHN2GSPJ7IP3VXI2NATH6QQTE5ZDMJCIZYWMZESSF5RKKBHT
   # Public: GCHPXGVDKPF5KT4CNAT7X77OXYZ7YVE4JHKFDUHCGCVWCL4K4PQ67KKZ
   account :merger, KP.from_seed("SCCLMTKRVHN2GSPJ7IP3VXI2NATH6QQTE5ZDMJCIZYWMZESSF5RKKBHT")
   create_account :merger
-  close_ledger
+  close_ledger #43
 
   merge_account :merger, :master
-  close_ledger
-
-# inflation with payouts
-  inflation
-  close_ledger
+  close_ledger #44
 
 # inflation with payouts
 # Secret seed: SBLDQ4ZOUCR4ZOIS4VHMSK5CZTZ7EXIPBNM2LP2HQPMW4T2F5EBTP4MF
 # Public: GDR53WAEIKOU3ZKN34CSHAWH7HV6K63CBJRUTWUDBFSMY7RRQK3SPKOS
 account :inflatee, KP.from_seed("SBLDQ4ZOUCR4ZOIS4VHMSK5CZTZ7EXIPBNM2LP2HQPMW4T2F5EBTP4MF")
 
-create_account :inflatee,  :master, "2000000000.0"
-
-close_ledger
+create_account :inflatee,  :master, "20000000000.0"
+close_ledger #45
 
 set_inflation_dest :master, :master
 set_inflation_dest :inflatee, :inflatee
+close_ledger #46
 
-close_ledger
+inflation
+close_ledger #47
+
 
 # manage_data
   # Secret seed: SCHZL45S64JBNP7V6K7IM35PM7MFJ3REWRVMDRSJIH63JIYSW44VUOLN
   # Public: GAYSCMKQY6EYLXOPTT6JPPOXDMVNBWITPTSZIVWW4LWARVBOTH5RTLAD
   account :dataman, KP.from_seed("SCHZL45S64JBNP7V6K7IM35PM7MFJ3REWRVMDRSJIH63JIYSW44VUOLN")
   create_account :dataman
-  close_ledger
+  close_ledger #48
 
   set_data :dataman, "name1", "1234"
   set_data :dataman, "name2", "5678"
-  close_ledger
+  close_ledger #49
 
   clear_data :dataman, "name2"
-  close_ledger
+  close_ledger #50
 
   # no-op change
   set_data :dataman, "name1", "1234"
-  close_ledger
+  close_ledger #51
 
   set_data :dataman, "name1", "0000"
-  close_ledger
+  close_ledger #52
 
 # different source account
   # Secret seed: SAKHJAR6DZPSQMKR5EFGQBWH4RZYUCLXBXA3MMJ5PK7YWV2LKVWEQMYA
   # Public: GACJPE4YUR22VP4CM2BDFDAHY3DLEF3H7NENKUQ53DT5TEI2GAHT5N4X
   account :different_source, KP.from_seed("SAKHJAR6DZPSQMKR5EFGQBWH4RZYUCLXBXA3MMJ5PK7YWV2LKVWEQMYA")
   create_account :different_source
-  close_ledger
+  close_ledger #53
 
   payment :master, :different_source,  [:native, "10.00"] do |env|
     newop = Stellar::Operation.from_xdr env.tx.operations[0].to_xdr
@@ -345,7 +343,7 @@ close_ledger
       env.tx.sign_decorated(get_account :different_source),
     ]
   end
-  close_ledger
+  close_ledger #54
 
   # self-pay
     # Secret seed: SAN5MUUVD2B3WJPIFDT7FQRLGNTD7LYFT7S7ULOKYBFC6ZUFIOSC2YRP
