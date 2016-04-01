@@ -30,13 +30,14 @@ func (res *Transaction) Populate(
 	res.EnvelopeXdr = row.TxEnvelope
 	res.ResultXdr = row.TxResult
 	res.ResultMetaXdr = row.TxMeta
+	res.FeeMetaXdr = row.TxFeeMeta
 	res.MemoType = row.MemoType
 	res.Memo = row.Memo.String
 	res.Signatures = strings.Split(row.SignatureString, ",")
 	res.ValidBefore = res.timeString(row.ValidBefore)
 	res.ValidAfter = res.timeString(row.ValidAfter)
 
-	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
+	lb := hal.LinkBuilder{Base: httpx.BaseURL(ctx)}
 	res.Links.Account = lb.Link("/accounts", res.Account)
 	res.Links.Ledger = lb.Link("/ledgers", fmt.Sprintf("%d", res.Ledger))
 	res.Links.Operations = lb.PagedLink("/transactions", res.ID, "operations")
