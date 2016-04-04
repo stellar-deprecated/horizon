@@ -96,29 +96,26 @@ func (action *OperationIndexAction) LoadPage() {
 // OperationShowAction renders a ledger found by its sequence number.
 type OperationShowAction struct {
 	Action
-	Query    db.OperationByIdQuery
+	ID       int64
 	Record   history.Operation
 	Resource interface{}
 }
 
-func (action *OperationShowAction) LoadQuery() {
-	action.Query = db.OperationByIdQuery{
-		SqlQuery: action.App.HorizonQuery(),
-		Id:       action.GetInt64("id"),
-	}
+func (action *OperationShowAction) loadParams() {
+	action.ID = action.GetInt64("id")
 }
 
-func (action *OperationShowAction) LoadRecord() {
-	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+func (action *OperationShowAction) loadRecord() {
+	action.Err = action.HistoryQ().OperationByID(&action.Record, action.ID)
 }
 
-func (action *OperationShowAction) LoadResource() {
+func (action *OperationShowAction) loadResource() {
 	action.Resource, action.Err = resource.NewOperation(action.Ctx, action.Record)
 }
 
 // JSON is a method for actions.JSON
 func (action *OperationShowAction) JSON() {
-	action.Do(action.LoadQuery, action.LoadRecord, action.LoadResource)
+	action.Do(action.loadParams, action.loadRecord, action.loadResource)
 	action.Do(func() {
 		hal.Render(action.W, action.Resource)
 	})

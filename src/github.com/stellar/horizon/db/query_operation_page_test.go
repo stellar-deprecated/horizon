@@ -17,7 +17,7 @@ func TestOperationPageQuery(t *testing.T) {
 	Convey("OperationPageQuery", t, func() {
 		var records []history.Operation
 
-		makeQuery := func(c string, o string, l int32) OperationPageQuery {
+		makeQuery := func(c string, o string, l uint64) OperationPageQuery {
 			pq, err := db2.NewPageQuery(c, o, l)
 
 			So(err, ShouldBeNil)

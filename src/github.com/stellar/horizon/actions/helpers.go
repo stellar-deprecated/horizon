@@ -91,14 +91,15 @@ func (base *Base) GetInt32(name string) int32 {
 
 // GetPagingParams returns the cursor/order/limit triplet that is the
 // standard way of communicating paging data to a horizon endpoint.
-func (base *Base) GetPagingParams() (cursor string, order string, limit int32) {
+func (base *Base) GetPagingParams() (cursor string, order string, limit uint64) {
 	if base.Err != nil {
 		return
 	}
 
 	cursor = base.GetString(ParamCursor)
 	order = base.GetString(ParamOrder)
-	limit = base.GetInt32(ParamLimit)
+	// TODO: add GetUint64 helpers
+	limit = uint64(base.GetInt64(ParamLimit))
 
 	if lei := base.R.Header.Get("Last-Event-ID"); lei != "" {
 		cursor = lei

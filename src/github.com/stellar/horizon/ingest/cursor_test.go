@@ -1,8 +1,9 @@
 package ingest
 
 import (
-	"github.com/stellar/horizon/test"
 	"testing"
+
+	"github.com/stellar/horizon/test"
 )
 
 func TestCursor(t *testing.T) {

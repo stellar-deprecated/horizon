@@ -39,7 +39,7 @@ type Page struct {
 	BasePage
 	BasePath string `json:"-"`
 	Order    string `json:"-"`
-	Limit    int32  `json:"-"`
+	Limit    uint64 `json:"-"`
 	Cursor   string `json:"-"`
 }
 

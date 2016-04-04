@@ -2,6 +2,8 @@ package util
 
 import (
 	"database/sql"
+	"log"
+	// "github.com/stellar/horizon/log"
 	"regexp"
 	"strings"
 )
@@ -20,6 +22,8 @@ func RunAll(db *sql.DB, script string) error {
 	}
 
 	for _, cmd := range AllStatements(script) {
+		log.Println("sql:exec", cmd)
+
 		_, err := tx.Exec(cmd)
 		if err != nil {
 			tx.Rollback()
@@ -33,8 +37,15 @@ func RunAll(db *sql.DB, script string) error {
 // AllStatements takes a sql script, possibly containing comments and multiple
 // statements, and returns a slice of strings that correspond to each individual
 // SQL statement within the script
-func AllStatements(script string) []string {
-	return strings.Split(removeComments(script), ";")
+func AllStatements(script string) (ret []string) {
+	for _, s := range strings.Split(removeComments(script), ";") {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		ret = append(ret, s)
+	}
+	return
 }
 
 func removeComments(script string) string {

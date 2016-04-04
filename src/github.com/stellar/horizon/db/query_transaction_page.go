@@ -15,7 +15,7 @@ type TransactionPageQuery struct {
 
 func (q TransactionPageQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := TransactionRecordSelect.
-		Limit(uint64(q.Limit))
+		Limit(q.Limit)
 
 	cursor, err := q.CursorInt64()
 	if err != nil {
@@ -31,8 +31,8 @@ func (q TransactionPageQuery) Select(ctx context.Context, dest interface{}) erro
 
 	if q.AccountAddress != "" {
 		var account history.Account
-		err := q.HistoryQ(ctx).AccountByAddress(&account, q.AccountAddress)
 
+		err := q.HistoryQ(ctx).AccountByAddress(&account, q.AccountAddress)
 		if err != nil {
 			return err
 		}
@@ -44,8 +44,8 @@ func (q TransactionPageQuery) Select(ctx context.Context, dest interface{}) erro
 
 	if q.LedgerSequence != 0 {
 		var ledger history.Ledger
-		err := Get(ctx, LedgerBySequenceQuery{q.SqlQuery, q.LedgerSequence}, &ledger)
 
+		err := q.HistoryQ(ctx).LedgerBySequence(&ledger, q.LedgerSequence)
 		if err != nil {
 			return err
 		}

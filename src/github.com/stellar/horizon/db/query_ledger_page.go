@@ -12,7 +12,7 @@ type LedgerPageQuery struct {
 
 func (q LedgerPageQuery) Select(ctx context.Context, dest interface{}) error {
 	sql := LedgerRecordSelect.
-		Limit(uint64(q.Limit))
+		Limit(q.Limit)
 
 	cursor, err := q.CursorInt64()
 	if err != nil {

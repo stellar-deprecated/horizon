@@ -83,15 +83,15 @@ func (action *LedgerIndexAction) LoadPage() {
 // LedgerShowAction renders a ledger found by its sequence number.
 type LedgerShowAction struct {
 	Action
-	Query  db.LedgerBySequenceQuery
-	Record history.Ledger
+	Sequence int32
+	Record   history.Ledger
 }
 
 // JSON is a method for actions.JSON
 func (action *LedgerShowAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecord,
+		action.loadParams,
+		action.loadRecord,
 		func() {
 			var res resource.Ledger
 			res.Populate(action.Ctx, action.Record)
@@ -100,13 +100,11 @@ func (action *LedgerShowAction) JSON() {
 	)
 }
 
-func (action *LedgerShowAction) LoadQuery() {
-	action.Query = db.LedgerBySequenceQuery{
-		SqlQuery: action.App.HorizonQuery(),
-		Sequence: action.GetInt32("id"),
-	}
+func (action *LedgerShowAction) loadParams() {
+	action.Sequence = action.GetInt32("id")
 }
 
-func (action *LedgerShowAction) LoadRecord() {
-	action.Err = db.Get(action.Ctx, action.Query, &action.Record)
+func (action *LedgerShowAction) loadRecord() {
+	action.Err = action.HistoryQ().
+		LedgerBySequence(&action.Record, action.Sequence)
 }

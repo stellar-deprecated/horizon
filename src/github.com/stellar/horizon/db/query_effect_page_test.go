@@ -19,7 +19,7 @@ func TestEffectPageQuery(t *testing.T) {
 	Convey("EffectPageQuery", t, func() {
 		var records []history.Effect
 
-		makeQuery := func(c string, o string, l int32) EffectPageQuery {
+		makeQuery := func(c string, o string, l uint64) EffectPageQuery {
 			pq := db2.MustPageQuery(c, o, l)
 
 			return EffectPageQuery{

@@ -1,6 +1,8 @@
 package ingest
 
 import (
+	"time"
+
 	"github.com/stellar/go-stellar-base/meta"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db2/core"
@@ -95,9 +97,14 @@ func (c *Cursor) NextLedger() bool {
 	}
 
 	c.data = &LedgerBundle{Sequence: c.lg}
+	start := time.Now()
 	c.Err = c.data.Load(c.DB)
 	if c.Err != nil {
 		return false
+	}
+
+	if c.Metrics != nil {
+		c.Metrics.LoadLedgerTimer.Update(time.Since(start))
 	}
 
 	c.tx = -1

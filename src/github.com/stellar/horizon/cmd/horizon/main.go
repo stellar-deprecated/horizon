@@ -14,6 +14,7 @@ import (
 )
 
 var app *horizon.App
+var config horizon.Config
 var version string
 
 var rootCmd *cobra.Command
@@ -160,8 +161,17 @@ func init() {
 }
 
 func initApp(cmd *cobra.Command, args []string) {
-	var err error
+	initConfig()
 
+	var err error
+	app, err = horizon.NewApp(config)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+}
+
+func initConfig() {
 	if viper.GetString("db-url") == "" {
 		rootCmd.Help()
 		os.Exit(1)
@@ -189,7 +199,7 @@ func initApp(cmd *cobra.Command, args []string) {
 		log.Fatal("Invalid TLS config: cert not configured")
 	}
 
-	config := horizon.Config{
+	config = horizon.Config{
 		DatabaseURL:            viper.GetString("db-url"),
 		StellarCoreDatabaseURL: viper.GetString("stellar-core-db-url"),
 		StellarCoreURL:         viper.GetString("stellar-core-url"),
@@ -205,11 +215,5 @@ func initApp(cmd *cobra.Command, args []string) {
 		TLSCert:                cert,
 		TLSKey:                 key,
 		Ingest:                 viper.GetBool("ingest"),
-	}
-
-	app, err = horizon.NewApp(config)
-
-	if err != nil {
-		log.Fatal(err.Error())
 	}
 }

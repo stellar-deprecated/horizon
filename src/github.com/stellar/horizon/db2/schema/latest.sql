@@ -25,8 +25,10 @@ DROP INDEX IF EXISTS public.index_history_ledgers_on_closed_at;
 DROP INDEX IF EXISTS public.index_history_effects_on_type;
 DROP INDEX IF EXISTS public.index_history_accounts_on_id;
 DROP INDEX IF EXISTS public.index_history_accounts_on_address;
+DROP INDEX IF EXISTS public.htp_by_htid;
 DROP INDEX IF EXISTS public.hs_transaction_by_id;
 DROP INDEX IF EXISTS public.hs_ledger_by_id;
+DROP INDEX IF EXISTS public.hop_by_hoid;
 DROP INDEX IF EXISTS public.hist_tx_p_id;
 DROP INDEX IF EXISTS public.hist_op_p_id;
 DROP INDEX IF EXISTS public.hist_e_id;
@@ -274,7 +276,8 @@ ALTER TABLE ONLY history_transaction_participants ALTER COLUMN id SET DEFAULT ne
 -- Data for Name: gorp_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-03-17 15:01:27.057034-07');
+INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-03-28 15:19:48.335447-07');
+INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2016-03-28 15:19:48.338603-07');
 
 
 --
@@ -407,6 +410,13 @@ CREATE UNIQUE INDEX hist_tx_p_id ON history_transaction_participants USING btree
 
 
 --
+-- Name: hop_by_hoid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX hop_by_hoid ON history_operation_participants USING btree (history_operation_id);
+
+
+--
 -- Name: hs_ledger_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -418,6 +428,13 @@ CREATE UNIQUE INDEX hs_ledger_by_id ON history_ledgers USING btree (id);
 --
 
 CREATE UNIQUE INDEX hs_transaction_by_id ON history_transactions USING btree (id);
+
+
+--
+-- Name: htp_by_htid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX htp_by_htid ON history_transaction_participants USING btree (history_transaction_id);
 
 
 --

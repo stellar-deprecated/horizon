@@ -5,6 +5,8 @@ import (
 	"github.com/stellar/horizon/db2/history"
 )
 
+// Add writes an effect to the database while automatically tracking the index
+// to use.
 func (ei *EffectIngestion) Add(aid xdr.AccountId, typ history.EffectType, details interface{}) bool {
 	if ei.err != nil {
 		return false
@@ -25,6 +27,7 @@ func (ei *EffectIngestion) Add(aid xdr.AccountId, typ history.EffectType, detail
 	return true
 }
 
+// Finish marks this ingestion as complete, returning any error that was recorded.
 func (ei *EffectIngestion) Finish() error {
 	err := ei.err
 	ei.err = nil

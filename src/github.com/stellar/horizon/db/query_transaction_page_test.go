@@ -16,7 +16,7 @@ func TestTransactionPageQuery(t *testing.T) {
 	Convey("TransactionPageQuery", t, func() {
 		var records []history.Transaction
 
-		makeQuery := func(c string, o string, l int32) TransactionPageQuery {
+		makeQuery := func(c string, o string, l uint64) TransactionPageQuery {
 			pq, err := db2.NewPageQuery(c, o, l)
 
 			So(err, ShouldBeNil)

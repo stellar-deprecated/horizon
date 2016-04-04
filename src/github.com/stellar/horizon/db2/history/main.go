@@ -13,18 +13,40 @@ import (
 const (
 	// account effects
 
-	EffectAccountCreated           EffectType = 0 // from create_account
-	EffectAccountRemoved           EffectType = 1 // from merge_account
-	EffectAccountCredited          EffectType = 2 // from create_account, payment, path_payment, merge_account
-	EffectAccountDebited           EffectType = 3 // from create_account, payment, path_payment, create_account
+	// EffectAccountCreated effects occur when a new account is created
+	EffectAccountCreated EffectType = 0 // from create_account
+
+	// EffectAccountRemoved effects occur when one account is merged into another
+	EffectAccountRemoved EffectType = 1 // from merge_account
+
+	// EffectAccountCredited effects occur when an account receives some currency
+	EffectAccountCredited EffectType = 2 // from create_account, payment, path_payment, merge_account
+
+	// EffectAccountDebited effects occur when an account sends some currency
+	EffectAccountDebited EffectType = 3 // from create_account, payment, path_payment, create_account
+
+	// EffectAccountThresholdsUpdated effects occur when an account changes its
+	// multisig thresholds.
 	EffectAccountThresholdsUpdated EffectType = 4 // from set_options
+
+	// EffectAccountHomeDomainUpdated effects occur when an account changes its
+	// home domain.
 	EffectAccountHomeDomainUpdated EffectType = 5 // from set_options
-	EffectAccountFlagsUpdated      EffectType = 6 // from set_options
+
+	// EffectAccountFlagsUpdated effects occur when an account changes its
+	// account flags, either clearing or setting.
+	EffectAccountFlagsUpdated EffectType = 6 // from set_options
 
 	// signer effects
 
+	// EffectSignerCreated occurs when an account gains a signer
 	EffectSignerCreated EffectType = 10 // from set_options
+
+	// EffectSignerRemoved occurs when an account loses a signer
 	EffectSignerRemoved EffectType = 11 // from set_options
+
+	// EffectSignerUpdated occurs when an account changes the weight of one of its
+	// signers.
 	EffectSignerUpdated EffectType = 12 // from set_options
 
 	// trustline effects
@@ -40,11 +62,20 @@ const (
 	EffectOfferCreated EffectType = 30 // from manage_offer, creat_passive_offer
 	EffectOfferRemoved EffectType = 31 // from manage_offer, creat_passive_offer, path_payment
 	EffectOfferUpdated EffectType = 32 // from manage_offer, creat_passive_offer, path_payment
-	EffectTrade        EffectType = 33 // from manage_offer, creat_passive_offer, path_payment
+
+	// EffectTrade occurs when a trade is initiated because of a path payment or
+	// offer operation.
+	EffectTrade EffectType = 33 // from manage_offer, creat_passive_offer, path_payment
 
 	// data effects
+
+	// EffectDataCreated occurs when an account gets a new data field
 	EffectDataCreated EffectType = 40 // from manage_data
+
+	// EffectDataRemoved occurs when an account removes a data field
 	EffectDataRemoved EffectType = 41 // from manage_data
+
+	// EffectDataUpdated occurs when an account changes a data field's value
 	EffectDataUpdated EffectType = 42 // from manage_data
 
 )
@@ -138,4 +169,15 @@ type Transaction struct {
 // LatestLedger loads the latest known ledger
 func (q *Q) LatestLedger(dest interface{}) error {
 	return q.GetRaw(dest, `SELECT COALESCE(MAX(sequence), 0) FROM history_ledgers`)
+}
+
+// OldestOutdatedLedgers populates a slice of ints with the first million
+// outdated ledgers, based upon the provided `currentVersion` number
+func (q *Q) OldestOutdatedLedgers(dest interface{}, currentVersion int) error {
+	return q.SelectRaw(dest, `
+		SELECT sequence
+		FROM history_ledgers
+		WHERE importer_version < $1
+		ORDER BY sequence ASC
+		LIMIT 1000000`, currentVersion)
 }

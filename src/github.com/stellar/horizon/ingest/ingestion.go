@@ -8,16 +8,16 @@ import (
 	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
-	"github.com/stellar/horizon/db/sqx"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/db2/sqx"
 )
 
 // Account ingests the provided account data into a new row in the
 // `history_accounts` table
 func (ingest *Ingestion) Account(id int64, address string) error {
 
-	q := history.Q{ingest.DB}
+	q := history.Q{Repo: ingest.DB}
 	var existing history.Account
 	err := q.AccountByAddress(&existing, address)
 

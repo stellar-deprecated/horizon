@@ -2,6 +2,7 @@ package db2
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
@@ -20,6 +21,7 @@ func (r *Repo) Begin() error {
 	if err != nil {
 		return errors.Wrap(err, 1)
 	}
+	r.logBegin()
 
 	r.tx = tx
 	return nil
@@ -42,6 +44,7 @@ func (r *Repo) Commit() error {
 	}
 
 	err := r.tx.Commit()
+	r.logCommit()
 	r.tx = nil
 	return err
 }
@@ -59,9 +62,11 @@ func (r *Repo) Get(dest interface{}, query sq.Sqlizer) error {
 // GetRaw runs `query` with `args`, setting the first result found on
 // `dest`, if any.
 func (r *Repo) GetRaw(dest interface{}, query string, args ...interface{}) error {
-	r.log("get", query, args)
 	query = r.conn().Rebind(query)
+	start := time.Now()
 	err := r.conn().Get(dest, query, args...)
+	r.log("get", start, query, args)
+
 	if err == nil {
 		return nil
 	}
@@ -84,9 +89,11 @@ func (r *Repo) Exec(query sq.Sqlizer) (sql.Result, error) {
 
 // ExecRaw runs `query` with `args`
 func (r *Repo) ExecRaw(query string, args ...interface{}) (sql.Result, error) {
-	r.log("exec", query, args)
 	query = r.conn().Rebind(query)
+	start := time.Now()
 	result, err := r.conn().Exec(query, args...)
+	r.log("exec", start, query, args)
+
 	if err == nil {
 		return result, nil
 	}
@@ -115,9 +122,11 @@ func (r *Repo) Query(query sq.Sqlizer) (*sqlx.Rows, error) {
 
 // QueryRaw runs `query` with `args`
 func (r *Repo) QueryRaw(query string, args ...interface{}) (*sqlx.Rows, error) {
-	r.log("query", query, args)
 	query = r.conn().Rebind(query)
+	start := time.Now()
 	result, err := r.conn().Queryx(query, args...)
+	r.log("query", start, query, args)
+
 	if err == nil {
 		return result, nil
 	}
@@ -136,6 +145,7 @@ func (r *Repo) Rollback() error {
 	}
 
 	err := r.tx.Rollback()
+	r.logRollback()
 	r.tx = nil
 	return err
 }
@@ -151,9 +161,11 @@ func (r *Repo) Select(dest interface{}, query sq.Sqlizer) error {
 
 // SelectRaw runs `query` with `args`, setting the results found on `dest`.
 func (r *Repo) SelectRaw(dest interface{}, query string, args ...interface{}) error {
-	r.log("select", query, args)
 	query = r.conn().Rebind(query)
+	start := time.Now()
 	err := r.conn().Select(dest, query, args...)
+	r.log("select", start, query, args)
+
 	if err == nil {
 		return nil
 	}
@@ -184,15 +196,31 @@ func (r *Repo) conn() Conn {
 	return r.DB
 }
 
-func (r *Repo) log(typ string, query string, args []interface{}) {
-	ctx := context.Background()
-	if r.Ctx != nil {
-		ctx = r.Ctx
-	}
-
+func (r *Repo) log(typ string, start time.Time, query string, args []interface{}) {
 	log.
-		Ctx(ctx).
+		Ctx(r.logCtx()).
 		WithField("args", args).
 		WithField("sql", query).
+		WithField("dur", time.Since(start).String()).
 		Debugf("sql: %s", typ)
+}
+
+func (r *Repo) logBegin() {
+	log.Ctx(r.logCtx()).Debug("sql: begin")
+}
+
+func (r *Repo) logCommit() {
+	log.Ctx(r.logCtx()).Debug("sql: commit")
+}
+
+func (r *Repo) logRollback() {
+	log.Ctx(r.logCtx()).Debug("sql: rollbacl")
+}
+
+func (r *Repo) logCtx() context.Context {
+	if r.Ctx != nil {
+		return r.Ctx
+	}
+
+	return context.Background()
 }
