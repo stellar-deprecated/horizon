@@ -7,6 +7,7 @@ import (
 
 	"github.com/stellar/go-stellar-base/amount"
 	"github.com/stellar/go-stellar-base/keypair"
+	"github.com/stellar/go-stellar-base/meta"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/ingest/participants"
@@ -199,6 +200,14 @@ func (is *Session) ingestEffects() {
 		key.SetTrustline(source, op.Line)
 
 		before, after, err := is.Cursor.BeforeAndAfter(key)
+
+		// NOTE:  when an account trusts itself, the transaction is successful but
+		// no ledger entries are actually modified, leading to an "empty meta"
+		// situation.  We simply continue on to the next operation in that scenario.
+		if err == meta.ErrMetaNotFound {
+			return
+		}
+
 		if err != nil {
 			is.Err = err
 			return

@@ -15,7 +15,7 @@ func TestIngest(t *testing.T) {
 
 	s := ingest(tt)
 	tt.Require.NoError(s.Err)
-	tt.Assert.Equal(57, s.Ingested)
+	tt.Assert.Equal(59, s.Ingested)
 
 	hq := &history.Q{Repo: tt.HorizonRepo()}
 

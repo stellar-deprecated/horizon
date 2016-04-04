@@ -345,14 +345,25 @@ close_ledger #47
   end
   close_ledger #54
 
-  # self-pay
-    # Secret seed: SAN5MUUVD2B3WJPIFDT7FQRLGNTD7LYFT7S7ULOKYBFC6ZUFIOSC2YRP
-    # Public: GANFZDRBCNTUXIODCJEYMACPMCSZEVE4WZGZ3CZDZ3P2SXK4KH75IK6Y
+# self-pay
+  # Secret seed: SAN5MUUVD2B3WJPIFDT7FQRLGNTD7LYFT7S7ULOKYBFC6ZUFIOSC2YRP
+  # Public: GANFZDRBCNTUXIODCJEYMACPMCSZEVE4WZGZ3CZDZ3P2SXK4KH75IK6Y
 
-    account :selfpay, KP.from_seed("SAN5MUUVD2B3WJPIFDT7FQRLGNTD7LYFT7S7ULOKYBFC6ZUFIOSC2YRP")
-    create_account :selfpay
-    close_ledger
+  account :selfpay, KP.from_seed("SAN5MUUVD2B3WJPIFDT7FQRLGNTD7LYFT7S7ULOKYBFC6ZUFIOSC2YRP")
+  create_account :selfpay
+  close_ledger
+
+  payment :selfpay, :selfpay, [:native, "10.0"]
+  close_ledger
 
 
-    payment :selfpay, :selfpay, [:native, "10.0"]
-    close_ledger
+# trust-self
+  # Secret seed: SCL6J5JUE3CU26GYQ7E27TUEGCQT2ZIYA2Q4QSHZEPPCPO2DE74VG6KU
+  # Public: GAKNI7DPN7BGAB62BU4GQC364JCFXFV7KIVTTDVOQK2ZPBPSJETABDQU
+
+  account :selftrust, KP.from_seed("SCL6J5JUE3CU26GYQ7E27TUEGCQT2ZIYA2Q4QSHZEPPCPO2DE74VG6KU")
+  create_account :selftrust
+  close_ledger
+
+  trust :selfpay, :selfpay, "USD"
+  close_ledger
