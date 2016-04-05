@@ -43,6 +43,7 @@ func String(aType xdr.AssetType) (string, error) {
 	return "", errors.New(ErrInvalidValue)
 }
 
+// MustString is the panicky version of String.
 func MustString(aType xdr.AssetType) string {
 	s, err := String(aType)
 	if err != nil {

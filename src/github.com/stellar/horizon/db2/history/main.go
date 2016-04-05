@@ -51,16 +51,33 @@ const (
 
 	// trustline effects
 
-	EffectTrustlineCreated      EffectType = 20 // from change_trust
-	EffectTrustlineRemoved      EffectType = 21 // from change_trust
-	EffectTrustlineUpdated      EffectType = 22 // from change_trust, allow_trust
-	EffectTrustlineAuthorized   EffectType = 23 // from allow_trust
+	// EffectTrustlineCreated occurs when an account trusts an anchor
+	EffectTrustlineCreated EffectType = 20 // from change_trust
+
+	// EffectTrustlineRemoved occurs when an account removes struct by setting the
+	// limit of a trustline to 0
+	EffectTrustlineRemoved EffectType = 21 // from change_trust
+
+	// EffectTrustlineUpdated occurs when an account changes a trustline's limit
+	EffectTrustlineUpdated EffectType = 22 // from change_trust, allow_trust
+
+	// EffectTrustlineAuthorized occurs when an anchor has AUTH_REQUIRED flag set
+	// to true and it authorizes another account's trustline
+	EffectTrustlineAuthorized EffectType = 23 // from allow_trust
+
+	// EffectTrustlineDeauthorized occurs when an anchor revokes access to a asset
+	// it issues.
 	EffectTrustlineDeauthorized EffectType = 24 // from allow_trust
 
 	// trading effects
 
+	// EffectOfferCreated occurs when an account offers to trade an asset
 	EffectOfferCreated EffectType = 30 // from manage_offer, creat_passive_offer
+
+	// EffectOfferRemoved occurs when an account removes an offer
 	EffectOfferRemoved EffectType = 31 // from manage_offer, creat_passive_offer, path_payment
+
+	// EffectOfferUpdated occurs when an offer is updated by the offering account.
 	EffectOfferUpdated EffectType = 32 // from manage_offer, creat_passive_offer, path_payment
 
 	// EffectTrade occurs when a trade is initiated because of a path payment or
