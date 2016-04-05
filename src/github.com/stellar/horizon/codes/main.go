@@ -7,7 +7,32 @@ import (
 	"github.com/stellar/go-stellar-base/xdr"
 )
 
+// ErrUnknownCode is returned when an unexepcted value is provided to `String`
 var ErrUnknownCode = errors.New("Unknown result code")
+
+const (
+	// OpSuccess is the string code used to specify the operation was successful
+	OpSuccess = "op_success"
+	// OpMalformed is the string code used to specify the operation was malformed
+	// in some way.
+	OpMalformed = "op_malformed"
+	// OpUnderfunded is the string code used to specify the operation failed
+	// due to a lack of funds.
+	OpUnderfunded = "op_underfunded"
+
+	// OpLowReserve is the string code used to specify the operation failed
+	// because the account in question does not have enough balance to satisfy
+	// what their new minimum balance would be.
+	OpLowReserve = "op_low_reserve"
+
+	// OpLineFull occurs when a payment would cause a destination account to
+	// exceed their declared trust limit for the asset being sent.
+	OpLineFull = "op_line_full"
+
+	// OpNoIssuer occurs when a operation does not correctly specify an issuing
+	// asset
+	OpNoIssuer = "op_no_issuer"
+)
 
 //String returns the appropriate string representation of the provided result code
 func String(code interface{}) (string, error) {
@@ -51,24 +76,24 @@ func String(code interface{}) (string, error) {
 	case xdr.CreateAccountResultCode:
 		switch code {
 		case xdr.CreateAccountResultCodeCreateAccountSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.CreateAccountResultCodeCreateAccountMalformed:
-			return "op_malformed", nil
+			return OpMalformed, nil
 		case xdr.CreateAccountResultCodeCreateAccountUnderfunded:
-			return "op_underfunded", nil
+			return OpUnderfunded, nil
 		case xdr.CreateAccountResultCodeCreateAccountLowReserve:
-			return "op_low_reserve", nil
+			return OpLowReserve, nil
 		case xdr.CreateAccountResultCodeCreateAccountAlreadyExist:
 			return "op_already_exists", nil
 		}
 	case xdr.PaymentResultCode:
 		switch code {
 		case xdr.PaymentResultCodePaymentSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.PaymentResultCodePaymentMalformed:
-			return "op_malformed", nil
+			return OpMalformed, nil
 		case xdr.PaymentResultCodePaymentUnderfunded:
-			return "op_underfunded", nil
+			return OpUnderfunded, nil
 		case xdr.PaymentResultCodePaymentSrcNoTrust:
 			return "op_src_no_trust", nil
 		case xdr.PaymentResultCodePaymentSrcNotAuthorized:
@@ -80,18 +105,18 @@ func String(code interface{}) (string, error) {
 		case xdr.PaymentResultCodePaymentNotAuthorized:
 			return "op_not_authorized", nil
 		case xdr.PaymentResultCodePaymentLineFull:
-			return "op_line_full", nil
+			return OpLineFull, nil
 		case xdr.PaymentResultCodePaymentNoIssuer:
-			return "op_no_issuer", nil
+			return OpNoIssuer, nil
 		}
 	case xdr.PathPaymentResultCode:
 		switch code {
 		case xdr.PathPaymentResultCodePathPaymentSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.PathPaymentResultCodePathPaymentMalformed:
-			return "op_malformed", nil
+			return OpMalformed, nil
 		case xdr.PathPaymentResultCodePathPaymentUnderfunded:
-			return "op_underfunded", nil
+			return OpUnderfunded, nil
 		case xdr.PathPaymentResultCodePathPaymentSrcNoTrust:
 			return "op_src_no_trust", nil
 		case xdr.PathPaymentResultCodePathPaymentSrcNotAuthorized:
@@ -103,9 +128,9 @@ func String(code interface{}) (string, error) {
 		case xdr.PathPaymentResultCodePathPaymentNotAuthorized:
 			return "op_not_authorized", nil
 		case xdr.PathPaymentResultCodePathPaymentLineFull:
-			return "op_line_full", nil
+			return OpLineFull, nil
 		case xdr.PathPaymentResultCodePathPaymentNoIssuer:
-			return "op_no_issuer", nil
+			return OpNoIssuer, nil
 		case xdr.PathPaymentResultCodePathPaymentTooFewOffers:
 			return "op_too_few_offers", nil
 		case xdr.PathPaymentResultCodePathPaymentOfferCrossSelf:
@@ -116,9 +141,9 @@ func String(code interface{}) (string, error) {
 	case xdr.ManageOfferResultCode:
 		switch code {
 		case xdr.ManageOfferResultCodeManageOfferSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.ManageOfferResultCodeManageOfferMalformed:
-			return "op_malformed", nil
+			return OpMalformed, nil
 		case xdr.ManageOfferResultCodeManageOfferSellNoTrust:
 			return "op_sell_no_trust", nil
 		case xdr.ManageOfferResultCodeManageOfferBuyNoTrust:
@@ -128,9 +153,9 @@ func String(code interface{}) (string, error) {
 		case xdr.ManageOfferResultCodeManageOfferBuyNotAuthorized:
 			return "buy_not_authorized", nil
 		case xdr.ManageOfferResultCodeManageOfferLineFull:
-			return "op_line_full", nil
+			return OpLineFull, nil
 		case xdr.ManageOfferResultCodeManageOfferUnderfunded:
-			return "op_underfunded", nil
+			return OpUnderfunded, nil
 		case xdr.ManageOfferResultCodeManageOfferCrossSelf:
 			return "op_cross_self", nil
 		case xdr.ManageOfferResultCodeManageOfferSellNoIssuer:
@@ -140,14 +165,14 @@ func String(code interface{}) (string, error) {
 		case xdr.ManageOfferResultCodeManageOfferNotFound:
 			return "op_offer_not_found", nil
 		case xdr.ManageOfferResultCodeManageOfferLowReserve:
-			return "op_low_reserve", nil
+			return OpLowReserve, nil
 		}
 	case xdr.SetOptionsResultCode:
 		switch code {
 		case xdr.SetOptionsResultCodeSetOptionsSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.SetOptionsResultCodeSetOptionsLowReserve:
-			return "op_low_reserve", nil
+			return OpLowReserve, nil
 		case xdr.SetOptionsResultCodeSetOptionsTooManySigners:
 			return "op_too_many_signers", nil
 		case xdr.SetOptionsResultCodeSetOptionsBadFlags:
@@ -168,22 +193,22 @@ func String(code interface{}) (string, error) {
 	case xdr.ChangeTrustResultCode:
 		switch code {
 		case xdr.ChangeTrustResultCodeChangeTrustSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.ChangeTrustResultCodeChangeTrustMalformed:
-			return "op_malformed", nil
+			return OpMalformed, nil
 		case xdr.ChangeTrustResultCodeChangeTrustNoIssuer:
-			return "op_no_issuer", nil
+			return OpNoIssuer, nil
 		case xdr.ChangeTrustResultCodeChangeTrustInvalidLimit:
 			return "op_invalid_limit", nil
 		case xdr.ChangeTrustResultCodeChangeTrustLowReserve:
-			return "op_low_reserve", nil
+			return OpLowReserve, nil
 		}
 	case xdr.AllowTrustResultCode:
 		switch code {
 		case xdr.AllowTrustResultCodeAllowTrustSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.AllowTrustResultCodeAllowTrustMalformed:
-			return "op_malformed", nil
+			return OpMalformed, nil
 		case xdr.AllowTrustResultCodeAllowTrustNoTrustLine:
 			return "op_no_trustline", nil
 		case xdr.AllowTrustResultCodeAllowTrustTrustNotRequired:
@@ -194,9 +219,9 @@ func String(code interface{}) (string, error) {
 	case xdr.AccountMergeResultCode:
 		switch code {
 		case xdr.AccountMergeResultCodeAccountMergeSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.AccountMergeResultCodeAccountMergeMalformed:
-			return "op_malformed", nil
+			return OpMalformed, nil
 		case xdr.AccountMergeResultCodeAccountMergeNoAccount:
 			return "op_no_account", nil
 		case xdr.AccountMergeResultCodeAccountMergeImmutableSet:
@@ -207,7 +232,7 @@ func String(code interface{}) (string, error) {
 	case xdr.InflationResultCode:
 		switch code {
 		case xdr.InflationResultCodeInflationSuccess:
-			return "op_success", nil
+			return OpSuccess, nil
 		case xdr.InflationResultCodeInflationNotTime:
 			return "op_not_time", nil
 		}
@@ -216,6 +241,8 @@ func String(code interface{}) (string, error) {
 	return "", errors.New(ErrUnknownCode)
 }
 
+// ForOperationResult returns the strong represtation used by horizon for the
+// error code `opr`
 func ForOperationResult(opr xdr.OperationResult) (string, error) {
 	if opr.Code != xdr.OperationResultCodeOpInner {
 		return String(opr.Code)
