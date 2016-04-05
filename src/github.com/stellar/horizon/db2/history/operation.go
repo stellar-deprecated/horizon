@@ -124,23 +124,11 @@ func (q *OperationsQ) OnlyPayments() *OperationsQ {
 
 // Page specifies the paging constraints for the query being built by `q`.
 func (q *OperationsQ) Page(page db2.PageQuery) *OperationsQ {
-	sql := q.sql
-	sql = sql.Limit(page.Limit)
-
-	cursor, err := page.CursorInt64()
-	if err != nil {
-		q.Err = err
+	if q.Err != nil {
 		return q
 	}
 
-	switch page.Order {
-	case "asc":
-		sql = sql.Where("hop.id > ?", cursor).OrderBy("hop.id asc")
-	case "desc":
-		sql = sql.Where("hop.id < ?", cursor).OrderBy("hop.id desc")
-	}
-
-	q.sql = sql
+	q.sql, q.Err = page.ApplyTo(q.sql, "hop.id")
 	return q
 }
 
