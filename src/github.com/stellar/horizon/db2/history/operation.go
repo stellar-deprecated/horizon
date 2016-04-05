@@ -5,6 +5,9 @@ import (
 
 	"github.com/go-errors/errors"
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/toid"
 )
 
 // UnmarshalDetails unmarshals the details of this operation into `dest`
@@ -19,6 +22,15 @@ func (r *Operation) UnmarshalDetails(dest interface{}) error {
 	}
 
 	return err
+}
+
+// Operations provides a helper to filter the operations table with pre-defined
+// filters.  See `OperationsQ` for the available filters.
+func (q *Q) Operations() *OperationsQ {
+	return &OperationsQ{
+		parent: q,
+		sql:    selectOperation,
+	}
 }
 
 // OperationByID loads a single operation with `id` into `dest`
@@ -40,3 +52,104 @@ var selectOperation = sq.Select(
 		"ht.transaction_hash").
 	From("history_operations hop").
 	LeftJoin("history_transactions ht ON ht.id = hop.transaction_id")
+
+// ForAccount filters the operations collection to a specific account
+func (q *OperationsQ) ForAccount(aid string) *OperationsQ {
+	var account Account
+	q.Err = q.parent.AccountByAddress(&account, aid)
+	if q.Err != nil {
+		return q
+	}
+
+	q.sql = q.sql.Join(
+		"history_operation_participants hopp ON "+
+			"hopp.history_operation_id = hop.id",
+	).Where("hopp.history_account_id = ?", account.ID)
+
+	return q
+}
+
+// ForLedger filters the query to a only operations in a specific ledger,
+// specified by its sequence.
+func (q *OperationsQ) ForLedger(seq int32) *OperationsQ {
+	var ledger Ledger
+	q.Err = q.parent.LedgerBySequence(&ledger, seq)
+	if q.Err != nil {
+		return q
+	}
+
+	start := toid.ID{LedgerSequence: seq}
+	end := toid.ID{LedgerSequence: seq + 1}
+	q.sql = q.sql.Where(
+		"hop.id >= ? AND hop.id < ?",
+		start.ToInt64(),
+		end.ToInt64(),
+	)
+
+	return q
+}
+
+// ForTransaction filters the query to a only operations in a specific
+// transaction, specified by the transactions's hex-encoded hash.
+func (q *OperationsQ) ForTransaction(hash string) *OperationsQ {
+	var tx Transaction
+	q.Err = q.parent.TransactionByHash(&tx, hash)
+	if q.Err != nil {
+		return q
+	}
+
+	start := toid.Parse(tx.ID)
+	end := start
+	end.TransactionOrder++
+	q.sql = q.sql.Where(
+		"hop.id >= ? AND hop.id < ?",
+		start.ToInt64(),
+		end.ToInt64(),
+	)
+
+	return q
+}
+
+// OnlyPayments filters the query being built to only include operations that
+// are in the "payment" class of operations:  CreateAccountOps, Payments, and
+// PathPayments.
+func (q *OperationsQ) OnlyPayments() *OperationsQ {
+	q.sql = q.sql.Where(sq.Eq{"hop.type": []xdr.OperationType{
+		xdr.OperationTypeCreateAccount,
+		xdr.OperationTypePayment,
+		xdr.OperationTypePathPayment,
+	}})
+	return q
+}
+
+// Page specifies the paging constraints for the query being built by `q`.
+func (q *OperationsQ) Page(page db2.PageQuery) *OperationsQ {
+	sql := q.sql
+	sql = sql.Limit(page.Limit)
+
+	cursor, err := page.CursorInt64()
+	if err != nil {
+		q.Err = err
+		return q
+	}
+
+	switch page.Order {
+	case "asc":
+		sql = sql.Where("hop.id > ?", cursor).OrderBy("hop.id asc")
+	case "desc":
+		sql = sql.Where("hop.id < ?", cursor).OrderBy("hop.id desc")
+	}
+
+	q.sql = sql
+	return q
+}
+
+// Select loads the results of the query specified by `q` into `dest`.
+func (q *OperationsQ) Select(dest interface{}) error {
+	if q.Err != nil {
+		return q.Err
+	}
+
+	q.Err = q.parent.Select(dest, q.sql)
+	return q.Err
+}

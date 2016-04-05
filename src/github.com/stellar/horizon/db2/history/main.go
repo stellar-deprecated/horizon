@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/guregu/null"
+	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db2"
 )
@@ -145,6 +146,14 @@ type Operation struct {
 	Type             xdr.OperationType `db:"type"`
 	DetailsString    null.String       `db:"details"`
 	SourceAccount    string            `db:"source_account"`
+}
+
+// OperationsQ is a helper struct to aid in configuring queries that loads
+// slices of Operation structs.
+type OperationsQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
 }
 
 // Q is a helper struct on which to hang common queries against a history
