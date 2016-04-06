@@ -2,6 +2,8 @@ package history
 
 import (
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/toid"
 )
 
 // TransactionByHash is a query that loads a single row from the
@@ -12,6 +14,71 @@ func (q *Q) TransactionByHash(dest interface{}, hash string) error {
 		Where("ht.transaction_hash = ?", hash)
 
 	return q.Get(dest, sql)
+}
+
+// Transactions provides a helper to filter rows from the `history_transactions`
+// table with pre-defined filters.  See `TransactionsQ` methods for the
+// available filters.
+func (q *Q) Transactions() *TransactionsQ {
+	return &TransactionsQ{
+		parent: q,
+		sql:    selectTransaction,
+	}
+}
+
+// ForAccount filters the transactions collection to a specific account
+func (q *TransactionsQ) ForAccount(aid string) *TransactionsQ {
+	var account Account
+	q.Err = q.parent.AccountByAddress(&account, aid)
+	if q.Err != nil {
+		return q
+	}
+
+	q.sql = q.sql.
+		Join("history_transaction_participants htp ON htp.history_transaction_id = ht.id").
+		Where("htp.history_account_id = ?", account.ID)
+
+	return q
+}
+
+// ForLedger filters the query to a only transactions in a specific ledger,
+// specified by its sequence.
+func (q *TransactionsQ) ForLedger(seq int32) *TransactionsQ {
+	var ledger Ledger
+	q.Err = q.parent.LedgerBySequence(&ledger, seq)
+	if q.Err != nil {
+		return q
+	}
+
+	start := toid.ID{LedgerSequence: seq}
+	end := toid.ID{LedgerSequence: seq + 1}
+	q.sql = q.sql.Where(
+		"ht.id >= ? AND ht.id < ?",
+		start.ToInt64(),
+		end.ToInt64(),
+	)
+
+	return q
+}
+
+// Page specifies the paging constraints for the query being built by `q`.
+func (q *TransactionsQ) Page(page db2.PageQuery) *TransactionsQ {
+	if q.Err != nil {
+		return q
+	}
+
+	q.sql, q.Err = page.ApplyTo(q.sql, "ht.id")
+	return q
+}
+
+// Select loads the results of the query specified by `q` into `dest`.
+func (q *TransactionsQ) Select(dest interface{}) error {
+	if q.Err != nil {
+		return q.Err
+	}
+
+	q.Err = q.parent.Select(dest, q.sql)
+	return q.Err
 }
 
 var selectTransaction = sq.Select(

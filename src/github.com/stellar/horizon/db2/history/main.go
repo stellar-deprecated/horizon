@@ -208,6 +208,14 @@ type Transaction struct {
 	UpdatedAt        time.Time   `db:"updated_at"`
 }
 
+// TransactionsQ is a helper struct to aid in configuring queries that loads
+// slices of transaction structs.
+type TransactionsQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
+}
+
 // LatestLedger loads the latest known ledger
 func (q *Q) LatestLedger(dest interface{}) error {
 	return q.GetRaw(dest, `SELECT COALESCE(MAX(sequence), 0) FROM history_ledgers`)
