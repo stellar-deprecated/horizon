@@ -42,17 +42,6 @@ func (q *Q) OperationByID(dest interface{}, id int64) error {
 	return q.Get(dest, sql)
 }
 
-var selectOperation = sq.Select(
-	"hop.id, " +
-		"hop.transaction_id, " +
-		"hop.application_order, " +
-		"hop.type, " +
-		"hop.details, " +
-		"hop.source_account, " +
-		"ht.transaction_hash").
-	From("history_operations hop").
-	LeftJoin("history_transactions ht ON ht.id = hop.transaction_id")
-
 // ForAccount filters the operations collection to a specific account
 func (q *OperationsQ) ForAccount(aid string) *OperationsQ {
 	var account Account
@@ -141,3 +130,14 @@ func (q *OperationsQ) Select(dest interface{}) error {
 	q.Err = q.parent.Select(dest, q.sql)
 	return q.Err
 }
+
+var selectOperation = sq.Select(
+	"hop.id, " +
+		"hop.transaction_id, " +
+		"hop.application_order, " +
+		"hop.type, " +
+		"hop.details, " +
+		"hop.source_account, " +
+		"ht.transaction_hash").
+	From("history_operations hop").
+	LeftJoin("history_transactions ht ON ht.id = hop.transaction_id")

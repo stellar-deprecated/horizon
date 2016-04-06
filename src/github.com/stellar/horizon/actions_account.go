@@ -1,7 +1,7 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
@@ -18,57 +18,28 @@ import (
 // a normal page query, ordered by the operation id that created them.
 type AccountIndexAction struct {
 	Action
-	Query   db.HistoryAccountPageQuery
-	Records []history.Account
-	Page    hal.Page
-}
-
-// LoadQuery sets action.Query from the request params
-func (action *AccountIndexAction) LoadQuery() {
-	action.ValidateCursorAsDefault()
-	action.Query = db.HistoryAccountPageQuery{
-		SqlQuery:  action.App.HorizonQuery(),
-		PageQuery: action.GetPageQuery(),
-	}
-}
-
-// LoadRecords populates action.Records
-func (action *AccountIndexAction) LoadRecords() {
-	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
-}
-
-// LoadPage populates action.Page
-func (action *AccountIndexAction) LoadPage() {
-	for _, record := range action.Records {
-		var res resource.HistoryAccount
-		res.Populate(action.Ctx, record)
-		action.Page.Add(res)
-	}
-	action.Page.BaseURL = action.BaseURL()
-	action.Page.BasePath = "/accounts"
-	action.Page.Limit = action.Query.Limit
-	action.Page.Cursor = action.Query.Cursor
-	action.Page.Order = action.Query.Order
-	action.Page.PopulateLinks()
+	PagingParams db2.PageQuery
+	Records      []history.Account
+	Page         hal.Page
 }
 
 // JSON is a method for actions.JSON
 func (action *AccountIndexAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecords,
-		action.LoadPage,
+		action.loadParams,
+		action.loadRecords,
+		action.loadPage,
 		func() { hal.Render(action.W, action.Page) },
 	)
 }
 
 // SSE is a method for actions.SSE
 func (action *AccountIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.LoadQuery)
+	action.Setup(action.loadParams)
 	action.Do(
-		action.LoadRecords,
+		action.loadRecords,
 		func() {
-			stream.SetLimit(int(action.Query.Limit))
+			stream.SetLimit(int(action.PagingParams.Limit))
 			var res resource.HistoryAccount
 			for _, record := range action.Records[stream.SentCount():] {
 				res.Populate(action.Ctx, record)
@@ -76,6 +47,33 @@ func (action *AccountIndexAction) SSE(stream sse.Stream) {
 			}
 		},
 	)
+}
+
+func (action *AccountIndexAction) loadParams() {
+	action.ValidateCursorAsDefault()
+	action.PagingParams = action.GetPageQuery()
+}
+
+func (action *AccountIndexAction) loadRecords() {
+	action.Err = action.HistoryQ().
+		Accounts().
+		Page(action.PagingParams).
+		Select(&action.Records)
+}
+
+// LoadPage populates action.Page
+func (action *AccountIndexAction) loadPage() {
+	for _, record := range action.Records {
+		var res resource.HistoryAccount
+		res.Populate(action.Ctx, record)
+		action.Page.Add(res)
+	}
+	action.Page.BaseURL = action.BaseURL()
+	action.Page.BasePath = "/accounts"
+	action.Page.Limit = action.PagingParams.Limit
+	action.Page.Cursor = action.PagingParams.Cursor
+	action.Page.Order = action.PagingParams.Order
+	action.Page.PopulateLinks()
 }
 
 // AccountShowAction renders a account summary found by its address.

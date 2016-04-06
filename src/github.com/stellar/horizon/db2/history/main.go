@@ -104,6 +104,14 @@ type Account struct {
 	Address string `db:"address"`
 }
 
+// AccountsQ is a helper struct to aid in configuring queries that loads
+// slices of account structs.
+type AccountsQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
+}
+
 // Effect is a row of data from the `history_effects` table
 type Effect struct {
 	HistoryAccountID   int64       `db:"history_account_id"`
