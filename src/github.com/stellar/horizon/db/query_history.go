@@ -7,36 +7,6 @@ import (
 	sq "github.com/lann/squirrel"
 )
 
-var LedgerRecordSelect sq.SelectBuilder = sq.Select(
-	"hl.id",
-	"hl.sequence",
-	"hl.importer_version",
-	"hl.ledger_hash",
-	"hl.previous_ledger_hash",
-	"hl.transaction_count",
-	"hl.operation_count",
-	"hl.closed_at",
-	"hl.created_at",
-	"hl.updated_at",
-	"hl.total_coins",
-	"hl.fee_pool",
-	"hl.base_fee",
-	"hl.base_reserve",
-	"hl.max_tx_set_size",
-).From("history_ledgers hl")
-
-var OperationRecordSelect sq.SelectBuilder = sq.
-	Select(
-		"hop.id, " +
-			"hop.transaction_id, " +
-			"hop.application_order, " +
-			"hop.type, " +
-			"hop.details, " +
-			"hop.source_account, " +
-			"ht.transaction_hash").
-	From("history_operations hop").
-	LeftJoin("history_transactions ht ON ht.id = hop.transaction_id")
-
 // Provides a squirrel.SelectBuilder upon which you may build actual queries.
 var TransactionRecordSelect sq.SelectBuilder = sq.
 	Select(

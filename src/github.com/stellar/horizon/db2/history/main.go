@@ -145,6 +145,14 @@ type Ledger struct {
 	MaxTxSetSize       int32       `db:"max_tx_set_size"`
 }
 
+// LedgersQ is a helper struct to aid in configuring queries that loads
+// slices of Ledger structs.
+type LedgersQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
+}
+
 // Operation is a row of data from the `history_operations` table
 type Operation struct {
 	TotalOrderID
