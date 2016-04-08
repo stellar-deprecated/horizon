@@ -2,11 +2,12 @@ package friendbot
 
 import (
 	"errors"
+	"sync"
+
 	. "github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/go-stellar-base/keypair"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
-	"sync"
 )
 
 // Bot represents the friendbot subsystem.
@@ -56,12 +57,16 @@ func (bot *Bot) makeTx(address string) (string, error) {
 	tx := Transaction(
 		SourceAccount{bot.Secret},
 		Sequence{bot.sequence + 1},
+		Network{bot.Network},
 		CreateAccount(
 			Destination{address},
 			NativeAmount{"10000.00"},
-			Network{bot.Network},
 		),
 	)
+
+	if tx.Err != nil {
+		return "", tx.Err
+	}
 
 	bot.sequence++
 
