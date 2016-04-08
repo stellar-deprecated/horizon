@@ -11,7 +11,6 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/go-stellar-base/build"
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
@@ -158,12 +157,6 @@ func (a *App) HistoryQ() *history.Q {
 // returned repo is bound to `ctx`.
 func (a *App) HorizonRepo(ctx context.Context) *db2.Repo {
 	return &db2.Repo{DB: a.historyQ.Repo.DB, Ctx: ctx}
-}
-
-// HorizonQuery returns a SqlQuery that can be embedded in a parent query
-// to specify the query should run against the horizon database
-func (a *App) HorizonQuery() db.SqlQuery {
-	return db.SqlQuery{DB: a.historyQ.Repo.DB}
 }
 
 // CoreRepo returns a new repo that loads data from the stellar core

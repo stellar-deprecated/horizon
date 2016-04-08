@@ -1,15 +1,18 @@
 package horizon
 
 import (
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/test"
-	"testing"
 )
 
 func TestTradeActions(t *testing.T) {
+	tt := test.Start(t).Scenario("trades")
+	defer tt.Finish()
 
 	Convey("Trade Actions:", t, func() {
-		test.LoadScenario("trades")
+
 		app := NewTestApp()
 		defer app.Close()
 		rh := NewRequestHelper(app)

@@ -10,7 +10,6 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/sebest/xff"
-	"github.com/stellar/horizon/db"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/txsub/sequence"
 	"github.com/zenazn/goji/web"
@@ -38,7 +37,6 @@ func initWeb(app *App) {
 	}
 
 	// register problems
-	problem.RegisterError(db.ErrNoResults, problem.NotFound)
 	problem.RegisterError(sql.ErrNoRows, problem.NotFound)
 	problem.RegisterError(sequence.ErrNoMoreRoom, problem.ServerOverCapacity)
 }
