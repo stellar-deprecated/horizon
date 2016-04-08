@@ -5,6 +5,7 @@ package results
 import (
 	"bytes"
 	"encoding/base64"
+
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
@@ -21,7 +22,6 @@ type DB struct {
 
 // ResultByHash implements txsub.ResultProvider
 func (rp *DB) ResultByHash(ctx context.Context, hash string) txsub.Result {
-
 	// query history database
 	var hr history.Transaction
 	err := rp.History.TransactionByHash(&hr, hash)
@@ -29,7 +29,7 @@ func (rp *DB) ResultByHash(ctx context.Context, hash string) txsub.Result {
 		return txResultFromHistory(hr)
 	}
 
-	if rp.History.NoRows(err) {
+	if !rp.History.NoRows(err) {
 		return txsub.Result{Err: err}
 	}
 
@@ -40,7 +40,7 @@ func (rp *DB) ResultByHash(ctx context.Context, hash string) txsub.Result {
 		return txResultFromCore(cr)
 	}
 
-	if rp.Core.NoRows(err) {
+	if !rp.Core.NoRows(err) {
 		return txsub.Result{Err: err}
 	}
 
