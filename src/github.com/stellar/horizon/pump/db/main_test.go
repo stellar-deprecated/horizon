@@ -1,20 +1,25 @@
 package db
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-	tdb "github.com/stellar/horizon/test/db"
-	"golang.org/x/net/context"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/test"
+	"golang.org/x/net/context"
 )
 
 func TestStreaming(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	db := tdb.Horizon()
+	tt := test.Start(t)
+	defer tt.Finish()
+
+	ctx, cancel := context.WithCancel(tt.Ctx)
 
 	Convey("LedgerClosePump", t, func() {
 
 		Convey("can cancel", func() {
-			pump := NewLedgerClosePump(ctx, db)
+			q := &history.Q{Repo: tt.HorizonRepo()}
+			pump := NewLedgerClosePump(ctx, q)
 			cancel()
 			_, more := <-pump
 			So(more, ShouldBeFalse)

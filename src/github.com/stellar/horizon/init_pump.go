@@ -1,9 +1,10 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db"
-	"github.com/stellar/horizon/pump"
 	"time"
+
+	"github.com/stellar/horizon/pump"
+	"github.com/stellar/horizon/pump/db"
 )
 
 func initPump(app *App) {
@@ -12,7 +13,7 @@ func initPump(app *App) {
 	if app.config.Autopump {
 		trigger = pump.Tick(1 * time.Second)
 	} else {
-		trigger = db.NewLedgerClosePump(app.ctx, app.HorizonRepo(nil).DB)
+		trigger = db.NewLedgerClosePump(app.ctx, app.HistoryQ())
 	}
 
 	app.pump = pump.NewPump(trigger)
