@@ -1,7 +1,7 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
@@ -17,28 +17,28 @@ import (
 // a normal page query.
 type LedgerIndexAction struct {
 	Action
-	Query   db.LedgerPageQuery
-	Records []history.Ledger
-	Page    hal.Page
+	PagingParams db2.PageQuery
+	Records      []history.Ledger
+	Page         hal.Page
 }
 
 // JSON is a method for actions.JSON
 func (action *LedgerIndexAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecords,
-		action.LoadPage,
+		action.loadParams,
+		action.loadRecords,
+		action.loadPage,
 		func() { hal.Render(action.W, action.Page) },
 	)
 }
 
 // SSE is a method for actions.SSE
 func (action *LedgerIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.LoadQuery)
+	action.Setup(action.loadParams)
 	action.Do(
-		action.LoadRecords,
+		action.loadRecords,
 		func() {
-			stream.SetLimit(int(action.Query.Limit))
+			stream.SetLimit(int(action.PagingParams.Limit))
 			records := action.Records[stream.SentCount():]
 
 			for _, record := range records {
@@ -50,22 +50,18 @@ func (action *LedgerIndexAction) SSE(stream sse.Stream) {
 	)
 }
 
-// LoadQuery sets action.Query from the request params
-func (action *LedgerIndexAction) LoadQuery() {
+func (action *LedgerIndexAction) loadParams() {
 	action.ValidateCursorAsDefault()
-	action.Query = db.LedgerPageQuery{
-		SqlQuery:  action.App.HorizonQuery(),
-		PageQuery: action.GetPageQuery(),
-	}
+	action.PagingParams = action.GetPageQuery()
 }
 
-// LoadRecords populates action.Records
-func (action *LedgerIndexAction) LoadRecords() {
-	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
+func (action *LedgerIndexAction) loadRecords() {
+	action.Err = action.HistoryQ().Ledgers().
+		Page(action.PagingParams).
+		Select(&action.Records)
 }
 
-// LoadPage populates action.Page
-func (action *LedgerIndexAction) LoadPage() {
+func (action *LedgerIndexAction) loadPage() {
 	for _, record := range action.Records {
 		var res resource.Ledger
 		res.Populate(action.Ctx, record)
@@ -74,9 +70,9 @@ func (action *LedgerIndexAction) LoadPage() {
 
 	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = action.Path()
-	action.Page.Limit = action.Query.Limit
-	action.Page.Cursor = action.Query.Cursor
-	action.Page.Order = action.Query.Order
+	action.Page.Limit = action.PagingParams.Limit
+	action.Page.Cursor = action.PagingParams.Cursor
+	action.Page.Order = action.PagingParams.Order
 	action.Page.PopulateLinks()
 }
 

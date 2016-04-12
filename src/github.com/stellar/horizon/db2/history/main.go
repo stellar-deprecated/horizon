@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/guregu/null"
+	sq "github.com/lann/squirrel"
 	"github.com/stellar/go-stellar-base/xdr"
 	"github.com/stellar/horizon/db2"
 )
@@ -51,16 +52,33 @@ const (
 
 	// trustline effects
 
-	EffectTrustlineCreated      EffectType = 20 // from change_trust
-	EffectTrustlineRemoved      EffectType = 21 // from change_trust
-	EffectTrustlineUpdated      EffectType = 22 // from change_trust, allow_trust
-	EffectTrustlineAuthorized   EffectType = 23 // from allow_trust
+	// EffectTrustlineCreated occurs when an account trusts an anchor
+	EffectTrustlineCreated EffectType = 20 // from change_trust
+
+	// EffectTrustlineRemoved occurs when an account removes struct by setting the
+	// limit of a trustline to 0
+	EffectTrustlineRemoved EffectType = 21 // from change_trust
+
+	// EffectTrustlineUpdated occurs when an account changes a trustline's limit
+	EffectTrustlineUpdated EffectType = 22 // from change_trust, allow_trust
+
+	// EffectTrustlineAuthorized occurs when an anchor has AUTH_REQUIRED flag set
+	// to true and it authorizes another account's trustline
+	EffectTrustlineAuthorized EffectType = 23 // from allow_trust
+
+	// EffectTrustlineDeauthorized occurs when an anchor revokes access to a asset
+	// it issues.
 	EffectTrustlineDeauthorized EffectType = 24 // from allow_trust
 
 	// trading effects
 
+	// EffectOfferCreated occurs when an account offers to trade an asset
 	EffectOfferCreated EffectType = 30 // from manage_offer, creat_passive_offer
+
+	// EffectOfferRemoved occurs when an account removes an offer
 	EffectOfferRemoved EffectType = 31 // from manage_offer, creat_passive_offer, path_payment
+
+	// EffectOfferUpdated occurs when an offer is updated by the offering account.
 	EffectOfferUpdated EffectType = 32 // from manage_offer, creat_passive_offer, path_payment
 
 	// EffectTrade occurs when a trade is initiated because of a path payment or
@@ -86,6 +104,14 @@ type Account struct {
 	Address string `db:"address"`
 }
 
+// AccountsQ is a helper struct to aid in configuring queries that loads
+// slices of account structs.
+type AccountsQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
+}
+
 // Effect is a row of data from the `history_effects` table
 type Effect struct {
 	HistoryAccountID   int64       `db:"history_account_id"`
@@ -94,6 +120,14 @@ type Effect struct {
 	Order              int32       `db:"order"`
 	Type               EffectType  `db:"type"`
 	DetailsString      null.String `db:"details"`
+}
+
+// EffectsQ is a helper struct to aid in configuring queries that loads
+// slices of Ledger structs.
+type EffectsQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
 }
 
 // EffectType is the numeric type for an effect, used as the `type` field in the
@@ -119,6 +153,14 @@ type Ledger struct {
 	MaxTxSetSize       int32       `db:"max_tx_set_size"`
 }
 
+// LedgersQ is a helper struct to aid in configuring queries that loads
+// slices of Ledger structs.
+type LedgersQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
+}
+
 // Operation is a row of data from the `history_operations` table
 type Operation struct {
 	TotalOrderID
@@ -128,6 +170,14 @@ type Operation struct {
 	Type             xdr.OperationType `db:"type"`
 	DetailsString    null.String       `db:"details"`
 	SourceAccount    string            `db:"source_account"`
+}
+
+// OperationsQ is a helper struct to aid in configuring queries that loads
+// slices of Operation structs.
+type OperationsQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
 }
 
 // Q is a helper struct on which to hang common queries against a history
@@ -164,6 +214,14 @@ type Transaction struct {
 	ValidBefore      null.Int    `db:"valid_before"`
 	CreatedAt        time.Time   `db:"created_at"`
 	UpdatedAt        time.Time   `db:"updated_at"`
+}
+
+// TransactionsQ is a helper struct to aid in configuring queries that loads
+// slices of transaction structs.
+type TransactionsQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
 }
 
 // LatestLedger loads the latest known ledger

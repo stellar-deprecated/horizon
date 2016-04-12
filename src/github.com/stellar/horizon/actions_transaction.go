@@ -3,7 +3,7 @@ package horizon
 import (
 	"net/http"
 
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
@@ -21,49 +21,19 @@ import (
 // a normal page query.
 type TransactionIndexAction struct {
 	Action
-	Query   db.TransactionPageQuery
-	Records []history.Transaction
-	Page    hal.Page
-}
-
-// LoadQuery sets action.Query from the request params
-func (action *TransactionIndexAction) LoadQuery() {
-	action.ValidateCursorAsDefault()
-	action.Query = db.TransactionPageQuery{
-		SqlQuery:       action.App.HorizonQuery(),
-		PageQuery:      action.GetPageQuery(),
-		AccountAddress: action.GetString("account_id"),
-		LedgerSequence: action.GetInt32("ledger_id"),
-	}
-}
-
-// LoadRecords populates action.Records
-func (action *TransactionIndexAction) LoadRecords() {
-	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
-}
-
-// LoadPage populates action.Page
-func (action *TransactionIndexAction) LoadPage() {
-	for _, record := range action.Records {
-		var res resource.Transaction
-		res.Populate(action.Ctx, record)
-		action.Page.Add(res)
-	}
-
-	action.Page.BaseURL = action.BaseURL()
-	action.Page.BasePath = action.Path()
-	action.Page.Limit = action.Query.Limit
-	action.Page.Cursor = action.Query.Cursor
-	action.Page.Order = action.Query.Order
-	action.Page.PopulateLinks()
+	LedgerFilter  int32
+	AccountFilter string
+	PagingParams  db2.PageQuery
+	Records       []history.Transaction
+	Page          hal.Page
 }
 
 // JSON is a method for actions.JSON
 func (action *TransactionIndexAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecords,
-		action.LoadPage,
+		action.loadParams,
+		action.loadRecords,
+		action.loadPage,
 		func() {
 			hal.Render(action.W, action.Page)
 		},
@@ -72,11 +42,11 @@ func (action *TransactionIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *TransactionIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.LoadQuery)
+	action.Setup(action.loadParams)
 	action.Do(
-		action.LoadRecords,
+		action.loadRecords,
 		func() {
-			stream.SetLimit(int(action.Query.Limit))
+			stream.SetLimit(int(action.PagingParams.Limit))
 			records := action.Records[stream.SentCount():]
 
 			for _, record := range records {
@@ -86,6 +56,42 @@ func (action *TransactionIndexAction) SSE(stream sse.Stream) {
 			}
 		},
 	)
+}
+
+func (action *TransactionIndexAction) loadParams() {
+	action.ValidateCursorAsDefault()
+	action.AccountFilter = action.GetString("account_id")
+	action.LedgerFilter = action.GetInt32("ledger_id")
+	action.PagingParams = action.GetPageQuery()
+}
+
+func (action *TransactionIndexAction) loadRecords() {
+	q := action.HistoryQ()
+	txs := q.Transactions()
+
+	switch {
+	case action.AccountFilter != "":
+		txs.ForAccount(action.AccountFilter)
+	case action.LedgerFilter > 0:
+		txs.ForLedger(action.LedgerFilter)
+	}
+
+	action.Err = txs.Page(action.PagingParams).Select(&action.Records)
+}
+
+func (action *TransactionIndexAction) loadPage() {
+	for _, record := range action.Records {
+		var res resource.Transaction
+		res.Populate(action.Ctx, record)
+		action.Page.Add(res)
+	}
+
+	action.Page.BaseURL = action.BaseURL()
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.PagingParams.Limit
+	action.Page.Cursor = action.PagingParams.Cursor
+	action.Page.Order = action.PagingParams.Order
+	action.Page.PopulateLinks()
 }
 
 // TransactionShowAction renders a ledger found by its sequence number.

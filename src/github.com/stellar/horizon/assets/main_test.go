@@ -27,10 +27,10 @@ func TestAssets(t *testing.T) {
 		So(result, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum12)
 		So(err, ShouldBeNil)
 
-		result, err = Parse("not_real")
+		_, err = Parse("not_real")
 		So(errors.Is(err, ErrInvalidString), ShouldBeTrue)
 
-		result, err = Parse("")
+		_, err = Parse("")
 		So(errors.Is(err, ErrInvalidString), ShouldBeTrue)
 	})
 
@@ -52,7 +52,7 @@ func TestAssets(t *testing.T) {
 		So(result, ShouldEqual, "credit_alphanum12")
 		So(err, ShouldBeNil)
 
-		result, err = String(xdr.AssetType(15))
+		_, err = String(xdr.AssetType(15))
 		So(errors.Is(err, ErrInvalidValue), ShouldBeTrue)
 	})
 }

@@ -1,7 +1,8 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db"
+	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource"
@@ -12,17 +13,20 @@ import (
 // or order book
 type TradeIndexAction struct {
 	Action
-	Query   db.EffectPageQuery
-	Records []history.Effect
-	Page    hal.Page
+	AccountFilter string
+	Selling       xdr.Asset
+	Buying        xdr.Asset
+	PagingParams  db2.PageQuery
+	Records       []history.Effect
+	Page          hal.Page
 }
 
 // JSON is a method for actions.JSON
 func (action *TradeIndexAction) JSON() {
 	action.Do(
-		action.LoadQuery,
-		action.LoadRecords,
-		action.LoadPage,
+		action.loadParams,
+		action.loadRecords,
+		action.loadPage,
 		func() {
 			hal.Render(action.W, action.Page)
 		},
@@ -30,44 +34,36 @@ func (action *TradeIndexAction) JSON() {
 }
 
 // LoadQuery sets action.Query from the request params
-func (action *TradeIndexAction) LoadQuery() {
-	action.Query = db.EffectPageQuery{
-		SqlQuery:  action.App.HorizonQuery(),
-		PageQuery: action.GetPageQuery(),
-		Filter:    &db.EffectTypeFilter{history.EffectTrade},
-	}
+func (action *TradeIndexAction) loadParams() {
+	action.AccountFilter = action.GetString("account_id")
+	action.PagingParams = action.GetPageQuery()
 
-	if address := action.GetString("account_id"); address != "" {
-		action.Query.Filter = db.FilterAll(
-			action.Query.Filter,
-			&db.EffectAccountFilter{action.Query.SqlQuery, address},
-		)
-		return
-	}
-
-	// HACK: see if it looks like we're specifying an order book on params
-	// try to load it if so
+	// scott: It is unfortunate that we have this string guard below.  Instead, we
+	// should probably add an alternative to `GetAsset` that returns a zero-value
+	// xdr.Asset when not provided by the request.  Perhaps `MaybeGetAsset`?.
 	if action.GetString("selling_asset_type") != "" {
-		selling := action.GetAsset("selling_")
-		buying := action.GetAsset("buying_")
-		f := &db.EffectOrderBookFilter{}
-		action.Do(
-			func() { action.Err = selling.Extract(&f.SellingType, &f.SellingCode, &f.SellingIssuer) },
-			func() { action.Err = buying.Extract(&f.BuyingType, &f.BuyingCode, &f.BuyingIssuer) },
-		)
+		action.Selling = action.GetAsset("selling_")
+		action.Buying = action.GetAsset("buying_")
+	}
+}
 
-		action.Query.Filter = db.FilterAll(action.Query.Filter, f)
+// loadRecords populates action.Records
+func (action *TradeIndexAction) loadRecords() {
+	trades := action.HistoryQ().Effects().OfType(history.EffectTrade)
+
+	if action.AccountFilter != "" {
+		trades = trades.ForAccount(action.AccountFilter)
 	}
 
+	if (action.Selling != xdr.Asset{} && action.Buying != xdr.Asset{}) {
+		trades = trades.ForOrderBook(action.Selling, action.Buying)
+	}
+
+	action.Err = trades.Page(action.PagingParams).Select(&action.Records)
 }
 
-// LoadRecords populates action.Records
-func (action *TradeIndexAction) LoadRecords() {
-	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
-}
-
-// LoadPage populates action.Page
-func (action *TradeIndexAction) LoadPage() {
+// loadPage populates action.Page
+func (action *TradeIndexAction) loadPage() {
 	for _, record := range action.Records {
 		var res resource.Trade
 		action.Err = res.Populate(action.Ctx, record)
@@ -79,8 +75,8 @@ func (action *TradeIndexAction) LoadPage() {
 
 	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = action.Path()
-	action.Page.Limit = action.Query.Limit
-	action.Page.Cursor = action.Query.Cursor
-	action.Page.Order = action.Query.Order
+	action.Page.Limit = action.PagingParams.Limit
+	action.Page.Cursor = action.PagingParams.Cursor
+	action.Page.Order = action.PagingParams.Order
 	action.Page.PopulateLinks()
 }

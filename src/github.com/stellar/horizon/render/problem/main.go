@@ -19,10 +19,10 @@ var (
 // specific errors that may occur in other packages to be rendered as a specific
 // P instance.
 //
-// For example, you might want to render any db.ErrNoResults errors as a
+// For example, you might want to render any sql.ErrNoRows errors as a
 // problem.NotFound, and you would do so by calling:
 //
-// problem.RegisterError(db.ErrNoResults, problem.NotFound) in you application
+// problem.RegisterError(sql.ErrNoRows, problem.NotFound) in you application
 // initialization sequence
 func RegisterError(err error, p P) {
 	errToProblemMap[err] = p

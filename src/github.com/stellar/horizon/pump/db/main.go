@@ -3,13 +3,9 @@ package db
 import (
 	"time"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/log"
 	"golang.org/x/net/context"
-)
-
-const (
-	MaxHistoryLedger = "SELECT MAX(sequence) FROM history_ledgers"
 )
 
 // TODO: replace with `App` managed services layer
@@ -22,7 +18,7 @@ const (
 // if a new ledger has been imported (by ruby-horizon as of 2015-04-30, but
 // should eventually end up being in this project).  If a new ledger is seen
 // the the channel returned by this function emits
-func NewLedgerClosePump(ctx context.Context, db *sqlx.DB) <-chan struct{} {
+func NewLedgerClosePump(ctx context.Context, q *history.Q) <-chan struct{} {
 	result := make(chan struct{})
 
 	go func() {
@@ -31,12 +27,11 @@ func NewLedgerClosePump(ctx context.Context, db *sqlx.DB) <-chan struct{} {
 			select {
 			case <-time.After(1 * time.Second):
 				var latestLedger int32
-				row := db.QueryRow(MaxHistoryLedger)
-				err := row.Scan(&latestLedger)
+				err := q.LatestLedger(&latestLedger)
 
 				if err != nil {
 					log.Warn("Failed to check latest ledger", err)
-					break
+					continue
 				}
 
 				if latestLedger > lastSeenLedger {

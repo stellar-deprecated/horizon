@@ -2,12 +2,13 @@ package horizon
 
 import (
 	"errors"
-	"github.com/stellar/horizon/db"
+	"regexp"
+
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
-	"regexp"
 )
 
 // This file contains the actions:
@@ -19,14 +20,19 @@ import (
 // transaction, or operation.
 type EffectIndexAction struct {
 	Action
-	Query   db.EffectPageQuery
-	Records []history.Effect
-	Page    hal.Page
+	AccountFilter     string
+	LedgerFilter      int32
+	TransactionFilter string
+	OperationFilter   int64
+
+	PagingParams db2.PageQuery
+	Records      []history.Effect
+	Page         hal.Page
 }
 
 // JSON is a method for actions.JSON
 func (action *EffectIndexAction) JSON() {
-	action.Do(action.LoadQuery, action.LoadRecords, action.LoadPage)
+	action.Do(action.loadParams, action.loadRecords, action.loadPage)
 
 	action.Do(func() {
 		hal.Render(action.W, action.Page)
@@ -35,12 +41,12 @@ func (action *EffectIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *EffectIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.LoadQuery)
+	action.Setup(action.loadParams)
 
 	action.Do(
-		action.LoadRecords,
+		action.loadRecords,
 		func() {
-			stream.SetLimit(int(action.Query.Limit))
+			stream.SetLimit(int(action.PagingParams.Limit))
 			records := action.Records[stream.SentCount():]
 
 			for _, record := range records {
@@ -60,42 +66,35 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 	)
 }
 
-// LoadQuery sets action.Query from the request params
-func (action *EffectIndexAction) LoadQuery() {
+func (action *EffectIndexAction) loadParams() {
 	action.ValidateCursor()
-	action.Query = db.EffectPageQuery{
-		SqlQuery:  action.App.HorizonQuery(),
-		PageQuery: action.GetPageQuery(),
-	}
-
-	if address := action.GetString("account_id"); address != "" {
-		action.Query.Filter = &db.EffectAccountFilter{action.Query.SqlQuery, address}
-		return
-	}
-
-	if seq := action.GetInt32("ledger_id"); seq != 0 {
-		action.Query.Filter = &db.EffectLedgerFilter{seq}
-		return
-	}
-
-	if tx := action.GetString("tx_id"); tx != "" {
-		action.Query.Filter = &db.EffectTransactionFilter{action.Query.SqlQuery, tx}
-		return
-	}
-
-	if op := action.GetInt64("op_id"); op != 0 {
-		action.Query.Filter = &db.EffectOperationFilter{op}
-		return
-	}
+	action.PagingParams = action.GetPageQuery()
+	action.AccountFilter = action.GetString("account_id")
+	action.LedgerFilter = action.GetInt32("ledger_id")
+	action.TransactionFilter = action.GetString("tx_id")
+	action.OperationFilter = action.GetInt64("op_id")
 }
 
-// LoadRecords populates action.Records
-func (action *EffectIndexAction) LoadRecords() {
-	action.Err = db.Select(action.Ctx, action.Query, &action.Records)
+// loadRecords populates action.Records
+func (action *EffectIndexAction) loadRecords() {
+	effects := action.HistoryQ().Effects()
+
+	switch {
+	case action.AccountFilter != "":
+		effects.ForAccount(action.AccountFilter)
+	case action.LedgerFilter > 0:
+		effects.ForLedger(action.LedgerFilter)
+	case action.OperationFilter > 0:
+		effects.ForOperation(action.OperationFilter)
+	case action.TransactionFilter != "":
+		effects.ForTransaction(action.TransactionFilter)
+	}
+
+	action.Err = effects.Page(action.PagingParams).Select(&action.Records)
 }
 
-// LoadPage populates action.Page
-func (action *EffectIndexAction) LoadPage() {
+// loadPage populates action.Page
+func (action *EffectIndexAction) loadPage() {
 	for _, record := range action.Records {
 		var res hal.Pageable
 		res, action.Err = resource.NewEffect(action.Ctx, record)
@@ -107,9 +106,9 @@ func (action *EffectIndexAction) LoadPage() {
 
 	action.Page.BaseURL = action.BaseURL()
 	action.Page.BasePath = action.Path()
-	action.Page.Limit = action.Query.Limit
-	action.Page.Cursor = action.Query.Cursor
-	action.Page.Order = action.Query.Order
+	action.Page.Limit = action.PagingParams.Limit
+	action.Page.Cursor = action.PagingParams.Cursor
+	action.Page.Order = action.PagingParams.Order
 	action.Page.PopulateLinks()
 }
 

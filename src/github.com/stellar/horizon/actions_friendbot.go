@@ -1,11 +1,13 @@
 package horizon
 
 import (
+	"net/http"
+
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
-	"net/http"
 )
 
+// FriendbotAction causes an account at `Address` to be created.
 type FriendbotAction struct {
 	TransactionCreateAction
 	Address string
@@ -15,9 +17,9 @@ type FriendbotAction struct {
 func (action *FriendbotAction) JSON() {
 
 	action.Do(
-		action.CheckEnabled,
-		action.LoadAddress,
-		action.LoadResult,
+		action.checkEnabled,
+		action.loadAddress,
+		action.loadResult,
 		action.loadResource,
 
 		func() {
@@ -25,7 +27,7 @@ func (action *FriendbotAction) JSON() {
 		})
 }
 
-func (action *FriendbotAction) CheckEnabled() {
+func (action *FriendbotAction) checkEnabled() {
 	if action.App.friendbot != nil {
 		return
 	}
@@ -39,10 +41,10 @@ func (action *FriendbotAction) CheckEnabled() {
 	}
 }
 
-func (action *FriendbotAction) LoadAddress() {
+func (action *FriendbotAction) loadAddress() {
 	action.Address = action.GetAddress("addr")
 }
 
-func (action *FriendbotAction) LoadResult() {
+func (action *FriendbotAction) loadResult() {
 	action.Result = action.App.friendbot.Pay(action.Ctx, action.Address)
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-errors/errors"
+	sq "github.com/lann/squirrel"
 )
 
 const (
@@ -40,6 +41,36 @@ var (
 	// PageQuery.GetContinuations cannot be cast to Pageable
 	ErrNotPageable = errors.New("Records provided are not Pageable")
 )
+
+// ApplyTo returns a new SelectBuilder after applying the paging effects of
+// `p` to `sql`.  This method provides the default case for paging: int64
+// cursor-based paging by an id column.
+func (p PageQuery) ApplyTo(
+	sql sq.SelectBuilder,
+	col string,
+) (sq.SelectBuilder, error) {
+	sql = sql.Limit(p.Limit)
+
+	cursor, err := p.CursorInt64()
+	if err != nil {
+		return sql, err
+	}
+
+	switch p.Order {
+	case "asc":
+		sql = sql.
+			Where(fmt.Sprintf("%s > ?", col), cursor).
+			OrderBy(fmt.Sprintf("%s asc", col))
+	case "desc":
+		sql = sql.
+			Where(fmt.Sprintf("%s < ?", col), cursor).
+			OrderBy(fmt.Sprintf("%s desc", col))
+	default:
+		return sql, errors.Errorf("invalid order: %s", p.Order)
+	}
+
+	return sql, nil
+}
 
 // Invert returns a new PageQuery whose order is reversed
 func (p PageQuery) Invert() PageQuery {
