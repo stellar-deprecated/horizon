@@ -92,7 +92,7 @@ func (tx *Transaction) MemoType() string {
 
 // ResultXDR returns the XDR encoded result for this transaction
 func (tx *Transaction) ResultXDR() string {
-	out, err := xdr.MarshalBase64(tx.Result)
+	out, err := xdr.MarshalBase64(tx.Result.Result)
 	if err != nil {
 		panic(err)
 	}
