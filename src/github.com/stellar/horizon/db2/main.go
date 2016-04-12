@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"golang.org/x/net/context"
 )
 

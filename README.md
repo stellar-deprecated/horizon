@@ -1,5 +1,4 @@
 # Note this code is beta.
-It is not ready yet for production.
 
 # Horizon
 [![Build Status](https://travis-ci.org/stellar/horizon.svg?branch=master)](https://travis-ci.org/stellar/horizon)
