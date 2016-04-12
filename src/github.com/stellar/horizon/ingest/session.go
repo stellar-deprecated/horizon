@@ -260,38 +260,38 @@ func (is *Session) ingestEffects() {
 			)
 		}
 	case xdr.OperationTypeManageData:
-		// op := opbody.MustManageDataOp()
-		// dets := map[string]interface{}{"name": op.DataName}
-		// key := xdr.LedgerKey{}
-		// effect := history.EffectType(0)
-		//
-		// key.SetData(source, string(op.DataName))
+		op := opbody.MustManageDataOp()
+		dets := map[string]interface{}{"name": op.DataName}
+		key := xdr.LedgerKey{}
+		effect := history.EffectType(0)
+
+		key.SetData(source, string(op.DataName))
 		// log.Println("fee:", is.Cursor.TransactionFee().ChangesXDR())
 		// log.Println("txx:", is.Cursor.Transaction().ResultMetaXDR())
 		//
-		// before, after, err := is.Cursor.BeforeAndAfter(key)
-		// if err != nil {
-		// 	is.Err = err
-		// 	return
-		// }
-		//
-		// if after != nil {
-		// 	raw := after.Data.MustData().DataValue
-		// 	dets["value"] = base64.StdEncoding.EncodeToString(raw)
-		// }
-		//
-		// switch {
-		// case before == nil && after != nil:
-		// 	effect = history.EffectDataCreated
-		// case before != nil && after == nil:
-		// 	effect = history.EffectDataRemoved
-		// case before != nil && after != nil:
-		// 	effect = history.EffectDataUpdated
-		// default:
-		// 	panic("Invalid before-and-after state")
-		// }
-		//
-		// effects.Add(source, effect, dets)
+		before, after, err := is.Cursor.BeforeAndAfter(key)
+		if err != nil {
+			is.Err = err
+			return
+		}
+
+		if after != nil {
+			raw := after.Data.MustData().DataValue
+			dets["value"] = base64.StdEncoding.EncodeToString(raw)
+		}
+
+		switch {
+		case before == nil && after != nil:
+			effect = history.EffectDataCreated
+		case before != nil && after == nil:
+			effect = history.EffectDataRemoved
+		case before != nil && after != nil:
+			effect = history.EffectDataUpdated
+		default:
+			panic("Invalid before-and-after state")
+		}
+
+		effects.Add(source, effect, dets)
 
 	default:
 		is.Err = fmt.Errorf("Unknown operation type: %s", is.Cursor.OperationType())
