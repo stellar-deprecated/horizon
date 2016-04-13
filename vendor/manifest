@@ -158,7 +158,7 @@
 		{
 			"importpath": "github.com/nullstyle/go-xdr/xdr3",
 			"repository": "https://github.com/nullstyle/go-xdr",
-			"revision": "0ed230ab0856542e23b068fa253a67f57f2d01eb",
+			"revision": "8bf8a5d05c8612d4039a7f67ddce3d49ee61b398",
 			"branch": "master",
 			"path": "/xdr3"
 		},
@@ -245,7 +245,7 @@
 		{
 			"importpath": "github.com/stellar/go-stellar-base",
 			"repository": "https://github.com/stellar/go-stellar-base",
-			"revision": "00baeffce28ec008e34a1c71a7f1e533127aef1a",
+			"revision": "f0dc2e49f67e98296959275764f74c9d9382dec0",
 			"branch": "master"
 		},
 		{
