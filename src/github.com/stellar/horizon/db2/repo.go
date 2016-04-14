@@ -2,6 +2,7 @@ package db2
 
 import (
 	"database/sql"
+	"reflect"
 	"time"
 
 	"github.com/go-errors/errors"
@@ -160,7 +161,12 @@ func (r *Repo) Select(dest interface{}, query sq.Sqlizer) error {
 }
 
 // SelectRaw runs `query` with `args`, setting the results found on `dest`.
-func (r *Repo) SelectRaw(dest interface{}, query string, args ...interface{}) error {
+func (r *Repo) SelectRaw(
+	dest interface{},
+	query string,
+	args ...interface{},
+) error {
+	r.clearSliceIfPossible(dest)
 	query = r.conn().Rebind(query)
 	start := time.Now()
 	err := r.conn().Select(dest, query, args...)
@@ -186,6 +192,27 @@ func (r *Repo) build(b sq.Sqlizer) (sql string, args []interface{}, err error) {
 		err = errors.Wrap(err, 1)
 	}
 	return
+}
+
+// clearSliceIfPossible is a utility function that clears a slice if the
+// provided interface wraps one. In the event that `dest` is not a pointer to a
+// slice this func will fail with a warning, this allowing the forthcoming db
+// select fail more concretely due to an incompatible destination.
+func (r *Repo) clearSliceIfPossible(dest interface{}) {
+	v := reflect.ValueOf(dest)
+	vt := v.Type()
+
+	if vt.Kind() != reflect.Ptr {
+		log.Warn("cannot clear slice: dest is not pointer")
+		return
+	}
+
+	if vt.Elem().Kind() != reflect.Slice {
+		log.Warn("cannot clear slice: dest is a pointer, but not to a slice")
+		return
+	}
+
+	reflect.Indirect(v).SetLen(0)
 }
 
 func (r *Repo) conn() Conn {
