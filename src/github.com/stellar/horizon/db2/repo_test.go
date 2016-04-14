@@ -61,4 +61,11 @@ func TestRepo(t *testing.T) {
 	assert.NoError(err)
 	assert.Equal(0, count)
 
+	// ensure that selecting into a populated slice clears the slice first
+	scenarios.Load(tdb.StellarCoreURL(), "base-core.sql")
+	require.Len(ids, 4, "ids slice was not preloaded with data")
+	err = repo.SelectRaw(&ids, "SELECT txid FROM txhistory limit 2")
+	assert.NoError(err)
+	assert.Len(ids, 2)
+
 }
