@@ -3,6 +3,7 @@ package ingest
 import (
 	"encoding/base64"
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/stellar/go-stellar-base/amount"
@@ -20,6 +21,8 @@ func (is *Session) Run() {
 	if is.Err != nil {
 		return
 	}
+
+	defer is.Ingestion.Rollback()
 
 	for is.Cursor.NextLedger() {
 		if is.Err != nil {
