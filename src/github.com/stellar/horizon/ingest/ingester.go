@@ -3,6 +3,7 @@ package ingest
 import (
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/errors"
 	"github.com/stellar/horizon/log"
 )
 
@@ -114,6 +115,15 @@ func (i *System) run() {
 // run causes the importer to check stellar-core to see if we can import new
 // data.
 func (i *System) runOnce() {
+
+	defer func() {
+		if rec := recover(); rec != nil {
+			err := errors.FromPanic(rec)
+			log.Errorf("import session panicked: %s", err)
+			errors.ReportToSentry(err, nil)
+		}
+	}()
+
 	// 1. find the latest ledger
 	// 2. if any available, import until none available
 	// 3. if any were imported, go to 1

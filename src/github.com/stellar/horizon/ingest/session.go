@@ -21,6 +21,8 @@ func (is *Session) Run() {
 		return
 	}
 
+	defer is.Ingestion.Rollback()
+
 	for is.Cursor.NextLedger() {
 		if is.Err != nil {
 			return
