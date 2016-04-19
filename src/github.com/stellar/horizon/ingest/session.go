@@ -3,7 +3,6 @@ package ingest
 import (
 	"encoding/base64"
 	"fmt"
-	"math/rand"
 	"time"
 
 	"github.com/stellar/go-stellar-base/amount"
