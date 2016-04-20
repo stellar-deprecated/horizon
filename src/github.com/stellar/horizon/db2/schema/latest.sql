@@ -11,93 +11,6 @@ SET client_min_messages = warning;
 
 SET search_path = public, pg_catalog;
 
-DROP INDEX IF EXISTS public.trade_effects_by_order_book;
-DROP INDEX IF EXISTS public.index_history_transactions_on_id;
-DROP INDEX IF EXISTS public.index_history_operations_on_type;
-DROP INDEX IF EXISTS public.index_history_operations_on_transaction_id;
-DROP INDEX IF EXISTS public.index_history_operations_on_id;
-DROP INDEX IF EXISTS public.index_history_ledgers_on_sequence;
-DROP INDEX IF EXISTS public.index_history_ledgers_on_previous_ledger_hash;
-DROP INDEX IF EXISTS public.index_history_ledgers_on_ledger_hash;
-DROP INDEX IF EXISTS public.index_history_ledgers_on_importer_version;
-DROP INDEX IF EXISTS public.index_history_ledgers_on_id;
-DROP INDEX IF EXISTS public.index_history_ledgers_on_closed_at;
-DROP INDEX IF EXISTS public.index_history_effects_on_type;
-DROP INDEX IF EXISTS public.index_history_accounts_on_id;
-DROP INDEX IF EXISTS public.index_history_accounts_on_address;
-DROP INDEX IF EXISTS public.htp_by_htid;
-DROP INDEX IF EXISTS public.hs_transaction_by_id;
-DROP INDEX IF EXISTS public.hs_ledger_by_id;
-DROP INDEX IF EXISTS public.hop_by_hoid;
-DROP INDEX IF EXISTS public.hist_tx_p_id;
-DROP INDEX IF EXISTS public.hist_op_p_id;
-DROP INDEX IF EXISTS public.hist_e_id;
-DROP INDEX IF EXISTS public.hist_e_by_order;
-DROP INDEX IF EXISTS public.by_ledger;
-DROP INDEX IF EXISTS public.by_hash;
-DROP INDEX IF EXISTS public.by_account;
-ALTER TABLE IF EXISTS ONLY public.history_transaction_participants DROP CONSTRAINT IF EXISTS history_transaction_participants_pkey;
-ALTER TABLE IF EXISTS ONLY public.history_operation_participants DROP CONSTRAINT IF EXISTS history_operation_participants_pkey;
-ALTER TABLE IF EXISTS ONLY public.gorp_migrations DROP CONSTRAINT IF EXISTS gorp_migrations_pkey;
-ALTER TABLE IF EXISTS public.history_transaction_participants ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.history_operation_participants ALTER COLUMN id DROP DEFAULT;
-DROP TABLE IF EXISTS public.history_transactions;
-DROP SEQUENCE IF EXISTS public.history_transaction_participants_id_seq;
-DROP TABLE IF EXISTS public.history_transaction_participants;
-DROP TABLE IF EXISTS public.history_operations;
-DROP SEQUENCE IF EXISTS public.history_operation_participants_id_seq;
-DROP TABLE IF EXISTS public.history_operation_participants;
-DROP TABLE IF EXISTS public.history_ledgers;
-DROP TABLE IF EXISTS public.history_effects;
-DROP TABLE IF EXISTS public.history_accounts;
-DROP TABLE IF EXISTS public.gorp_migrations;
-DROP EXTENSION IF EXISTS hstore;
-DROP EXTENSION IF EXISTS plpgsql;
-DROP SCHEMA IF EXISTS public;
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
---
-
-CREATE SCHEMA public;
-
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
--- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
-
-
---
--- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs';
-
-
-SET search_path = public, pg_catalog;
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -276,8 +189,8 @@ ALTER TABLE ONLY history_transaction_participants ALTER COLUMN id SET DEFAULT ne
 -- Data for Name: gorp_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-03-28 15:19:48.335447-07');
-INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2016-03-28 15:19:48.338603-07');
+INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-04-20 09:55:50.155384-07');
+INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2016-04-20 09:55:50.159092-07');
 
 
 --

@@ -88,6 +88,26 @@ func (r *Repo) Exec(query sq.Sqlizer) (sql.Result, error) {
 	return r.ExecRaw(sql, args...)
 }
 
+// ExecAll runs all sql commands in `script` against `r` within a single
+// transaction.
+func (r *Repo) ExecAll(script string) error {
+	err := r.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer r.Rollback()
+
+	for _, cmd := range AllStatements(script) {
+		_, err = r.ExecRaw(cmd)
+		if err != nil {
+			return err
+		}
+	}
+
+	return r.Commit()
+}
+
 // ExecRaw runs `query` with `args`
 func (r *Repo) ExecRaw(query string, args ...interface{}) (sql.Result, error) {
 	query = r.conn().Rebind(query)

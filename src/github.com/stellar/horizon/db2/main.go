@@ -4,6 +4,8 @@ package db2
 
 import (
 	"database/sql"
+	"regexp"
+	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
@@ -46,6 +48,20 @@ type Repo struct {
 	tx *sqlx.Tx
 }
 
+// AllStatements takes a sql script, possibly containing comments and multiple
+// statements, and returns a slice of strings that correspond to each individual
+// SQL statement within the script
+func AllStatements(script string) (ret []string) {
+	for _, s := range strings.Split(removeComments(script), ";") {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		ret = append(ret, s)
+	}
+	return
+}
+
 // Open the postgres database at `url` and returns a new *Repo using it.
 func Open(url string) (*Repo, error) {
 	db, err := sqlx.Connect("postgres", url)
@@ -59,3 +75,14 @@ func Open(url string) (*Repo, error) {
 // ensure various types conform to Conn interface
 var _ Conn = (*sqlx.Tx)(nil)
 var _ Conn = (*sqlx.DB)(nil)
+
+// SQLBlockComments is a regex that matches against SQL block comments
+var sqlBlockComments = regexp.MustCompile(`/\*.*?\*/`)
+
+// SQLLineComments is a regex that matches against SQL line comments
+var sqlLineComments = regexp.MustCompile("--.*?\n")
+
+func removeComments(script string) string {
+	withoutBlocks := sqlBlockComments.ReplaceAllString(script, "")
+	return sqlLineComments.ReplaceAllString(withoutBlocks, "")
+}
