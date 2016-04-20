@@ -179,6 +179,10 @@ func initConfig() {
 		log.Fatal("Invalid config: stellar-core-db-url is blank.  Please specify --stellar-core-db-url on the command line or set the STELLAR_CORE_DATABASE_URL environment variable.")
 	}
 
+	if viper.GetString("stellar-core-url") == "" {
+		log.Fatal("Invalid config: stellar-core-url is blank.  Please specify --stellar-core-url on the command line or set the STELLAR_CORE_URL environment variable.")
+	}
+
 	ll, err := logrus.ParseLevel(viper.GetString("log-level"))
 
 	if err != nil {
