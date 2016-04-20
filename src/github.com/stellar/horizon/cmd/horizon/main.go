@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"runtime"
 
 	"github.com/PuerkitoBio/throttled"
@@ -173,13 +172,11 @@ func initApp(cmd *cobra.Command, args []string) {
 
 func initConfig() {
 	if viper.GetString("db-url") == "" {
-		rootCmd.Help()
-		os.Exit(1)
+		log.Fatal("Invalid config: db-url is blank.  Please specify --db-url on the command line or set the DATABASE_URL environment variable.")
 	}
 
 	if viper.GetString("stellar-core-db-url") == "" {
-		rootCmd.Help()
-		os.Exit(1)
+		log.Fatal("Invalid config: stellar-core-db-url is blank.  Please specify --stellar-core-db-url on the command line or set the STELLAR_CORE_DATABASE_URL environment variable.")
 	}
 
 	ll, err := logrus.ParseLevel(viper.GetString("log-level"))
