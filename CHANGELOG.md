@@ -14,6 +14,11 @@ bumps.  A breaking change will get clearly notified in this log.
 - BREAKING: Horizon can now import data from stellar-core without the aid of the horizon-importer project.  This process is now known as "ingestion", and is enabled by either setting the `INGEST` environment variable to "true" or specifying "--ingest" on the launch arguments for the horizon process.  Only one process should be running in this mode for any given horizon database.
 - Add `horizon db init`, used to install the latest bundled schema for the horizon database.
 - Add `horizon db reingest` command, used to update outdated or corrupt horizon database information.  Admins may now use `horizon db reingest outdated` to migrate any old data when updated horizon.
+- Added `network_passphrase` field to root resource.
+- Added `fee_meta_xdr` field to transaction resource.
+
+### Bug fixes
+- Corrected casing on the "offers" link of an account resource.
 
 ## [v0.4.0] - 2016-02-19
 
