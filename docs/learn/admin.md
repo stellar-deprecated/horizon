@@ -87,9 +87,9 @@ The log line above announces that horizon is ready to serve client requests. Not
 
 ## Ingesting stellar-core data
 
-Horizon provides most of its utility through ingested data.  Your horizon server can be configured to listen for an ingest transaction results from the connected stellar-core.  We recommend that within your infrastructure you run one (and only one) horizon process that is configured in this way.   While running multiple ingestion processes will not corrupt the horizon database, your error logs will quickly fill up as the two instances race to ingest the data from stellar-core.  We may develop a system that coordinates multiple horizon processes in the future, but we would also be happy to include an external contribution that accomplishes this.
+Horizon provides most of its utility through ingested data.  Your horizon server can be configured to listen for and ingest transaction results from the connected stellar-core.  We recommend that within your infrastructure you run one (and only one) horizon process that is configured in this way.   While running multiple ingestion processes will not corrupt the horizon database, your error logs will quickly fill up as the two instances race to ingest the data from stellar-core.  We may develop a system that coordinates multiple horizon processes in the future, but we would also be happy to include an external contribution that accomplishes this.
 
-TODO
+To enable ingestion, you must either pass `--ingest=true` on the command line or set the `INGEST` environment variable to "true".  
 
 ## Monitoring
 
@@ -97,8 +97,7 @@ To ensure that your instance of horizon is performing correctly we encourage you
 
 Horizon will output logs to standard out.  Information about what requests are coming in will be reported, but more importantly and warnings or errors will also be emitted by default.  A correctly running horizon instance will not ouput any warning or error log entries.
 
-Metrics are collected while a horizon process is running and they are exposed at the `/metrics` path.  You can see an example at (https://horizon-testnet.stellar.org/metrics).  TODO.
-
+Metrics are collected while a horizon process is running and they are exposed at the `/metrics` path.  You can see an example at (https://horizon-testnet.stellar.org/metrics).
 
 ## I'm Stuck! Help!
 
