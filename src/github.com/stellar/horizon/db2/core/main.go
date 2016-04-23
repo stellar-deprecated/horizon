@@ -21,6 +21,12 @@ type Account struct {
 	Flags         xdr.AccountFlags
 }
 
+type AccountData struct {
+	Accountid string
+	Key       string `db:"dataname"`
+	Value     string `db:"datavalue"`
+}
+
 // LedgerHeader is row of data from the `ledgerheaders` table
 type LedgerHeader struct {
 	LedgerHash     string           `db:"ledgerhash"`

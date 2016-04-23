@@ -42,6 +42,19 @@ func (base *Base) Execute(action interface{}) {
 	contentType := render.Negotiate(base.Ctx, base.R)
 
 	switch contentType {
+	case render.MimeRaw:
+		action, ok := action.(Raw)
+
+		if !ok {
+			goto NotAcceptable
+		}
+
+		action.Raw()
+
+		if base.Err != nil {
+			problem.Render(base.Ctx, base.W, base.Err)
+			return
+		}
 	case render.MimeHal, render.MimeJSON:
 		action, ok := action.(JSON)
 
