@@ -19,6 +19,12 @@ func (q *Q) AccountDataByKey(dest interface{}, addy string, key string) error {
 	return q.Get(dest, sql)
 }
 
+// AllDataByAddress loads all data for `addy`
+func (q *Q) AllDataByAddress(dest interface{}, addy string) error {
+	sql := selectAccountData.Where("accountid = ?", addy)
+	return q.Select(dest, sql)
+}
+
 var selectAccountData = sq.Select(
 	"ad.accountid",
 	"ad.dataname",

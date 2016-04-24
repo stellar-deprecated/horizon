@@ -81,6 +81,7 @@ type AccountShowAction struct {
 	Action
 	Address        string
 	HistoryRecord  history.Account
+	CoreData       []core.AccountData
 	CoreRecord     core.Account
 	CoreSigners    []core.Signer
 	CoreTrustlines []core.Trustline
@@ -124,6 +125,12 @@ func (action *AccountShowAction) loadRecord() {
 	}
 
 	action.Err = action.CoreQ().
+		AllDataByAddress(&action.CoreData, action.Address)
+	if action.Err != nil {
+		return
+	}
+
+	action.Err = action.CoreQ().
 		SignersByAddress(&action.CoreSigners, action.Address)
 	if action.Err != nil {
 		return
@@ -146,6 +153,7 @@ func (action *AccountShowAction) loadResource() {
 	action.Err = action.Resource.Populate(
 		action.Ctx,
 		action.CoreRecord,
+		action.CoreData,
 		action.CoreSigners,
 		action.CoreTrustlines,
 		action.HistoryRecord,
