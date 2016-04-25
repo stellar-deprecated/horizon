@@ -14,6 +14,7 @@ import (
 func (this *Account) Populate(
 	ctx context.Context,
 	ca core.Account,
+	cd []core.AccountData,
 	cs []core.Signer,
 	ct []core.Trustline,
 	ha history.Account,
@@ -42,6 +43,12 @@ func (this *Account) Populate(
 	err = this.Balances[len(this.Balances)-1].PopulateNative(ca.Balance)
 	if err != nil {
 		return
+	}
+
+	// populate data
+	this.Data = make(map[string]string)
+	for _, d := range cd {
+		this.Data[d.Key] = d.Value
 	}
 
 	// populate signers
