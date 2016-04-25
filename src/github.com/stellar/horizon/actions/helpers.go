@@ -269,6 +269,11 @@ func (base *Base) Path() string {
 //  is not `application/x-www-form-urlencoded`
 func (base *Base) ValidateBodyType() {
 	c := base.R.Header.Get("Content-Type")
+
+	if c == "" {
+		return
+	}
+
 	mt, _, err := mime.ParseMediaType(c)
 
 	if err != nil {
