@@ -8,6 +8,14 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+### Added
+
+  - ManageData operation data is now rendered in the various operation end points.
+
+### Bug fixes
+
+- Transaction memos that contain utf-8 are now properly rendered in browsers by properly setting the charset of the http response.
+
 ## [v0.5.0] - 2016-04-22
 
 ### Added
