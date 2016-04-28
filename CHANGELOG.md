@@ -6,7 +6,7 @@ file.  This project adheres to [Semantic Versioning](http://semver.org/).
 As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
-## [Unreleased]
+## [v0.5.1] - 2016-04-28
 
 ### Added
 
@@ -60,7 +60,8 @@ bumps.  A breaking change will get clearly notified in this log.
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.5.0...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.5.1...master
+[v0.5.1]: https://github.com/stellar/horizon/compare/v0.5.0...v0.5.1
 [v0.5.0]: https://github.com/stellar/horizon/compare/v0.4.0...v0.5.0
 [v0.4.0]: https://github.com/stellar/horizon/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/stellar/horizon/compare/v0.2.0...v0.3.0
