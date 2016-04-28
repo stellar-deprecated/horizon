@@ -21,6 +21,7 @@ var TypeNames = map[xdr.OperationType]string{
 	xdr.OperationTypeAllowTrust:         "allow_trust",
 	xdr.OperationTypeAccountMerge:       "account_merge",
 	xdr.OperationTypeInflation:          "inflation",
+	xdr.OperationTypeManageData:         "manage_data",
 }
 
 // New creates a new operation resource, finding the appropriate type to use
@@ -76,6 +77,10 @@ func New(
 		e := Inflation{Base: base}
 		err = row.UnmarshalDetails(&e)
 		result = e
+	case xdr.OperationTypeManageData:
+		e := ManageData{Base: base}
+		err = row.UnmarshalDetails(&e)
+		result = e
 	default:
 		result = base
 	}
@@ -121,6 +126,14 @@ type PathPayment struct {
 	SourceAssetType   string       `json:"source_asset_type"`
 	SourceAssetCode   string       `json:"source_asset_code,omitempty"`
 	SourceAssetIssuer string       `json:"source_asset_issuer,omitempty"`
+}
+
+// ManageData represents a ManageData operation as it is serialized into json
+// for the horizon API.
+type ManageData struct {
+	Base
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 type ManageOffer struct {
