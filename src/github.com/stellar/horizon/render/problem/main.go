@@ -86,7 +86,7 @@ func render(ctx context.Context, w http.ResponseWriter, p P) {
 
 	Inflate(ctx, &p)
 
-	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Content-Type", "application/problem+json; charset=utf-8")
 	js, err := json.MarshalIndent(p, "", "  ")
 
 	if err != nil {
