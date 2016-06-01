@@ -360,5 +360,9 @@ func (ingest *Ingestion) formatTimeBounds(bounds *xdr.TimeBounds) interface{} {
 		return nil
 	}
 
+	if bounds.MaxTime == 0 {
+		return sq.Expr("?::int8range", fmt.Sprintf("[%d,]", bounds.MinTime))
+	}
+
 	return sq.Expr("?::int8range", fmt.Sprintf("[%d,%d]", bounds.MinTime, bounds.MaxTime))
 }
