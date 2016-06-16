@@ -9,14 +9,14 @@ The ledger details endpoint provides information on a single [ledger](./resource
 ## Request
 
 ```
-GET /ledgers/{id}
+GET /ledgers/{sequence}
 ```
 
 ### Arguments
 
 |  name  |  notes  | description | example |
 | ------ | ------- | ----------- | ------- |
-| `id` | required, number | Ledger ID | `69859` |
+| `sequence` | required, number | Ledger Sequence | `69859` |
 
 ### curl Example Request
 
@@ -80,4 +80,4 @@ This endpoint responds with a single Ledger.  See [ledger resource](./resources/
 ## Errors
 
 - The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no ledger whose ID matches the `id` argument.
+- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no ledger whose sequence number matches the `sequence` argument.
