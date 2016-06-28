@@ -28,6 +28,7 @@ func main() {
 
 func init() {
 	viper.SetDefault("port", 8000)
+	viper.SetDefault("history-retention-count", 0)
 	viper.SetDefault("autopump", false)
 
 	viper.BindEnv("port", "PORT")
@@ -47,6 +48,7 @@ func init() {
 	viper.BindEnv("tls-key", "TLS_KEY")
 	viper.BindEnv("ingest", "INGEST")
 	viper.BindEnv("network-passphrase", "NETWORK_PASSPHRASE")
+	viper.BindEnv("history-retention-count", "HISTORY_RETENTION_COUNT")
 
 	rootCmd = &cobra.Command{
 		Use:   "horizon",
@@ -154,6 +156,12 @@ func init() {
 		"Override the network passphrase",
 	)
 
+	rootCmd.Flags().Uint(
+		"history-retention-count",
+		0,
+		"the minimum number of ledgers to maintain within horizon's history tables.  0 signifies an unlimited number of ledgers will be retained",
+	)
+
 	rootCmd.AddCommand(dbCmd)
 
 	viper.BindPFlags(rootCmd.Flags())
@@ -216,5 +224,6 @@ func initConfig() {
 		TLSCert:                cert,
 		TLSKey:                 key,
 		Ingest:                 viper.GetBool("ingest"),
+		HistoryRetentionCount:  uint(viper.GetInt("history-retention-count")),
 	}
 }
