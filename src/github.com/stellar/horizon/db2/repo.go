@@ -261,7 +261,7 @@ func (r *Repo) logCommit() {
 }
 
 func (r *Repo) logRollback() {
-	log.Ctx(r.logCtx()).Debug("sql: rollbacl")
+	log.Ctx(r.logCtx()).Debug("sql: rollback")
 }
 
 func (r *Repo) logCtx() context.Context {
