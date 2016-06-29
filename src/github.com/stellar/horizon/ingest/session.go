@@ -315,11 +315,6 @@ func (is *Session) ingestLedger() {
 		is.Cursor.SuccessfulLedgerOperationCount(),
 	)
 
-	// If this is ledger 1, create the root account
-	if is.Cursor.LedgerSequence() == 1 {
-		is.Ingestion.Account(1, keypair.Master(is.Network).Address())
-	}
-
 	for is.Cursor.NextTx() {
 		is.ingestTransaction()
 	}
@@ -349,12 +344,6 @@ func (is *Session) ingestOperation() {
 		return
 	}
 
-	// Import the new account if one was created
-	if is.Cursor.Operation().Body.Type == xdr.OperationTypeCreateAccount {
-		op := is.Cursor.Operation().Body.MustCreateAccountOp()
-		is.Err = is.Ingestion.Account(is.Cursor.OperationID(), op.Destination.Address())
-	}
-
 	is.ingestOperationParticipants()
 	is.ingestEffects()
 }
@@ -374,13 +363,7 @@ func (is *Session) ingestOperationParticipants() {
 		return
 	}
 
-	var aids []int64
-	aids, is.Err = is.lookupParticipantIDs(p)
-	if is.Err != nil {
-		return
-	}
-
-	is.Err = is.Ingestion.OperationParticipants(is.Cursor.OperationID(), aids)
+	is.Err = is.Ingestion.OperationParticipants(is.Cursor.OperationID(), p)
 	if is.Err != nil {
 		return
 	}
@@ -500,39 +483,11 @@ func (is *Session) ingestTransactionParticipants() {
 		return
 	}
 
-	var aids []int64
-	aids, is.Err = is.lookupParticipantIDs(p)
+	is.Err = is.Ingestion.TransactionParticipants(is.Cursor.TransactionID(), p)
 	if is.Err != nil {
 		return
 	}
 
-	is.Err = is.Ingestion.TransactionParticipants(is.Cursor.TransactionID(), aids)
-	if is.Err != nil {
-		return
-	}
-
-}
-
-func (is *Session) lookupParticipantIDs(aids []xdr.AccountId) (ret []int64, err error) {
-	found := map[int64]bool{}
-
-	for _, in := range aids {
-		var out int64
-		out, err = is.accountCache.Get(in.Address())
-		if err != nil {
-			return
-		}
-
-		// De-duplicate
-		if _, ok := found[out]; ok {
-			continue
-		}
-
-		found[out] = true
-		ret = append(ret, out)
-	}
-
-	return
 }
 
 // assetDetails sets the details for `a` on `result` using keys with `prefix`

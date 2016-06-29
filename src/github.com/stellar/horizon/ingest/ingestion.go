@@ -13,40 +13,8 @@ import (
 	"github.com/stellar/horizon/db2/sqx"
 )
 
-// Account ingests the provided account data into a new row in the
-// `history_accounts` table
-func (ingest *Ingestion) Account(id int64, address string) error {
-
-	q := history.Q{Repo: ingest.DB}
-	var existing history.Account
-	err := q.AccountByAddress(&existing, address)
-
-	if err != nil && !q.NoRows(err) {
-		return err
-	}
-
-	// already imported
-	if !q.NoRows(err) {
-		return nil
-	}
-
-	sql := ingest.accounts.Values(id, address)
-
-	_, err = ingest.DB.Exec(sql)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // Clear removes data from the ledger
 func (ingest *Ingestion) Clear(start int64, end int64) error {
-
-	if start <= 1 {
-		del := sq.Delete("history_accounts").Where("id = 1")
-		ingest.DB.Exec(del)
-	}
 
 	err := ingest.clearRange(start, end, "history_effects", "history_operation_id")
 	if err != nil {
@@ -65,10 +33,6 @@ func (ingest *Ingestion) Clear(start int64, end int64) error {
 		return err
 	}
 	err = ingest.clearRange(start, end, "history_transactions", "id")
-	if err != nil {
-		return err
-	}
-	err = ingest.clearRange(start, end, "history_accounts", "id")
 	if err != nil {
 		return err
 	}
@@ -175,11 +139,14 @@ func (ingest *Ingestion) Operation(
 // OperationParticipants ingests the provided accounts `aids` as participants of
 // operation with id `op`, creating a new row in the
 // `history_operation_participants` table.
-func (ingest *Ingestion) OperationParticipants(op int64, aids []int64) error {
+func (ingest *Ingestion) OperationParticipants(op int64, aids []xdr.AccountId) error {
 	sql := ingest.operation_participants
-
 	for _, aid := range aids {
-		sql = sql.Values(op, aid)
+		haid, err := ingest.getParticipantID(aid)
+		if err != nil {
+			return err
+		}
+		sql = sql.Values(op, haid)
 	}
 
 	_, err := ingest.DB.Exec(sql)
@@ -248,11 +215,15 @@ func (ingest *Ingestion) Transaction(
 // TransactionParticipants ingests the provided account ids as participants of
 // transaction with id `tx`, creating a new row in the
 // `history_transaction_participants` table.
-func (ingest *Ingestion) TransactionParticipants(tx int64, aids []int64) error {
+func (ingest *Ingestion) TransactionParticipants(tx int64, aids []xdr.AccountId) error {
 	sql := ingest.transaction_participants
 
 	for _, aid := range aids {
-		sql = sql.Values(tx, aid)
+		haid, err := ingest.getParticipantID(aid)
+		if err != nil {
+			return err
+		}
+		sql = sql.Values(tx, haid)
 	}
 
 	_, err := ingest.DB.Exec(sql)
@@ -293,7 +264,6 @@ func (ingest *Ingestion) createInsertBuilders() {
 	)
 
 	ingest.accounts = sq.Insert("history_accounts").Columns(
-		"id",
 		"address",
 	)
 
@@ -353,6 +323,35 @@ func (ingest *Ingestion) commit() error {
 	}
 
 	return nil
+}
+
+func (ingest *Ingestion) getParticipantID(
+	aid xdr.AccountId,
+) (result int64, err error) {
+
+	q := history.Q{Repo: ingest.DB}
+	var existing history.Account
+	err = q.AccountByAddress(&existing, aid.Address())
+
+	if err != nil && !q.NoRows(err) {
+		return
+	}
+
+	// already imported, return the found value
+	if !q.NoRows(err) {
+		result = existing.ID
+		return
+	}
+	err = ingest.DB.GetRaw(
+		&result,
+		`INSERT INTO history_accounts (address) VALUES (?) RETURNING id`,
+		aid.Address(),
+	)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func (ingest *Ingestion) formatTimeBounds(bounds *xdr.TimeBounds) interface{} {
