@@ -14,7 +14,8 @@ func (ei *EffectIngestion) Add(aid xdr.AccountId, typ history.EffectType, detail
 
 	ei.added++
 	var haid int64
-	haid, ei.err = ei.Accounts.Get(aid.Address())
+
+	haid, ei.err = ei.parent.getParticipantID(aid)
 	if ei.err != nil {
 		return false
 	}

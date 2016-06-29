@@ -89,8 +89,8 @@ func (is *Session) ingestEffects() {
 
 	effects := &EffectIngestion{
 		Dest:        is.Ingestion,
-		Accounts:    is.accountCache,
 		OperationID: is.Cursor.OperationID(),
+		parent:      is.Ingestion,
 	}
 	source := is.Cursor.OperationSourceAccount()
 	opbody := is.Cursor.Operation().Body

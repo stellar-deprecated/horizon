@@ -8,7 +8,6 @@ import (
 
 	sq "github.com/lann/squirrel"
 	"github.com/rcrowley/go-metrics"
-	"github.com/stellar/horizon/cache"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
 )
@@ -53,9 +52,9 @@ type Cursor struct {
 type EffectIngestion struct {
 	Dest        *Ingestion
 	OperationID int64
-	Accounts    *cache.HistoryAccount
 	err         error
 	added       int
+	parent      *Ingestion
 }
 
 // LedgerBundle represents a single ledger's worth of novelty created by one
@@ -133,8 +132,6 @@ type Session struct {
 	// Ingested is the number of ledgers that were successfully ingested during
 	// this session.
 	Ingested int
-
-	accountCache *cache.HistoryAccount
 }
 
 // New initializes the ingester, causing it to begin polling the stellar-core
@@ -167,9 +164,8 @@ func NewSession(first, last int32, i *System) *Session {
 			DB:          i.CoreDB,
 			Metrics:     &i.Metrics,
 		},
-		Network:      i.Network,
-		Metrics:      &i.Metrics,
-		accountCache: cache.NewHistoryAccount(hdb),
+		Network: i.Network,
+		Metrics: &i.Metrics,
 	}
 }
 
@@ -179,6 +175,8 @@ func ReingestAll(network string, core, horizon *db2.Repo) (int, error) {
 	return i.ReingestAll()
 }
 
+// ReingestOutdated re-ingests any data that was not imported using the latest
+// version of the ingestion system.
 func ReingestOutdated(network string, core, horizon *db2.Repo) (int, error) {
 	i := New(network, core, horizon)
 	return i.ReingestOutdated()
