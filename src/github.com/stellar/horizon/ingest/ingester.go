@@ -13,6 +13,50 @@ func (i *System) Close() {
 	i.tick.Stop()
 }
 
+// ElderLedger represents the oldest "ingestable" ledger known to the
+// stellar-core database this ingestion system is communicating with.  Horizon,
+// which wants to operate on a contiguous range of ledger data (i.e. free from
+// gaps) uses the elder ledger to start importing in the case of an empty
+// database.
+//
+// Due to the design of stellar-core, ledger 1 will _always_ be in the database,
+// even when configured to catchup minimally, so we cannot simply take
+// MIN(ledgerseq). Instead, we can find whether or not 1 is the elder ledger by
+// checking for the presence of ledger 2.
+func (i *System) ElderLedger() (result int32, err error) {
+	// otherwise, SELECT MIN(ledgerseq)
+
+	var found bool
+	err = i.CoreDB.GetRaw(&found, `
+		SELECT CASE WHEN EXISTS (
+		    SELECT *
+		    FROM ledgerheaders
+		    WHERE ledgerseq = 2
+		)
+		THEN CAST(1 AS BIT)
+		ELSE CAST(0 AS BIT) END
+	`)
+
+	if err != nil {
+		return
+	}
+
+	// if ledger 2 is present, use it 1 as the elder ledger (since 1 is guaranteed
+	// to be present)
+	if found {
+		result = 1
+		return
+	}
+
+	err = i.CoreDB.GetRaw(&result, `
+		SELECT MIN(ledgerseq)
+		FROM ledgerheaders
+		WHERE ledgerseq > 2
+	`)
+
+	return
+}
+
 // ReingestAll re-ingests all ledgers
 func (i *System) ReingestAll() (int, error) {
 	err := i.updateLedgerState()
