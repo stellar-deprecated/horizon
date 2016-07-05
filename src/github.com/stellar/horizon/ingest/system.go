@@ -1,6 +1,7 @@
 package ingest
 
 import (
+	err2 "github.com/pkg/errors"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/errors"
@@ -19,7 +20,7 @@ func (i *System) ReingestAll() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return i.ReingestRange(1, i.coreSequence)
+	return i.ReingestRange(i.coreElderSequence, i.coreSequence)
 }
 
 // ReingestOutdated finds old ledgers and reimports them.
@@ -89,6 +90,7 @@ func (i *System) ReingestOutdated() (n int, err error) {
 func (i *System) ReingestRange(start, end int32) (int, error) {
 	is := NewSession(start, end, i)
 	is.ClearExisting = true
+
 	is.Run()
 	return is.Ingested, is.Err
 }
@@ -125,8 +127,9 @@ func (i *System) runOnce() {
 	}()
 
 	// 1. find the latest ledger
-	// 2. if any available, import until none available
-	// 3. if any were imported, go to 1
+	// 2. if any ledgers are available, validate that a new ledger is on the chain
+	// 3. import until none available
+	// 4. if any were imported, go to 1
 	for {
 		// 1.
 		err := i.updateLedgerState()
@@ -136,16 +139,34 @@ func (i *System) runOnce() {
 			return
 		}
 
+		var start int32
+
+		if i.historySequence == 0 {
+			start = i.coreElderSequence
+			log.Infof("history db is empty, starting ingestion from ledger %d", start)
+		} else {
+			start = i.historySequence + 1
+		}
+
+		end := i.coreSequence
+
 		// 2.
-		if i.historySequence >= i.coreSequence {
+		if start > i.coreSequence {
 			return
 		}
-		is := NewSession(
-			i.historySequence+1,
-			i.coreSequence,
-			i,
-		)
 
+		if start != i.coreElderSequence {
+			err := i.validateLedgerChain(start)
+			if err != nil {
+				log.
+					WithField("start", start).
+					Errorf("ledger gap detected (possible db corruption): %s", err)
+				return
+			}
+		}
+
+		// 3.
+		is := NewSession(start, end, i)
 		is.Run()
 
 		if is.Err != nil {
@@ -153,7 +174,7 @@ func (i *System) runOnce() {
 			return
 		}
 
-		// 3.
+		// 4.
 		if is.Ingested == 0 {
 			return
 		}
@@ -178,6 +199,38 @@ func (i *System) updateLedgerState() error {
 	err = hq.LatestLedger(&i.historySequence)
 	if err != nil {
 		return err
+	}
+
+	err = hq.ElderLedger(&i.historyElderSequence)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateLedgerChain helps to ensure the chain of ledger entries is contiguous
+// within horizon.  It ensures the ledger at `seq` is a child of `seq - 1`.
+func (i *System) validateLedgerChain(seq int32) error {
+	var (
+		cur  core.LedgerHeader
+		prev core.LedgerHeader
+	)
+
+	q := &core.Q{i.CoreDB}
+
+	err := q.LedgerHeaderBySequence(&cur, seq)
+	if err != nil {
+		return err2.Wrap(err, "validateLedgerChain: failed to load cur ledger")
+	}
+
+	err = q.LedgerHeaderBySequence(&prev, seq-1)
+	if err != nil {
+		return err2.Wrap(err, "validateLedgerChain: failed to load prev ledger")
+	}
+
+	if cur.PrevHash != prev.LedgerHash {
+		return err2.New("cur and prev ledger hashes don't match")
 	}
 
 	return nil

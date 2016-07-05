@@ -39,9 +39,6 @@ func (is *Session) Run() {
 	}
 
 	is.Err = is.Ingestion.Close()
-
-	// TODO: validate ledger chain
-
 }
 
 func (is *Session) clearLedger() {
