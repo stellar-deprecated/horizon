@@ -49,7 +49,7 @@ func (action *Action) GetPagingParams() (cursor string, order string, limit uint
 
 	if cursor == "now" {
 		tid := toid.ID{
-			LedgerSequence:   action.App.latestLedgerState.Horizon,
+			LedgerSequence:   action.App.latestLedgerState.HorizonLatest,
 			TransactionOrder: toid.TransactionMask,
 			OperationOrder:   toid.OperationMask,
 		}

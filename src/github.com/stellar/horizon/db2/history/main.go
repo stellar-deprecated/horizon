@@ -224,6 +224,11 @@ type TransactionsQ struct {
 	sql    sq.SelectBuilder
 }
 
+// ElderLedger loads the oldest ledger known to the history database
+func (q *Q) ElderLedger(dest interface{}) error {
+	return q.GetRaw(dest, `SELECT COALESCE(MIN(sequence), 0) FROM history_ledgers`)
+}
+
 // LatestLedger loads the latest known ledger
 func (q *Q) LatestLedger(dest interface{}) error {
 	return q.GetRaw(dest, `SELECT COALESCE(MAX(sequence), 0) FROM history_ledgers`)

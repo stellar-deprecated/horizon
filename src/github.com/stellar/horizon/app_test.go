@@ -66,12 +66,12 @@ func TestApp(t *testing.T) {
 		test.LoadScenario("base")
 		app := NewTestApp()
 		defer app.Close()
-		So(app.horizonLedgerGauge.Value(), ShouldEqual, 0)
-		So(app.stellarCoreLedgerGauge.Value(), ShouldEqual, 0)
+		So(app.horizonLatestLedgerGauge.Value(), ShouldEqual, 0)
+		So(app.coreLatestLedgerGauge.Value(), ShouldEqual, 0)
 
 		app.UpdateMetrics(test.Context())
 
-		So(app.horizonLedgerGauge.Value(), ShouldEqual, 3)
-		So(app.stellarCoreLedgerGauge.Value(), ShouldEqual, 3)
+		So(app.horizonLatestLedgerGauge.Value(), ShouldEqual, 3)
+		So(app.coreLatestLedgerGauge.Value(), ShouldEqual, 3)
 	})
 }

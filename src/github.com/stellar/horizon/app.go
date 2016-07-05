@@ -50,17 +50,21 @@ type App struct {
 	ingester          *ingest.System
 
 	// metrics
-	metrics                metrics.Registry
-	horizonLedgerGauge     metrics.Gauge
-	stellarCoreLedgerGauge metrics.Gauge
-	horizonConnGauge       metrics.Gauge
-	stellarCoreConnGauge   metrics.Gauge
-	goroutineGauge         metrics.Gauge
+	metrics                  metrics.Registry
+	horizonLatestLedgerGauge metrics.Gauge
+	horizonElderLedgerGauge  metrics.Gauge
+	horizonConnGauge         metrics.Gauge
+	coreLatestLedgerGauge    metrics.Gauge
+	coreElderLedgerGauge     metrics.Gauge
+	coreConnGauge            metrics.Gauge
+	goroutineGauge           metrics.Gauge
 
 	// cached state
 	latestLedgerState struct {
-		Core    int32
-		Horizon int32
+		CoreLatest    int32
+		CoreElder     int32
+		HorizonLatest int32
+		HorizonElder  int32
 	}
 }
 
@@ -176,12 +180,22 @@ func (a *App) CoreQ() *core.Q {
 func (a *App) UpdateLedgerState() {
 	var err error
 
-	err = a.CoreQ().LatestLedger(&a.latestLedgerState.Core)
+	err = a.CoreQ().LatestLedger(&a.latestLedgerState.CoreLatest)
 	if err != nil {
 		goto Failed
 	}
 
-	err = a.HistoryQ().LatestLedger(&a.latestLedgerState.Horizon)
+	err = a.CoreQ().ElderLedger(&a.latestLedgerState.CoreElder)
+	if err != nil {
+		goto Failed
+	}
+
+	err = a.HistoryQ().LatestLedger(&a.latestLedgerState.HorizonLatest)
+	if err != nil {
+		goto Failed
+	}
+
+	err = a.HistoryQ().ElderLedger(&a.latestLedgerState.HorizonElder)
 	if err != nil {
 		goto Failed
 	}
@@ -246,9 +260,11 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 
 	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
 
-	a.horizonLedgerGauge.Update(int64(a.latestLedgerState.Horizon))
-	a.stellarCoreLedgerGauge.Update(int64(a.latestLedgerState.Core))
+	a.horizonLatestLedgerGauge.Update(int64(a.latestLedgerState.HorizonLatest))
+	a.horizonElderLedgerGauge.Update(int64(a.latestLedgerState.HorizonElder))
+	a.coreLatestLedgerGauge.Update(int64(a.latestLedgerState.CoreLatest))
+	a.coreElderLedgerGauge.Update(int64(a.latestLedgerState.CoreElder))
 
 	a.horizonConnGauge.Update(int64(a.historyQ.Repo.DB.Stats().OpenConnections))
-	a.stellarCoreConnGauge.Update(int64(a.coreQ.Repo.DB.Stats().OpenConnections))
+	a.coreConnGauge.Update(int64(a.coreQ.Repo.DB.Stats().OpenConnections))
 }

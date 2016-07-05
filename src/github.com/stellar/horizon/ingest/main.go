@@ -80,9 +80,10 @@ type System struct {
 	// Network is the passphrase for the network being imported
 	Network string
 
-	tick            *time.Ticker
-	historySequence int32
-	coreSequence    int32
+	tick              *time.Ticker
+	historySequence   int32
+	coreSequence      int32
+	coreElderSequence int32
 }
 
 // IngesterMetrics tracks all the metrics for the ingestion subsystem
