@@ -79,6 +79,15 @@ var dbMigrateCmd = &cobra.Command{
 	},
 }
 
+var dbReapCmd = &cobra.Command{
+	Use:   "reap",
+	Short: "reaps (i.e. removes) any reapable history data",
+	Long:  "reap removes any historical data that is earlier than the configured retention cutoff",
+	Run: func(cmd *cobra.Command, args []string) {
+		log.Println("reaping data")
+	},
+}
+
 var dbReingestCmd = &cobra.Command{
 	Use:   "reingest",
 	Short: "imports all data",
@@ -145,6 +154,7 @@ var dbReingestCmd = &cobra.Command{
 func init() {
 	dbCmd.AddCommand(dbInitCmd)
 	dbCmd.AddCommand(dbMigrateCmd)
+	dbCmd.AddCommand(dbReapCmd)
 	dbCmd.AddCommand(dbReingestCmd)
 }
 
