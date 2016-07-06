@@ -5,6 +5,7 @@ import (
 
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
+	"github.com/zenazn/goji/web"
 )
 
 // FriendbotAction causes an account at `Address` to be created.
@@ -47,4 +48,13 @@ func (action *FriendbotAction) loadAddress() {
 
 func (action *FriendbotAction) loadResult() {
 	action.Result = action.App.friendbot.Pay(action.Ctx, action.Address)
+}
+
+// ServeHTTPC implements Action for FriendbotAction.  NOTE: We cannot use the
+// generated stub because FriendbotAction doesn't directly instantiate the
+// template.
+func (action FriendbotAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	ap.Execute(&action)
 }

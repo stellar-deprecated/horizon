@@ -1,7 +1,6 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
@@ -11,70 +10,7 @@ import (
 
 // This file contains the actions:
 //
-// AccountIndexAction: pages of account's addresses in order of creation
 // AccountShowAction: details for single account (including stellar-core state)
-
-// AccountIndexAction renders a page of account resources, identified by
-// a normal page query, ordered by the operation id that created them.
-type AccountIndexAction struct {
-	Action
-	PagingParams db2.PageQuery
-	Records      []history.Account
-	Page         hal.Page
-}
-
-// JSON is a method for actions.JSON
-func (action *AccountIndexAction) JSON() {
-	action.Do(
-		action.loadParams,
-		action.loadRecords,
-		action.loadPage,
-		func() { hal.Render(action.W, action.Page) },
-	)
-}
-
-// SSE is a method for actions.SSE
-func (action *AccountIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.loadParams)
-	action.Do(
-		action.loadRecords,
-		func() {
-			stream.SetLimit(int(action.PagingParams.Limit))
-			var res resource.HistoryAccount
-			for _, record := range action.Records[stream.SentCount():] {
-				res.Populate(action.Ctx, record)
-				stream.Send(sse.Event{ID: record.PagingToken(), Data: res})
-			}
-		},
-	)
-}
-
-func (action *AccountIndexAction) loadParams() {
-	action.ValidateCursorAsDefault()
-	action.PagingParams = action.GetPageQuery()
-}
-
-func (action *AccountIndexAction) loadRecords() {
-	action.Err = action.HistoryQ().
-		Accounts().
-		Page(action.PagingParams).
-		Select(&action.Records)
-}
-
-// LoadPage populates action.Page
-func (action *AccountIndexAction) loadPage() {
-	for _, record := range action.Records {
-		var res resource.HistoryAccount
-		res.Populate(action.Ctx, record)
-		action.Page.Add(res)
-	}
-	action.Page.BaseURL = action.BaseURL()
-	action.Page.BasePath = "/accounts"
-	action.Page.Limit = action.PagingParams.Limit
-	action.Page.Cursor = action.PagingParams.Cursor
-	action.Page.Order = action.PagingParams.Order
-	action.Page.PopulateLinks()
-}
 
 // AccountShowAction renders a account summary found by its address.
 type AccountShowAction struct {
