@@ -153,11 +153,13 @@ type Root struct {
 		Transactions        hal.Link `json:"transactions"`
 	} `json:"_links"`
 
-	HorizonVersion      string `json:"horizon_version"`
-	StellarCoreVersion  string `json:"core_version"`
-	HorizonSequence     int32  `json:"horizon_latest_ledger"`
-	StellarCoreSequence int32  `json:"core_latest_ledger"`
-	NetworkPassphrase   string `json:"network_passphrase"`
+	HorizonVersion       string `json:"horizon_version"`
+	StellarCoreVersion   string `json:"core_version"`
+	HorizonSequence      int32  `json:"horizon_latest_ledger"`
+	HorizonElderSequence int32  `json:"horizon_elder_ledger"`
+	CoreSequence         int32  `json:"core_latest_ledger"`
+	CoreElderSequence    int32  `json:"core_elder_ledger"`
+	NetworkPassphrase    string `json:"network_passphrase"`
 }
 
 // Signer represents one of an account's signers.
