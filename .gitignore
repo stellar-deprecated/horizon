@@ -1,6 +1,7 @@
 .DS_Store
 docs/public
 /.env
+/.go
 /tmp/
 /pkg
 /bin

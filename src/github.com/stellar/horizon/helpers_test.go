@@ -85,7 +85,7 @@ func ShouldBeProblem(a interface{}, options ...interface{}) string {
 	}
 
 	if expected.Status != 0 && actual.Status != expected.Status {
-		return fmt.Sprintf("Mismatched problem status: %s expected, got %s", expected.Status, actual.Status)
+		return fmt.Sprintf("Mismatched problem status: %d expected, got %d", expected.Status, actual.Status)
 	}
 
 	return ""

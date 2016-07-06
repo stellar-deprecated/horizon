@@ -21,6 +21,7 @@ type Account struct {
 	Flags         xdr.AccountFlags
 }
 
+// AccountData is a row of data from the `accountdata` table
 type AccountData struct {
 	Accountid string
 	Key       string `db:"dataname"`
@@ -125,6 +126,8 @@ type Trustline struct {
 	Flags     int32
 }
 
+// AssetFromDB produces an xdr.Asset by combining the constituent type, code and
+// issuer, as often retrieved from the DB in 3 separate columns.
 func AssetFromDB(typ xdr.AssetType, code string, issuer string) (result xdr.Asset, err error) {
 	switch typ {
 	case xdr.AssetTypeAssetTypeNative:
