@@ -28,7 +28,11 @@ type OperationIndexAction struct {
 
 // JSON is a method for actions.JSON
 func (action *OperationIndexAction) JSON() {
-	action.Do(action.loadParams, action.loadRecords, action.loadPage)
+	action.Do(
+		action.loadParams,
+		action.ValidateCursorWithinHistory,
+		action.loadRecords,
+		action.loadPage)
 	action.Do(func() {
 		hal.Render(action.W, action.Page)
 	})
@@ -36,7 +40,10 @@ func (action *OperationIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *OperationIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.loadParams)
+	action.Setup(
+		action.loadParams,
+		action.ValidateCursorWithinHistory,
+	)
 	action.Do(
 		action.loadRecords,
 		func() {

@@ -10,6 +10,7 @@ import (
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/toid"
 	"github.com/zenazn/goji/web"
 )
@@ -111,6 +112,41 @@ func (action *Action) ValidateCursorAsDefault() {
 	}
 
 	action.GetInt64(actions.ParamCursor)
+}
+
+// ValidateCursorWithinHistory compares the requested page of data against the
+// ledger state of the history database.  In the event that the cursor is
+// guaranteed to return no results, we return a 410 GONE http response.
+func (action *Action) ValidateCursorWithinHistory() {
+	if action.Err != nil {
+		return
+	}
+
+	pq := action.GetPageQuery()
+	if action.Err != nil {
+		return
+	}
+
+	// an ascending query should never return a gone response:  An ascending query
+	// prior to known history should return results at the beginning of history,
+	// and an ascending query beyond the end of history should not error out but
+	// rather return an empty page (allowing code that tracks the procession of
+	// some resource more easily).
+	if pq.Order != "desc" {
+		return
+	}
+
+	cursor, err := pq.CursorInt64()
+	if err != nil {
+		action.Err = err
+		return
+	}
+
+	elder := toid.New(action.App.latestLedgerState.HorizonElder, 0, 0)
+
+	if cursor <= elder.ToInt64() {
+		action.Err = &problem.BeforeHistory
+	}
 }
 
 // BaseURL returns the base url for this requestion, defined as a url containing

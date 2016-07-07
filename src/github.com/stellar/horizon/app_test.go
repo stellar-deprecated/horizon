@@ -54,10 +54,10 @@ func TestApp(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		w := rh.Get("/accounts", test.RequestHelperNoop)
+		w := rh.Get("/ledgers", test.RequestHelperNoop)
 		So(w.Code, ShouldEqual, 200)
 
-		w = rh.Get("/accounts/", test.RequestHelperNoop)
+		w = rh.Get("/ledgers/", test.RequestHelperNoop)
 		So(w.Code, ShouldEqual, 200)
 
 	})

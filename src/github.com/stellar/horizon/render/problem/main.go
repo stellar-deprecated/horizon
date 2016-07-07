@@ -215,4 +215,16 @@ var (
 		Detail: "The request has an unsupported content type. Presently, the " +
 			"only supported content type is application/x-www-form-urlencoded.",
 	}
+
+	// BeforeHistory is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	BeforeHistory = P{
+		Type:   "before_history",
+		Title:  "Data Requested Is Before Recorded History",
+		Status: http.StatusGone,
+		Detail: "This horizon instance is configured to only track a " +
+			"portion of the stellar network's latest history. This request " +
+			"is asking for results prior to the recorded history known to " +
+			"this horizon instance.",
+	}
 )
