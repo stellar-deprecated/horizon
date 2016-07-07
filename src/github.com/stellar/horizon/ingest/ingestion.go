@@ -15,28 +15,28 @@ import (
 
 // Clear removes data from the ledger
 func (ingest *Ingestion) Clear(start int64, end int64) error {
-
-	err := ingest.clearRange(start, end, "history_effects", "history_operation_id")
+	clear := ingest.DB.DeleteRange
+	err := clear(start, end, "history_effects", "history_operation_id")
 	if err != nil {
 		return err
 	}
-	err = ingest.clearRange(start, end, "history_operation_participants", "history_operation_id")
+	err = clear(start, end, "history_operation_participants", "history_operation_id")
 	if err != nil {
 		return err
 	}
-	err = ingest.clearRange(start, end, "history_operations", "id")
+	err = clear(start, end, "history_operations", "id")
 	if err != nil {
 		return err
 	}
-	err = ingest.clearRange(start, end, "history_transaction_participants", "history_transaction_id")
+	err = clear(start, end, "history_transaction_participants", "history_transaction_id")
 	if err != nil {
 		return err
 	}
-	err = ingest.clearRange(start, end, "history_transactions", "id")
+	err = clear(start, end, "history_transactions", "id")
 	if err != nil {
 		return err
 	}
-	err = ingest.clearRange(start, end, "history_ledgers", "id")
+	err = clear(start, end, "history_ledgers", "id")
 	if err != nil {
 		return err
 	}
@@ -232,16 +232,6 @@ func (ingest *Ingestion) TransactionParticipants(tx int64, aids []xdr.AccountId)
 	}
 
 	return nil
-}
-
-func (ingest *Ingestion) clearRange(start int64, end int64, table string, idCol string) error {
-	del := sq.Delete(table).Where(
-		fmt.Sprintf("%s >= ? AND %s < ?", idCol, idCol),
-		start,
-		end,
-	)
-	_, err := ingest.DB.Exec(del)
-	return err
 }
 
 func (ingest *Ingestion) createInsertBuilders() {
