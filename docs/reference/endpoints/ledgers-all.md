@@ -49,7 +49,7 @@ server.ledgers()
 ```
 ## Response
 
-This endpoint responds with a list of ledgers.  See [ledger resource](./resources/ledger.md) for reference.
+This endpoint responds with a list of ledgers.  See [ledger resource](../resources/ledger.md) for reference.
 
 ### Example Response
 

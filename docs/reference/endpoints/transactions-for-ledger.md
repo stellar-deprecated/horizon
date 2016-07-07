@@ -46,7 +46,7 @@ server.transactions()
 
 ## Response
 
-This endpoint responds with a list of transactions in a given ledger.  See [transaction resource](./resources/transaction.md) for reference.
+This endpoint responds with a list of transactions in a given ledger.  See [transaction resource](../resources/transaction.md) for reference.
 
 ### Example Response
 

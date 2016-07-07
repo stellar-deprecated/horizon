@@ -49,7 +49,7 @@ server.operations()
 
 ## Response
 
-This endpoint responds with a list of operations that affected the given account. See [operation resource](./resources/operation.md) for reference.
+This endpoint responds with a list of operations that affected the given account. See [operation resource](../resources/operation.md) for reference.
 
 ### Example Response
 

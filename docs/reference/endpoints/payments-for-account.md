@@ -49,7 +49,7 @@ server.payments()
 ```
 ## Response
 
-This endpoint responds with a [page](./resources/page.md) of [payment operations](./resources/operation.md).
+This endpoint responds with a [page](../resources/page.md) of [payment operations](../resources/operation.md).
 
 ### Example Response
 

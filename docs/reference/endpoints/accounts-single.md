@@ -45,7 +45,7 @@ server.accounts()
 
 ## Response
 
-This endpoint responds with the details of a single account for a given ID. See [account resource](./resources/account.md) for reference.
+This endpoint responds with the details of a single account for a given ID. See [account resource](../resources/account.md) for reference.
 
 ### Example Response
 ```json

@@ -41,7 +41,7 @@ curl "https://horizon-testnet.stellar.org/paths?destination_account=GAEDTJ4PPEFV
 
 ## Response
 
-This endpoint responds with a page of path resources.  See [path resource](./resources/path.md) for reference.
+This endpoint responds with a page of path resources.  See [path resource](../resources/path.md) for reference.
 
 ### Example Response
 

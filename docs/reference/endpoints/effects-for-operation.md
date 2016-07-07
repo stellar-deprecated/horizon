@@ -48,7 +48,7 @@ server.effects()
 
 ## Response
 
-This endpoint responds with a list of effects on the ledger as a result of a given operation. See [effect resource](./resources/effect.md) for reference.
+This endpoint responds with a list of effects on the ledger as a result of a given operation. See [effect resource](../resources/effect.md) for reference.
 
 ### Example Response
 

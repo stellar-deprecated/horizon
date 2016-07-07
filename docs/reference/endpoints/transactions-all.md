@@ -53,9 +53,9 @@ server.transactions()
 
 ## Response
 
-If called normally this endpoint responds with a [page](./resources/page.md) of transactions.
+If called normally this endpoint responds with a [page](../resources/page.md) of transactions.
 If called in streaming mode the transaction resources are returned individually.
-See [transaction resource](./resources/transaction.md) for reference.
+See [transaction resource](../resources/transaction.md) for reference.
 
 ### Example Response
 
