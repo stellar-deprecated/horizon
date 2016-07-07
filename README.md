@@ -26,7 +26,7 @@ gb vendor restore
 Then, simply run `gb build`.  After successful
 completion, you should find `bin/horizon` is present in the project directory.
 
-More detailed intructions and [admin guide](/docs/learn/admin.md). 
+More detailed intructions and [admin guide](/docs/reference/admin.md). 
 
 ## Developing Horizon
 
