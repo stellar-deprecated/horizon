@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=order_book&endpoint=trades
 ---
 
-People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  These offers are summarized by the assets being bought and sold in [orderbooks](./resources/orderbook.md).  When an offer is fully or partially fulfilled, a [trade](./resources/trade.md) happens.
+People on the Stellar network can make [offers](../resources/offer.md) to buy or sell assets.  These offers are summarized by the assets being bought and sold in [orderbooks](../resources/orderbook.md).  When an offer is fully or partially fulfilled, a [trade](../resources/trade.md) happens.
 
 Horizon will return a list of trades by the orderbook the trade's assets are associated with.
 
@@ -116,4 +116,4 @@ The list of trades.
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
+- The [standard errors](../errors.md#Standard_Errors).

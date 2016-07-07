@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=order_book&endpoint=details
 ---
 
-People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  These offers are summarized by the assets being bought and sold in [orderbooks](./resources/orderbook.md).
+People on the Stellar network can make [offers](../resources/offer.md) to buy or sell assets.  These offers are summarized by the assets being bought and sold in [orderbooks](../resources/orderbook.md).
 
 Horizon will return, for each orderbook, a summary of the orderbook and the bids and asks associated with that orderbook.
 
@@ -86,4 +86,4 @@ The summary of the orderbook and its bids and asks.
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
+- The [standard errors](../errors.md#Standard_Errors).

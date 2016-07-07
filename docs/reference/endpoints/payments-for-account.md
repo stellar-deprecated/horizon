@@ -4,9 +4,9 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=payments&endpoint=for_account
 ---
 
-This endpoint responds with a collection of [Payment operations](./resources/operation.md) where the given [account](./resources/account.md) was either the sender or receiver.
+This endpoint responds with a collection of [Payment operations](../resources/operation.md) where the given [account](../resources/account.md) was either the sender or receiver.
 
-This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new payments to or from an account as they get made in the Stellar network.
+This endpoint can also be used in [streaming](../responses.md#streaming) mode so it is possible to use it to listen for new payments to or from an account as they get made in the Stellar network.
 If called in streaming mode Horizon will start at the earliest known payment unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream payments created since your request time.
 
 ## Request
@@ -134,4 +134,4 @@ This endpoint responds with a [page](./resources/page.md) of [payment operations
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
+- The [standard errors](../errors.md#Standard_Errors).

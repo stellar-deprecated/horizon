@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=transactions&endpoint=for_ledger
 ---
 
-This endpoint represents all [transactions](./resources/transaction.md) in a given [ledger](./resources/ledger.md).
+This endpoint represents all [transactions](../resources/transaction.md) in a given [ledger](../resources/ledger.md).
 
 ## Request
 
@@ -114,5 +114,5 @@ This endpoint responds with a list of transactions in a given ledger.  See [tran
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no ledgers whose sequence matches the `id` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no ledgers whose sequence matches the `id` argument.

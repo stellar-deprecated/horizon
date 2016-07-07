@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=payments&endpoint=all
 ---
 
-This endpoint represents all payment [operations](./resources/operation.md) that are part of validated [transactions](./resources/transaction.md). This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new payments as they get made in the Stellar network.
+This endpoint represents all payment [operations](../resources/operation.md) that are part of validated [transactions](../resources/transaction.md). This endpoint can also be used in [streaming](../responses.md#streaming) mode so it is possible to use it to listen for new payments as they get made in the Stellar network.
 If called in streaming mode Horizon will start at the earliest known payment unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream payments created since your request time.
 
 ## Request
@@ -51,7 +51,7 @@ server.payments()
 ```
 ## Response
 
-This endpoint responds with a list of payments. See [operation resource](./resources/operation.md) for more information about operations (and payment operations).
+This endpoint responds with a list of payments. See [operation resource](../resources/operation.md) for more information about operations (and payment operations).
 
 ### Example Response
 
@@ -163,4 +163,4 @@ This endpoint responds with a list of payments. See [operation resource](./resou
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
+- The [standard errors](../errors.md#Standard_Errors).

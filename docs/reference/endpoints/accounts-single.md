@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=accounts&endpoint=single
 ---
 
-Returns information and links relating to a single [account](./resources/account.md).
+Returns information and links relating to a single [account](../resources/account.md).
 
 The balances section in the returned JSON will also list all the [trust lines](https://www.stellar.org/developers/learn/concepts/assets.html) this account has set up.
 
@@ -120,5 +120,5 @@ This endpoint responds with the details of a single account for a given ID. See 
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard-Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `account` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `account` argument.

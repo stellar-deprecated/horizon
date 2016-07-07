@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=payments&endpoint=for_transaction
 ---
 
-This endpoint represents all payment [operations](./resources/operation.md) that are part of a given [transaction](./resources/transaction.md).
+This endpoint represents all payment [operations](../resources/operation.md) that are part of a given [transaction](../resources/transaction.md).
 
 ## Request
 
@@ -45,7 +45,7 @@ server.payments()
 ```
 ## Response
 
-This endpoint responds with a list of payments operations that are part of a given transaction. See [operation resource](./resources/operation.md) for more information about operations (and payment operations).
+This endpoint responds with a list of payments operations that are part of a given transaction. See [operation resource](../resources/operation.md) for more information about operations (and payment operations).
 
 ### Example Response
 
@@ -100,5 +100,5 @@ This endpoint responds with a list of payments operations that are part of a giv
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no transaction whose ID matches the `hash` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no transaction whose ID matches the `hash` argument.

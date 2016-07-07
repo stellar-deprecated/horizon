@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=offers&endpoint=for_account
 ---
 
-People on the Stellar network can make [offers](./resources/offer.md) to buy or sell assets.  This endpoint represents all the offers a particular account makes.
+People on the Stellar network can make [offers](../resources/offer.md) to buy or sell assets.  This endpoint represents all the offers a particular account makes.
 
 
 ## Request
@@ -130,4 +130,4 @@ The list of offers.
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
+- The [standard errors](../errors.md#Standard_Errors).

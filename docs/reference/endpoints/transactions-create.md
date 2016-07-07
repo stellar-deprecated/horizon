@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=transactions&endpoint=create
 ---
 
-Posts a new [transaction](./resources/transaction.md) to the Stellar Network.
+Posts a new [transaction](../resources/transaction.md) to the Stellar Network.
 Note that creating a valid transaction and signing it properly is the
 responsibility of your client library.
 
@@ -36,7 +36,7 @@ POST /transactions
 
 | name | loc  |  notes   |         example        | description |
 | ---- | ---- | -------- | ---------------------- | ----------- |
-| `tx` | body | required | `AAAAAO`....`f4yDBA==` | Base64 representation of transaction envelope [XDR](../learn/xdr.md) |
+| `tx` | body | required | `AAAAAO`....`f4yDBA==` | Base64 representation of transaction envelope [XDR](../xdr.md) |
 
 
 ### curl Example Request
@@ -61,9 +61,9 @@ If the transaction failed or errored, then an error response will be returned. P
 |-------------------|--------|-----------------------------------------------------------------------|
 | `hash`            | string | A hex-encoded hash of the submitted transaction.                      |
 | `ledger`          | number | The ledger number that the submitted transaction was included in.     |
-| `envelope_xdr`    | string | A base64 encoded `TransactionEnvelope` [XDR](../learn/xdr.md) object. |
-| `result_xdr`      | string | A base64 encoded `TransactionResult` [XDR](../learn/xdr.md) object.   |
-| `result_meta_xdr` | string | A base64 encoded `TransactionMeta` [XDR](../learn/xdr.md) object.     |
+| `envelope_xdr`    | string | A base64 encoded `TransactionEnvelope` [XDR](../xdr.md) object. |
+| `result_xdr`      | string | A base64 encoded `TransactionResult` [XDR](../xdr.md) object.   |
+| `result_meta_xdr` | string | A base64 encoded `TransactionMeta` [XDR](../xdr.md) object.     |
 
 ### Example Response
 
@@ -79,6 +79,6 @@ If the transaction failed or errored, then an error response will be returned. P
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [transaction_failed](./errors/transaction-failed.md): The transaction failed and could not be applied to the ledger.
-- [transaction_malformed](./errors/transaction-malformed.md): The transaction could not be decoded and was not submitted to the network.
+- The [standard errors](../errors.md#Standard_Errors).
+- [transaction_failed](../errors/transaction-failed.md): The transaction failed and could not be applied to the ledger.
+- [transaction_malformed](../errors/transaction-malformed.md): The transaction could not be decoded and was not submitted to the network.

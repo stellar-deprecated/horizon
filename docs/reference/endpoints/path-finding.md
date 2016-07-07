@@ -111,5 +111,5 @@ This endpoint responds with a page of path resources.  See [path resource](./res
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if no paths could be found to fulfill this payment request
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if no paths could be found to fulfill this payment request

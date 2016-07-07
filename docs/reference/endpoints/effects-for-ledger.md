@@ -6,7 +6,7 @@ clientData:
 
 Effects are the specific ways that the ledger was changed by any operation.
 
-This endpoint represents all [effects](./resources/effect.md) that occurred in the given [ledger](./resources/ledger.md).
+This endpoint represents all [effects](../resources/effect.md) that occurred in the given [ledger](../resources/ledger.md).
 
 ## Request
 
@@ -132,5 +132,5 @@ This endpoint responds with a list of effects that occurred in the ledger. See [
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there are no effects for a given ledger.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there are no effects for a given ledger.

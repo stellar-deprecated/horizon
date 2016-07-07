@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=payments&endpoint=for_ledger
 ---
 
-This endpoint represents all payment [operations](./resources/operation.md) that are part of a valid [transactions](./resources/transaction.md) in a given [ledger](./resources/ledger.md).
+This endpoint represents all payment [operations](../resources/operation.md) that are part of a valid [transactions](../resources/transaction.md) in a given [ledger](../resources/ledger.md).
 
 ## Request
 
@@ -46,7 +46,7 @@ server.payments()
 
 ## Response
 
-This endpoint responds with a list of payment operations in a given ledger.  See [operation resource](./resources/operation.md) for more information about operations (and payment operations).
+This endpoint responds with a list of payment operations in a given ledger.  See [operation resource](../resources/operation.md) for more information about operations (and payment operations).
 
 ### Example Response
 
@@ -99,5 +99,5 @@ This endpoint responds with a list of payment operations in a given ledger.  See
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no ledger whose ID matches the `id` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no ledger whose ID matches the `id` argument.

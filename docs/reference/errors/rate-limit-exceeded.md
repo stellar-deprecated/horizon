@@ -9,7 +9,7 @@ If you are encountering this error, please reduce your request speed. Here are s
 * Try streaming responses to watch for new data instead of pulling data every time.
 * Cache immutable data, such as transaction details, locally
 
-See the [Rate Limiting Guide](../../learn/rate-limiting.md) for more info.
+See the [Rate Limiting Guide](../../reference/rate-limiting.md) for more info.
 
 ## Attributes
 

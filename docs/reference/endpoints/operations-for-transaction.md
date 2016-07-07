@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=operations&endpoint=for_transaction
 ---
 
-This endpoint represents all [operations](./resources/operation.md) that are part of a given [transaction](./resources/transaction.md).
+This endpoint represents all [operations](../resources/operation.md) that are part of a given [transaction](../resources/transaction.md).
 
 ## Request
 
@@ -46,7 +46,7 @@ server.operations()
 
 ## Response
 
-This endpoint responds with a list of operations that are part of a given transaction. See [operation resource](./resources/operation.md) for reference.
+This endpoint responds with a list of operations that are part of a given transaction. See [operation resource](../resources/operation.md) for reference.
 
 ### Example Response
 
@@ -99,5 +99,5 @@ This endpoint responds with a list of operations that are part of a given transa
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `hash` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `hash` argument.

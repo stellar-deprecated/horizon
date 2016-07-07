@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=ledgers&endpoint=single
 ---
 
-The ledger details endpoint provides information on a single [ledger](./resources/ledger.md).
+The ledger details endpoint provides information on a single [ledger](../resources/ledger.md).
 
 ## Request
 
@@ -43,7 +43,7 @@ server.ledgers()
 ```
 ## Response
 
-This endpoint responds with a single Ledger.  See [ledger resource](./resources/ledger.md) for reference.
+This endpoint responds with a single Ledger.  See [ledger resource](../resources/ledger.md) for reference.
 
 ### Example Response
 
@@ -79,5 +79,5 @@ This endpoint responds with a single Ledger.  See [ledger resource](./resources/
 
 ## Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no ledger whose sequence number matches the `sequence` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no ledger whose sequence number matches the `sequence` argument.

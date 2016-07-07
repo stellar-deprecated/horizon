@@ -4,8 +4,8 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=transactions&endpoint=for_account
 ---
 
-This endpoint represents all [transactions](./resources/transaction.md) that affected a given [account](./resources/account.md).
-This endpoint can also be used in [streaming](../learn/responses.md#streaming) mode so it is possible to use it to listen for new transactions as that affect a given account as they get made in the Stellar network.
+This endpoint represents all [transactions](../resources/transaction.md) that affected a given [account](../resources/account.md).
+This endpoint can also be used in [streaming](../responses.md#streaming) mode so it is possible to use it to listen for new transactions as that affect a given account as they get made in the Stellar network.
 If called in streaming mode Horizon will start at the earliest known transaction unless a `cursor` is set. In that case it will start from the `cursor`. You can also set `cursor` value to `now` to only stream transaction created since your request time.
 
 ## Request
@@ -65,7 +65,7 @@ server.transactions()
 
 ## Response
 
-This endpoint responds with a list of transactions that changed a given account's state. See [transaction resource](./resources/transaction.md) for reference.
+This endpoint responds with a list of transactions that changed a given account's state. See [transaction resource](../resources/transaction.md) for reference.
 
 ### Example Response
 ```json
@@ -179,5 +179,5 @@ This endpoint responds with a list of transactions that changed a given account'
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `account_id` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no account whose ID matches the `account_id` argument.

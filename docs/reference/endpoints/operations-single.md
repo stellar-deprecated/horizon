@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=operations&endpoint=single
 ---
 
-The operation details endpoint provides information on a single [operation](./resources/operation.md). The operation ID provided in the `id` argument specifies which operation to load.
+The operation details endpoint provides information on a single [operation](../resources/operation.md). The operation ID provided in the `id` argument specifies which operation to load.
 
 ## Request
 
@@ -45,7 +45,7 @@ server.operations()
 
 ## Response
 
-This endpoint responds with a single Operation.  See [operation resource](./resources/operation.md) for reference.
+This endpoint responds with a single Operation.  See [operation resource](../resources/operation.md) for reference.
 
 ### Example Response
 
@@ -81,5 +81,5 @@ This endpoint responds with a single Operation.  See [operation resource](./reso
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no  whose ID matches the `account` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no  whose ID matches the `account` argument.

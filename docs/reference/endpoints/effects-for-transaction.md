@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=effects&endpoint=for_transaction
 ---
 
-This endpoint represents all [effects](./resources/effect.md) that occurred as a result of a given [transaction](./resources/transaction.md).
+This endpoint represents all [effects](../resources/effect.md) that occurred as a result of a given [transaction](../resources/transaction.md).
 
 ## Request
 
@@ -130,5 +130,5 @@ This endpoint responds with a list of effects on the ledger as a result of a giv
 
 ## Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there are no effects for transaction whose hash matches the `hash` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there are no effects for transaction whose hash matches the `hash` argument.

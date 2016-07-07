@@ -4,7 +4,7 @@ clientData:
   laboratoryUrl: https://www.stellar.org/laboratory/#explorer?resource=transactions&endpoint=single
 ---
 
-The transaction details endpoint provides information on a single [transaction](./resources/transaction.md). The transaction hash provided in the `hash` argument specifies which transaction to load.
+The transaction details endpoint provides information on a single [transaction](../resources/transaction.md). The transaction hash provided in the `hash` argument specifies which transaction to load.
 
 ## Request
 
@@ -43,7 +43,7 @@ server.transactions()
 
 ## Response
 
-This endpoint responds with a single Transaction.  See [transaction resource](./resources/transaction.md) for reference.
+This endpoint responds with a single Transaction.  See [transaction resource](../resources/transaction.md) for reference.
 
 ### Example Response
 
@@ -94,5 +94,5 @@ This endpoint responds with a single Transaction.  See [transaction resource](./
 
 ## Possible Errors
 
-- The [standard errors](../learn/errors.md#Standard_Errors).
-- [not_found](./errors/not-found.md): A `not_found` error will be returned if there is no transaction whose ID matches the `hash` argument.
+- The [standard errors](../errors.md#Standard-Errors).
+- [not_found](../errors/not-found.md): A `not_found` error will be returned if there is no transaction whose ID matches the `hash` argument.
