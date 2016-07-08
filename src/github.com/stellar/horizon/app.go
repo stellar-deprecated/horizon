@@ -19,6 +19,7 @@ import (
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/pump"
+	"github.com/stellar/horizon/reap"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
@@ -48,6 +49,7 @@ type App struct {
 	paths             paths.Finder
 	friendbot         *friendbot.Bot
 	ingester          *ingest.System
+	reaper            *reap.System
 
 	// metrics
 	metrics                  metrics.Registry
@@ -145,6 +147,10 @@ func (a *App) Close() {
 
 	if a.ingester != nil {
 		a.ingester.Close()
+	}
+
+	if a.reaper != nil {
+		a.reaper.Close()
 	}
 
 	a.historyQ.Repo.DB.Close()
@@ -267,4 +273,10 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 
 	a.horizonConnGauge.Update(int64(a.historyQ.Repo.DB.Stats().OpenConnections))
 	a.coreConnGauge.Update(int64(a.coreQ.Repo.DB.Stats().OpenConnections))
+}
+
+// DeleteUnretainedHistory forwards to the app's reaper.  See
+// `reap.DeleteUnretainedHistory` for details
+func (a *App) DeleteUnretainedHistory() error {
+	return a.reaper.DeleteUnretainedHistory()
 }

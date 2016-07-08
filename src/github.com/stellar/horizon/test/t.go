@@ -15,6 +15,8 @@ func (t *T) CoreRepo() *db2.Repo {
 // Finish finishes the test, logging any accumulated horizon logs to the logs
 // output
 func (t *T) Finish() {
+	RestoreLogger()
+
 	if t.LogBuffer.Len() > 0 {
 		t.T.Log("\n" + t.LogBuffer.String())
 	}
