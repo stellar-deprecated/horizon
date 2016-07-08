@@ -87,6 +87,9 @@ func LoadScenarioWithoutHorizon(scenarioName string) {
 	loadScenario(scenarioName, false)
 }
 
+// OverrideLogger sets the default logger used by horizon to `l`.  This is used
+// by the testing system so that we can collect output from logs during test
+// runs.  Panics if the logger is already overridden.
 func OverrideLogger(l *hlog.Entry) {
 	if oldDefault != nil {
 		panic("logger already overridden")
@@ -96,6 +99,9 @@ func OverrideLogger(l *hlog.Entry) {
 	hlog.DefaultLogger = l
 }
 
+// RestoreLogger restores the default horizon logger after it is overridden
+// using a call to `OverrideLogger`.  Panics if the default logger is not
+// presently overridden.
 func RestoreLogger() {
 	if oldDefault == nil {
 		panic("logger not overridden, cannot restore")
