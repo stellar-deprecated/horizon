@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
 )
@@ -91,6 +92,7 @@ type LedgerShowAction struct {
 func (action *LedgerShowAction) JSON() {
 	action.Do(
 		action.loadParams,
+		action.verifyWithinHistory,
 		action.loadRecord,
 		func() {
 			var res resource.Ledger
@@ -107,4 +109,10 @@ func (action *LedgerShowAction) loadParams() {
 func (action *LedgerShowAction) loadRecord() {
 	action.Err = action.HistoryQ().
 		LedgerBySequence(&action.Record, action.Sequence)
+}
+
+func (action *LedgerShowAction) verifyWithinHistory() {
+	if action.Sequence < action.App.latestLedgerState.HorizonElder {
+		action.Err = &problem.BeforeHistory
+	}
 }
