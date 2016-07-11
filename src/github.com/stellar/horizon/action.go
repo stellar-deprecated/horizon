@@ -3,6 +3,7 @@ package horizon
 import (
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/stellar/horizon/actions"
 	"github.com/stellar/horizon/db2"
@@ -136,7 +137,17 @@ func (action *Action) ValidateCursorWithinHistory() {
 		return
 	}
 
-	cursor, err := pq.CursorInt64()
+	var cursor int64
+	var err error
+
+	// HACK: checking for the presence of "-" to see whether we should use
+	// CursorInt64 or CursorInt64Pair is gross.
+	if strings.Contains(pq.Cursor, "-") {
+		cursor, _, err = pq.CursorInt64Pair("-")
+	} else {
+		cursor, err = pq.CursorInt64()
+	}
+
 	if err != nil {
 		action.Err = err
 		return
