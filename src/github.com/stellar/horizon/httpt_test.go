@@ -28,9 +28,9 @@ func StartHTTPTest(t *testing.T, scenario string) *HTTPT {
 
 func (ht *HTTPT) Get(
 	path string,
-	fn func(*http.Request),
+	fn ...func(*http.Request),
 ) *httptest.ResponseRecorder {
-	return ht.RH.Get(path, fn)
+	return ht.RH.Get(path, fn...)
 }
 
 func (ht *HTTPT) Finish() {

@@ -9,16 +9,12 @@ import (
 )
 
 type RequestHelper interface {
-	Get(string, func(*http.Request)) *httptest.ResponseRecorder
-	Post(string, url.Values, func(*http.Request)) *httptest.ResponseRecorder
+	Get(string, ...func(*http.Request)) *httptest.ResponseRecorder
+	Post(string, url.Values, ...func(*http.Request)) *httptest.ResponseRecorder
 }
 
 type requestHelper struct {
 	router *web.Mux
-}
-
-func RequestHelperNoop(r *http.Request) {
-
 }
 
 func RequestHelperRemoteAddr(ip string) func(r *http.Request) {
@@ -41,41 +37,43 @@ func NewRequestHelper(router *web.Mux) RequestHelper {
 	return &requestHelper{router}
 }
 
-func (r *requestHelper) Get(
+func (rh *requestHelper) Get(
 	path string,
-	requestModFn func(*http.Request),
+	mods ...func(*http.Request),
 ) *httptest.ResponseRecorder {
 
 	req, _ := http.NewRequest("GET", path, nil)
-	return r.Execute(req, requestModFn)
+	return rh.Execute(req, mods)
 }
 
-func (r *requestHelper) Post(
+func (rh *requestHelper) Post(
 	path string,
 	form url.Values,
-	requestModFn func(*http.Request),
+	mods ...func(*http.Request),
 ) *httptest.ResponseRecorder {
 
 	body := strings.NewReader(form.Encode())
 	req, _ := http.NewRequest("POST", path, body)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	return r.Execute(req, requestModFn)
+	return rh.Execute(req, mods)
 }
 
-func (r *requestHelper) Execute(
+func (rh *requestHelper) Execute(
 	req *http.Request,
-	requestModFn func(*http.Request),
+	requestModFns []func(*http.Request),
 ) *httptest.ResponseRecorder {
 
 	req.RemoteAddr = "127.0.0.1"
-	requestModFn(req)
+	for _, fn := range requestModFns {
+		fn(req)
+	}
 
 	w := httptest.NewRecorder()
 	c := web.C{
 		Env: map[interface{}]interface{}{},
 	}
 
-	r.router.ServeHTTPC(c, w, req)
+	rh.router.ServeHTTPC(c, w, req)
 	return w
 
 }

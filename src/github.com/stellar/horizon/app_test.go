@@ -34,7 +34,7 @@ func TestApp(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		w := rh.Get("/", test.RequestHelperNoop)
+		w := rh.Get("/")
 
 		So(w.Code, ShouldEqual, 200)
 		So(w.HeaderMap.Get("Access-Control-Allow-Origin"), ShouldEqual, "")
@@ -54,10 +54,10 @@ func TestApp(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		w := rh.Get("/ledgers", test.RequestHelperNoop)
+		w := rh.Get("/ledgers")
 		So(w.Code, ShouldEqual, 200)
 
-		w = rh.Get("/ledgers/", test.RequestHelperNoop)
+		w = rh.Get("/ledgers/")
 		So(w.Code, ShouldEqual, 200)
 
 	})
