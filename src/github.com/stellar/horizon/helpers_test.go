@@ -5,33 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"testing"
 
 	"github.com/PuerkitoBio/throttled"
 	hlog "github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/test"
 )
-
-// StartHTTPTest is a helper function to setup a new test that will make http
-// requests. Pair it with a deferred call to FinishHTTPTest.
-func StartHTTPTest(
-	t *testing.T,
-	scenario string,
-) (*App, *test.T, test.RequestHelper) {
-	tt := test.Start(t).Scenario(scenario)
-	app := NewTestApp()
-	rh := NewRequestHelper(app)
-
-	return app, tt, rh
-}
-
-// FinishHTTPTest closed out a test function that was initialized using
-// `StartHTTPTest`
-func FinishHTTPTest(app *App, tt *test.T) {
-	tt.Finish()
-	app.Close()
-}
 
 func NewTestApp() *App {
 	app, err := NewApp(NewTestConfig())
