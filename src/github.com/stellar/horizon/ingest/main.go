@@ -80,6 +80,10 @@ type System struct {
 	// Network is the passphrase for the network being imported
 	Network string
 
+	// StellarCoreURL is the http endpoint of the stellar-core that data is being
+	// ingested from.
+	StellarCoreURL string
+
 	tick                 *time.Ticker
 	historySequence      int32
 	historyElderSequence int32
@@ -117,6 +121,10 @@ type Session struct {
 	// Network is the passphrase for the network being imported
 	Network string
 
+	// StellarCoreURL is the http endpoint of the stellar-core that data is being
+	// ingested from.
+	StellarCoreURL string
+
 	// ClearExisting causes the session to clear existing data from the horizon db
 	// when the session is run.
 	ClearExisting bool
@@ -138,12 +146,14 @@ type Session struct {
 
 // New initializes the ingester, causing it to begin polling the stellar-core
 // database for now ledgers and ingesting data into the horizon database.
-func New(network string, core, horizon *db2.Repo) *System {
+func New(network string, coreURL string, core, horizon *db2.Repo) *System {
 	i := &System{
-		Network:   network,
-		HorizonDB: horizon,
-		CoreDB:    core,
+		Network:        network,
+		StellarCoreURL: coreURL,
+		HorizonDB:      horizon,
+		CoreDB:         core,
 	}
+
 	i.Metrics.ClearLedgerTimer = metrics.NewTimer()
 	i.Metrics.IngestLedgerTimer = metrics.NewTimer()
 	i.Metrics.LoadLedgerTimer = metrics.NewTimer()
@@ -166,33 +176,34 @@ func NewSession(first, last int32, i *System) *Session {
 			DB:          i.CoreDB,
 			Metrics:     &i.Metrics,
 		},
-		Network: i.Network,
-		Metrics: &i.Metrics,
+		Network:        i.Network,
+		StellarCoreURL: i.StellarCoreURL,
+		Metrics:        &i.Metrics,
 	}
 }
 
 // ReingestAll re-ingests all data
-func ReingestAll(network string, core, horizon *db2.Repo) (int, error) {
-	i := New(network, core, horizon)
+func ReingestAll(network string, coreURL string, core, horizon *db2.Repo) (int, error) {
+	i := New(network, coreURL, core, horizon)
 	return i.ReingestAll()
 }
 
 // ReingestOutdated re-ingests any data that was not imported using the latest
 // version of the ingestion system.
-func ReingestOutdated(network string, core, horizon *db2.Repo) (int, error) {
-	i := New(network, core, horizon)
+func ReingestOutdated(network string, coreURL string, core, horizon *db2.Repo) (int, error) {
+	i := New(network, coreURL, core, horizon)
 	return i.ReingestOutdated()
 }
 
 // ReingestSingle re-ingests a single ledger
-func ReingestSingle(network string, core, horizon *db2.Repo, sequence int32) error {
-	i := New(network, core, horizon)
+func ReingestSingle(network string, coreURL string, core, horizon *db2.Repo, sequence int32) error {
+	i := New(network, coreURL, core, horizon)
 	return i.ReingestSingle(sequence)
 }
 
 // RunOnce runs a single ingestion session
-func RunOnce(network string, core, horizon *db2.Repo) (*Session, error) {
-	i := New(network, core, horizon)
+func RunOnce(network string, coreURL string, core, horizon *db2.Repo) (*Session, error) {
+	i := New(network, coreURL, core, horizon)
 	err := i.updateLedgerState()
 	if err != nil {
 		return nil, err

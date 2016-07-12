@@ -3,6 +3,11 @@ package ingest
 import (
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"path"
+	"strings"
 	"time"
 
 	"github.com/stellar/go-stellar-base/amount"
@@ -39,6 +44,11 @@ func (is *Session) Run() {
 	}
 
 	is.Err = is.Ingestion.Close()
+	if is.Err != nil {
+		return
+	}
+
+	is.Err = is.reportCursorState()
 }
 
 func (is *Session) clearLedger() {
@@ -665,4 +675,44 @@ func (is *Session) operationFlagDetails(result map[string]interface{}, f int32, 
 
 	result[prefix+"_flags"] = n
 	result[prefix+"_flags_s"] = s
+}
+
+// reportCursorState makes an http request to the configured stellar-core server
+// to report that it has finished processing the data being ingested.  This
+// allows stellar-core to free that storage when next it runs its own
+// maintenance.
+func (is *Session) reportCursorState() error {
+	if is.StellarCoreURL == "" {
+		return nil
+	}
+
+	u, err := url.Parse(is.StellarCoreURL)
+	if err != nil {
+		return err
+	}
+
+	u.Path = path.Join(u.Path, "setcursor")
+	q := u.Query()
+	q.Set("id", "HORIZON")
+	q.Set("cursor", fmt.Sprintf("%d", is.Cursor.LastLedger))
+	u.RawQuery = q.Encode()
+	url := u.String()
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	raw, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	body := strings.TrimSpace(string(raw))
+	if body != "Done" {
+		return fmt.Errorf("failed to set cursor on stellar-core: %s", body)
+	}
+
+	return nil
 }

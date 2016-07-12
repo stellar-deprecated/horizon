@@ -116,7 +116,7 @@ var dbReingestCmd = &cobra.Command{
 			log.Fatal("network-passphrase is blank: reingestion requires manually setting passphrase")
 		}
 
-		i := ingest.New(passphrase, cdb, hdb)
+		i := ingest.New(passphrase, config.StellarCoreURL, cdb, hdb)
 		logStatus := func(stage string) {
 			count := i.Metrics.IngestLedgerTimer.Count()
 			rate := i.Metrics.IngestLedgerTimer.RateMean()

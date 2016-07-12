@@ -30,6 +30,7 @@ func TestIngest(t *testing.T) {
 func ingest(tt *test.T) *Session {
 	s, _ := RunOnce(
 		network.TestNetworkPassphrase,
+		"",
 		tt.CoreRepo(),
 		tt.HorizonRepo(),
 	)
