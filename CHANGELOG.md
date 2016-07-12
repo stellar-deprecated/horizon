@@ -8,10 +8,16 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+This release contains the initial implementation of the "Abridged History System".  It allows a horizon system to be operated without complete knowledge of the ledger's history.  With this release, horizon will start ingesting data from the earliest point known to the connected stellar-core instance, rather than ledger 1 as it behaved previously.  See the admin guide section titled "Ingesting stellar-core data" for more details.
+
 ### Added
 
 - *Elder* ledgers have been introduced:  An elder ledger is the oldest ledger known to a db.  For example, the `core_elder_ledger` attribute on the root endpoint refers to the oldest known ledger stored in the connected stellar-core database.
 - Added the `history-retention-count` command line flag, used to specify the amount of historical data to keep in the history db.  This is expressed as a number of ledgers, for example a value of `362880` would retain roughly 6 weeks of data given an average of 10 seconds per ledger.
+- Horizon now reports the last ledger ingested to stellar-core using the `setcursor` command.
+- Requests for data that precede the recorded window of history stored by horizon will receive a `410 Gone` http response to allow software to differentiate from other "not found" situations.
+- The new `db reap` command will manually trigger the deletion of unretained historical data
+- A background process on the server now deletes unretained historical once per hour.
 
 ### Changed
 
