@@ -4,33 +4,26 @@ import (
 	"encoding/json"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/resource"
-	"github.com/stellar/horizon/test"
 )
 
-func TestAccountActions(t *testing.T) {
+func TestAccountActions_Show(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
 
-	Convey("Account Actions:", t, func() {
-		test.LoadScenario("base")
-		app := NewTestApp()
-		defer app.Close()
-		rh := NewRequestHelper(app)
+	// existing account
+	w := ht.Get(
+		"/accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
+	)
+	if ht.Assert.Equal(200, w.Code) {
 
-		Convey("GET /accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", func() {
-			w := rh.Get("/accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H")
+		var result resource.Account
+		err := json.Unmarshal(w.Body.Bytes(), &result)
+		ht.Require.NoError(err)
+		ht.Assert.Equal("3", result.Sequence)
+	}
 
-			So(w.Code, ShouldEqual, 200)
-
-			var result resource.Account
-			err := json.Unmarshal(w.Body.Bytes(), &result)
-			So(err, ShouldBeNil)
-			So(result.Sequence, ShouldEqual, "3")
-		})
-
-		Convey("GET /accounts/100", func() {
-			w := rh.Get("/accounts/100")
-			So(w.Code, ShouldEqual, 404)
-		})
-	})
+	// missing account
+	w = ht.Get("/accounts/100")
+	ht.Assert.Equal(404, w.Code)
 }
