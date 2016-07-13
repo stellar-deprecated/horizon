@@ -1,40 +1,31 @@
 package horizon
 
 import (
+	"net/url"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/horizon/test"
 )
 
-func TestTradeActions(t *testing.T) {
-	tt := test.Start(t).Scenario("trades")
-	defer tt.Finish()
+func TestTradeActions_Index(t *testing.T) {
+	ht := StartHTTPTest(t, "trades")
+	defer ht.Finish()
 
-	Convey("Trade Actions:", t, func() {
+	// for an account
+	w := ht.Get("/accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2/trades")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(1, w.Body)
+	}
 
-		app := NewTestApp()
-		defer app.Close()
-		rh := NewRequestHelper(app)
+	// for order book
+	var q = make(url.Values)
+	q.Add("selling_asset_type", "credit_alphanum4")
+	q.Add("selling_asset_code", "EUR")
+	q.Add("selling_asset_issuer", "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG")
+	q.Add("buying_asset_type", "credit_alphanum4")
+	q.Add("buying_asset_code", "USD")
+	q.Add("buying_asset_issuer", "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
 
-		Convey("GET /accounts/:account_id/trades", func() {
-			w := rh.Get("/accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2/trades")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 1)
-		})
-
-		Convey("GET /order_book/trades", func() {
-			url := "/order_book/trades?" +
-				"selling_asset_type=credit_alphanum4&" +
-				"selling_asset_code=EUR&" +
-				"selling_asset_issuer=GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG&" +
-				"buying_asset_type=credit_alphanum4&" +
-				"buying_asset_code=USD&" +
-				"buying_asset_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
-
-			w := rh.Get(url)
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 1)
-		})
-	})
+	w = ht.Get("/order_book/trades?" + q.Encode())
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(1, w.Body)
+	}
 }

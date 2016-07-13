@@ -2,102 +2,98 @@ package horizon
 
 import (
 	"encoding/json"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/horizon/resource"
-	"github.com/stellar/horizon/test"
-	"github.com/stellar/horizon/txsub"
-	"github.com/stellar/horizon/txsub/sequence"
 	"net/url"
 	"testing"
+
+	"github.com/stellar/horizon/resource"
+	"github.com/stellar/horizon/txsub"
+	"github.com/stellar/horizon/txsub/sequence"
 )
 
-func TestTransactionActions(t *testing.T) {
+func TestTransactionActions_Show(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
 
-	Convey("Transactions Actions:", t, func() {
-		test.LoadScenario("base")
-		app := NewTestApp()
-		defer app.Close()
-		rh := NewRequestHelper(app)
+	w := ht.Get("/transactions/2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d")
 
-		Convey("GET /transactions/2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d", func() {
-			w := rh.Get("/transactions/2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d")
-			So(w.Code, ShouldEqual, 200)
+	if ht.Assert.Equal(200, w.Code) {
+		var actual resource.Transaction
+		err := json.Unmarshal(w.Body.Bytes(), &actual)
+		ht.Require.NoError(err)
 
-			var result resource.Transaction
-			err := json.Unmarshal(w.Body.Bytes(), &result)
-			So(err, ShouldBeNil)
-			So(result.Hash, ShouldEqual, "2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d")
-		})
+		ht.Assert.Equal(
+			"2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d",
+			actual.Hash,
+		)
+	}
 
-		Convey("GET /transactions/not_real", func() {
-			w := rh.Get("/transactions/not_real")
-			So(w.Code, ShouldEqual, 404)
-		})
+	// missing tx
+	w = ht.Get("/transactions/not_real")
+	ht.Assert.Equal(404, w.Code)
+}
 
-		Convey("GET /ledgers/100/transactions", func() {
-			w := rh.Get("/ledgers/100/transactions")
-			So(w.Code, ShouldEqual, 404)
-		})
+func TestTransactionActions_Index(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
 
-		Convey("GET /transactions", func() {
-			w := rh.Get("/transactions")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 4)
-		})
+	w := ht.Get("/transactions")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(4, w.Body)
+	}
 
-		Convey("GET /ledgers/:ledger_id/transactions", func() {
-			w := rh.Get("/ledgers/1/transactions")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 0)
+	// filtered by ledger
+	w = ht.Get("/ledgers/1/transactions")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(0, w.Body)
+	}
 
-			w = rh.Get("/ledgers/2/transactions")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 3)
+	w = ht.Get("/ledgers/2/transactions")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(3, w.Body)
+	}
 
-			w = rh.Get("/ledgers/3/transactions")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 1)
-		})
+	w = ht.Get("/ledgers/3/transactions")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(1, w.Body)
+	}
 
-		Convey("GET /accounts/:account_od/transactions", func() {
-			w := rh.Get("/accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H/transactions")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 3)
+	// missing ledger
+	w = ht.Get("/ledgers/100/transactions")
+	ht.Assert.Equal(404, w.Code)
 
-			w = rh.Get("/accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2/transactions")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 1)
+	// filtering by account
+	w = ht.Get("/accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H/transactions")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(3, w.Body)
+	}
 
-			w = rh.Get("/accounts/GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU/transactions")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Body, ShouldBePageOf, 2)
-		})
+	w = ht.Get("/accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2/transactions")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(1, w.Body)
+	}
 
-		Convey("POST /transactions", func() {
-			Convey("503 response when Sequence buffer is full", func() {
-				app.submitter.Results = &txsub.MockResultProvider{
-					Results: []txsub.Result{
-						{Err: sequence.ErrNoMoreRoom},
-					},
-				}
+	w = ht.Get("/accounts/GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU/transactions")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(2, w.Body)
+	}
+}
 
-				w := rh.Post(
-					"/transactions",
-					url.Values{"tx": []string{"AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAAZAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAECDzqvkQBQoNAJifPRXDoLhvtycT3lFPCQ51gkdsFHaBNWw05S/VhW0Xgkr0CBPE4NaFV2Kmcs3ZwLmib4TRrML"}},
-				)
-				So(w.Code, ShouldEqual, 503)
+func TestTransactionActions_Post(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
 
-			})
+	form := url.Values{"tx": []string{"AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAAZAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAECDzqvkQBQoNAJifPRXDoLhvtycT3lFPCQ51gkdsFHaBNWw05S/VhW0Xgkr0CBPE4NaFV2Kmcs3ZwLmib4TRrML"}}
 
-			Convey("200 response for existing transaction", func() {
-				w := rh.Post(
-					"/transactions",
-					url.Values{"tx": []string{"AAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3AAAAZAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAArqN6LeOagjxMaUP96Bzfs9e0corNZXzBWJkFoK7kvkwAAAAAO5rKAAAAAAAAAAABVvwF9wAAAECDzqvkQBQoNAJifPRXDoLhvtycT3lFPCQ51gkdsFHaBNWw05S/VhW0Xgkr0CBPE4NaFV2Kmcs3ZwLmib4TRrML"}},
-				)
-				So(w.Code, ShouldEqual, 200)
+	// existing transaction
+	w := ht.Post("/transactions", form)
+	ht.Assert.Equal(200, w.Code)
 
-			})
-		})
-
-	})
+	// sequence buffer full
+	ht.App.submitter.Results = &txsub.MockResultProvider{
+		Results: []txsub.Result{
+			{Err: sequence.ErrNoMoreRoom},
+		},
+	}
+	w = ht.Post("/transactions", form)
+	ht.Assert.Equal(503, w.Code)
 }
