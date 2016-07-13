@@ -67,14 +67,14 @@ func TestHelpers(t *testing.T) {
 			So(action.Err, ShouldBeNil)
 			So(result, ShouldEqual, 2)
 
-			result = action.GetInt32("64max")
+			_ = action.GetInt32("64max")
 			So(action.Err, ShouldHaveSameTypeAs, &problem.P{})
 			p := action.Err.(*problem.P)
 			So(p.Type, ShouldEqual, "bad_request")
 			So(p.Extras["invalid_field"], ShouldEqual, "64max")
 			action.Err = nil
 
-			result = action.GetInt32("64min")
+			_ = action.GetInt32("64min")
 			So(action.Err, ShouldHaveSameTypeAs, &problem.P{})
 			p = action.Err.(*problem.P)
 			So(p.Type, ShouldEqual, "bad_request")

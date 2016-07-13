@@ -48,6 +48,7 @@ func ForOperation(
 		err = fmt.Errorf("Unknown operation type: %s", op.Body.Type)
 	}
 
+	result = dedupe(result)
 	return
 }
 
@@ -57,43 +58,44 @@ func ForTransaction(
 	tx *xdr.Transaction,
 	meta *xdr.TransactionMeta,
 	feeMeta *xdr.LedgerEntryChanges,
-) (ret []xdr.AccountId, err error) {
+) (result []xdr.AccountId, err error) {
 
-	alreadyAdded := map[string]bool{}
-	add := func(aids ...xdr.AccountId) {
-		for _, aid := range aids {
-			_, found := alreadyAdded[aid.Address()]
-			if found {
-				continue
-			}
-
-			ret = append(ret, aid)
-			alreadyAdded[aid.Address()] = true
-		}
-	}
-
-	add(tx.SourceAccount)
+	result = append(result, tx.SourceAccount)
 
 	p, err := forMeta(meta)
 	if err != nil {
 		return
 	}
-	add(p...)
+	result = append(result, p...)
 
 	p, err = forChanges(feeMeta)
 	if err != nil {
 		return
 	}
-	add(p...)
+	result = append(result, p...)
 
 	for i := range tx.Operations {
 		p, err = ForOperation(tx, &tx.Operations[i])
 		if err != nil {
 			return
 		}
-		add(p...)
+		result = append(result, p...)
 	}
 
+	result = dedupe(result)
+	return
+}
+
+// dedupe remove any duplicate ids from `in`
+func dedupe(in []xdr.AccountId) (out []xdr.AccountId) {
+	set := map[string]xdr.AccountId{}
+	for _, id := range in {
+		set[id.Address()] = id
+	}
+
+	for _, id := range set {
+		out = append(out, id)
+	}
 	return
 }
 

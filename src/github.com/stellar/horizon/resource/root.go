@@ -7,9 +7,17 @@ import (
 )
 
 // Populate fills in the details
-func (res *Root) Populate(ctx context.Context, hSeq, cSeq int32, hVersion, cVersion string, passphrase string) {
-	res.HorizonSequence = hSeq
-	res.StellarCoreSequence = cSeq
+func (res *Root) Populate(
+	ctx context.Context,
+	hLatestSeq, hElderSeq int32,
+	cLatestSeq, cElderSeq int32,
+	hVersion, cVersion string,
+	passphrase string,
+) {
+	res.HorizonSequence = hLatestSeq
+	res.HorizonElderSequence = hElderSeq
+	res.CoreSequence = cLatestSeq
+	res.CoreElderSequence = cElderSeq
 	res.HorizonVersion = hVersion
 	res.StellarCoreVersion = cVersion
 	res.NetworkPassphrase = passphrase

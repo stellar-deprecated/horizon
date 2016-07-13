@@ -4,69 +4,47 @@ import (
 	"encoding/json"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/resource"
-	"github.com/stellar/horizon/test"
 )
 
-func TestLedgerActions(t *testing.T) {
-	test.LoadScenario("base")
-	app := NewTestApp()
-	defer app.Close()
-	rh := NewRequestHelper(app)
+func TestLedgerActions_Index(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
 
-	Convey("Ledger Actions:", t, func() {
+	// default params
+	w := ht.Get("/ledgers")
 
-		Convey("GET /ledgers/1", func() {
-			w := rh.Get("/ledgers/1", test.RequestHelperNoop)
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(3, w.Body)
+	}
 
-			t.Log(w.Body.String())
-			So(w.Code, ShouldEqual, 200)
+	// with limit
+	w = ht.RH.Get("/ledgers?limit=1")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(1, w.Body)
+	}
+}
 
-			var result resource.Ledger
-			err := json.Unmarshal(w.Body.Bytes(), &result)
-			So(err, ShouldBeNil)
-			So(result.Sequence, ShouldEqual, 1)
-		})
+func TestLedgerActions_Show(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
 
-		Convey("GET /ledgers/100", func() {
-			w := rh.Get("/ledgers/100", test.RequestHelperNoop)
+	w := ht.Get("/ledgers/1")
+	ht.Assert.Equal(200, w.Code)
 
-			So(w.Code, ShouldEqual, 404)
-		})
+	var result resource.Ledger
+	err := json.Unmarshal(w.Body.Bytes(), &result)
+	if ht.Assert.NoError(err) {
+		ht.Assert.Equal(int32(1), result.Sequence)
+	}
 
-		Convey("GET /ledgers", func() {
+	// ledger higher than history
+	w = ht.Get("/ledgers/100")
+	ht.Assert.Equal(404, w.Code)
 
-			Convey("With Default Params", func() {
-				w := rh.Get("/ledgers", test.RequestHelperNoop)
+	// ledger that was reaped
+	ht.ReapHistory(1)
 
-				var result map[string]interface{}
-				err := json.Unmarshal(w.Body.Bytes(), &result)
-				So(err, ShouldBeNil)
-				So(w.Code, ShouldEqual, 200)
-
-				embedded := result["_embedded"].(map[string]interface{})
-				records := embedded["records"].([]interface{})
-
-				So(len(records), ShouldEqual, 3)
-
-			})
-
-			Convey("With A Limit", func() {
-				w := rh.Get("/ledgers?limit=1", test.RequestHelperNoop)
-
-				var result map[string]interface{}
-				err := json.Unmarshal(w.Body.Bytes(), &result)
-				So(err, ShouldBeNil)
-				So(w.Code, ShouldEqual, 200)
-
-				embedded := result["_embedded"].(map[string]interface{})
-				records := embedded["records"].([]interface{})
-
-				So(len(records), ShouldEqual, 1)
-
-			})
-
-		})
-	})
+	w = ht.Get("/ledgers/1")
+	ht.Assert.Equal(410, w.Code)
 }

@@ -19,37 +19,37 @@ func TestRateLimitMiddleware(t *testing.T) {
 		rh := NewRequestHelper(app)
 
 		Convey("sets X-RateLimit-Limit headers correctly", func() {
-			w := rh.Get("/", test.RequestHelperNoop)
+			w := rh.Get("/")
 			So(w.Code, ShouldEqual, 200)
 			So(w.Header().Get("X-RateLimit-Limit"), ShouldEqual, "10")
 		})
 
 		Convey("sets X-RateLimit-Remaining headers correctly", func() {
 			for i := 0; i < 10; i++ {
-				w := rh.Get("/", test.RequestHelperNoop)
+				w := rh.Get("/")
 				expected := 10 - (i + 1)
 				So(w.Header().Get("X-RateLimit-Remaining"), ShouldEqual, strconv.Itoa(expected))
 			}
 
 			// confirm remaining stays at 0
 			for i := 0; i < 10; i++ {
-				w := rh.Get("/", test.RequestHelperNoop)
+				w := rh.Get("/")
 				So(w.Header().Get("X-RateLimit-Remaining"), ShouldEqual, "0")
 			}
 		})
 
 		Convey("sets X-RateLimit-Reset header correctly", func() {
-			w := rh.Get("/", test.RequestHelperNoop)
+			w := rh.Get("/")
 			So(w.Header().Get("X-RateLimit-Reset"), ShouldEqual, "3599")
 		})
 
 		Convey("Restricts based on RemoteAddr IP after too many requests", func() {
 			for i := 0; i < 10; i++ {
-				w := rh.Get("/", test.RequestHelperNoop)
+				w := rh.Get("/")
 				So(w.Code, ShouldEqual, 200)
 			}
 
-			w := rh.Get("/", test.RequestHelperNoop)
+			w := rh.Get("/")
 			So(w.Code, ShouldEqual, 429)
 
 			w = rh.Get("/", test.RequestHelperRemoteAddr("127.0.0.2"))
@@ -97,11 +97,11 @@ func TestRateLimitMiddleware(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		for i := 0; i < 10; i++ {
-			w := rh.Get("/", test.RequestHelperNoop)
+			w := rh.Get("/")
 			So(w.Code, ShouldEqual, 200)
 		}
 
-		w := rh.Get("/", test.RequestHelperNoop)
+		w := rh.Get("/")
 		So(w.Code, ShouldEqual, 429)
 
 		w = rh.Get("/", test.RequestHelperRemoteAddr("127.0.0.2"))

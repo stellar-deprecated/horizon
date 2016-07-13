@@ -2,6 +2,7 @@ package db2
 
 import (
 	"database/sql"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -47,6 +48,20 @@ func (r *Repo) Commit() error {
 	err := r.tx.Commit()
 	r.logCommit()
 	r.tx = nil
+	return err
+}
+
+func (r *Repo) DeleteRange(
+	start, end int64,
+	table string,
+	idCol string,
+) error {
+	del := sq.Delete(table).Where(
+		fmt.Sprintf("%s >= ? AND %s < ?", idCol, idCol),
+		start,
+		end,
+	)
+	_, err := r.Exec(del)
 	return err
 }
 
@@ -261,7 +276,7 @@ func (r *Repo) logCommit() {
 }
 
 func (r *Repo) logRollback() {
-	log.Ctx(r.logCtx()).Debug("sql: rollbacl")
+	log.Ctx(r.logCtx()).Debug("sql: rollback")
 }
 
 func (r *Repo) logCtx() context.Context {

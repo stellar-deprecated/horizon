@@ -26,11 +26,23 @@ CREATE TABLE gorp_migrations (
 
 
 --
+-- Name: history_accounts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE history_accounts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: history_accounts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE history_accounts (
-    id bigint NOT NULL,
+    id bigint DEFAULT nextval('history_accounts_id_seq'::regclass) NOT NULL,
     address character varying(64)
 );
 
@@ -189,14 +201,22 @@ ALTER TABLE ONLY history_transaction_participants ALTER COLUMN id SET DEFAULT ne
 -- Data for Name: gorp_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-04-20 09:55:50.155384-07');
-INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2016-04-20 09:55:50.159092-07');
+INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2016-06-28 15:12:02.483252-07');
+INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2016-06-28 15:12:02.486221-07');
+INSERT INTO gorp_migrations VALUES ('3_use_sequence_in_history_accounts.sql', '2016-06-28 15:12:02.487849-07');
 
 
 --
 -- Data for Name: history_accounts; Type: TABLE DATA; Schema: public; Owner: -
 --
 
+
+
+--
+-- Name: history_accounts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('history_accounts_id_seq', 1, false);
 
 
 --

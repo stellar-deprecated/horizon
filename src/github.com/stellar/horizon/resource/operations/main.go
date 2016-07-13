@@ -88,6 +88,7 @@ func New(
 	return
 }
 
+// Base represents the common attributes of an operation resource
 type Base struct {
 	Links struct {
 		Self        hal.Link `json:"self"`
@@ -104,6 +105,8 @@ type Base struct {
 	TypeI         int32  `json:"type_i"`
 }
 
+// CreateAccount is the json resource representing a single operation whose type
+// is CreateAccount.
 type CreateAccount struct {
 	Base
 	StartingBalance string `json:"starting_balance"`
@@ -111,6 +114,8 @@ type CreateAccount struct {
 	Account         string `json:"account"`
 }
 
+// Payment is the json resource representing a single operation whose type is
+// Payment.
 type Payment struct {
 	Base
 	base.Asset
@@ -119,6 +124,8 @@ type Payment struct {
 	Amount string `json:"amount"`
 }
 
+// PathPayment is the json resource representing a single operation whose type
+// is PathPayment.
 type PathPayment struct {
 	Payment
 	Path              []base.Asset `json:"path"`
@@ -136,6 +143,8 @@ type ManageData struct {
 	Value string `json:"value"`
 }
 
+// ManageOffer is the json resource representing a single operation whose type
+// is ManageOffer.
 type ManageOffer struct {
 	Base
 	OfferID            int64      `json:"offer_id"`
@@ -150,10 +159,14 @@ type ManageOffer struct {
 	SellingAssetIssuer string     `json:"selling_asset_issuer,omitempty"`
 }
 
+// CreatePassiveOffer is the json resource representing a single operation whose
+// type is CreatePassiveOffer.
 type CreatePassiveOffer struct {
 	ManageOffer
 }
 
+// SetOptions is the json resource representing a single operation whose type is
+// SetOptions.
 type SetOptions struct {
 	Base
 	HomeDomain    string `json:"home_domain,omitempty"`
@@ -173,6 +186,8 @@ type SetOptions struct {
 	HighThreshold *int `json:"high_threshold,omitempty"`
 }
 
+// ChangeTrust is the json resource representing a single operation whose type
+// is ChangeTrust.
 type ChangeTrust struct {
 	Base
 	base.Asset
@@ -181,6 +196,8 @@ type ChangeTrust struct {
 	Trustor string `json:"trustor"`
 }
 
+// AllowTrust is the json resource representing a single operation whose type is
+// AllowTrust.
 type AllowTrust struct {
 	Base
 	base.Asset
@@ -189,12 +206,16 @@ type AllowTrust struct {
 	Authorize bool   `json:"authorize"`
 }
 
+// AccountMerge is the json resource representing a single operation whose type
+// is AccountMerge.
 type AccountMerge struct {
 	Base
 	Account string `json:"account"`
 	Into    string `json:"into"`
 }
 
+// Inflation is the json resource representing a single operation whose type is
+// Inflation.
 type Inflation struct {
 	Base
 }

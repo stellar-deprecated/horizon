@@ -21,6 +21,7 @@ type Account struct {
 	Flags         xdr.AccountFlags
 }
 
+// AccountData is a row of data from the `accountdata` table
 type AccountData struct {
 	Accountid string
 	Key       string `db:"dataname"`
@@ -125,6 +126,8 @@ type Trustline struct {
 	Flags     int32
 }
 
+// AssetFromDB produces an xdr.Asset by combining the constituent type, code and
+// issuer, as often retrieved from the DB in 3 separate columns.
 func AssetFromDB(typ xdr.AssetType, code string, issuer string) (result xdr.Asset, err error) {
 	switch typ {
 	case xdr.AssetTypeAssetTypeNative:
@@ -170,6 +173,48 @@ func AssetFromDB(typ xdr.AssetType, code string, issuer string) (result xdr.Asse
 	}
 
 	return
+}
+
+// ElderLedger represents the oldest "ingestable" ledger known to the
+// stellar-core database this ingestion system is communicating with.  Horizon,
+// which wants to operate on a contiguous range of ledger data (i.e. free from
+// gaps) uses the elder ledger to start importing in the case of an empty
+// database.
+//
+// Due to the design of stellar-core, ledger 1 will _always_ be in the database,
+// even when configured to catchup minimally, so we cannot simply take
+// MIN(ledgerseq). Instead, we can find whether or not 1 is the elder ledger by
+// checking for the presence of ledger 2.
+func (q *Q) ElderLedger(dest *int32) error {
+	var found bool
+	err := q.GetRaw(&found, `
+		SELECT CASE WHEN EXISTS (
+		    SELECT *
+		    FROM ledgerheaders
+		    WHERE ledgerseq = 2
+		)
+		THEN CAST(1 AS BIT)
+		ELSE CAST(0 AS BIT) END
+	`)
+
+	if err != nil {
+		return err
+	}
+
+	// if ledger 2 is present, use it 1 as the elder ledger (since 1 is guaranteed
+	// to be present)
+	if found {
+		*dest = 1
+		return nil
+	}
+
+	err = q.GetRaw(dest, `
+		SELECT COALESCE(MIN(ledgerseq), 0)
+		FROM ledgerheaders
+		WHERE ledgerseq > 2
+	`)
+
+	return err
 }
 
 // LatestLedger loads the latest known ledger

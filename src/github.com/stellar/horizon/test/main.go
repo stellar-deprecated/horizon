@@ -87,6 +87,30 @@ func LoadScenarioWithoutHorizon(scenarioName string) {
 	loadScenario(scenarioName, false)
 }
 
+// OverrideLogger sets the default logger used by horizon to `l`.  This is used
+// by the testing system so that we can collect output from logs during test
+// runs.  Panics if the logger is already overridden.
+func OverrideLogger(l *hlog.Entry) {
+	if oldDefault != nil {
+		panic("logger already overridden")
+	}
+
+	oldDefault = hlog.DefaultLogger
+	hlog.DefaultLogger = l
+}
+
+// RestoreLogger restores the default horizon logger after it is overridden
+// using a call to `OverrideLogger`.  Panics if the default logger is not
+// presently overridden.
+func RestoreLogger() {
+	if oldDefault == nil {
+		panic("logger not overridden, cannot restore")
+	}
+
+	hlog.DefaultLogger = oldDefault
+	oldDefault = nil
+}
+
 // Start initializes a new test helper object and conceptually "starts" a new
 // test
 func Start(t *testing.T) *T {
@@ -98,6 +122,8 @@ func Start(t *testing.T) *T {
 	result.Logger.Logger.Out = result.LogBuffer
 	result.Logger.Logger.Formatter.(*logrus.TextFormatter).DisableColors = true
 	result.Logger.Logger.Level = logrus.DebugLevel
+
+	OverrideLogger(result.Logger)
 
 	result.Ctx = hlog.Set(context.Background(), result.Logger)
 	result.HorizonDB = Database()
@@ -121,5 +147,6 @@ func StellarCoreDatabase() *sqlx.DB {
 // DEPRECATED:  use `StellarCoreURL()` from test/db package
 func StellarCoreDatabaseURL() string {
 	return tdb.StellarCoreURL()
-
 }
+
+var oldDefault *hlog.Entry = nil

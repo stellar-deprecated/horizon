@@ -3,6 +3,11 @@ package ingest
 import (
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"path"
+	"strings"
 	"time"
 
 	"github.com/stellar/go-stellar-base/amount"
@@ -39,9 +44,11 @@ func (is *Session) Run() {
 	}
 
 	is.Err = is.Ingestion.Close()
+	if is.Err != nil {
+		return
+	}
 
-	// TODO: validate ledger chain
-
+	is.Err = is.reportCursorState()
 }
 
 func (is *Session) clearLedger() {
@@ -89,8 +96,8 @@ func (is *Session) ingestEffects() {
 
 	effects := &EffectIngestion{
 		Dest:        is.Ingestion,
-		Accounts:    is.accountCache,
 		OperationID: is.Cursor.OperationID(),
+		parent:      is.Ingestion,
 	}
 	source := is.Cursor.OperationSourceAccount()
 	opbody := is.Cursor.Operation().Body
@@ -315,11 +322,6 @@ func (is *Session) ingestLedger() {
 		is.Cursor.SuccessfulLedgerOperationCount(),
 	)
 
-	// If this is ledger 1, create the root account
-	if is.Cursor.LedgerSequence() == 1 {
-		is.Ingestion.Account(1, keypair.Master(is.Network).Address())
-	}
-
 	for is.Cursor.NextTx() {
 		is.ingestTransaction()
 	}
@@ -349,12 +351,6 @@ func (is *Session) ingestOperation() {
 		return
 	}
 
-	// Import the new account if one was created
-	if is.Cursor.Operation().Body.Type == xdr.OperationTypeCreateAccount {
-		op := is.Cursor.Operation().Body.MustCreateAccountOp()
-		is.Err = is.Ingestion.Account(is.Cursor.OperationID(), op.Destination.Address())
-	}
-
 	is.ingestOperationParticipants()
 	is.ingestEffects()
 }
@@ -374,13 +370,7 @@ func (is *Session) ingestOperationParticipants() {
 		return
 	}
 
-	var aids []int64
-	aids, is.Err = is.lookupParticipantIDs(p)
-	if is.Err != nil {
-		return
-	}
-
-	is.Err = is.Ingestion.OperationParticipants(is.Cursor.OperationID(), aids)
+	is.Err = is.Ingestion.OperationParticipants(is.Cursor.OperationID(), p)
 	if is.Err != nil {
 		return
 	}
@@ -500,39 +490,11 @@ func (is *Session) ingestTransactionParticipants() {
 		return
 	}
 
-	var aids []int64
-	aids, is.Err = is.lookupParticipantIDs(p)
+	is.Err = is.Ingestion.TransactionParticipants(is.Cursor.TransactionID(), p)
 	if is.Err != nil {
 		return
 	}
 
-	is.Err = is.Ingestion.TransactionParticipants(is.Cursor.TransactionID(), aids)
-	if is.Err != nil {
-		return
-	}
-
-}
-
-func (is *Session) lookupParticipantIDs(aids []xdr.AccountId) (ret []int64, err error) {
-	found := map[int64]bool{}
-
-	for _, in := range aids {
-		var out int64
-		out, err = is.accountCache.Get(in.Address())
-		if err != nil {
-			return
-		}
-
-		// De-duplicate
-		if _, ok := found[out]; ok {
-			continue
-		}
-
-		found[out] = true
-		ret = append(ret, out)
-	}
-
-	return
 }
 
 // assetDetails sets the details for `a` on `result` using keys with `prefix`
@@ -713,4 +675,44 @@ func (is *Session) operationFlagDetails(result map[string]interface{}, f int32, 
 
 	result[prefix+"_flags"] = n
 	result[prefix+"_flags_s"] = s
+}
+
+// reportCursorState makes an http request to the configured stellar-core server
+// to report that it has finished processing the data being ingested.  This
+// allows stellar-core to free that storage when next it runs its own
+// maintenance.
+func (is *Session) reportCursorState() error {
+	if is.StellarCoreURL == "" {
+		return nil
+	}
+
+	u, err := url.Parse(is.StellarCoreURL)
+	if err != nil {
+		return err
+	}
+
+	u.Path = path.Join(u.Path, "setcursor")
+	q := u.Query()
+	q.Set("id", "HORIZON")
+	q.Set("cursor", fmt.Sprintf("%d", is.Cursor.LastLedger))
+	u.RawQuery = q.Encode()
+	url := u.String()
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	raw, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	body := strings.TrimSpace(string(raw))
+	if body != "Done" {
+		return fmt.Errorf("failed to set cursor on stellar-core: %s", body)
+	}
+
+	return nil
 }

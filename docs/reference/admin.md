@@ -15,7 +15,7 @@ The stellar development foundation runs two horizon servers, one for the public 
 ## Prerequisites
 
 Horizon is a dependent upon a stellar-core server.  Horizon needs access to both the SQL database and the HTTP API that is published by stellar-core. See [the administration guide](https://www.stellar.org/developers/stellar-core/learn/admin.html
-) to learn how to set up and administer a stellar-core server.  Secondly, horizon is dependent upon a postgresql server, which it uses to store processed core data for ease of use. Horizon requires postgres version >= 9.3. 
+) to learn how to set up and administer a stellar-core server.  Secondly, horizon is dependent upon a postgresql server, which it uses to store processed core data for ease of use. Horizon requires postgres version >= 9.3.
 
 In addition to the two required prerequisites above, you may optionally install a redis server to be used for rate limiting requests.
 
@@ -89,7 +89,31 @@ The log line above announces that horizon is ready to serve client requests. Not
 
 Horizon provides most of its utility through ingested data.  Your horizon server can be configured to listen for and ingest transaction results from the connected stellar-core.  We recommend that within your infrastructure you run one (and only one) horizon process that is configured in this way.   While running multiple ingestion processes will not corrupt the horizon database, your error logs will quickly fill up as the two instances race to ingest the data from stellar-core.  We may develop a system that coordinates multiple horizon processes in the future, but we would also be happy to include an external contribution that accomplishes this.
 
-To enable ingestion, you must either pass `--ingest=true` on the command line or set the `INGEST` environment variable to "true".  
+To enable ingestion, you must either pass `--ingest=true` on the command line or set the `INGEST` environment variable to "true".
+
+### Managing storage for historical data
+
+Given an empty horizon database, any and all available history on the attached stellar-core instance will be ingested. Over time, this recorded history will grow unbounded, increasing storage used by the database.  To keep you costs down, you may configure horizon to only retain a certain number of ledgers in the historical database.  This is done using the `--history-retention-count` flag or the `HISTORY_RETENTION_COUNT` environment variable.  Set the value to the number of recent ledgers you with to keep around, and every hour the horizon subsystem will reap expired data.  Alternatively, you may execute the command `horizon db reap` to force a collection.
+
+### Surviving stellar-core downtime
+
+Horizon tries to maintain a gap-free window into the history of the stellar-network.  This reduces the number of edge cases that horizon-dependent software must deal with, aiming to make the integration process simpler.  To maintain a gap-free history, horizon needs access to all of the metadata produced by stellar-core in the process of closing a ledger, and there are instances when this metadata can be lost.  Usually, this loss of metadata occurs because the stellar-core node went offline and performed a catchup operation when restarted.
+
+To ensure that the metadata required by horizon is maintained, you have several options: You may either set the `CATCHUP_COMPLETE` stellar-core configuration option to `true` or configure `CATCHUP_RECENT` to determine the amount of time your stellar-core can be offline without having to rebuild your horizon database.
+
+We _do not_ recommend using the `CATCHUP_COMPLETE` method, as this will force stellar-core to apply every transaction from the beginning of the ledger, which will take an ever increasing amount of time.  Instead, we recommend you set the `CATCHUP_RECENT` config value.  To do this, determine how long of a downtime you would like to survive (expressed in seconds) and divide by ten.  This roughly equates to the number of ledgers that occur within you desired grace period (ledgers roughly close at a rate of one every ten seconds).  With this value set, stellar-core will replay transactions for ledgers that are recent enough, ensuring that the metadata needed by horizon is present.
+
+### Correcting gaps in historical data
+
+In the section above, we mentioned that horizon _tries_ to maintain a gap-free window.  Unfortunately, it cannot directly control the state of stellar-core and so gaps may form due to extended down time.  When a gap is encountered, horizon will stop ingesting historical data and complain loudly in the log with error messages (log lines will include "ledger gap detected").  To resolve this situation, you must re-establish the expected state of the stellar-core database and purge historical data from horizon's database.  We leave the details of this process up to the reader as it is dependent upon your operating needs and configuration, but we offer one potential solution:
+
+We recommend you configure the HISTORY_RETENTION_COUNT in horizon to a value less than or equal to the configured value for CATCHUP_RECENT in stellar-core.  Given this situation any downtime that would cause a ledger gap will require a downtime greater than the amount of historical data retained by horizon.  To re-establish continuity, simply:
+
+1.  Stop horizon.
+2.  run `horizon db reap` to clear the historical database.
+3.  Clear the cursor for horizon by running `stellar-core -c "dropcursor?id=HORIZON"` (ensure capitilization is maintained).
+4.  Clear ledger metadata from before the gap by running `stellar-core -c "maintenance?queue=true"`.
+5.  Restart horizon.    
 
 ## Monitoring
 

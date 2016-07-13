@@ -4,6 +4,7 @@ import (
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
 )
@@ -26,6 +27,7 @@ type LedgerIndexAction struct {
 func (action *LedgerIndexAction) JSON() {
 	action.Do(
 		action.loadParams,
+		action.ValidateCursorWithinHistory,
 		action.loadRecords,
 		action.loadPage,
 		func() { hal.Render(action.W, action.Page) },
@@ -34,7 +36,10 @@ func (action *LedgerIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *LedgerIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.loadParams)
+	action.Setup(
+		action.loadParams,
+		action.ValidateCursorWithinHistory,
+	)
 	action.Do(
 		action.loadRecords,
 		func() {
@@ -87,6 +92,7 @@ type LedgerShowAction struct {
 func (action *LedgerShowAction) JSON() {
 	action.Do(
 		action.loadParams,
+		action.verifyWithinHistory,
 		action.loadRecord,
 		func() {
 			var res resource.Ledger
@@ -103,4 +109,10 @@ func (action *LedgerShowAction) loadParams() {
 func (action *LedgerShowAction) loadRecord() {
 	action.Err = action.HistoryQ().
 		LedgerBySequence(&action.Record, action.Sequence)
+}
+
+func (action *LedgerShowAction) verifyWithinHistory() {
+	if action.Sequence < action.App.latestLedgerState.HorizonElder {
+		action.Err = &problem.BeforeHistory
+	}
 }

@@ -15,7 +15,7 @@ func TestPathActions(t *testing.T) {
 
 	Convey("Path Actions:", t, func() {
 		Convey("(no query args): GET /paths", func() {
-			w := rh.Get("/paths", test.RequestHelperNoop)
+			w := rh.Get("/paths")
 
 			t.Log(w.Body.String())
 			So(w.Code, ShouldEqual, 400)
@@ -29,7 +29,7 @@ func TestPathActions(t *testing.T) {
 				"&destination_asset_issuer=GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN" +
 				"&destination_amount=10"
 
-			w := rh.Get("/paths"+qs, test.RequestHelperNoop)
+			w := rh.Get("/paths"+qs)
 			So(w.Code, ShouldEqual, 200)
 			t.Log(qs)
 			t.Log(w.Body.String())

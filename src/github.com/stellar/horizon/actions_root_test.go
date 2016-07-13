@@ -26,7 +26,7 @@ func TestRootAction(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		w := rh.Get("/", test.RequestHelperNoop)
+		w := rh.Get("/")
 
 		So(w.Code, ShouldEqual, 200)
 

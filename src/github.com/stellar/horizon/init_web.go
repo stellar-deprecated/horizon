@@ -82,7 +82,6 @@ func initWebActions(app *App) {
 	r.Get("/ledgers/:ledger_id/effects", &EffectIndexAction{})
 
 	// account actions
-	r.Get("/accounts", &AccountIndexAction{})
 	r.Get("/accounts/:id", &AccountShowAction{})
 	r.Get("/accounts/:account_id/transactions", &TransactionIndexAction{})
 	r.Get("/accounts/:account_id/operations", &OperationIndexAction{})

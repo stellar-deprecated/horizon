@@ -32,7 +32,12 @@ type EffectIndexAction struct {
 
 // JSON is a method for actions.JSON
 func (action *EffectIndexAction) JSON() {
-	action.Do(action.loadParams, action.loadRecords, action.loadPage)
+	action.Do(
+		action.loadParams,
+		action.ValidateCursorWithinHistory,
+		action.loadRecords,
+		action.loadPage,
+	)
 
 	action.Do(func() {
 		hal.Render(action.W, action.Page)
@@ -41,7 +46,10 @@ func (action *EffectIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *EffectIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.loadParams)
+	action.Setup(
+		action.loadParams,
+		action.ValidateCursorWithinHistory,
+	)
 
 	action.Do(
 		action.loadRecords,

@@ -8,10 +8,12 @@ import (
 	"golang.org/x/net/context"
 )
 
+// PagingToken implements hal.Pageable
 func (this Base) PagingToken() string {
 	return this.PT
 }
 
+// Populate fills out this resource using `row` as the source.
 func (this *Base) Populate(ctx context.Context, row history.Operation) {
 	this.ID = fmt.Sprintf("%d", row.ID)
 	this.PT = row.PagingToken()

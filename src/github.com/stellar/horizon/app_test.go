@@ -34,7 +34,7 @@ func TestApp(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		w := rh.Get("/", test.RequestHelperNoop)
+		w := rh.Get("/")
 
 		So(w.Code, ShouldEqual, 200)
 		So(w.HeaderMap.Get("Access-Control-Allow-Origin"), ShouldEqual, "")
@@ -54,10 +54,10 @@ func TestApp(t *testing.T) {
 		defer app.Close()
 		rh := NewRequestHelper(app)
 
-		w := rh.Get("/accounts", test.RequestHelperNoop)
+		w := rh.Get("/ledgers")
 		So(w.Code, ShouldEqual, 200)
 
-		w = rh.Get("/accounts/", test.RequestHelperNoop)
+		w = rh.Get("/ledgers/")
 		So(w.Code, ShouldEqual, 200)
 
 	})
@@ -66,12 +66,12 @@ func TestApp(t *testing.T) {
 		test.LoadScenario("base")
 		app := NewTestApp()
 		defer app.Close()
-		So(app.horizonLedgerGauge.Value(), ShouldEqual, 0)
-		So(app.stellarCoreLedgerGauge.Value(), ShouldEqual, 0)
+		So(app.horizonLatestLedgerGauge.Value(), ShouldEqual, 0)
+		So(app.coreLatestLedgerGauge.Value(), ShouldEqual, 0)
 
 		app.UpdateMetrics(test.Context())
 
-		So(app.horizonLedgerGauge.Value(), ShouldEqual, 3)
-		So(app.stellarCoreLedgerGauge.Value(), ShouldEqual, 3)
+		So(app.horizonLatestLedgerGauge.Value(), ShouldEqual, 3)
+		So(app.coreLatestLedgerGauge.Value(), ShouldEqual, 3)
 	})
 }

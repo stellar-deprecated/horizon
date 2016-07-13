@@ -18,7 +18,7 @@ func TestTradeActions(t *testing.T) {
 		rh := NewRequestHelper(app)
 
 		Convey("GET /accounts/:account_id/trades", func() {
-			w := rh.Get("/accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2/trades", test.RequestHelperNoop)
+			w := rh.Get("/accounts/GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2/trades")
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 		})
@@ -32,7 +32,7 @@ func TestTradeActions(t *testing.T) {
 				"buying_asset_code=USD&" +
 				"buying_asset_issuer=GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4"
 
-			w := rh.Get(url, test.RequestHelperNoop)
+			w := rh.Get(url)
 			So(w.Code, ShouldEqual, 200)
 			So(w.Body, ShouldBePageOf, 1)
 		})

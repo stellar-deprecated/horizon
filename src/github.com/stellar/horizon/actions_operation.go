@@ -4,8 +4,10 @@ import (
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
+	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/resource"
+	"github.com/stellar/horizon/toid"
 )
 
 // This file contains the actions:
@@ -28,7 +30,11 @@ type OperationIndexAction struct {
 
 // JSON is a method for actions.JSON
 func (action *OperationIndexAction) JSON() {
-	action.Do(action.loadParams, action.loadRecords, action.loadPage)
+	action.Do(
+		action.loadParams,
+		action.ValidateCursorWithinHistory,
+		action.loadRecords,
+		action.loadPage)
 	action.Do(func() {
 		hal.Render(action.W, action.Page)
 	})
@@ -36,7 +42,10 @@ func (action *OperationIndexAction) JSON() {
 
 // SSE is a method for actions.SSE
 func (action *OperationIndexAction) SSE(stream sse.Stream) {
-	action.Setup(action.loadParams)
+	action.Setup(
+		action.loadParams,
+		action.ValidateCursorWithinHistory,
+	)
 	action.Do(
 		action.loadRecords,
 		func() {
@@ -124,8 +133,21 @@ func (action *OperationShowAction) loadResource() {
 
 // JSON is a method for actions.JSON
 func (action *OperationShowAction) JSON() {
-	action.Do(action.loadParams, action.loadRecord, action.loadResource)
+	action.Do(
+		action.loadParams,
+		action.verifyWithinHistory,
+		action.loadRecord,
+		action.loadResource,
+	)
 	action.Do(func() {
 		hal.Render(action.W, action.Resource)
 	})
+}
+
+func (action *OperationShowAction) verifyWithinHistory() {
+	parsed := toid.Parse(action.ID)
+
+	if parsed.LedgerSequence < action.App.latestLedgerState.HorizonElder {
+		action.Err = &problem.BeforeHistory
+	}
 }

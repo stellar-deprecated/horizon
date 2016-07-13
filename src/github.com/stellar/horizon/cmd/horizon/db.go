@@ -79,6 +79,20 @@ var dbMigrateCmd = &cobra.Command{
 	},
 }
 
+var dbReapCmd = &cobra.Command{
+	Use:   "reap",
+	Short: "reaps (i.e. removes) any reapable history data",
+	Long:  "reap removes any historical data that is earlier than the configured retention cutoff",
+	Run: func(cmd *cobra.Command, args []string) {
+		initApp(cmd, args)
+
+		err := app.DeleteUnretainedHistory()
+		if err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
 var dbReingestCmd = &cobra.Command{
 	Use:   "reingest",
 	Short: "imports all data",
@@ -102,7 +116,7 @@ var dbReingestCmd = &cobra.Command{
 			log.Fatal("network-passphrase is blank: reingestion requires manually setting passphrase")
 		}
 
-		i := ingest.New(passphrase, cdb, hdb)
+		i := ingest.New(passphrase, config.StellarCoreURL, cdb, hdb)
 		logStatus := func(stage string) {
 			count := i.Metrics.IngestLedgerTimer.Count()
 			rate := i.Metrics.IngestLedgerTimer.RateMean()
@@ -145,6 +159,7 @@ var dbReingestCmd = &cobra.Command{
 func init() {
 	dbCmd.AddCommand(dbInitCmd)
 	dbCmd.AddCommand(dbMigrateCmd)
+	dbCmd.AddCommand(dbReapCmd)
 	dbCmd.AddCommand(dbReingestCmd)
 }
 
