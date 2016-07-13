@@ -27,8 +27,6 @@ import (
 	"gopkg.in/tylerb/graceful.v1"
 )
 
-var appContextKey = 0
-
 // You can override this variable using: gb build -ldflags "-X main.version aabbccdd"
 var version = ""
 
@@ -74,12 +72,6 @@ type App struct {
 // var, which will be used for the reported horizon version.
 func SetVersion(v string) {
 	version = v
-}
-
-// AppFromContext retrieves a *App from the context tree.
-func AppFromContext(ctx context.Context) (*App, bool) {
-	a, ok := ctx.Value(&appContextKey).(*App)
-	return a, ok
 }
 
 // NewApp constructs an new App instance from the provided config.
