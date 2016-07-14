@@ -50,37 +50,9 @@ type Eventable interface {
 	SseEvent() Event
 }
 
-// Streamer handles the work of turning a channel of Eventable objects
-// into a http response to a client.  Construct one and call `ServeHTTP` to do
-// so
-type Streamer struct {
-	Ctx  context.Context
-	Data <-chan Eventable
-}
-
-func (s *Streamer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	if !WritePreamble(s.Ctx, w) {
-		return
-	}
-
-	// wait for data and stream it as it becomes available
-	// finish when either the client closes the connection
-	// or the data provider closes the channel
-	for {
-		select {
-		case eventable, more := <-s.Data:
-			if !more {
-				WriteEvent(s.Ctx, w, goodbyeEvent)
-				return
-			}
-			WriteEvent(s.Ctx, w, eventable.SseEvent())
-		case <-s.Ctx.Done():
-			return
-		}
-	}
-}
-
+// WritePreamble prepares this http connection for streaming using Server Sent
+// Events.  It sends the initial http response with the appropriate headers to
+// do so.
 func WritePreamble(ctx context.Context, w http.ResponseWriter) bool {
 
 	_, flushable := w.(http.Flusher)

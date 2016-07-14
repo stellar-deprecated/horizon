@@ -17,10 +17,9 @@ type Stream interface {
 }
 
 // NewStream creates a new stream against the provided response writer
-func NewStream(ctx context.Context, w http.ResponseWriter, r *http.Request) (Stream, bool) {
+func NewStream(ctx context.Context, w http.ResponseWriter, r *http.Request) Stream {
 	result := &stream{ctx, w, r, false, 0, 0}
-	ok := WritePreamble(ctx, w)
-	return result, ok
+	return result
 }
 
 type stream struct {
@@ -33,6 +32,14 @@ type stream struct {
 }
 
 func (s *stream) Send(e Event) {
+	if s.sent == 0 {
+		ok := WritePreamble(s.ctx, s.w)
+		if !ok {
+			s.done = true
+			return
+		}
+	}
+
 	WriteEvent(s.ctx, s.w, e)
 	s.sent++
 }
