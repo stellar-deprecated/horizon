@@ -29,6 +29,10 @@ func RequestHelperXFF(xff string) func(r *http.Request) {
 	}
 }
 
+func RequestHelperRaw(r *http.Request) {
+	r.Header.Set("Accept", "application/octet-stream")
+}
+
 func RequestHelperStreaming(r *http.Request) {
 	r.Header.Set("Accept", "text/event-stream")
 }

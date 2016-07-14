@@ -5,9 +5,7 @@ import (
 )
 
 func initAppContext(app *App) {
-	ctx, cancel := context.WithCancel(context.Background())
-	app.ctx = context.WithValue(ctx, &appContextKey, app)
-	app.cancel = cancel
+	app.ctx, app.cancel = context.WithCancel(context.Background())
 }
 
 func init() {

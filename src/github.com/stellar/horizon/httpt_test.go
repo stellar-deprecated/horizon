@@ -3,6 +3,7 @@ package horizon
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/stellar/horizon/test"
@@ -26,6 +27,7 @@ func StartHTTPTest(t *testing.T, scenario string) *HTTPT {
 	return ret
 }
 
+// Post delegates to the test's request helper
 func (ht *HTTPT) Get(
 	path string,
 	fn ...func(*http.Request),
@@ -33,9 +35,19 @@ func (ht *HTTPT) Get(
 	return ht.RH.Get(path, fn...)
 }
 
+// Finish closes the test app and finishes the test
 func (ht *HTTPT) Finish() {
 	ht.T.Finish()
 	ht.App.Close()
+}
+
+// Post delegates to the test's request helper
+func (ht *HTTPT) Post(
+	path string,
+	form url.Values,
+	mods ...func(*http.Request),
+) *httptest.ResponseRecorder {
+	return ht.RH.Post(path, form, mods...)
 }
 
 // ReapHistory causes the test server to run `DeleteUnretainedHistory`, after
