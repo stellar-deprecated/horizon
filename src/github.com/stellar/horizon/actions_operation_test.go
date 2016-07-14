@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stellar/horizon/resource/operations"
+	"github.com/stellar/horizon/test"
 )
 
 func TestOperationActions_Index(t *testing.T) {
@@ -92,4 +93,16 @@ func TestOperationActions_Show(t *testing.T) {
 	ht.ReapHistory(1)
 	w = ht.Get("/operations/8589938689")
 	ht.Assert.Equal(410, w.Code)
+}
+
+func TestOperationActions_Regressions(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
+
+	// ensure that trying to stream ops from an account that doesn't exist
+	// fails before streaming the hello message.  Regression test for #285
+	w := ht.Get("/accounts/foo/operations?limit=1", test.RequestHelperStreaming)
+	if ht.Assert.Equal(404, w.Code) {
+		ht.Assert.ProblemType(w.Body, "not_found")
+	}
 }
