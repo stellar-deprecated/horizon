@@ -4,65 +4,68 @@ import (
 	"net/http"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/test"
 )
 
-func TestApp(t *testing.T) {
+func TestNewApp(t *testing.T) {
+	tt := test.Start(t)
+	defer tt.Finish()
 
-	Convey("NewApp panics if the provided config's SentryDSN is invalid", t, func() {
-		config := NewTestConfig()
-		config.SentryDSN = "Not a url"
+	config := NewTestConfig()
+	config.SentryDSN = "Not a url"
 
-		So(func() {
-			app, _ := NewApp(config)
-			app.Close()
-		}, ShouldPanic)
+	tt.Assert.Panics(func() {
+		app, _ := NewApp(config)
+		app.Close()
+	})
+}
+
+func TestGenericHTTPFeatures(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
+
+	// CORS
+	w := ht.Get("/")
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Empty(w.HeaderMap.Get("Access-Control-Allow-Origin"))
+	}
+
+	w = ht.Get("/", func(r *http.Request) {
+		r.Header.Set("Origin", "somewhere.com")
 	})
 
-	Convey("CORS support", t, func() {
-		app := NewTestApp()
-		defer app.Close()
-		rh := NewRequestHelper(app)
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Equal(
+			"somewhere.com",
+			w.HeaderMap.Get("Access-Control-Allow-Origin"),
+		)
+	}
 
-		w := rh.Get("/")
+	// Trailing slash is stripped
+	w = ht.Get("/ledgers")
+	ht.Assert.Equal(200, w.Code)
+	w = ht.Get("/ledgers/")
+	ht.Assert.Equal(200, w.Code)
+}
 
-		So(w.Code, ShouldEqual, 200)
-		So(w.HeaderMap.Get("Access-Control-Allow-Origin"), ShouldEqual, "")
+func TestMetrics(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
 
-		w = rh.Get("/", func(r *http.Request) {
-			r.Header.Set("Origin", "somewhere.com")
-		})
+	hl := ht.App.horizonLatestLedgerGauge
+	he := ht.App.horizonElderLedgerGauge
+	cl := ht.App.coreLatestLedgerGauge
+	ce := ht.App.coreElderLedgerGauge
 
-		So(w.Code, ShouldEqual, 200)
-		So(w.HeaderMap.Get("Access-Control-Allow-Origin"), ShouldEqual, "somewhere.com")
+	ht.Require.EqualValues(0, hl.Value())
+	ht.Require.EqualValues(0, he.Value())
+	ht.Require.EqualValues(0, cl.Value())
+	ht.Require.EqualValues(0, ce.Value())
 
-	})
+	ht.App.UpdateMetrics(test.Context())
 
-	Convey("Trailing slash causes redirect", t, func() {
-		test.LoadScenario("base")
-		app := NewTestApp()
-		defer app.Close()
-		rh := NewRequestHelper(app)
-
-		w := rh.Get("/ledgers")
-		So(w.Code, ShouldEqual, 200)
-
-		w = rh.Get("/ledgers/")
-		So(w.Code, ShouldEqual, 200)
-
-	})
-
-	Convey("app.UpdateMetrics", t, func() {
-		test.LoadScenario("base")
-		app := NewTestApp()
-		defer app.Close()
-		So(app.horizonLatestLedgerGauge.Value(), ShouldEqual, 0)
-		So(app.coreLatestLedgerGauge.Value(), ShouldEqual, 0)
-
-		app.UpdateMetrics(test.Context())
-
-		So(app.horizonLatestLedgerGauge.Value(), ShouldEqual, 3)
-		So(app.coreLatestLedgerGauge.Value(), ShouldEqual, 3)
-	})
+	ht.Require.EqualValues(3, hl.Value())
+	ht.Require.EqualValues(1, he.Value())
+	ht.Require.EqualValues(3, cl.Value())
+	ht.Require.EqualValues(1, ce.Value())
 }
