@@ -23,6 +23,7 @@ func StartHTTPTest(t *testing.T, scenario string) *HTTPT {
 	ret.App = NewTestApp()
 	ret.RH = test.NewRequestHelper(ret.App.web.router)
 	ret.Assert = &Assertions{ret.T.Assert}
+	ret.App.UpdateLedgerState()
 
 	return ret
 }

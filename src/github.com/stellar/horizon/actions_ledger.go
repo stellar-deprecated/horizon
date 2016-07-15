@@ -3,6 +3,7 @@ package horizon
 import (
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
@@ -112,7 +113,7 @@ func (action *LedgerShowAction) loadRecord() {
 }
 
 func (action *LedgerShowAction) verifyWithinHistory() {
-	if action.Sequence < action.App.latestLedgerState.HorizonElder {
+	if action.Sequence < ledger.CurrentState().HorizonElder {
 		action.Err = &problem.BeforeHistory
 	}
 }

@@ -1,8 +1,8 @@
 package reap
 
 import (
-	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/errors"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/toid"
 )
@@ -20,30 +20,16 @@ func (r *System) DeleteUnretainedHistory() error {
 		return nil
 	}
 
-	q := &history.Q{r.HorizonDB}
 	var (
-		latest      int32
-		elder       int32
-		targetElder int32
+		latest      = ledger.CurrentState()
+		targetElder = (latest.HorizonLatest - int32(r.RetentionCount)) + 1
 	)
 
-	err := q.LatestLedger(&latest)
-	if err != nil {
-		return err
-	}
-
-	err = q.ElderLedger(&elder)
-	if err != nil {
-		return err
-	}
-
-	targetElder = (latest - int32(r.RetentionCount)) + 1
-
-	if targetElder < elder {
+	if targetElder < latest.HorizonElder {
 		return nil
 	}
 
-	err = r.clearBefore(targetElder)
+	err := r.clearBefore(targetElder)
 	if err != nil {
 		return err
 	}

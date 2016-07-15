@@ -5,6 +5,7 @@ import (
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/errors"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
 )
 
@@ -20,7 +21,8 @@ func (i *System) ReingestAll() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return i.ReingestRange(i.coreElderSequence, i.coreSequence)
+	ls := ledger.CurrentState()
+	return i.ReingestRange(ls.CoreElder, ls.CoreLatest)
 }
 
 // ReingestOutdated finds old ledgers and reimports them.
@@ -139,23 +141,26 @@ func (i *System) runOnce() {
 			return
 		}
 
-		var start int32
+		var (
+			start int32
+			ls    = ledger.CurrentState()
+		)
 
-		if i.historySequence == 0 {
-			start = i.coreElderSequence
+		if ls.HorizonLatest == 0 {
+			start = ls.CoreElder
 			log.Infof("history db is empty, starting ingestion from ledger %d", start)
 		} else {
-			start = i.historySequence + 1
+			start = ls.HorizonLatest + 1
 		}
 
-		end := i.coreSequence
+		end := ls.CoreLatest
 
 		// 2.
-		if start > i.coreSequence {
+		if start > end {
 			return
 		}
 
-		if start != i.coreElderSequence {
+		if start != ls.CoreElder {
 			err := i.validateLedgerChain(start)
 			if err != nil {
 				log.
@@ -186,26 +191,29 @@ func (i *System) updateLedgerState() error {
 	cq := &core.Q{Repo: i.CoreDB}
 	hq := &history.Q{Repo: i.HorizonDB}
 
-	err := cq.ElderLedger(&i.coreElderSequence)
+	var next ledger.State
+
+	err := cq.ElderLedger(&next.CoreElder)
 	if err != nil {
 		return err
 	}
 
-	err = cq.LatestLedger(&i.coreSequence)
+	err = cq.LatestLedger(&next.CoreLatest)
 	if err != nil {
 		return err
 	}
 
-	err = hq.LatestLedger(&i.historySequence)
+	err = hq.LatestLedger(&next.HorizonLatest)
 	if err != nil {
 		return err
 	}
 
-	err = hq.ElderLedger(&i.historyElderSequence)
+	err = hq.ElderLedger(&next.HorizonElder)
 	if err != nil {
 		return err
 	}
 
+	ledger.SetState(next)
 	return nil
 }
 

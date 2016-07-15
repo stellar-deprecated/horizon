@@ -86,7 +86,7 @@ func TestOperationActions_Show(t *testing.T) {
 	}
 
 	// doesn't exist
-	w = ht.Get("/operations/10")
+	w = ht.Get("/operations/9589938689")
 	ht.Assert.Equal(404, w.Code)
 
 	// before history

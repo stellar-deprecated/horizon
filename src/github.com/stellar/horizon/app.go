@@ -16,6 +16,7 @@ import (
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/friendbot"
 	"github.com/stellar/horizon/ingest"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/pump"
@@ -58,14 +59,6 @@ type App struct {
 	coreElderLedgerGauge     metrics.Gauge
 	coreConnGauge            metrics.Gauge
 	goroutineGauge           metrics.Gauge
-
-	// cached state
-	latestLedgerState struct {
-		CoreLatest    int32
-		CoreElder     int32
-		HorizonLatest int32
-		HorizonElder  int32
-	}
 }
 
 // SetVersion records the provided version string in the package level `version`
@@ -177,27 +170,29 @@ func (a *App) CoreQ() *core.Q {
 // db connections and ledger state
 func (a *App) UpdateLedgerState() {
 	var err error
+	var next ledger.State
 
-	err = a.CoreQ().LatestLedger(&a.latestLedgerState.CoreLatest)
+	err = a.CoreQ().LatestLedger(&next.CoreLatest)
 	if err != nil {
 		goto Failed
 	}
 
-	err = a.CoreQ().ElderLedger(&a.latestLedgerState.CoreElder)
+	err = a.CoreQ().ElderLedger(&next.CoreElder)
 	if err != nil {
 		goto Failed
 	}
 
-	err = a.HistoryQ().LatestLedger(&a.latestLedgerState.HorizonLatest)
+	err = a.HistoryQ().LatestLedger(&next.HorizonLatest)
 	if err != nil {
 		goto Failed
 	}
 
-	err = a.HistoryQ().ElderLedger(&a.latestLedgerState.HorizonElder)
+	err = a.HistoryQ().ElderLedger(&next.HorizonElder)
 	if err != nil {
 		goto Failed
 	}
 
+	ledger.SetState(next)
 	return
 
 Failed:
@@ -257,11 +252,11 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 	a.UpdateLedgerState()
 
 	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
-
-	a.horizonLatestLedgerGauge.Update(int64(a.latestLedgerState.HorizonLatest))
-	a.horizonElderLedgerGauge.Update(int64(a.latestLedgerState.HorizonElder))
-	a.coreLatestLedgerGauge.Update(int64(a.latestLedgerState.CoreLatest))
-	a.coreElderLedgerGauge.Update(int64(a.latestLedgerState.CoreElder))
+	ls := ledger.CurrentState()
+	a.horizonLatestLedgerGauge.Update(int64(ls.HorizonLatest))
+	a.horizonElderLedgerGauge.Update(int64(ls.HorizonElder))
+	a.coreLatestLedgerGauge.Update(int64(ls.CoreLatest))
+	a.coreElderLedgerGauge.Update(int64(ls.CoreElder))
 
 	a.horizonConnGauge.Update(int64(a.historyQ.Repo.DB.Stats().OpenConnections))
 	a.coreConnGauge.Update(int64(a.coreQ.Repo.DB.Stats().OpenConnections))

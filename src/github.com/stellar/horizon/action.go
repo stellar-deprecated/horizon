@@ -10,6 +10,7 @@ import (
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/toid"
@@ -51,7 +52,7 @@ func (action *Action) GetPagingParams() (cursor string, order string, limit uint
 
 	if cursor == "now" {
 		tid := toid.ID{
-			LedgerSequence:   action.App.latestLedgerState.HorizonLatest,
+			LedgerSequence:   ledger.CurrentState().HorizonLatest,
 			TransactionOrder: toid.TransactionMask,
 			OperationOrder:   toid.OperationMask,
 		}
@@ -153,7 +154,7 @@ func (action *Action) ValidateCursorWithinHistory() {
 		return
 	}
 
-	elder := toid.New(action.App.latestLedgerState.HorizonElder, 0, 0)
+	elder := toid.New(ledger.CurrentState().HorizonElder, 0, 0)
 
 	if cursor <= elder.ToInt64() {
 		action.Err = &problem.BeforeHistory

@@ -10,6 +10,7 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/ledger"
 )
 
 const (
@@ -84,11 +85,7 @@ type System struct {
 	// ingested from.
 	StellarCoreURL string
 
-	tick                 *time.Ticker
-	historySequence      int32
-	historyElderSequence int32
-	coreSequence         int32
-	coreElderSequence    int32
+	tick *time.Ticker
 }
 
 // IngesterMetrics tracks all the metrics for the ingestion subsystem
@@ -209,9 +206,11 @@ func RunOnce(network string, coreURL string, core, horizon *db2.Repo) (*Session,
 		return nil, err
 	}
 
+	ls := ledger.CurrentState()
+
 	is := NewSession(
-		i.historySequence+1,
-		i.coreSequence,
+		ls.HorizonLatest+1,
+		ls.CoreLatest,
 		i,
 	)
 
