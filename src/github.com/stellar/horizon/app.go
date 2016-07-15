@@ -52,8 +52,8 @@ type App struct {
 
 	// metrics
 	metrics                  metrics.Registry
-	horizonLatestLedgerGauge metrics.Gauge
-	horizonElderLedgerGauge  metrics.Gauge
+	historyLatestLedgerGauge metrics.Gauge
+	historyElderLedgerGauge  metrics.Gauge
 	horizonConnGauge         metrics.Gauge
 	coreLatestLedgerGauge    metrics.Gauge
 	coreElderLedgerGauge     metrics.Gauge
@@ -182,12 +182,12 @@ func (a *App) UpdateLedgerState() {
 		goto Failed
 	}
 
-	err = a.HistoryQ().LatestLedger(&next.HorizonLatest)
+	err = a.HistoryQ().LatestLedger(&next.HistoryLatest)
 	if err != nil {
 		goto Failed
 	}
 
-	err = a.HistoryQ().ElderLedger(&next.HorizonElder)
+	err = a.HistoryQ().ElderLedger(&next.HistoryElder)
 	if err != nil {
 		goto Failed
 	}
@@ -253,8 +253,8 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 
 	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
 	ls := ledger.CurrentState()
-	a.horizonLatestLedgerGauge.Update(int64(ls.HorizonLatest))
-	a.horizonElderLedgerGauge.Update(int64(ls.HorizonElder))
+	a.historyLatestLedgerGauge.Update(int64(ls.HistoryLatest))
+	a.historyElderLedgerGauge.Update(int64(ls.HistoryElder))
 	a.coreLatestLedgerGauge.Update(int64(ls.CoreLatest))
 	a.coreElderLedgerGauge.Update(int64(ls.CoreElder))
 

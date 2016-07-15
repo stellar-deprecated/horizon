@@ -209,7 +209,7 @@ func RunOnce(network string, coreURL string, core, horizon *db2.Repo) (*Session,
 	ls := ledger.CurrentState()
 
 	is := NewSession(
-		ls.HorizonLatest+1,
+		ls.HistoryLatest+1,
 		ls.CoreLatest,
 		i,
 	)

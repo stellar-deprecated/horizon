@@ -14,8 +14,8 @@ func (res *Root) Populate(
 	hVersion, cVersion string,
 	passphrase string,
 ) {
-	res.HorizonSequence = ledgerState.HorizonLatest
-	res.HorizonElderSequence = ledgerState.HorizonElder
+	res.HorizonSequence = ledgerState.HistoryLatest
+	res.HistoryElderSequence = ledgerState.HistoryElder
 	res.CoreSequence = ledgerState.CoreLatest
 	res.CoreElderSequence = ledgerState.CoreElder
 	res.HorizonVersion = hVersion

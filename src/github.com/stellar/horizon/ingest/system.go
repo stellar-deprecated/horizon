@@ -146,11 +146,11 @@ func (i *System) runOnce() {
 			ls    = ledger.CurrentState()
 		)
 
-		if ls.HorizonLatest == 0 {
+		if ls.HistoryLatest == 0 {
 			start = ls.CoreElder
 			log.Infof("history db is empty, starting ingestion from ledger %d", start)
 		} else {
-			start = ls.HorizonLatest + 1
+			start = ls.HistoryLatest + 1
 		}
 
 		end := ls.CoreLatest
@@ -203,12 +203,12 @@ func (i *System) updateLedgerState() error {
 		return err
 	}
 
-	err = hq.LatestLedger(&next.HorizonLatest)
+	err = hq.LatestLedger(&next.HistoryLatest)
 	if err != nil {
 		return err
 	}
 
-	err = hq.ElderLedger(&next.HorizonElder)
+	err = hq.ElderLedger(&next.HistoryElder)
 	if err != nil {
 		return err
 	}

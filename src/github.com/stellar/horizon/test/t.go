@@ -62,8 +62,8 @@ func (t *T) UpdateLedgerState() {
 
 	err = t.HorizonRepo().GetRaw(&next, `
 			SELECT
-				MIN(sequence) as horizon_elder,
-				MAX(sequence) as horizon_latest
+				MIN(sequence) as history_elder,
+				MAX(sequence) as history_latest
 			FROM history_ledgers
 		`)
 

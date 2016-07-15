@@ -22,6 +22,7 @@ This release contains the initial implementation of the "Abridged History System
 ### Changed
 
 - BREAKING: When making a streaming request, a normal error response will be returned if an error occurs prior to sending the first event.  Additionally, the initial http response and streaming preamble will not be sent until the first event is available.
+- BREAKING: `horizon_latest_ledger` has renamed to `history_latest_ledger`
 - Horizon no longer needs to begin the ingestion of historical data from ledger sequence 1.  
 - Rows in the `history_accounts` table are no longer identified using the "Total Order ID" that other historical records  use, but are rather using a simple auto-incremented id.
 

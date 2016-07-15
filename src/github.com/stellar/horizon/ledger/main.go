@@ -14,8 +14,8 @@ import (
 type State struct {
 	CoreLatest    int32 `db:"core_latest"`
 	CoreElder     int32 `db:"core_elder"`
-	HorizonLatest int32 `db:"horizon_latest"`
-	HorizonElder  int32 `db:"horizon_elder"`
+	HistoryLatest int32 `db:"history_latest"`
+	HistoryElder  int32 `db:"history_elder"`
 }
 
 // CurrentState returns the cached snapshot of ledger state

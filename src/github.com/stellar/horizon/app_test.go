@@ -52,8 +52,8 @@ func TestMetrics(t *testing.T) {
 	ht := StartHTTPTest(t, "base")
 	defer ht.Finish()
 
-	hl := ht.App.horizonLatestLedgerGauge
-	he := ht.App.horizonElderLedgerGauge
+	hl := ht.App.historyLatestLedgerGauge
+	he := ht.App.historyElderLedgerGauge
 	cl := ht.App.coreLatestLedgerGauge
 	ce := ht.App.coreElderLedgerGauge
 
