@@ -33,6 +33,7 @@ type EffectIndexAction struct {
 // JSON is a method for actions.JSON
 func (action *EffectIndexAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 		action.loadRecords,
@@ -47,6 +48,7 @@ func (action *EffectIndexAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *EffectIndexAction) SSE(stream sse.Stream) {
 	action.Setup(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 	)

@@ -31,6 +31,7 @@ type TransactionIndexAction struct {
 // JSON is a method for actions.JSON
 func (action *TransactionIndexAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 		action.loadRecords,
@@ -44,6 +45,7 @@ func (action *TransactionIndexAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *TransactionIndexAction) SSE(stream sse.Stream) {
 	action.Setup(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 	)
@@ -121,6 +123,7 @@ func (action *TransactionShowAction) loadResource() {
 // JSON is a method for actions.JSON
 func (action *TransactionShowAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.loadRecord,
 		action.loadResource,

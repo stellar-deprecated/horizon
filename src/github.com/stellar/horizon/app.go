@@ -153,6 +153,17 @@ func (a *App) CoreQ() *core.Q {
 	return a.coreQ
 }
 
+// IsHistoryStale returns true if the latest history ledger is more than
+// `StaleThreshold` ledgers behind the latest core ledger
+func (a *App) IsHistoryStale() bool {
+	if a.config.StaleThreshold == 0 {
+		return false
+	}
+
+	ls := ledger.CurrentState()
+	return (ls.CoreLatest - ls.HistoryLatest) > int32(a.config.StaleThreshold)
+}
+
 // UpdateLedgerState triggers a refresh of several metrics gauges, such as open
 // db connections and ledger state
 func (a *App) UpdateLedgerState() {
@@ -264,7 +275,9 @@ func (a *App) Tick() {
 	go func() { a.UpdateStellarCoreInfo(); wg.Done() }()
 	wg.Wait()
 
-	go a.ingester.Tick()
+	if a.ingester != nil {
+		go a.ingester.Tick()
+	}
 
 	wg.Add(2)
 	go func() { a.reaper.Tick(); wg.Done() }()

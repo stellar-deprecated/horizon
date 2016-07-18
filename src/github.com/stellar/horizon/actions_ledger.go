@@ -27,6 +27,7 @@ type LedgerIndexAction struct {
 // JSON is a method for actions.JSON
 func (action *LedgerIndexAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 		action.loadRecords,
@@ -38,6 +39,7 @@ func (action *LedgerIndexAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *LedgerIndexAction) SSE(stream sse.Stream) {
 	action.Setup(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 	)
@@ -92,6 +94,7 @@ type LedgerShowAction struct {
 // JSON is a method for actions.JSON
 func (action *LedgerShowAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.verifyWithinHistory,
 		action.loadRecord,

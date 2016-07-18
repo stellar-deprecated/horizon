@@ -161,6 +161,23 @@ func (action *Action) ValidateCursorWithinHistory() {
 	}
 }
 
+// EnsureHistoryFreshness halts processing and raises
+func (action *Action) EnsureHistoryFreshness() {
+	if action.Err != nil {
+		return
+	}
+
+	if action.App.IsHistoryStale() {
+		ls := ledger.CurrentState()
+		err := problem.StaleHistory
+		err.Extras = map[string]interface{}{
+			"history_latest_ledger": ls.HistoryLatest,
+			"core_latest_ledger":    ls.CoreLatest,
+		}
+		action.Err = &err
+	}
+}
+
 // BaseURL returns the base url for this requestion, defined as a url containing
 // the Host and Scheme portions of the request uri.
 func (action *Action) BaseURL() *url.URL {

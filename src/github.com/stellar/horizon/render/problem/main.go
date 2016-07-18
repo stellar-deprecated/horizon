@@ -227,4 +227,16 @@ var (
 			"is asking for results prior to the recorded history known to " +
 			"this horizon instance.",
 	}
+
+	// StaleHistory is a well-known problem type.  Use it as a shortcut
+	// in your actions.
+	StaleHistory = P{
+		Type:   "stale_history",
+		Title:  "Historical DB Is Too Stale",
+		Status: http.StatusServiceUnavailable,
+		Detail: "This horizon instance is configured to reject client requests " +
+			"when it can determine that the history database is lagging too far " +
+			"behind the connected instance of stellar-core.  If you operate this " +
+			"server, please ensure that the ingestion system is properly running.",
+	}
 )

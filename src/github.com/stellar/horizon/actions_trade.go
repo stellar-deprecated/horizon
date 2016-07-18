@@ -24,6 +24,7 @@ type TradeIndexAction struct {
 // JSON is a method for actions.JSON
 func (action *TradeIndexAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.loadRecords,
 		action.loadPage,
