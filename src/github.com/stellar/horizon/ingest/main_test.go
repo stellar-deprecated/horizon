@@ -27,12 +27,32 @@ func TestIngest(t *testing.T) {
 	tt.Require.NoError(s.Err, "Couldn't re-import, even with clear allowed")
 }
 
+func TestTick(t *testing.T) {
+	tt := test.Start(t).ScenarioWithoutHorizon("base")
+	defer tt.Finish()
+	sys := sys(tt)
+
+	// ingest by tick
+	s := sys.Tick()
+	tt.Require.NoError(s.Err)
+	tt.Require.Nil(sys.current)
+
+	tt.UpdateLedgerState()
+	s = sys.Tick()
+	tt.Require.NotNil(s)
+	tt.Require.NoError(s.Err)
+}
+
 func ingest(tt *test.T) *Session {
-	s, _ := RunOnce(
+	sys := sys(tt)
+	return sys.Tick()
+}
+
+func sys(tt *test.T) *System {
+	return New(
 		network.TestNetworkPassphrase,
 		"",
 		tt.CoreRepo(),
 		tt.HorizonRepo(),
 	)
-	return s
 }

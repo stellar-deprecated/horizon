@@ -14,7 +14,7 @@ type System struct {
 	HorizonDB      *db2.Repo
 	RetentionCount uint
 
-	tick *time.Ticker
+	nextRun time.Time
 }
 
 // New initializes the reaper, causing it to begin polling the stellar-core
@@ -25,6 +25,6 @@ func New(retention uint, horizon *db2.Repo) *System {
 		RetentionCount: retention,
 	}
 
-	r.tick = time.NewTicker(1 * time.Hour)
+	r.nextRun = time.Now().Add(1 * time.Hour)
 	return r
 }

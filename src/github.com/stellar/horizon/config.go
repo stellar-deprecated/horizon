@@ -12,7 +12,6 @@ type Config struct {
 	StellarCoreDatabaseURL string
 	StellarCoreURL         string
 	Port                   int
-	Autopump               bool
 	RateLimit              throttled.Quota
 	RedisURL               string
 	LogLevel               logrus.Level

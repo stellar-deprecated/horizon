@@ -20,7 +20,6 @@ func initIngester(app *App) {
 		app.CoreRepo(nil),
 		app.HorizonRepo(nil),
 	)
-	app.ingester.Start()
 }
 
 func init() {

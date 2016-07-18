@@ -1,17 +1,13 @@
 package reap
 
 import (
+	"time"
+
 	"github.com/stellar/horizon/errors"
 	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/toid"
 )
-
-// Close causes the ingester to shut down.
-func (r *System) Close() {
-	log.Info("canceling reaper poller")
-	r.tick.Stop()
-}
 
 // DeleteUnretainedHistory removes all data associated with unretained ledgers.
 func (r *System) DeleteUnretainedHistory() error {
@@ -41,17 +37,15 @@ func (r *System) DeleteUnretainedHistory() error {
 	return nil
 }
 
-// Start causes the reaper to begin periodically clearing unretained historical
-// data from the horizon database.
-func (r *System) Start() {
-	go r.run()
-}
-
-func (r *System) run() {
-	for _ = range r.tick.C {
-		log.Debug("ticking reaper")
-		r.runOnce()
+// Tick triggers the reaper system to update itself, deleted unretained history
+// if it is the appropriate time.
+func (r *System) Tick() {
+	if time.Now().After(r.nextRun) {
+		return
 	}
+
+	r.runOnce()
+	r.nextRun = time.Now().Add(1 * time.Hour)
 }
 
 func (r *System) runOnce() {

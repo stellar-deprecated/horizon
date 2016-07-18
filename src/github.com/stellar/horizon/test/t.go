@@ -36,12 +36,14 @@ func (t *T) HorizonRepo() *db2.Repo {
 // Scenario loads the named sql scenario into the database
 func (t *T) Scenario(name string) *T {
 	LoadScenario(name)
+	t.UpdateLedgerState()
 	return t
 }
 
 // ScenarioWithoutHorizon loads the named sql scenario into the database
 func (t *T) ScenarioWithoutHorizon(name string) *T {
 	LoadScenarioWithoutHorizon(name)
+	t.UpdateLedgerState()
 	return t
 }
 
@@ -51,8 +53,8 @@ func (t *T) UpdateLedgerState() {
 
 	err := t.CoreRepo().GetRaw(&next, `
 		SELECT
-			MIN(ledgerseq) as core_elder,
-			MAX(ledgerseq) as core_latest
+			COALESCE(MIN(ledgerseq), 0) as core_elder,
+			COALESCE(MAX(ledgerseq), 0) as core_latest
 		FROM ledgerheaders
 	`)
 
@@ -62,8 +64,8 @@ func (t *T) UpdateLedgerState() {
 
 	err = t.HorizonRepo().GetRaw(&next, `
 			SELECT
-				MIN(sequence) as history_elder,
-				MAX(sequence) as history_latest
+				COALESCE(MIN(sequence), 0) as history_elder,
+				COALESCE(MAX(sequence), 0) as history_latest
 			FROM history_ledgers
 		`)
 

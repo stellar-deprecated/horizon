@@ -4,13 +4,12 @@
 package ingest
 
 import (
-	"time"
+	"sync"
 
 	sq "github.com/lann/squirrel"
 	"github.com/rcrowley/go-metrics"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
-	"github.com/stellar/horizon/ledger"
 )
 
 const (
@@ -85,7 +84,8 @@ type System struct {
 	// ingested from.
 	StellarCoreURL string
 
-	tick *time.Ticker
+	lock    sync.Mutex
+	current *Session
 }
 
 // IngesterMetrics tracks all the metrics for the ingestion subsystem
@@ -154,7 +154,6 @@ func New(network string, coreURL string, core, horizon *db2.Repo) *System {
 	i.Metrics.ClearLedgerTimer = metrics.NewTimer()
 	i.Metrics.IngestLedgerTimer = metrics.NewTimer()
 	i.Metrics.LoadLedgerTimer = metrics.NewTimer()
-	i.tick = time.NewTicker(1 * time.Second)
 	return i
 }
 
@@ -177,44 +176,4 @@ func NewSession(first, last int32, i *System) *Session {
 		StellarCoreURL: i.StellarCoreURL,
 		Metrics:        &i.Metrics,
 	}
-}
-
-// ReingestAll re-ingests all data
-func ReingestAll(network string, coreURL string, core, horizon *db2.Repo) (int, error) {
-	i := New(network, coreURL, core, horizon)
-	return i.ReingestAll()
-}
-
-// ReingestOutdated re-ingests any data that was not imported using the latest
-// version of the ingestion system.
-func ReingestOutdated(network string, coreURL string, core, horizon *db2.Repo) (int, error) {
-	i := New(network, coreURL, core, horizon)
-	return i.ReingestOutdated()
-}
-
-// ReingestSingle re-ingests a single ledger
-func ReingestSingle(network string, coreURL string, core, horizon *db2.Repo, sequence int32) error {
-	i := New(network, coreURL, core, horizon)
-	return i.ReingestSingle(sequence)
-}
-
-// RunOnce runs a single ingestion session
-func RunOnce(network string, coreURL string, core, horizon *db2.Repo) (*Session, error) {
-	i := New(network, coreURL, core, horizon)
-	err := i.updateLedgerState()
-	if err != nil {
-		return nil, err
-	}
-
-	ls := ledger.CurrentState()
-
-	is := NewSession(
-		ls.HistoryLatest+1,
-		ls.CoreLatest,
-		i,
-	)
-
-	is.Run()
-
-	return is, is.Err
 }
