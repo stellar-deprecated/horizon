@@ -6,7 +6,7 @@ file.  This project adheres to [Semantic Versioning](http://semver.org/).
 As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
-## [Unreleased]
+## [v0.6.0] - 2016-07-20
 
 This release contains the initial implementation of the "Abridged History System".  It allows a horizon system to be operated without complete knowledge of the ledger's history.  With this release, horizon will start ingesting data from the earliest point known to the connected stellar-core instance, rather than ledger 1 as it behaved previously.  See the admin guide section titled "Ingesting stellar-core data" for more details.
 
@@ -85,7 +85,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.5.1...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.6.0...master
+[v0.6.0]: https://github.com/stellar/horizon/compare/v0.5.1...v0.6.0
 [v0.5.1]: https://github.com/stellar/horizon/compare/v0.5.0...v0.5.1
 [v0.5.0]: https://github.com/stellar/horizon/compare/v0.4.0...v0.5.0
 [v0.4.0]: https://github.com/stellar/horizon/compare/v0.3.0...v0.4.0
