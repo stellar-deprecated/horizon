@@ -2,6 +2,7 @@ package resource
 
 import (
 	"github.com/stellar/horizon/httpx"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/render/hal"
 	"golang.org/x/net/context"
 )
@@ -9,15 +10,14 @@ import (
 // Populate fills in the details
 func (res *Root) Populate(
 	ctx context.Context,
-	hLatestSeq, hElderSeq int32,
-	cLatestSeq, cElderSeq int32,
+	ledgerState ledger.State,
 	hVersion, cVersion string,
 	passphrase string,
 ) {
-	res.HorizonSequence = hLatestSeq
-	res.HorizonElderSequence = hElderSeq
-	res.CoreSequence = cLatestSeq
-	res.CoreElderSequence = cElderSeq
+	res.HorizonSequence = ledgerState.HistoryLatest
+	res.HistoryElderSequence = ledgerState.HistoryElder
+	res.CoreSequence = ledgerState.CoreLatest
+	res.CoreElderSequence = ledgerState.CoreElder
 	res.HorizonVersion = hVersion
 	res.StellarCoreVersion = cVersion
 	res.NetworkPassphrase = passphrase

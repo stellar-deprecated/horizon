@@ -1,6 +1,7 @@
 package horizon
 
 import (
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource"
 )
@@ -18,10 +19,7 @@ func (action *RootAction) JSON() {
 	var res resource.Root
 	res.Populate(
 		action.Ctx,
-		action.App.latestLedgerState.HorizonLatest,
-		action.App.latestLedgerState.HorizonElder,
-		action.App.latestLedgerState.CoreLatest,
-		action.App.latestLedgerState.CoreElder,
+		ledger.CurrentState(),
 		action.App.horizonVersion,
 		action.App.coreVersion,
 		action.App.networkPassphrase,

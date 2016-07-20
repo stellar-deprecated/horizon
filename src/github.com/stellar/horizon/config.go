@@ -12,7 +12,6 @@ type Config struct {
 	StellarCoreDatabaseURL string
 	StellarCoreURL         string
 	Port                   int
-	Autopump               bool
 	RateLimit              throttled.Quota
 	RedisURL               string
 	LogLevel               logrus.Level
@@ -32,4 +31,9 @@ type Config struct {
 	// determining a "retention duration", each ledger roughly corresponds to 10
 	// seconds of real time.
 	HistoryRetentionCount uint
+
+	// StaleThreshold represents the number of ledgers a history database may be
+	// out-of-date by before horizon begins to respond with an error to history
+	// requests.
+	StaleThreshold uint
 }

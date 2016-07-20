@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -16,11 +17,10 @@ import (
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/friendbot"
 	"github.com/stellar/horizon/ingest"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
-	"github.com/stellar/horizon/pump"
 	"github.com/stellar/horizon/reap"
-	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 	"golang.org/x/net/http2"
@@ -43,29 +43,21 @@ type App struct {
 	horizonVersion    string
 	networkPassphrase string
 	submitter         *txsub.System
-	pump              *pump.Pump
 	paths             paths.Finder
 	friendbot         *friendbot.Bot
 	ingester          *ingest.System
 	reaper            *reap.System
+	ticks             *time.Ticker
 
 	// metrics
 	metrics                  metrics.Registry
-	horizonLatestLedgerGauge metrics.Gauge
-	horizonElderLedgerGauge  metrics.Gauge
+	historyLatestLedgerGauge metrics.Gauge
+	historyElderLedgerGauge  metrics.Gauge
 	horizonConnGauge         metrics.Gauge
 	coreLatestLedgerGauge    metrics.Gauge
 	coreElderLedgerGauge     metrics.Gauge
 	coreConnGauge            metrics.Gauge
 	goroutineGauge           metrics.Gauge
-
-	// cached state
-	latestLedgerState struct {
-		CoreLatest    int32
-		CoreElder     int32
-		HorizonLatest int32
-		HorizonElder  int32
-	}
 }
 
 // SetVersion records the provided version string in the package level `version`
@@ -80,18 +72,13 @@ func NewApp(config Config) (*App, error) {
 	result := &App{config: config}
 	result.horizonVersion = version
 	result.networkPassphrase = build.DefaultNetwork.Passphrase
+	result.ticks = time.NewTicker(1 * time.Second)
 	result.init()
 	return result, nil
 }
 
-// Init initializes app, using the config to populate db connections and
-// whatnot.
-func (a *App) init() {
-	appInit.Run(a)
-}
-
-// Serve starts the horizon system, binding it to a socket, setting up
-// the shutdown signals and starting the appropriate db-streaming pumps.
+// Serve starts the horizon web server, binding it to a socket, setting up
+// the shutdown signals.
 func (a *App) Serve() {
 
 	a.web.router.Compile()
@@ -115,9 +102,9 @@ func (a *App) Serve() {
 
 	http2.ConfigureServer(srv.Server, nil)
 
-	sse.SetPump(a.pump.Subscribe())
-
 	log.Infof("Starting horizon on %s", addr)
+
+	go a.run()
 
 	var err error
 	if a.config.TLSCert != "" {
@@ -136,14 +123,7 @@ func (a *App) Serve() {
 // Close cancels the app and forces the closure of db connections
 func (a *App) Close() {
 	a.cancel()
-
-	if a.ingester != nil {
-		a.ingester.Close()
-	}
-
-	if a.reaper != nil {
-		a.reaper.Close()
-	}
+	a.ticks.Stop()
 
 	a.historyQ.Repo.DB.Close()
 	a.coreQ.Repo.DB.Close()
@@ -173,31 +153,44 @@ func (a *App) CoreQ() *core.Q {
 	return a.coreQ
 }
 
+// IsHistoryStale returns true if the latest history ledger is more than
+// `StaleThreshold` ledgers behind the latest core ledger
+func (a *App) IsHistoryStale() bool {
+	if a.config.StaleThreshold == 0 {
+		return false
+	}
+
+	ls := ledger.CurrentState()
+	return (ls.CoreLatest - ls.HistoryLatest) > int32(a.config.StaleThreshold)
+}
+
 // UpdateLedgerState triggers a refresh of several metrics gauges, such as open
 // db connections and ledger state
 func (a *App) UpdateLedgerState() {
 	var err error
+	var next ledger.State
 
-	err = a.CoreQ().LatestLedger(&a.latestLedgerState.CoreLatest)
+	err = a.CoreQ().LatestLedger(&next.CoreLatest)
 	if err != nil {
 		goto Failed
 	}
 
-	err = a.CoreQ().ElderLedger(&a.latestLedgerState.CoreElder)
+	err = a.CoreQ().ElderLedger(&next.CoreElder)
 	if err != nil {
 		goto Failed
 	}
 
-	err = a.HistoryQ().LatestLedger(&a.latestLedgerState.HorizonLatest)
+	err = a.HistoryQ().LatestLedger(&next.HistoryLatest)
 	if err != nil {
 		goto Failed
 	}
 
-	err = a.HistoryQ().ElderLedger(&a.latestLedgerState.HorizonElder)
+	err = a.HistoryQ().ElderLedger(&next.HistoryElder)
 	if err != nil {
 		goto Failed
 	}
 
+	ledger.SetState(next)
 	return
 
 Failed:
@@ -253,15 +246,13 @@ func (a *App) UpdateStellarCoreInfo() {
 
 // UpdateMetrics triggers a refresh of several metrics gauges, such as open
 // db connections and ledger state
-func (a *App) UpdateMetrics(ctx context.Context) {
-	a.UpdateLedgerState()
-
+func (a *App) UpdateMetrics() {
 	a.goroutineGauge.Update(int64(runtime.NumGoroutine()))
-
-	a.horizonLatestLedgerGauge.Update(int64(a.latestLedgerState.HorizonLatest))
-	a.horizonElderLedgerGauge.Update(int64(a.latestLedgerState.HorizonElder))
-	a.coreLatestLedgerGauge.Update(int64(a.latestLedgerState.CoreLatest))
-	a.coreElderLedgerGauge.Update(int64(a.latestLedgerState.CoreElder))
+	ls := ledger.CurrentState()
+	a.historyLatestLedgerGauge.Update(int64(ls.HistoryLatest))
+	a.historyElderLedgerGauge.Update(int64(ls.HistoryElder))
+	a.coreLatestLedgerGauge.Update(int64(ls.CoreLatest))
+	a.coreElderLedgerGauge.Update(int64(ls.CoreElder))
 
 	a.horizonConnGauge.Update(int64(a.historyQ.Repo.DB.Stats().OpenConnections))
 	a.coreConnGauge.Update(int64(a.coreQ.Repo.DB.Stats().OpenConnections))
@@ -271,4 +262,49 @@ func (a *App) UpdateMetrics(ctx context.Context) {
 // `reap.DeleteUnretainedHistory` for details
 func (a *App) DeleteUnretainedHistory() error {
 	return a.reaper.DeleteUnretainedHistory()
+}
+
+// Tick triggers horizon to update all of it's background processes such as
+// transaction submission, metrics, ingestion and reaping.
+func (a *App) Tick() {
+	var wg sync.WaitGroup
+	log.Debug("ticking app")
+	// update ledger state and stellar-core info in parallel
+	wg.Add(2)
+	go func() { a.UpdateLedgerState(); wg.Done() }()
+	go func() { a.UpdateStellarCoreInfo(); wg.Done() }()
+	wg.Wait()
+
+	if a.ingester != nil {
+		go a.ingester.Tick()
+	}
+
+	wg.Add(2)
+	go func() { a.reaper.Tick(); wg.Done() }()
+	go func() { a.submitter.Tick(a.ctx); wg.Done() }()
+	wg.Wait()
+
+	// finally, update metrics
+	a.UpdateMetrics()
+	log.Debug("finished ticking app")
+}
+
+// Init initializes app, using the config to populate db connections and
+// whatnot.
+func (a *App) init() {
+	appInit.Run(a)
+}
+
+// run is the function that runs in the background that triggers Tick each
+// second
+func (a *App) run() {
+	for {
+		select {
+		case <-a.ticks.C:
+			a.Tick()
+		case <-a.ctx.Done():
+			log.Info("finished background ticker")
+			return
+		}
+	}
 }

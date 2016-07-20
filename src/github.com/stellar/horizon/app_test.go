@@ -52,8 +52,8 @@ func TestMetrics(t *testing.T) {
 	ht := StartHTTPTest(t, "base")
 	defer ht.Finish()
 
-	hl := ht.App.horizonLatestLedgerGauge
-	he := ht.App.horizonElderLedgerGauge
+	hl := ht.App.historyLatestLedgerGauge
+	he := ht.App.historyElderLedgerGauge
 	cl := ht.App.coreLatestLedgerGauge
 	ce := ht.App.coreElderLedgerGauge
 
@@ -62,7 +62,8 @@ func TestMetrics(t *testing.T) {
 	ht.Require.EqualValues(0, cl.Value())
 	ht.Require.EqualValues(0, ce.Value())
 
-	ht.App.UpdateMetrics(test.Context())
+	ht.App.UpdateLedgerState()
+	ht.App.UpdateMetrics()
 
 	ht.Require.EqualValues(3, hl.Value())
 	ht.Require.EqualValues(1, he.Value())

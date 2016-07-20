@@ -23,17 +23,8 @@ func initSubmissionSystem(app *App) {
 		Sequences:         cq.SequenceProvider(),
 		NetworkPassphrase: app.networkPassphrase,
 	}
-
-	go func() {
-		ticks := app.pump.Subscribe()
-
-		for _ = range ticks {
-			app.submitter.Tick(app.ctx)
-		}
-	}()
-
 }
 
 func init() {
-	appInit.Add("txsub", initSubmissionSystem, "app-context", "log", "horizon-db", "core-db", "pump")
+	appInit.Add("txsub", initSubmissionSystem, "app-context", "log", "horizon-db", "core-db")
 }

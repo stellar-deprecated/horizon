@@ -10,6 +10,7 @@ import (
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/toid"
@@ -51,7 +52,7 @@ func (action *Action) GetPagingParams() (cursor string, order string, limit uint
 
 	if cursor == "now" {
 		tid := toid.ID{
-			LedgerSequence:   action.App.latestLedgerState.HorizonLatest,
+			LedgerSequence:   ledger.CurrentState().HistoryLatest,
 			TransactionOrder: toid.TransactionMask,
 			OperationOrder:   toid.OperationMask,
 		}
@@ -153,10 +154,27 @@ func (action *Action) ValidateCursorWithinHistory() {
 		return
 	}
 
-	elder := toid.New(action.App.latestLedgerState.HorizonElder, 0, 0)
+	elder := toid.New(ledger.CurrentState().HistoryElder, 0, 0)
 
 	if cursor <= elder.ToInt64() {
 		action.Err = &problem.BeforeHistory
+	}
+}
+
+// EnsureHistoryFreshness halts processing and raises
+func (action *Action) EnsureHistoryFreshness() {
+	if action.Err != nil {
+		return
+	}
+
+	if action.App.IsHistoryStale() {
+		ls := ledger.CurrentState()
+		err := problem.StaleHistory
+		err.Extras = map[string]interface{}{
+			"history_latest_ledger": ls.HistoryLatest,
+			"core_latest_ledger":    ls.CoreLatest,
+		}
+		action.Err = &err
 	}
 }
 

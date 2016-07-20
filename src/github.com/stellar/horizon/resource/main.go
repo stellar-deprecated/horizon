@@ -155,8 +155,8 @@ type Root struct {
 
 	HorizonVersion       string `json:"horizon_version"`
 	StellarCoreVersion   string `json:"core_version"`
-	HorizonSequence      int32  `json:"horizon_latest_ledger"`
-	HorizonElderSequence int32  `json:"horizon_elder_ledger"`
+	HorizonSequence      int32  `json:"history_latest_ledger"`
+	HistoryElderSequence int32  `json:"history_elder_ledger"`
 	CoreSequence         int32  `json:"core_latest_ledger"`
 	CoreElderSequence    int32  `json:"core_elder_ledger"`
 	NetworkPassphrase    string `json:"network_passphrase"`

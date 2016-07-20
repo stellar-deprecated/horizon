@@ -3,6 +3,7 @@ package horizon
 import (
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
@@ -31,6 +32,7 @@ type OperationIndexAction struct {
 // JSON is a method for actions.JSON
 func (action *OperationIndexAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 		action.loadRecords,
@@ -43,6 +45,7 @@ func (action *OperationIndexAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *OperationIndexAction) SSE(stream sse.Stream) {
 	action.Setup(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 	)
@@ -134,6 +137,7 @@ func (action *OperationShowAction) loadResource() {
 // JSON is a method for actions.JSON
 func (action *OperationShowAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.verifyWithinHistory,
 		action.loadRecord,
@@ -146,8 +150,7 @@ func (action *OperationShowAction) JSON() {
 
 func (action *OperationShowAction) verifyWithinHistory() {
 	parsed := toid.Parse(action.ID)
-
-	if parsed.LedgerSequence < action.App.latestLedgerState.HorizonElder {
+	if parsed.LedgerSequence < ledger.CurrentState().HistoryElder {
 		action.Err = &problem.BeforeHistory
 	}
 }

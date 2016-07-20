@@ -14,7 +14,6 @@ type MetricsAction struct {
 
 // JSON is a method for actions.JSON
 func (action *MetricsAction) JSON() {
-	action.App.UpdateMetrics(action.Ctx)
 	action.LoadSnapshot()
 	action.Snapshot["_links"] = map[string]interface{}{
 		"self": hal.NewLink("/metrics"),

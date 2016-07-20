@@ -315,12 +315,16 @@ func (is *Session) ingestLedger() {
 	}
 
 	start := time.Now()
-	is.Ingestion.Ledger(
+	is.Err = is.Ingestion.Ledger(
 		is.Cursor.LedgerID(),
 		is.Cursor.Ledger(),
 		is.Cursor.SuccessfulTransactionCount(),
 		is.Cursor.SuccessfulLedgerOperationCount(),
 	)
+
+	if is.Err != nil {
+		return
+	}
 
 	for is.Cursor.NextTx() {
 		is.ingestTransaction()

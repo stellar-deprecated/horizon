@@ -5,22 +5,14 @@ import (
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/errors"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
 )
 
-// Close causes the ingester to shut down.
-func (i *System) Close() {
-	log.Info("canceling ingestion poller")
-	i.tick.Stop()
-}
-
 // ReingestAll re-ingests all ledgers
 func (i *System) ReingestAll() (int, error) {
-	err := i.updateLedgerState()
-	if err != nil {
-		return 0, err
-	}
-	return i.ReingestRange(i.coreElderSequence, i.coreSequence)
+	ls := ledger.CurrentState()
+	return i.ReingestRange(ls.CoreElder, ls.CoreLatest)
 }
 
 // ReingestOutdated finds old ledgers and reimports them.
@@ -101,23 +93,46 @@ func (i *System) ReingestSingle(sequence int32) error {
 	return err
 }
 
-// Start causes the ingester to begin polling the stellar-core database for now
-// ledgers and ingesting data into the horizon database.
-func (i *System) Start() {
-	go i.run()
+// Tick triggers the ingestion system to ingest any new ledger data, provided
+// that there currently is not an import session in progress.
+func (i *System) Tick() *Session {
+	i.lock.Lock()
+	if i.current != nil {
+		log.Info("ingest: already in progress")
+		i.lock.Unlock()
+		return nil
+	}
+
+	is := i.newTickSession()
+	i.current = is
+	i.lock.Unlock()
+
+	i.runOnce()
+	return is
 }
 
-func (i *System) run() {
-	for _ = range i.tick.C {
-		log.Debug("ticking ingester")
-		i.runOnce()
+// newTickSession creates an unverified new ingestion session that reflects the
+// current cached ledger state.
+func (i *System) newTickSession() *Session {
+	var (
+		start int32
+		ls    = ledger.CurrentState()
+	)
+
+	if ls.HistoryLatest == 0 {
+		start = ls.CoreElder
+	} else {
+		start = ls.HistoryLatest + 1
 	}
+
+	end := ls.CoreLatest
+
+	return NewSession(start, end, i)
 }
 
 // run causes the importer to check stellar-core to see if we can import new
 // data.
 func (i *System) runOnce() {
-
 	defer func() {
 		if rec := recover(); rec != nil {
 			err := errors.FromPanic(rec)
@@ -126,87 +141,58 @@ func (i *System) runOnce() {
 		}
 	}()
 
-	// 1. find the latest ledger
-	// 2. if any ledgers are available, validate that a new ledger is on the chain
+	ls := ledger.CurrentState()
+
+	// 1. stash a copy of the current ingestion session (assigned from the tick)
+	// 2. output "initial ingestion" message if the
 	// 3. import until none available
-	// 4. if any were imported, go to 1
-	for {
-		// 1.
-		err := i.updateLedgerState()
 
+	// 1.
+	i.lock.Lock()
+	is := i.current
+	i.lock.Unlock()
+
+	defer func() {
+		i.lock.Lock()
+		i.current = nil
+		i.lock.Unlock()
+	}()
+
+	if is == nil {
+		log.Warn("ingest: runOnce ran with a nil current session")
+		return
+	}
+
+	if is.Cursor.FirstLedger > is.Cursor.LastLedger {
+		return
+	}
+
+	// 2.
+	if ls.HistoryLatest == 0 {
+		log.Infof(
+			"history db is empty, starting ingestion from ledger %d",
+			is.Cursor.FirstLedger,
+		)
+	}
+
+	if is.Cursor.FirstLedger != ls.CoreElder {
+		err := i.validateLedgerChain(is.Cursor.FirstLedger)
 		if err != nil {
-			log.Errorf("could not load ledger state: %s", err)
-			return
-		}
-
-		var start int32
-
-		if i.historySequence == 0 {
-			start = i.coreElderSequence
-			log.Infof("history db is empty, starting ingestion from ledger %d", start)
-		} else {
-			start = i.historySequence + 1
-		}
-
-		end := i.coreSequence
-
-		// 2.
-		if start > i.coreSequence {
-			return
-		}
-
-		if start != i.coreElderSequence {
-			err := i.validateLedgerChain(start)
-			if err != nil {
-				log.
-					WithField("start", start).
-					Errorf("ledger gap detected (possible db corruption): %s", err)
-				return
-			}
-		}
-
-		// 3.
-		is := NewSession(start, end, i)
-		is.Run()
-
-		if is.Err != nil {
-			log.Errorf("import session failed: %s", is.Err)
-			return
-		}
-
-		// 4.
-		if is.Ingested == 0 {
+			log.
+				WithField("start", is.Cursor.FirstLedger).
+				Errorf("ledger gap detected (possible db corruption): %s", err)
 			return
 		}
 	}
 
-}
+	// 3.
+	is.Run()
 
-func (i *System) updateLedgerState() error {
-	cq := &core.Q{Repo: i.CoreDB}
-	hq := &history.Q{Repo: i.HorizonDB}
-
-	err := cq.ElderLedger(&i.coreElderSequence)
-	if err != nil {
-		return err
+	if is.Err != nil {
+		log.Errorf("import session failed: %s", is.Err)
 	}
 
-	err = cq.LatestLedger(&i.coreSequence)
-	if err != nil {
-		return err
-	}
-
-	err = hq.LatestLedger(&i.historySequence)
-	if err != nil {
-		return err
-	}
-
-	err = hq.ElderLedger(&i.historyElderSequence)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return
 }
 
 // validateLedgerChain helps to ensure the chain of ledger entries is contiguous

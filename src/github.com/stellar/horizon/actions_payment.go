@@ -23,6 +23,7 @@ type PaymentsIndexAction struct {
 // JSON is a method for actions.JSON
 func (action *PaymentsIndexAction) JSON() {
 	action.Do(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 		action.loadRecords,
@@ -36,6 +37,7 @@ func (action *PaymentsIndexAction) JSON() {
 // SSE is a method for actions.SSE
 func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
 	action.Setup(
+		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 	)

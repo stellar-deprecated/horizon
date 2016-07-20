@@ -29,10 +29,8 @@ func main() {
 func init() {
 	viper.SetDefault("port", 8000)
 	viper.SetDefault("history-retention-count", 0)
-	viper.SetDefault("autopump", false)
 
 	viper.BindEnv("port", "PORT")
-	viper.BindEnv("autopump", "AUTOPUMP")
 	viper.BindEnv("db-url", "DATABASE_URL")
 	viper.BindEnv("stellar-core-db-url", "STELLAR_CORE_DATABASE_URL")
 	viper.BindEnv("stellar-core-url", "STELLAR_CORE_URL")
@@ -49,6 +47,7 @@ func init() {
 	viper.BindEnv("ingest", "INGEST")
 	viper.BindEnv("network-passphrase", "NETWORK_PASSPHRASE")
 	viper.BindEnv("history-retention-count", "HISTORY_RETENTION_COUNT")
+	viper.BindEnv("history-stale-threshold", "HISTORY_STALE_THRESHOLD")
 
 	rootCmd = &cobra.Command{
 		Use:   "horizon",
@@ -82,12 +81,6 @@ func init() {
 		"port",
 		8000,
 		"tcp port to listen on for http requests",
-	)
-
-	rootCmd.Flags().Bool(
-		"autopump",
-		false,
-		"pump streams every second, instead of once per ledger close",
 	)
 
 	rootCmd.Flags().Int(
@@ -162,6 +155,12 @@ func init() {
 		"the minimum number of ledgers to maintain within horizon's history tables.  0 signifies an unlimited number of ledgers will be retained",
 	)
 
+	rootCmd.Flags().Uint(
+		"history-stale-threshold",
+		0,
+		"the maximum number of ledgers the history db is allowed to be out of date from the connected stellar-core db before horizon considers history stale",
+	)
+
 	rootCmd.AddCommand(dbCmd)
 
 	viper.BindPFlags(rootCmd.Flags())
@@ -212,7 +211,6 @@ func initConfig() {
 		DatabaseURL:            viper.GetString("db-url"),
 		StellarCoreDatabaseURL: viper.GetString("stellar-core-db-url"),
 		StellarCoreURL:         viper.GetString("stellar-core-url"),
-		Autopump:               viper.GetBool("autopump"),
 		Port:                   viper.GetInt("port"),
 		RateLimit:              throttled.PerHour(viper.GetInt("per-hour-rate-limit")),
 		RedisURL:               viper.GetString("redis-url"),
@@ -225,5 +223,6 @@ func initConfig() {
 		TLSKey:                 key,
 		Ingest:                 viper.GetBool("ingest"),
 		HistoryRetentionCount:  uint(viper.GetInt("history-retention-count")),
+		StaleThreshold:         uint(viper.GetInt("history-stale-threshold")),
 	}
 }
