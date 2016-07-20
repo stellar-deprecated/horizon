@@ -115,6 +115,12 @@ We recommend you configure the HISTORY_RETENTION_COUNT in horizon to a value les
 4.  Clear ledger metadata from before the gap by running `stellar-core -c "maintenance?queue=true"`.
 5.  Restart horizon.    
 
+## Managing Stale Historical Data
+
+Horizon ingests ledger data from a connected instance of stellar-core.  In the event that stellar-core stops running (or if horizon stops ingesting data for any other reason), the view provided by horizon will start to lag behind reality.  For simpler applications, this may be fine, but in many cases this lag is unacceptable and the application should not continue operating until the lag is resolved.
+
+To help applications that cannot tolerate lag, horizon provides a configurable "staleness" threshold.  Given that enough lag has accumulated to surpass this threshold (expressed in number of ledgers), horizon will only respond with an error: [`stale_history`](./errors/stale-history.md).  To configure this option, use either the `--history-stale-threshold` command line flag or the `HISTORY_STALE_THRESHOLD` environment variable.  NOTE:  non-historical requests (such as submitting transactions or finding payment paths) will not error out when the staleness threshold is surpassed.
+
 ## Monitoring
 
 To ensure that your instance of horizon is performing correctly we encourage you to monitor it, and provide both logs and metrics to do so.  

@@ -14,6 +14,7 @@ This release contains the initial implementation of the "Abridged History System
 
 - *Elder* ledgers have been introduced:  An elder ledger is the oldest ledger known to a db.  For example, the `core_elder_ledger` attribute on the root endpoint refers to the oldest known ledger stored in the connected stellar-core database.
 - Added the `history-retention-count` command line flag, used to specify the amount of historical data to keep in the history db.  This is expressed as a number of ledgers, for example a value of `362880` would retain roughly 6 weeks of data given an average of 10 seconds per ledger.
+- Added the `history-stale-threshold` command line flag to enable stale history protection.  See the admin guide for more info.
 - Horizon now reports the last ledger ingested to stellar-core using the `setcursor` command.
 - Requests for data that precede the recorded window of history stored by horizon will receive a `410 Gone` http response to allow software to differentiate from other "not found" situations.
 - The new `db reap` command will manually trigger the deletion of unretained historical data
