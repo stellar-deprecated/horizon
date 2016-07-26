@@ -27,3 +27,18 @@ func TestAccountActions_Show(t *testing.T) {
 	w = ht.Get("/accounts/100")
 	ht.Assert.Equal(404, w.Code)
 }
+
+func TestAccountActions_ShowRegressions(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
+
+	// Regression:  return 200 ok even when the history record cannot be found.
+
+	// overwrite history with blank,
+	ht.T.ScenarioWithoutHorizon("base")
+	w := ht.Get(
+		"/accounts/GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
+	)
+	ht.Assert.Equal(200, w.Code)
+
+}

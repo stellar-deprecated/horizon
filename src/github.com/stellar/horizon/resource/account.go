@@ -60,7 +60,7 @@ func (this *Account) Populate(
 	this.Signers[len(this.Signers)-1].PopulateMaster(ca)
 
 	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
-	self := fmt.Sprintf("/accounts/%s", ha.Address)
+	self := fmt.Sprintf("/accounts/%s", ca.Accountid)
 	this.Links.Self = lb.Link(self)
 	this.Links.Transactions = lb.PagedLink(self, "transactions")
 	this.Links.Operations = lb.PagedLink(self, "operations")

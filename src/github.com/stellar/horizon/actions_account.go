@@ -80,6 +80,13 @@ func (action *AccountShowAction) loadRecord() {
 
 	action.Err = action.HistoryQ().
 		AccountByAddress(&action.HistoryRecord, action.Address)
+
+	// Do not fail when we cannot find the history record... it probably just
+	// means that the account was created outside of our known history range.
+	if action.HistoryQ().NoRows(action.Err) {
+		action.Err = nil
+	}
+
 	if action.Err != nil {
 		return
 	}
