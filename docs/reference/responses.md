@@ -38,7 +38,12 @@ links between documents.  Let's look at a simple example:
   "sequence": 1,
   "transaction_count": 0,
   "operation_count": 0,
-  "closed_at": "0001-01-01T00:00:00Z"
+  "closed_at": "0001-01-01T00:00:00Z",
+  "total_coins": "100000000000.0000000",
+  "fee_pool": "0.0000000",
+  "base_fee": 100,
+  "base_reserve": "10.0000000",
+  "max_tx_set_size": 50
 }
 ```
 

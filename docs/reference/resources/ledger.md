@@ -60,7 +60,12 @@ To learn more about the concept of ledgers in the Stellar network, take a look a
   "sequence": 500,
   "transaction_count": 0,
   "operation_count": 0,
-  "closed_at": "2015-07-09T21:39:28Z"
+  "closed_at": "2015-07-09T21:39:28Z",
+  "total_coins": "100000000000.0000000",
+  "fee_pool": "0.0025600",
+  "base_fee": 100,
+  "base_reserve": "10.0000000",
+  "max_tx_set_size": 50
 }
 ```
 
