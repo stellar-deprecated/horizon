@@ -21,6 +21,7 @@ import (
 	"github.com/stellar/horizon/log"
 	"github.com/stellar/horizon/paths"
 	"github.com/stellar/horizon/reap"
+	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 	"golang.org/x/net/http2"
@@ -283,6 +284,8 @@ func (a *App) Tick() {
 	go func() { a.reaper.Tick(); wg.Done() }()
 	go func() { a.submitter.Tick(a.ctx); wg.Done() }()
 	wg.Wait()
+
+	sse.Tick()
 
 	// finally, update metrics
 	a.UpdateMetrics()
