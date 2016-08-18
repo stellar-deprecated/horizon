@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stellar/horizon/render/sse"
 	"github.com/stellar/horizon/test"
 )
 
@@ -69,4 +70,37 @@ func TestMetrics(t *testing.T) {
 	ht.Require.EqualValues(1, he.Value())
 	ht.Require.EqualValues(3, cl.Value())
 	ht.Require.EqualValues(1, ce.Value())
+}
+
+func TestTick(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
+
+	// stop the ticker so we can manually do it
+	ht.App.ticks.Stop()
+
+	// Regression.  Insure that SSE is pumped on each tick.
+
+	// force a tick to close replace the "Pumped()" chan, protecting the test from
+	// any ticks caused before a.ticks.Stop() was ran.
+	sse.Tick()
+
+	ch := sse.Pumped()
+	select {
+	case <-ch:
+		t.Error("sse.Pumped() triggered prior to tick")
+		t.FailNow()
+	default:
+		// no-op, channel is in the correct state when we cannot read from it
+	}
+
+	sse.Tick()
+
+	select {
+	case <-ch:
+		// no-op.  Success!
+	default:
+		t.Error("sse.Pumped() did not trigger after tick")
+		t.FailNow()
+	}
 }
