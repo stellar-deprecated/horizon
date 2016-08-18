@@ -131,3 +131,9 @@ func getJSON(val interface{}) string {
 
 	return string(js)
 }
+
+func init() {
+	lock.Lock()
+	nextTick = make(chan struct{})
+	lock.Unlock()
+}
