@@ -6,6 +6,12 @@ file.  This project adheres to [Semantic Versioning](http://semver.org/).
 As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
+## [v0.6.2] - 2016-08-18
+
+### Bug fixes
+
+- Fixes streaming (SSE) requests, which were broken in v0.6.0
+
 ## [v0.6.1] - 2016-07-26
 
 ### Bug fixes
@@ -92,7 +98,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.6.1...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.6.2...master
+[v0.6.2]: https://github.com/stellar/horizon/compare/v0.6.1...v0.6.2
 [v0.6.1]: https://github.com/stellar/horizon/compare/v0.6.0...v0.6.1
 [v0.6.0]: https://github.com/stellar/horizon/compare/v0.5.1...v0.6.0
 [v0.5.1]: https://github.com/stellar/horizon/compare/v0.5.0...v0.5.1
