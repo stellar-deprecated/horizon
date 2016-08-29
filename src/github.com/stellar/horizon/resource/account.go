@@ -20,7 +20,6 @@ func (this *Account) Populate(
 	ha history.Account,
 ) (err error) {
 	this.ID = ca.Accountid
-	this.PT = ha.PagingToken()
 	this.AccountID = ca.Accountid
 	this.Sequence = ca.Seqnum
 	this.SubentryCount = ca.Numsubentries
