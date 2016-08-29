@@ -12,7 +12,6 @@ When horizon returns information about an account it uses the following format:
 | Attribute    | Type             |                                                                                                                        |
 |--------------|------------------|------------------------------------------------------------------------------------------------------------------------|
 | id           | string           | The canonical id of this account, suitable for use as the :id parameter for url templates that require an account's ID. |
-| paging_token | number           | A [paging token](./page.md) suitable for use as a `cursor` parameter.                                                                |
 | account_id      | string           | The account's public key encoded into a base32 string representation.                                                    |
 | sequence     | number           | The current sequence number that can be used when submitting a transaction from this account.                           |
 | balances     | array of objects | An array of the native asset or credits this account holds.                                                          |
@@ -52,7 +51,6 @@ When horizon returns information about an account it uses the following format:
     }
   },
   "id": "GAOEWNUEKXKNGB2AAOX6S6FEP6QKCFTU7KJH647XTXQXTMOAUATX2VF5",
-  "paging_token": "132564165595136",
   "account_id": "GAOEWNUEKXKNGB2AAOX6S6FEP6QKCFTU7KJH647XTXQXTMOAUATX2VF5",
   "sequence": 132564165591040,
   "balances": [
@@ -68,7 +66,6 @@ When horizon returns information about an account it uses the following format:
 
 | Resource                 | Type       | Resource URI Template                |
 |--------------------------|------------|--------------------------------------|
-| [All Accounts](../accounts-all.md)         | Collection | `/accounts`                          |
 | [Account Details](../accounts-single.md)      | Single     | `/accounts/:id`                      |
 | [Account Transactions](../transactions-for-account.md) | Collection | `/accounts/:account_id/transactions` |
 | [Account Operations](../operations-for-account.md)   | Collection | `/accounts/:account_id/operations`   |
