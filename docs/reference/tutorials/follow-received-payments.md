@@ -129,6 +129,9 @@ Every time you receive a new payment you will get a new row of data. Payments is
 
 ## Following payments using `EventStream`
 
+> **Warning!** `EventSource` object does not reconnect for certain error types so it can stop working.
+> If you need a reliable streaming connection please use our [SDK](https://github.com/stellar/js-stellar-sdk).
+
 Another way to follow payments is writing a simple JS script that will stream payments and print them to console. Create `stream_payments.js` file and paste the following code into it:
 
 ```js
