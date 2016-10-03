@@ -1,8 +1,8 @@
 package core
 
 import (
-	"github.com/stellar/go-stellar-base/amount"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/amount"
+	"github.com/stellar/go/xdr"
 	"math/big"
 )
 
@@ -18,7 +18,7 @@ func (p *PriceLevel) PriceAsString() string {
 }
 
 // AmountAsString returns the amount as a string, formatted using
-// the amount.String() utility from go-stellar-base.
+// the amount.String() utility from go.
 func (p *PriceLevel) AmountAsString() string {
 	return amount.String(xdr.Int64(p.Amount))
 }

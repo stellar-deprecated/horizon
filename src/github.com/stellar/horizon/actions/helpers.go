@@ -4,9 +4,9 @@ import (
 	"mime"
 	"strconv"
 
-	"github.com/stellar/go-stellar-base/amount"
-	"github.com/stellar/go-stellar-base/strkey"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/amount"
+	"github.com/stellar/go/strkey"
+	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/render/problem"

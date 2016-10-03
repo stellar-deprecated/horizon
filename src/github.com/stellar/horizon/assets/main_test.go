@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-errors/errors"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/xdr"
 )
 
 func TestAssets(t *testing.T) {

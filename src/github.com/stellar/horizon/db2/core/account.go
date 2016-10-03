@@ -2,7 +2,7 @@ package core
 
 import (
 	sq "github.com/lann/squirrel"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/xdr"
 )
 
 // IsAuthRequired returns true if the account has the "AUTH_REQUIRED" option

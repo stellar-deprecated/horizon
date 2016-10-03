@@ -6,8 +6,8 @@ import (
 
 	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
-	"github.com/stellar/go-stellar-base/strkey"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/strkey"
+	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/utf8"
 )
 

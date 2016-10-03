@@ -3,8 +3,8 @@ package ingest
 import (
 	"time"
 
-	"github.com/stellar/go-stellar-base/meta"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/meta"
+	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/toid"
 )

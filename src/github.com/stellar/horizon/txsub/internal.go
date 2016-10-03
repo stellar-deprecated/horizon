@@ -1,9 +1,9 @@
 package txsub
 
 import (
-	"github.com/stellar/go-stellar-base/build"
-	"github.com/stellar/go-stellar-base/strkey"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/build"
+	"github.com/stellar/go/strkey"
+	"github.com/stellar/go/xdr"
 	"golang.org/x/net/context"
 )
 
