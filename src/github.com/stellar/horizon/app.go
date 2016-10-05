@@ -11,7 +11,7 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/rcrowley/go-metrics"
-	"github.com/stellar/go-stellar-base/build"
+	"github.com/stellar/go/build"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"

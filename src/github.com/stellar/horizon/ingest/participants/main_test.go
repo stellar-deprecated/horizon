@@ -3,7 +3,7 @@ package participants
 import (
 	"testing"
 
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/test"
 )

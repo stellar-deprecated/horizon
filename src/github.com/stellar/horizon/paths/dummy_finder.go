@@ -1,7 +1,7 @@
 package paths
 
 import (
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/xdr"
 )
 
 type DummyFinder struct {

@@ -3,7 +3,7 @@ package ingest
 import (
 	"testing"
 
-	"github.com/stellar/go-stellar-base/network"
+	"github.com/stellar/go/network"
 	"github.com/stellar/horizon/test"
 )
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-errors/errors"
 	sq "github.com/lann/squirrel"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2"
 )
 

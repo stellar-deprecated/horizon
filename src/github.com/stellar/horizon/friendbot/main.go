@@ -4,8 +4,8 @@ import (
 	"errors"
 	"sync"
 
-	. "github.com/stellar/go-stellar-base/build"
-	"github.com/stellar/go-stellar-base/keypair"
+	. "github.com/stellar/go/build"
+	"github.com/stellar/go/keypair"
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 )

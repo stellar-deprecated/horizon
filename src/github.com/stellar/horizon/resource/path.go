@@ -1,7 +1,7 @@
 package resource
 
 import (
-	"github.com/stellar/go-stellar-base/amount"
+	"github.com/stellar/go/amount"
 	"github.com/stellar/horizon/paths"
 	"golang.org/x/net/context"
 )

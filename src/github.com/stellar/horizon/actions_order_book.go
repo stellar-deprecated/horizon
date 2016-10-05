@@ -3,7 +3,7 @@ package horizon
 import (
 	"net/http"
 
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"

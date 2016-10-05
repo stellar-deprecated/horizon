@@ -3,7 +3,7 @@ package simplepath
 import (
 	"errors"
 	sq "github.com/lann/squirrel"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db2/core"
 	"math/big"

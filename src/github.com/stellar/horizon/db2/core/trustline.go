@@ -3,7 +3,7 @@ package core
 import (
 	"errors"
 	sq "github.com/lann/squirrel"
-	"github.com/stellar/go-stellar-base/xdr"
+	"github.com/stellar/go/xdr"
 )
 
 // AssetsForAddress loads `dest` as `[]xdr.Asset` with every asset the account
