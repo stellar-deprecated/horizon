@@ -129,6 +129,7 @@ FROM
 		co.pricen,
 		co.priced,
 		co.price
+	ORDER BY co.price
 	LIMIT $1
 
 ) UNION (
