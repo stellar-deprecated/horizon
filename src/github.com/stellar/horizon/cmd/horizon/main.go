@@ -48,6 +48,7 @@ func init() {
 	viper.BindEnv("network-passphrase", "NETWORK_PASSPHRASE")
 	viper.BindEnv("history-retention-count", "HISTORY_RETENTION_COUNT")
 	viper.BindEnv("history-stale-threshold", "HISTORY_STALE_THRESHOLD")
+	viper.BindEnv("skip-cursor-update", "SKIP_CURSOR_UPDATE")
 
 	rootCmd = &cobra.Command{
 		Use:   "horizon",
@@ -224,5 +225,6 @@ func initConfig() {
 		Ingest:                 viper.GetBool("ingest"),
 		HistoryRetentionCount:  uint(viper.GetInt("history-retention-count")),
 		StaleThreshold:         uint(viper.GetInt("history-stale-threshold")),
+		SkipCursorUpdate:       viper.GetBool("skip-cursor-update"),
 	}
 }

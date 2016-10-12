@@ -11,9 +11,10 @@ dropdb hayashi_scenarios --if-exists
 createdb hayashi_scenarios
 
 export STELLAR_CORE_DATABASE_URL="postgres://localhost/hayashi_scenarios?sslmode=disable"
-export STELLAR_CORE_URL="http://localhost:8080"
 export DATABASE_URL="postgres://localhost/horizon_scenarios?sslmode=disable"
 export NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+export STELLAR_CORE_URL="http://localhost:8080"
+export SKIP_CURSOR_UPDATE="true"
 
 # run all scenarios
 for i in $PACKAGES; do
@@ -27,7 +28,6 @@ for i in $PACKAGES; do
   # recreate horizon dbs
   dropdb horizon_scenarios --if-exists
   createdb horizon_scenarios
-
 
   # import the core data into horizon
   $DIR/../bin/horizon db init

@@ -84,6 +84,11 @@ type System struct {
 	// ingested from.
 	StellarCoreURL string
 
+	// SkipCursorUpdate causes the ingestor to skip
+	// reporting the "last imported ledger" cursor to
+	// stellar-core
+	SkipCursorUpdate bool
+
 	lock    sync.Mutex
 	current *Session
 }
@@ -125,6 +130,11 @@ type Session struct {
 	// ClearExisting causes the session to clear existing data from the horizon db
 	// when the session is run.
 	ClearExisting bool
+
+	// SkipCursorUpdate causes the session to skip
+	// reporting the "last imported ledger" cursor to
+	// stellar-core
+	SkipCursorUpdate bool
 
 	// Metrics is a reference to where the session should record its metric information
 	Metrics *IngesterMetrics
@@ -172,8 +182,9 @@ func NewSession(first, last int32, i *System) *Session {
 			DB:          i.CoreDB,
 			Metrics:     &i.Metrics,
 		},
-		Network:        i.Network,
-		StellarCoreURL: i.StellarCoreURL,
-		Metrics:        &i.Metrics,
+		Network:          i.Network,
+		StellarCoreURL:   i.StellarCoreURL,
+		SkipCursorUpdate: i.SkipCursorUpdate,
+		Metrics:          &i.Metrics,
 	}
 }

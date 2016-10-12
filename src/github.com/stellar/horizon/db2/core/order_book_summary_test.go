@@ -63,3 +63,39 @@ func TestGetOrderBookSummary(t *testing.T) {
 	tt.Assert.Equal(bids[1].Pricef, iasks[1].InvertPricef())
 	tt.Assert.Equal(bids[2].Pricef, iasks[2].InvertPricef())
 }
+
+// regression test for https://github.com/stellar/horizon/issues/310
+func TestGetOrderBookSummary_Regress310(t *testing.T) {
+	tt := test.Start(t).Scenario("order_books_310")
+	defer tt.Finish()
+	q := &Q{tt.CoreRepo()}
+
+	selling, err := AssetFromDB(xdr.AssetTypeAssetTypeCreditAlphanum4, "USD", "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
+	tt.Require.NoError(err)
+	buying, err := AssetFromDB(xdr.AssetTypeAssetTypeNative, "", "")
+	tt.Require.NoError(err)
+
+	var summary OrderBookSummary
+	err = q.GetOrderBookSummary(&summary, selling, buying)
+	tt.Require.NoError(err)
+	tt.Require.Len(summary, 20)
+
+	// In the order_books_310 scenario, the orders were
+	// placed in such a way that three orders at prices
+	// 0.1, 0.2, and 0.3 should appear first, when the
+	// query is correct.  In a failing scenario the 0.2
+	// transaction should not appear.
+
+	tt.Assert.Equal(0.1, summary[0].Pricef)
+	tt.Assert.Equal(0.2, summary[1].Pricef)
+	tt.Assert.Equal(0.3, summary[2].Pricef)
+
+	// validate the inverse order book is correct as well
+	err = q.GetOrderBookSummary(&summary, buying, selling)
+	tt.Require.NoError(err)
+	tt.Require.Len(summary, 20)
+
+	tt.Assert.Equal(1.0/10.2, summary[0].Pricef)
+	tt.Assert.Equal(1.0/10.1, summary[1].Pricef)
+	tt.Assert.Equal(1.0/10.0, summary[2].Pricef)
+}

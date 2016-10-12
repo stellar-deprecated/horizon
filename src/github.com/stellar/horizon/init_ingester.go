@@ -1,8 +1,9 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/ingest"
 	"log"
+
+	"github.com/stellar/horizon/ingest"
 )
 
 func initIngester(app *App) {
@@ -20,6 +21,8 @@ func initIngester(app *App) {
 		app.CoreRepo(nil),
 		app.HorizonRepo(nil),
 	)
+
+	app.ingester.SkipCursorUpdate = app.config.SkipCursorUpdate
 }
 
 func init() {
