@@ -129,6 +129,9 @@ FROM
 		co.pricen,
 		co.priced,
 		co.price
+
+	ORDER BY co.price ASC
+
 	LIMIT $1
 
 ) UNION (
@@ -155,6 +158,9 @@ FROM
 		co.pricen,
 		co.priced,
 		co.price
+
+	ORDER BY co.price DESC
+	
 	LIMIT $1
 )) summary
 

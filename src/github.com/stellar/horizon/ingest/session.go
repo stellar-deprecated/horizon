@@ -686,7 +686,13 @@ func (is *Session) operationFlagDetails(result map[string]interface{}, f int32, 
 // allows stellar-core to free that storage when next it runs its own
 // maintenance.
 func (is *Session) reportCursorState() error {
+	// TODO(scott): with the introduction of
+	// SkipCursorUpdate, this should probably be removed.
 	if is.StellarCoreURL == "" {
+		return nil
+	}
+
+	if is.SkipCursorUpdate {
 		return nil
 	}
 

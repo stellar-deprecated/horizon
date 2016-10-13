@@ -36,4 +36,8 @@ type Config struct {
 	// out-of-date by before horizon begins to respond with an error to history
 	// requests.
 	StaleThreshold uint
+
+	// SkipCursorUpdate causes the ingestor to skip reporting the "last imported
+	// ledger" state to stellar-core.
+	SkipCursorUpdate bool
 }

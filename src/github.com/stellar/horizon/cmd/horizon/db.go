@@ -117,6 +117,8 @@ var dbReingestCmd = &cobra.Command{
 		}
 
 		i := ingest.New(passphrase, config.StellarCoreURL, cdb, hdb)
+		i.SkipCursorUpdate = config.SkipCursorUpdate
+
 		logStatus := func(stage string) {
 			count := i.Metrics.IngestLedgerTimer.Count()
 			rate := i.Metrics.IngestLedgerTimer.RateMean()
