@@ -52,7 +52,7 @@ func (bot *Bot) Pay(ctx context.Context, address string) (result txsub.Result) {
 
 func (bot *Bot) makeTx(address string) (string, error) {
 	bot.lock.Lock()
-	bot.lock.Unlock()
+	defer bot.lock.Unlock()
 
 	tx := Transaction(
 		SourceAccount{bot.Secret},
@@ -77,7 +77,7 @@ func (bot *Bot) makeTx(address string) (string, error) {
 
 func (bot *Bot) refreshSequence(ctx context.Context) error {
 	bot.lock.Lock()
-	bot.lock.Unlock()
+	defer bot.lock.Unlock()
 
 	addy := bot.address()
 	sp := bot.Submitter.Sequences
