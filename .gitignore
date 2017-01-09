@@ -11,6 +11,7 @@ docs/public
 /vendor/src
 *.bts
 *.swp
+*.swo
 
 /test.go
 /tls/*.crt
