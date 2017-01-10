@@ -12,6 +12,7 @@ bumps.  A breaking change will get clearly notified in this log.
 ### Bug fixes
 
 - Fixes race conditions in friendbot
+- Fixes missing price in "manage_offer" operation resources
 
 ## [v0.6.2] - 2016-08-18
 
