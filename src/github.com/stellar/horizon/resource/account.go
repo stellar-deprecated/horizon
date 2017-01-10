@@ -66,6 +66,8 @@ func (this *Account) Populate(
 	this.Links.Payments = lb.PagedLink(self, "payments")
 	this.Links.Effects = lb.PagedLink(self, "effects")
 	this.Links.Offers = lb.PagedLink(self, "offers")
-
+	this.Links.Trades = lb.PagedLink(self, "trades")
+	this.Links.Data = lb.Link(self, "data/{key}")
+	this.Links.Data.PopulateTemplated()
 	return
 }

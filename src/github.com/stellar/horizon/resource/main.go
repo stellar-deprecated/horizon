@@ -22,6 +22,8 @@ type Account struct {
 		Payments     hal.Link `json:"payments"`
 		Effects      hal.Link `json:"effects"`
 		Offers       hal.Link `json:"offers"`
+		Trades       hal.Link `json:"trades"`
+		Data         hal.Link `json:"data"`
 	} `json:"_links"`
 
 	HistoryAccount

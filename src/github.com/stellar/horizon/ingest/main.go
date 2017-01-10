@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	sq "github.com/lann/squirrel"
-	"github.com/rcrowley/go-metrics"
-	"github.com/stellar/horizon/db2"
+	metrics "github.com/rcrowley/go-metrics"
+	"github.com/stellar/go/support/db"
 	"github.com/stellar/horizon/db2/core"
 )
 
@@ -33,7 +33,7 @@ type Cursor struct {
 	// attempt to be ingested in this session.
 	LastLedger int32
 	// DB is the stellar-core db that data is ingested from.
-	DB *db2.Repo
+	DB *db.Repo
 
 	Metrics *IngesterMetrics
 
@@ -70,10 +70,10 @@ type LedgerBundle struct {
 type System struct {
 	// HorizonDB is the connection to the horizon database that ingested data will
 	// be written to.
-	HorizonDB *db2.Repo
+	HorizonDB *db.Repo
 
 	// CoreDB is the stellar-core db that data is ingested from.
-	CoreDB *db2.Repo
+	CoreDB *db.Repo
 
 	Metrics IngesterMetrics
 
@@ -104,7 +104,7 @@ type IngesterMetrics struct {
 type Ingestion struct {
 	// DB is the sql repo to be used for writing any rows into the horizon
 	// database.
-	DB *db2.Repo
+	DB *db.Repo
 
 	ledgers                  sq.InsertBuilder
 	transactions             sq.InsertBuilder
@@ -153,7 +153,7 @@ type Session struct {
 
 // New initializes the ingester, causing it to begin polling the stellar-core
 // database for now ledgers and ingesting data into the horizon database.
-func New(network string, coreURL string, core, horizon *db2.Repo) *System {
+func New(network string, coreURL string, core, horizon *db.Repo) *System {
 	i := &System{
 		Network:        network,
 		StellarCoreURL: coreURL,

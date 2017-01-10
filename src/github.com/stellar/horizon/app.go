@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/rcrowley/go-metrics"
+	metrics "github.com/rcrowley/go-metrics"
 	"github.com/stellar/go/build"
-	"github.com/stellar/horizon/db2"
+	"github.com/stellar/go/support/db"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/friendbot"
@@ -25,7 +25,7 @@ import (
 	"github.com/stellar/horizon/txsub"
 	"golang.org/x/net/context"
 	"golang.org/x/net/http2"
-	"gopkg.in/tylerb/graceful.v1"
+	graceful "gopkg.in/tylerb/graceful.v1"
 )
 
 // You can override this variable using: gb build -ldflags "-X main.version aabbccdd"
@@ -72,7 +72,7 @@ func NewApp(config Config) (*App, error) {
 
 	result := &App{config: config}
 	result.horizonVersion = version
-	result.networkPassphrase = build.DefaultNetwork.Passphrase
+	result.networkPassphrase = build.TestNetwork.Passphrase
 	result.ticks = time.NewTicker(1 * time.Second)
 	result.init()
 	return result, nil
@@ -138,14 +138,14 @@ func (a *App) HistoryQ() *history.Q {
 
 // HorizonRepo returns a new repo that loads data from the horizon database. The
 // returned repo is bound to `ctx`.
-func (a *App) HorizonRepo(ctx context.Context) *db2.Repo {
-	return &db2.Repo{DB: a.historyQ.Repo.DB, Ctx: ctx}
+func (a *App) HorizonRepo(ctx context.Context) *db.Repo {
+	return &db.Repo{DB: a.historyQ.Repo.DB, Ctx: ctx}
 }
 
 // CoreRepo returns a new repo that loads data from the stellar core
 // database. The returned repo is bound to `ctx`.
-func (a *App) CoreRepo(ctx context.Context) *db2.Repo {
-	return &db2.Repo{DB: a.coreQ.Repo.DB, Ctx: ctx}
+func (a *App) CoreRepo(ctx context.Context) *db.Repo {
+	return &db.Repo{DB: a.coreQ.Repo.DB, Ctx: ctx}
 }
 
 // CoreQ returns a helper object for performing sql queries aginst the

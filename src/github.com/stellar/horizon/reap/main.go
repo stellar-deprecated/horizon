@@ -5,13 +5,14 @@
 package reap
 
 import (
-	"github.com/stellar/horizon/db2"
 	"time"
+
+	"github.com/stellar/go/support/db"
 )
 
 // System represents the history reaping subsystem of horizon.
 type System struct {
-	HorizonDB      *db2.Repo
+	HorizonDB      *db.Repo
 	RetentionCount uint
 
 	nextRun time.Time
@@ -19,7 +20,7 @@ type System struct {
 
 // New initializes the reaper, causing it to begin polling the stellar-core
 // database for now ledgers and ingesting data into the horizon database.
-func New(retention uint, horizon *db2.Repo) *System {
+func New(retention uint, horizon *db.Repo) *System {
 	r := &System{
 		HorizonDB:      horizon,
 		RetentionCount: retention,
