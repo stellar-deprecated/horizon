@@ -150,7 +150,7 @@ type ManageOffer struct {
 	OfferID            int64      `json:"offer_id"`
 	Amount             string     `json:"amount"`
 	Price              string     `json:"price"`
-	PriceR             base.Price `json:"price"`
+	PriceR             base.Price `json:"price_r"`
 	BuyingAssetType    string     `json:"buying_asset_type"`
 	BuyingAssetCode    string     `json:"buying_asset_code,omitempty"`
 	BuyingAssetIssuer  string     `json:"buying_asset_issuer,omitempty"`

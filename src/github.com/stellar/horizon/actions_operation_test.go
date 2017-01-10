@@ -105,4 +105,16 @@ func TestOperationActions_Regressions(t *testing.T) {
 	if ht.Assert.Equal(404, w.Code) {
 		ht.Assert.ProblemType(w.Body, "not_found")
 	}
+
+	// #202 - price is not shown on manage_offer operations
+	test.LoadScenario("trades")
+	w = ht.Get("/operations/21474840577")
+	if ht.Assert.Equal(200, w.Code) {
+		var result operations.ManageOffer
+		err := json.Unmarshal(w.Body.Bytes(), &result)
+		ht.Require.NoError(err, "failed to parse body")
+		ht.Assert.Equal("1.0000000", result.Price)
+		ht.Assert.Equal(int32(1), result.PriceR.N)
+		ht.Assert.Equal(int32(1), result.PriceR.D)
+	}
 }
