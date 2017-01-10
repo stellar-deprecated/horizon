@@ -29,3 +29,20 @@ func TestTradeActions_Index(t *testing.T) {
 		ht.Assert.PageOf(1, w.Body)
 	}
 }
+
+func TestTradeActions_IndexRegressions(t *testing.T) {
+	ht := StartHTTPTest(t, "trades")
+	defer ht.Finish()
+
+	// Regression:  https://github.com/stellar/horizon/issues/318
+	var q = make(url.Values)
+	q.Add("selling_asset_type", "credit_alphanum4")
+	q.Add("selling_asset_code", "EUR")
+	q.Add("selling_asset_issuer", "GCQPYGH4K57XBDENKKX55KDTWOTK5WDWRQOH2LHEDX3EKVIQRLMESGBG")
+	q.Add("buying_asset_type", "native")
+
+	w := ht.Get("/order_book/trades?" + q.Encode())
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.PageOf(0, w.Body)
+	}
+}

@@ -56,7 +56,7 @@ func (action *TradeIndexAction) loadRecords() {
 		trades = trades.ForAccount(action.AccountFilter)
 	}
 
-	if (action.Selling != xdr.Asset{} && action.Buying != xdr.Asset{}) {
+	if (action.Selling != xdr.Asset{} || action.Buying != xdr.Asset{}) {
 		trades = trades.ForOrderBook(action.Selling, action.Buying)
 	}
 
