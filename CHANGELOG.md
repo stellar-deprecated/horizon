@@ -7,12 +7,18 @@ As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
 
-## [Unreleased]
+## [v0.7.0] - 2016-01-10
+
+### Added
+
+- The account resource now includes links to the account's trades and data values.
 
 ### Bug fixes
 
+- Fixes paging_token attribute of account resource
 - Fixes race conditions in friendbot
-- Fixes missing price in "manage_offer" operation resources
+- Fixes #202: Add price and price_r to "manage_offer" operation resources
+- Fixes #318: order books for the native currency now filters correctly.
 
 ## [v0.6.2] - 2016-08-18
 
@@ -106,7 +112,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.6.2...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.7.0...master
+[v0.7.0]: https://github.com/stellar/horizon/compare/v0.6.2...v0.7.0
 [v0.6.2]: https://github.com/stellar/horizon/compare/v0.6.1...v0.6.2
 [v0.6.1]: https://github.com/stellar/horizon/compare/v0.6.0...v0.6.1
 [v0.6.0]: https://github.com/stellar/horizon/compare/v0.5.1...v0.6.0
