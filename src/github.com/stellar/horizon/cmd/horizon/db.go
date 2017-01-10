@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/stellar/horizon/db2"
+	"github.com/stellar/go/support/db"
 	"github.com/stellar/horizon/db2/schema"
 	"github.com/stellar/horizon/ingest"
 	hlog "github.com/stellar/horizon/log"
@@ -26,7 +26,7 @@ var dbInitCmd = &cobra.Command{
 	Short: "install schema",
 	Long:  "init initializes the postgres database used by horizon.",
 	Run: func(cmd *cobra.Command, args []string) {
-		db, err := db2.Open(viper.GetString("db-url"))
+		db, err := db.Open("postgres", viper.GetString("db-url"))
 		if err != nil {
 			hlog.Error(err)
 			os.Exit(1)
@@ -101,12 +101,12 @@ var dbReingestCmd = &cobra.Command{
 		initConfig()
 		hlog.DefaultLogger.Logger.Level = config.LogLevel
 
-		hdb, err := db2.Open(config.DatabaseURL)
+		hdb, err := db.Open("postgres", config.DatabaseURL)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		cdb, err := db2.Open(config.StellarCoreDatabaseURL)
+		cdb, err := db.Open("postgres", config.StellarCoreDatabaseURL)
 		if err != nil {
 			log.Fatal(err)
 		}

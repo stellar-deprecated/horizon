@@ -7,8 +7,8 @@ import (
 
 	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/go/support/db"
 	"github.com/stellar/go/xdr"
-	"github.com/stellar/horizon/db2"
 )
 
 const (
@@ -183,7 +183,7 @@ type OperationsQ struct {
 // Q is a helper struct on which to hang common queries against a history
 // portion of the horizon database.
 type Q struct {
-	*db2.Repo
+	*db.Repo
 }
 
 // TotalOrderID represents the ID portion of rows that are identified by the

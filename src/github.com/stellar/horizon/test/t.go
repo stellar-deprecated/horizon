@@ -1,13 +1,13 @@
 package test
 
 import (
-	"github.com/stellar/horizon/db2"
+	"github.com/stellar/go/support/db"
 	"github.com/stellar/horizon/ledger"
 )
 
-// CoreRepo returns a db2.Repo instance pointing at the stellar core test database
-func (t *T) CoreRepo() *db2.Repo {
-	return &db2.Repo{
+// CoreRepo returns a db.Repo instance pointing at the stellar core test database
+func (t *T) CoreRepo() *db.Repo {
+	return &db.Repo{
 		DB:  t.CoreDB,
 		Ctx: t.Ctx,
 	}
@@ -25,9 +25,9 @@ func (t *T) Finish() {
 	}
 }
 
-// HorizonRepo returns a db2.Repo instance pointing at the horizon test database
-func (t *T) HorizonRepo() *db2.Repo {
-	return &db2.Repo{
+// HorizonRepo returns a db.Repo instance pointing at the horizon test database
+func (t *T) HorizonRepo() *db.Repo {
+	return &db.Repo{
 		DB:  t.HorizonDB,
 		Ctx: t.Ctx,
 	}

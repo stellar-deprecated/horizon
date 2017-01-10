@@ -5,8 +5,8 @@ package core
 import (
 	"github.com/guregu/null"
 	"github.com/stellar/go/strkey"
+	"github.com/stellar/go/support/db"
 	"github.com/stellar/go/xdr"
-	"github.com/stellar/horizon/db2"
 )
 
 // Account is a row of data from the `accounts` table
@@ -73,7 +73,7 @@ type OrderBookSummary []OrderBookSummaryPriceLevel
 // Q is a helper struct on which to hang common queries against a stellar
 // core database.
 type Q struct {
-	*db2.Repo
+	*db.Repo
 }
 
 // PriceLevel represents an aggregation of offers to trade at a certain

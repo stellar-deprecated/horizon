@@ -1,14 +1,14 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db2"
+	"github.com/stellar/go/support/db"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/log"
 )
 
 func initHorizonDb(app *App) {
-	repo, err := db2.Open(app.config.DatabaseURL)
+	repo, err := db.Open("postgres", app.config.DatabaseURL)
 
 	if err != nil {
 		log.Panic(err)
@@ -20,7 +20,7 @@ func initHorizonDb(app *App) {
 }
 
 func initCoreDb(app *App) {
-	repo, err := db2.Open(app.config.StellarCoreDatabaseURL)
+	repo, err := db.Open("postgres", app.config.StellarCoreDatabaseURL)
 
 	if err != nil {
 		log.Panic(err)

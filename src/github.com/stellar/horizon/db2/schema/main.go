@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	migrate "github.com/rubenv/sql-migrate"
-	"github.com/stellar/horizon/db2"
+	"github.com/stellar/go/support/db"
 )
 
 //go:generate go-bindata -ignore .+\.go$ -pkg schema -o bindata.go ./...
@@ -30,7 +30,7 @@ var Migrations migrate.MigrationSource = &migrate.AssetMigrationSource{
 }
 
 // Init installs the latest schema into db after clearing it first
-func Init(db *db2.Repo) error {
+func Init(db *db.Repo) error {
 	return db.ExecAll(string(MustAsset("latest.sql")))
 }
 

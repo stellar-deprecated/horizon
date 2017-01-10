@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-// PagingToken implements `db2.Pageable`
+// PagingToken implements `hal.Pageable`
 func (this Base) PagingToken() string {
 	return this.PT
 }
