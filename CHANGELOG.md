@@ -14,7 +14,7 @@ bumps.  A breaking change will get clearly notified in this log.
 - Trade resources now include "bought_amount" and "sold_amount" fields when being viewed through the "Orderbook Trades" endpoint.
 - Fixes #322: orderbook summaries with over 20 bids now return the correct price levels, starting with the closest to the spread.
 
-## [v0.7.0] - 2016-01-10
+## [v0.7.0] - 2017-01-10
 
 ### Added
 
