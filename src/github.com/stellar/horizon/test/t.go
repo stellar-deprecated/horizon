@@ -51,7 +51,7 @@ func (t *T) ScenarioWithoutHorizon(name string) *T {
 	return t
 }
 
-// UnmarshalPage populares dest with the records contained in the json-encoded
+// UnmarshalPage populates dest with the records contained in the json-encoded
 // page in r.
 func (t *T) UnmarshalPage(r io.Reader, dest interface{}) {
 	var env struct {

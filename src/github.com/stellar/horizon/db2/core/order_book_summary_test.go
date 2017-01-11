@@ -80,11 +80,10 @@ func TestGetOrderBookSummary_Regress310(t *testing.T) {
 	tt.Require.NoError(err)
 	tt.Require.Len(summary, 20)
 
-	// In the order_books_310 scenario, the orders were
-	// placed in such a way that three orders at prices
-	// 0.1, 0.2, and 0.3 should appear first, when the
-	// query is correct.  In a failing scenario the 0.2
-	// transaction should not appear.
+	// In the order_books_310 scenario, the orders were placed in such a way that
+	// three orders at prices 10.2, 10.1, and 10.0 should appear first, when the
+	// query is correct.  In a failing scenario the 10.2 transaction should not
+	// appear, because it was inserted after the first 20 rows
 	bids := summary.Bids()
 	tt.Assert.Equal(10.2, bids[0].Pricef)
 	tt.Assert.Equal(10.1, bids[1].Pricef)
