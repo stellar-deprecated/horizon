@@ -159,7 +159,7 @@ FROM
 		co.priced,
 		co.price
 
-	ORDER BY co.price DESC
+	ORDER BY co.price ASC
 	
 	LIMIT $1
 )) summary
