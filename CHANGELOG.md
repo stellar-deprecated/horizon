@@ -7,7 +7,7 @@ As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
 
-## [v0.7.0] - 2016-01-10
+## [v0.7.0] - 2017-01-10
 
 ### Added
 
