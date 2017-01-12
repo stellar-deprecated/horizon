@@ -27,6 +27,12 @@ func TestTradeActions_Index(t *testing.T) {
 	w = ht.Get("/order_book/trades?" + q.Encode())
 	if ht.Assert.Equal(200, w.Code) {
 		ht.Assert.PageOf(1, w.Body)
+
+		records := []map[string]interface{}{}
+		ht.UnmarshalPage(w.Body, &records)
+
+		ht.Assert.Contains(records[0], "bought_amount")
+		ht.Assert.Contains(records[0], "sold_amount")
 	}
 }
 

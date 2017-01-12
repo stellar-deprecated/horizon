@@ -1,6 +1,10 @@
 package test
 
 import (
+	"io"
+
+	"encoding/json"
+
 	"github.com/stellar/go/support/db"
 	"github.com/stellar/horizon/ledger"
 )
@@ -45,6 +49,22 @@ func (t *T) ScenarioWithoutHorizon(name string) *T {
 	LoadScenarioWithoutHorizon(name)
 	t.UpdateLedgerState()
 	return t
+}
+
+// UnmarshalPage populates dest with the records contained in the json-encoded
+// page in r.
+func (t *T) UnmarshalPage(r io.Reader, dest interface{}) {
+	var env struct {
+		Embedded struct {
+			Records json.RawMessage `json:"records"`
+		} `json:"_embedded"`
+	}
+
+	err := json.NewDecoder(r).Decode(&env)
+	t.Require.NoError(err, "failed to decode page")
+
+	err = json.Unmarshal(env.Embedded.Records, dest)
+	t.Require.NoError(err, "failed to decode records")
 }
 
 // UpdateLedgerState updates the cached ledger state (or panicing on failure).
