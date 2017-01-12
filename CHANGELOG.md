@@ -7,7 +7,7 @@ As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
 
-## [Unreleased]
+## [v0.7.1] - 2017-01-12
 
 ### Bug fixes
 
@@ -119,7 +119,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.7.0...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.7.1...master
+[v0.7.1]: https://github.com/stellar/horizon/compare/v0.7.0...v0.7.1
 [v0.7.0]: https://github.com/stellar/horizon/compare/v0.6.2...v0.7.0
 [v0.6.2]: https://github.com/stellar/horizon/compare/v0.6.1...v0.6.2
 [v0.6.1]: https://github.com/stellar/horizon/compare/v0.6.0...v0.6.1
