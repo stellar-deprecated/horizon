@@ -619,7 +619,7 @@ func (is *Session) operationDetails() map[string]interface{} {
 		}
 
 		if op.Signer != nil {
-			details["signer_key"] = op.Signer.PubKey.Address()
+			details["signer_key"] = op.Signer.Key.Address()
 			details["signer_weight"] = op.Signer.Weight
 		}
 	case xdr.OperationTypeChangeTrust:

@@ -159,7 +159,7 @@ func (base *Base) GetAccountID(name string) (result xdr.AccountId) {
 	var key xdr.Uint256
 	copy(key[:], raw)
 
-	result, err = xdr.NewAccountId(xdr.CryptoKeyTypeKeyTypeEd25519, key)
+	result, err = xdr.NewAccountId(xdr.PublicKeyTypePublicKeyTypeEd25519, key)
 	if err != nil {
 		base.SetInvalidField(name, err)
 		return

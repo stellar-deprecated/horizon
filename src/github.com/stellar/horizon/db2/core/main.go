@@ -146,7 +146,7 @@ func AssetFromDB(typ xdr.AssetType, code string, issuer string) (result xdr.Asse
 		}
 
 		copy(pkey[:], decoded)
-		an.Issuer, err = xdr.NewAccountId(xdr.CryptoKeyTypeKeyTypeEd25519, pkey)
+		an.Issuer, err = xdr.NewAccountId(xdr.PublicKeyTypePublicKeyTypeEd25519, pkey)
 		if err != nil {
 			return
 		}
@@ -165,7 +165,7 @@ func AssetFromDB(typ xdr.AssetType, code string, issuer string) (result xdr.Asse
 		}
 
 		copy(pkey[:], decoded)
-		an.Issuer, err = xdr.NewAccountId(xdr.CryptoKeyTypeKeyTypeEd25519, pkey)
+		an.Issuer, err = xdr.NewAccountId(xdr.PublicKeyTypePublicKeyTypeEd25519, pkey)
 		if err != nil {
 			return
 		}
