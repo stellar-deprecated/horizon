@@ -32,82 +32,95 @@ var TypeNames = map[history.EffectType]string{
 	history.EffectDataUpdated:              "data_updated",
 }
 
+// New creates a new effect resource from the provided database representaiton
+// of the effect.
 func New(
 	ctx context.Context,
 	row history.Effect,
 ) (result hal.Pageable, err error) {
 
-	base := Base{}
-	base.Populate(ctx, row)
+	basev := Base{}
+	basev.Populate(ctx, row)
 
 	switch row.Type {
 	case history.EffectAccountCreated:
-		e := AccountCreated{Base: base}
+		e := AccountCreated{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountCredited:
-		e := AccountCredited{Base: base}
+		e := AccountCredited{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountDebited:
-		e := AccountDebited{Base: base}
+		e := AccountDebited{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountThresholdsUpdated:
-		e := AccountThresholdsUpdated{Base: base}
+		e := AccountThresholdsUpdated{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountHomeDomainUpdated:
-		e := AccountHomeDomainUpdated{Base: base}
+		e := AccountHomeDomainUpdated{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectAccountFlagsUpdated:
-		e := AccountFlagsUpdated{Base: base}
+		e := AccountFlagsUpdated{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectSignerCreated:
-		e := SignerCreated{Base: base}
+		e := SignerCreated{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectSignerUpdated:
-		e := SignerUpdated{Base: base}
+		e := SignerUpdated{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectSignerRemoved:
-		e := SignerRemoved{Base: base}
+		e := SignerRemoved{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineCreated:
-		e := TrustlineCreated{Base: base}
+		e := TrustlineCreated{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineUpdated:
-		e := TrustlineUpdated{Base: base}
+		e := TrustlineUpdated{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineRemoved:
-		e := TrustlineRemoved{Base: base}
+		e := TrustlineRemoved{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineAuthorized:
-		e := TrustlineAuthorized{Base: base}
+		e := TrustlineAuthorized{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrustlineDeauthorized:
-		e := TrustlineDeauthorized{Base: base}
+		e := TrustlineDeauthorized{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	case history.EffectTrade:
-		e := Trade{Base: base}
+		e := Trade{Base: basev}
 		err = row.UnmarshalDetails(&e)
 		result = e
 	default:
-		result = base
+		result = basev
+	}
+
+	if err != nil {
+		return
+	}
+
+	rh, ok := result.(base.Rehydratable)
+
+	if ok {
+		err = rh.Rehydrate()
 	}
 
 	return
 }
 
+// Base provides the common structure for any effect resource effect.
 type Base struct {
 	Links struct {
 		Operation hal.Link `json:"operation"`
@@ -161,18 +174,21 @@ type SignerCreated struct {
 	Base
 	Weight    int32  `json:"weight"`
 	PublicKey string `json:"public_key"`
+	Key       string `json:"key"`
 }
 
 type SignerRemoved struct {
 	Base
 	Weight    int32  `json:"weight"`
 	PublicKey string `json:"public_key"`
+	Key       string `json:"key"`
 }
 
 type SignerUpdated struct {
 	Base
 	Weight    int32  `json:"weight"`
 	PublicKey string `json:"public_key"`
+	Key       string `json:"key"`
 }
 
 type TrustlineCreated struct {
@@ -220,3 +236,8 @@ type Trade struct {
 	BoughtAssetCode   string `json:"bought_asset_code,omitempty"`
 	BoughtAssetIssuer string `json:"bought_asset_issuer,omitempty"`
 }
+
+// interface implementations
+var _ base.Rehydratable = &SignerCreated{}
+var _ base.Rehydratable = &SignerRemoved{}
+var _ base.Rehydratable = &SignerUpdated{}

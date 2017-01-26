@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/go-errors/errors"
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/toid"
@@ -20,7 +20,7 @@ func (r *Effect) UnmarshalDetails(dest interface{}) error {
 
 	err := json.Unmarshal([]byte(r.DetailsString.String), &dest)
 	if err != nil {
-		err = errors.Wrap(err, 1)
+		err = errors.Wrap(err, "unmarshal failed")
 	}
 
 	return err
