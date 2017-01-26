@@ -7,6 +7,20 @@ As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
 
+## [Unreleased]
+
+### Added
+
+- account signer resources now contain a type specifying the type of the signer: `ed25519_public_key`, `sha256_hash`, and `preauth_tx` are the present values used for the respective signer types.
+
+### Changed
+
+- The `public_key` field on signer effects and an account's signer summary has been renamed to `key` to reflect that new signer types are not necessarily specifying a public key anymore.
+
+### Deprecated
+
+- The `public_key` field on account signers and signer effects are deprecated
+
 ## [v0.7.1] - 2017-01-12
 
 ### Bug fixes
