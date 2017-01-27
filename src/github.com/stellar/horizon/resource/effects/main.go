@@ -32,7 +32,7 @@ var TypeNames = map[history.EffectType]string{
 	history.EffectDataUpdated:              "data_updated",
 }
 
-// New creates a new effect resource from the provided database representaiton
+// New creates a new effect resource from the provided database representation
 // of the effect.
 func New(
 	ctx context.Context,
