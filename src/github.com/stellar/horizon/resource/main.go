@@ -5,6 +5,8 @@ package resource
 import (
 	"time"
 
+	"github.com/stellar/go/strkey"
+	"github.com/stellar/go/support/errors"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
@@ -12,6 +14,15 @@ import (
 	"github.com/stellar/horizon/resource/operations"
 	"golang.org/x/net/context"
 )
+
+// KeyTypeNames maps from strkey version bytes into json string values to use in
+// horizon responses.
+var KeyTypeNames = map[strkey.VersionByte]string{
+	strkey.VersionByteAccountID: "ed25519_public_key",
+	strkey.VersionByteSeed:      "ed25519_secret_seed",
+	strkey.VersionByteHashX:     "sha256_hash",
+	strkey.VersionByteHashTx:    "preauth_tx",
+}
 
 // Account is the summary of an account
 type Account struct {
@@ -168,6 +179,8 @@ type Root struct {
 type Signer struct {
 	PublicKey string `json:"public_key"`
 	Weight    int32  `json:"weight"`
+	Key       string `json:"key"`
+	Type      string `json:"type"`
 }
 
 // Trade represents a trade effect
@@ -259,4 +272,31 @@ func NewOperation(
 	row history.Operation,
 ) (result hal.Pageable, err error) {
 	return operations.New(ctx, row)
+}
+
+// KeyTypeFromAddress converts the version byte of the provided strkey encoded
+// value (for example an account id or a signer key) and returns the appropriate
+// horizon-specific type name.
+func KeyTypeFromAddress(address string) (string, error) {
+	vb, err := strkey.Version(address)
+	if err != nil {
+		return "", errors.Wrap(err, "invalid address")
+	}
+
+	result, ok := KeyTypeNames[vb]
+	if !ok {
+		result = "unknown"
+	}
+
+	return result, nil
+}
+
+// MustKeyTypeFromAddress is the panicking variant of KeyTypeFromAddress.
+func MustKeyTypeFromAddress(address string) string {
+	ret, err := KeyTypeFromAddress(address)
+	if err != nil {
+		panic(err)
+	}
+
+	return ret
 }

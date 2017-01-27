@@ -19,7 +19,7 @@ func makeAsset(typ xdr.AssetType, code string, issuer string) xdr.Asset {
 	var key xdr.Uint256
 	copy(key[:], raw)
 
-	an.Issuer, _ = xdr.NewAccountId(xdr.CryptoKeyTypeKeyTypeEd25519, key)
+	an.Issuer, _ = xdr.NewAccountId(xdr.PublicKeyTypePublicKeyTypeEd25519, key)
 
 	result, _ := xdr.NewAsset(typ, an)
 	return result
