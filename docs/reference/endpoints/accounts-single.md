@@ -114,7 +114,10 @@ This endpoint responds with the details of a single account for a given ID. See 
       "public_key": "GD42RQNXTRIW6YR3E2HXV5T2AI27LBRHOERV2JIYNFMXOBA234SWLQQB",
       "weight": 1
     }
-  ]
+  ],
+  "data": {
+    "club": "MTAw"
+  }
 }
 ```
 
