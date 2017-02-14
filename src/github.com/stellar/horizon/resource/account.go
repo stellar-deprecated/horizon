@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/stellar/horizon/db2/core"
@@ -70,4 +71,17 @@ func (this *Account) Populate(
 	this.Links.Data = lb.Link(self, "data/{key}")
 	this.Links.Data.PopulateTemplated()
 	return
+}
+
+// GetData returns decoded value for a given key. If the key does
+// not exist, empty slice will be returned.
+func (this *Account) GetData(key string) []byte {
+	data, exists := this.Data[key]
+	if !exists {
+		return nil
+	}
+
+	// We assume that horizon always returns valid base64 encoded string
+	decoded, _ := base64.StdEncoding.DecodeString(data)
+	return decoded
 }
