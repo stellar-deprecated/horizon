@@ -151,6 +151,7 @@ type Ledger struct {
 	BaseFee            int32       `db:"base_fee"`
 	BaseReserve        int32       `db:"base_reserve"`
 	MaxTxSetSize       int32       `db:"max_tx_set_size"`
+	ProtocolVersion    int32       `db:"protocol_version"`
 }
 
 // LedgersQ is a helper struct to aid in configuring queries that loads
