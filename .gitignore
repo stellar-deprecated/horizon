@@ -10,6 +10,7 @@ docs/public
 /vendor/bin
 /vendor/src
 /.vscode/last.sql
+/.vscode/temp.sql
 *.bts
 *.swp
 *.swo
