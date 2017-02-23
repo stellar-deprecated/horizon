@@ -14,7 +14,7 @@ func TestValidation(t *testing.T) {
 	sys := New(network.TestNetworkPassphrase, "", tt.CoreRepo(), tt.HorizonRepo())
 
 	// intact chain
-	for i := int32(2); i <= 59; i++ {
+	for i := int32(2); i <= 57; i++ {
 		tt.Assert.NoError(sys.validateLedgerChain(i))
 	}
 	_, err := tt.CoreRepo().ExecRaw(

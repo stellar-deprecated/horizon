@@ -207,10 +207,10 @@ ALTER TABLE ONLY history_transaction_participants ALTER COLUMN id SET DEFAULT ne
 -- Data for Name: gorp_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2017-02-23 12:36:03.625186-06');
-INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2017-02-23 12:36:03.628769-06');
-INSERT INTO gorp_migrations VALUES ('3_use_sequence_in_history_accounts.sql', '2017-02-23 12:36:03.631708-06');
-INSERT INTO gorp_migrations VALUES ('4_add_protocol_version.sql', '2017-02-23 12:36:03.637745-06');
+INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2017-02-23 13:54:51.059578-06');
+INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2017-02-23 13:54:51.06302-06');
+INSERT INTO gorp_migrations VALUES ('3_use_sequence_in_history_accounts.sql', '2017-02-23 13:54:51.065467-06');
+INSERT INTO gorp_migrations VALUES ('4_add_protocol_version.sql', '2017-02-23 13:54:51.072906-06');
 
 
 --
