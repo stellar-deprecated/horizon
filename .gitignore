@@ -9,6 +9,7 @@ docs/public
 /vendor/pkg
 /vendor/bin
 /vendor/src
+/.vscode/last.sql
 *.bts
 *.swp
 *.swo

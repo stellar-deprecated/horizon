@@ -13,7 +13,8 @@ import (
 	"github.com/stellar/horizon/db2/sqx"
 )
 
-// Clear removes data from the ledger
+// Clear removes a range of data from the history database, exclusive of the end
+// id provided.
 func (ingest *Ingestion) Clear(start int64, end int64) error {
 	clear := ingest.DB.DeleteRange
 	err := clear(start, end, "history_effects", "history_operation_id")
@@ -101,6 +102,7 @@ func (ingest *Ingestion) Ledger(
 		time.Now().UTC(),
 		txs,
 		ops,
+		header.Data.LedgerVersion,
 	)
 
 	_, err := ingest.DB.Exec(sql)
@@ -251,6 +253,7 @@ func (ingest *Ingestion) createInsertBuilders() {
 		"updated_at",
 		"transaction_count",
 		"operation_count",
+		"protocol_version",
 	)
 
 	ingest.accounts = sq.Insert("history_accounts").Columns(

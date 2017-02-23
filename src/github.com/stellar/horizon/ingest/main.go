@@ -21,7 +21,7 @@ const (
 	// Scripts, that have yet to be ported to this codebase can then be leveraged
 	// to re-ingest old data with the new algorithm, providing a seamless
 	// transition when the ingested data's structure changes.
-	CurrentVersion = 8
+	CurrentVersion = 9
 )
 
 // Cursor iterates through a stellar core database's ledgers
