@@ -6,6 +6,12 @@ file.  This project adheres to [Semantic Versioning](http://semver.org/).
 As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
+## [Unreleased]
+
+### Fixed
+
+- BREAKING CHANGE: The reingestion process has been updated.  Prior versions of horizon would enter a failed state when a gap between the imported history and the stellar-core database formed or when a previously imported ledger was no longer found in the stellar-core database.  This usually occurs when running stellar-core with the `CATCHUP_RECENT` config option.
+
 
 ## [v0.8.0] - 2017-02-07
 
