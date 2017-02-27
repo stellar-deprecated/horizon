@@ -356,14 +356,3 @@ close_ledger #47
   payment :selfpay, :selfpay, [:native, "10.0"]
   close_ledger
 
-
-# trust-self
-  # Secret seed: SCL6J5JUE3CU26GYQ7E27TUEGCQT2ZIYA2Q4QSHZEPPCPO2DE74VG6KU
-  # Public: GAKNI7DPN7BGAB62BU4GQC364JCFXFV7KIVTTDVOQK2ZPBPSJETABDQU
-
-  account :selftrust, KP.from_seed("SCL6J5JUE3CU26GYQ7E27TUEGCQT2ZIYA2Q4QSHZEPPCPO2DE74VG6KU")
-  create_account :selftrust
-  close_ledger
-
-  trust :selfpay, :selfpay, "USD"
-  close_ledger

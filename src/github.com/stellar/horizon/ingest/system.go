@@ -1,23 +1,55 @@
 package ingest
 
 import (
+	"github.com/stellar/go/support/errors"
 	err2 "github.com/stellar/go/support/errors"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
-	"github.com/stellar/horizon/errors"
+	herr "github.com/stellar/horizon/errors"
 	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/toid"
 )
 
 // ReingestAll re-ingests all ledgers
 func (i *System) ReingestAll() (int, error) {
-	ls := ledger.CurrentState()
-	return i.ReingestRange(ls.CoreElder, ls.CoreLatest)
+
+	err := i.trimAbandondedLedgers()
+	if err != nil {
+		return 0, err
+	}
+
+	var coreElder int32
+	var coreLatest int32
+	cq := core.Q{Repo: i.CoreDB}
+
+	err = cq.ElderLedger(&coreElder)
+	if err != nil {
+		return 0, errors.Wrap(err, "load core elder ledger failed")
+	}
+
+	err = cq.LatestLedger(&coreLatest)
+	if err != nil {
+		return 0, errors.Wrap(err, "load core elder ledger failed")
+	}
+
+	log.
+		WithField("start", coreElder).
+		WithField("end", coreLatest).
+		Info("reingest: all")
+
+	return i.ReingestRange(coreElder, coreLatest)
 }
 
 // ReingestOutdated finds old ledgers and reimports them.
 func (i *System) ReingestOutdated() (n int, err error) {
+
 	q := history.Q{Repo: i.HorizonDB}
+
+	err = i.trimAbandondedLedgers()
+	if err != nil {
+		return
+	}
 
 	// NOTE: this loop will never terminate if some bug were cause a ledger
 	// reingestion to silently fail.
@@ -84,6 +116,11 @@ func (i *System) ReingestRange(start, end int32) (int, error) {
 	is.ClearExisting = true
 
 	is.Run()
+	log.WithField("start", start).
+		WithField("end", end).
+		WithField("err", is.Err).
+		WithField("ingested", is.Ingested).
+		Info("ingest: range complete")
 	return is.Ingested, is.Err
 }
 
@@ -135,7 +172,7 @@ func (i *System) newTickSession() *Session {
 func (i *System) runOnce() {
 	defer func() {
 		if rec := recover(); rec != nil {
-			err := errors.FromPanic(rec)
+			err := herr.FromPanic(rec)
 			log.Errorf("import session panicked: %s", err)
 			errors.ReportToSentry(err, nil)
 		}
@@ -193,6 +230,44 @@ func (i *System) runOnce() {
 	}
 
 	return
+}
+
+// trimAbandondedLedgers deletes all "abandonded" ledgers from the history
+// database. An abandonded ledger, in this context, means a ledger known to
+// horizon but is no longer present in the stellar-core database source.  The
+// usual cause for this situation is a stellar-core that uses the CATCHUP_RECENT
+// mode.
+func (i *System) trimAbandondedLedgers() error {
+	var coreElder int32
+	cq := core.Q{Repo: i.CoreDB}
+
+	err := cq.ElderLedger(&coreElder)
+	if err != nil {
+		return errors.Wrap(err, "load core elder ledger failed")
+	}
+
+	hdb := i.HorizonDB.Clone()
+	ingestion := &Ingestion{DB: hdb}
+
+	err = ingestion.Start()
+	if err != nil {
+		return errors.Wrap(err, "failed to begin ingestion")
+	}
+
+	end := toid.New(coreElder, 0, 0)
+
+	ingestion.Clear(0, end.ToInt64())
+
+	err = ingestion.Close()
+	if err != nil {
+		return errors.Wrap(err, "failed to close ingestion")
+	}
+
+	log.
+		WithField("new_elder_ledger", coreElder).
+		Infof("reingest: abandonded ledgers trimmed")
+
+	return nil
 }
 
 // validateLedgerChain helps to ensure the chain of ledger entries is contiguous

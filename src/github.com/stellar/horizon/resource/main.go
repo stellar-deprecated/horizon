@@ -103,6 +103,7 @@ type Ledger struct {
 	BaseFee          int32     `json:"base_fee"`
 	BaseReserve      string    `json:"base_reserve"`
 	MaxTxSetSize     int32     `json:"max_tx_set_size"`
+	ProtocolVersion  int32     `json:"protocol_version"`
 }
 
 // Offer is the display form of an offer to trade currency.
@@ -173,6 +174,7 @@ type Root struct {
 	CoreSequence         int32  `json:"core_latest_ledger"`
 	CoreElderSequence    int32  `json:"core_elder_ledger"`
 	NetworkPassphrase    string `json:"network_passphrase"`
+	ProtocolVersion      int32  `json:"protocol_version"`
 }
 
 // Signer represents one of an account's signers.

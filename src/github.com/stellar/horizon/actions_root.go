@@ -23,6 +23,7 @@ func (action *RootAction) JSON() {
 		action.App.horizonVersion,
 		action.App.coreVersion,
 		action.App.networkPassphrase,
+		action.App.protocolVersion,
 	)
 
 	hal.Render(action.W, res)

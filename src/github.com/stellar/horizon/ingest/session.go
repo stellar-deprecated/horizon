@@ -29,10 +29,6 @@ func (is *Session) Run() {
 	defer is.Ingestion.Rollback()
 
 	for is.Cursor.NextLedger() {
-		if is.Err != nil {
-			return
-		}
-
 		is.clearLedger()
 		is.ingestLedger()
 		is.flush()
@@ -40,6 +36,11 @@ func (is *Session) Run() {
 
 	if is.Err != nil {
 		is.Ingestion.Rollback()
+		return
+	}
+
+	if is.Cursor.Err != nil {
+		is.Err = is.Cursor.Err
 		return
 	}
 

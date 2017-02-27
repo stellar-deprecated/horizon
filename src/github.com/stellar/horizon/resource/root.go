@@ -13,6 +13,7 @@ func (res *Root) Populate(
 	ledgerState ledger.State,
 	hVersion, cVersion string,
 	passphrase string,
+	pVersion int32,
 ) {
 	res.HorizonSequence = ledgerState.HistoryLatest
 	res.HistoryElderSequence = ledgerState.HistoryElder
@@ -21,6 +22,7 @@ func (res *Root) Populate(
 	res.HorizonVersion = hVersion
 	res.StellarCoreVersion = cVersion
 	res.NetworkPassphrase = passphrase
+	res.ProtocolVersion = pVersion
 
 	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	res.Links.Account = lb.Link("/accounts/{account_id}")

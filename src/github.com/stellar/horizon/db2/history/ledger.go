@@ -59,4 +59,5 @@ var selectLedger = sq.Select(
 	"hl.base_fee",
 	"hl.base_reserve",
 	"hl.max_tx_set_size",
+	"hl.protocol_version",
 ).From("history_ledgers hl")

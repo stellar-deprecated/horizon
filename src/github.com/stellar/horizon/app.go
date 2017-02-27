@@ -43,6 +43,7 @@ type App struct {
 	coreVersion       string
 	horizonVersion    string
 	networkPassphrase string
+	protocolVersion   int32
 	submitter         *txsub.System
 	paths             paths.Finder
 	friendbot         *friendbot.Bot
@@ -243,6 +244,7 @@ func (a *App) UpdateStellarCoreInfo() {
 	// TODO: make resilient to changes in stellar-core's info output
 	a.coreVersion = serverInfo["build"].(string)
 	a.networkPassphrase = serverInfo["network"].(string)
+	a.protocolVersion = int32(serverInfo["protocol_version"].(float64))
 }
 
 // UpdateMetrics triggers a refresh of several metrics gauges, such as open

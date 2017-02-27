@@ -15,7 +15,8 @@ func TestRootAction(t *testing.T) {
 	server := test.NewStaticMockServer(`{
 			"info": {
 				"network": "test",
-				"build": "test-core"
+				"build": "test-core",
+				"protocol_version": 4
 			}
 		}`)
 	defer server.Close()
