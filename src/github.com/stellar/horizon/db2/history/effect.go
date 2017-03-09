@@ -31,6 +31,12 @@ func (r *Effect) ID() string {
 	return fmt.Sprintf("%019d-%010d", r.HistoryOperationID, r.Order)
 }
 
+// LedgerSequence return the ledger in which the effect occurred.
+func (r *Effect) LedgerSequence() int32 {
+	id := toid.Parse(r.HistoryOperationID)
+	return id.LedgerSequence
+}
+
 // PagingToken returns a cursor for this effect
 func (r *Effect) PagingToken() string {
 	return fmt.Sprintf("%d-%d", r.HistoryOperationID, r.Order)

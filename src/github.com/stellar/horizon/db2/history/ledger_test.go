@@ -27,4 +27,11 @@ func TestLedgerQueries(t *testing.T) {
 	if tt.Assert.NoError(err) {
 		tt.Assert.Len(ls, 3)
 	}
+
+	// LedgersBySequence
+	err = q.LedgersBySequence(&ls, 1, 2, 3)
+
+	if tt.Assert.NoError(err) {
+		tt.Assert.Len(ls, 3)
+	}
 }

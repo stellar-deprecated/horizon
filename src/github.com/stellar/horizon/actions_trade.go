@@ -1,6 +1,10 @@
 package horizon
 
 import (
+	"errors"
+
+	"fmt"
+
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
@@ -18,6 +22,9 @@ type TradeIndexAction struct {
 	Buying        xdr.Asset
 	PagingParams  db2.PageQuery
 	Records       []history.Effect
+	// LedgerRecords is a cache of loaded ledger data used to populate the time
+	// when a trade occurred.
+	LedgerRecords map[int32]history.Ledger
 	Page          hal.Page
 }
 
@@ -27,6 +34,7 @@ func (action *TradeIndexAction) JSON() {
 		action.EnsureHistoryFreshness,
 		action.loadParams,
 		action.loadRecords,
+		action.loadLedgers,
 		action.loadPage,
 		func() {
 			hal.Render(action.W, action.Page)
@@ -63,14 +71,50 @@ func (action *TradeIndexAction) loadRecords() {
 	action.Err = trades.Page(action.PagingParams).Select(&action.Records)
 }
 
+// loadLedgers collects the unique ledgers referenced in the loaded trades and loads the details for each.
+func (action *TradeIndexAction) loadLedgers() {
+	if len(action.Records) == 0 {
+		return
+	}
+
+	ledgerSequences := make([]interface{}, len(action.Records))
+
+	// populate the unique sequences
+	for i, trade := range action.Records {
+		ledgerSequences[i] = trade.LedgerSequence()
+	}
+
+	var ledgers []history.Ledger
+	action.Err = action.HistoryQ().LedgersBySequence(
+		&ledgers,
+		ledgerSequences...,
+	)
+	if action.Err != nil {
+		return
+	}
+
+	action.LedgerRecords = map[int32]history.Ledger{}
+	for _, l := range ledgers {
+		action.LedgerRecords[l.Sequence] = l
+	}
+}
+
 // loadPage populates action.Page
 func (action *TradeIndexAction) loadPage() {
 	for _, record := range action.Records {
 		var res resource.Trade
-		action.Err = res.Populate(action.Ctx, record)
+
+		ledger, found := action.LedgerRecords[record.LedgerSequence()]
+		if !found {
+			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
+			action.Err = errors.New(msg)
+		}
+
+		action.Err = res.Populate(action.Ctx, record, ledger)
 		if action.Err != nil {
 			return
 		}
+
 		action.Page.Add(res)
 	}
 

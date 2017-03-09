@@ -3,6 +3,10 @@ package horizon
 import (
 	"net/url"
 	"testing"
+	"time"
+
+	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/resource"
 )
 
 func TestTradeActions_Index(t *testing.T) {
@@ -14,6 +18,16 @@ func TestTradeActions_Index(t *testing.T) {
 	if ht.Assert.Equal(200, w.Code) {
 		ht.Assert.PageOf(1, w.Body)
 	}
+
+	// 	ensure created_at is populated correctly
+	records := []resource.Trade{}
+	ht.UnmarshalPage(w.Body, &records)
+
+	l := history.Ledger{}
+	hq := history.Q{Repo: ht.HorizonRepo()}
+	ht.Require.NoError(hq.LedgerBySequence(&l, 6))
+
+	ht.Assert.WithinDuration(l.ClosedAt, records[0].LedgerCloseTime, 1*time.Second)
 
 	// for order book
 	var q = make(url.Values)
