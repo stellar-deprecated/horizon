@@ -108,6 +108,7 @@ func (action *TradeIndexAction) loadPage() {
 		if !found {
 			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
 			action.Err = errors.New(msg)
+			return
 		}
 
 		action.Err = res.Populate(action.Ctx, record, ledger)
