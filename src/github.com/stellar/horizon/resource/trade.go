@@ -19,6 +19,12 @@ func (res *Trade) Populate(
 		err = errors.New("invalid effect; not a trade")
 		return
 	}
+
+	if row.LedgerSequence() != ledger.Sequence {
+		err = errors.New("invalid ledger; different sequence than trade")
+		return
+	}
+
 	row.UnmarshalDetails(res)
 	res.ID = row.PagingToken()
 	res.PT = row.PagingToken()
