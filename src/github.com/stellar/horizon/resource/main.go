@@ -193,18 +193,19 @@ type Trade struct {
 		Buyer  hal.Link `json:"buyer"`
 	} `json:"_links"`
 
-	ID                string `json:"id"`
-	PT                string `json:"paging_token"`
-	Seller            string `json:"seller"`
-	SoldAmount        string `json:"sold_amount"`
-	SoldAssetType     string `json:"sold_asset_type"`
-	SoldAssetCode     string `json:"sold_asset_code,omitempty"`
-	SoldAssetIssuer   string `json:"sold_asset_issuer,omitempty"`
-	Buyer             string `json:"buyer"`
-	BoughtAmount      string `json:"bought_amount"`
-	BoughtAssetType   string `json:"bought_asset_type"`
-	BoughtAssetCode   string `json:"bought_asset_code,omitempty"`
-	BoughtAssetIssuer string `json:"bought_asset_issuer,omitempty"`
+	ID                string    `json:"id"`
+	PT                string    `json:"paging_token"`
+	Seller            string    `json:"seller"`
+	SoldAmount        string    `json:"sold_amount"`
+	SoldAssetType     string    `json:"sold_asset_type"`
+	SoldAssetCode     string    `json:"sold_asset_code,omitempty"`
+	SoldAssetIssuer   string    `json:"sold_asset_issuer,omitempty"`
+	Buyer             string    `json:"buyer"`
+	BoughtAmount      string    `json:"bought_amount"`
+	BoughtAssetType   string    `json:"bought_asset_type"`
+	BoughtAssetCode   string    `json:"bought_asset_code,omitempty"`
+	BoughtAssetIssuer string    `json:"bought_asset_issuer,omitempty"`
+	LedgerCloseTime   time.Time `json:"created_at"`
 }
 
 // Transaction represents a single, successful transaction

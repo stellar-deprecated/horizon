@@ -10,15 +10,26 @@ import (
 )
 
 // Populate fills out the details
-func (res *Trade) Populate(ctx context.Context, row history.Effect) (err error) {
+func (res *Trade) Populate(
+	ctx context.Context,
+	row history.Effect,
+	ledger history.Ledger,
+) (err error) {
 	if row.Type != history.EffectTrade {
 		err = errors.New("invalid effect; not a trade")
 		return
 	}
+
+	if row.LedgerSequence() != ledger.Sequence {
+		err = errors.New("invalid ledger; different sequence than trade")
+		return
+	}
+
 	row.UnmarshalDetails(res)
 	res.ID = row.PagingToken()
 	res.PT = row.PagingToken()
 	res.Buyer = row.Account
+	res.LedgerCloseTime = ledger.ClosedAt
 
 	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
 	res.Links.Self = lb.Link("/accounts", res.Seller)

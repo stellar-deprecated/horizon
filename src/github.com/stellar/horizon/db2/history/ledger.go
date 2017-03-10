@@ -1,7 +1,10 @@
 package history
 
 import (
+	"fmt"
+
 	sq "github.com/lann/squirrel"
+	"github.com/stellar/go/support/errors"
 	"github.com/stellar/horizon/db2"
 )
 
@@ -21,6 +24,18 @@ func (q *Q) Ledgers() *LedgersQ {
 		parent: q,
 		sql:    selectLedger,
 	}
+}
+
+// LedgersBySequence loads the a set of ledgers identified by the sequences
+// `seqs` into `dest`.
+func (q *Q) LedgersBySequence(dest interface{}, seqs ...interface{}) error {
+	if len(seqs) == 0 {
+		return errors.New("no sequence arguments provided")
+	}
+	in := fmt.Sprintf("sequence IN (%s)", sq.Placeholders(len(seqs)))
+	sql := selectLedger.Where(in, seqs...)
+
+	return q.Select(dest, sql)
 }
 
 // Page specifies the paging constraints for the query being built by `q`.
