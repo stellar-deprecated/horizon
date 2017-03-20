@@ -8,8 +8,13 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+---
+
+## [v0.9.0] - 2017-03-20
+
 ### Added
 - Horizon now exposes the stellar network protocol in several places:  It shows the currently reported protocol version (as returned by the stellar-core `info` command) on the root endpoint, and it reports the protocol version of each ledger resource.
+- Trade resources now include a `created_at` timestamp
 
 ### Fixed
 
@@ -142,7 +147,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.8.0...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.9.0...master
+[v0.9.0]: https://github.com/stellar/horizon/compare/v0.8.0...v0.9.0
 [v0.8.0]: https://github.com/stellar/horizon/compare/v0.7.1...v0.8.0
 [v0.7.1]: https://github.com/stellar/horizon/compare/v0.7.0...v0.7.1
 [v0.7.0]: https://github.com/stellar/horizon/compare/v0.6.2...v0.7.0
