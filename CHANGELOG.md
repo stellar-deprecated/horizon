@@ -14,7 +14,7 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ### Added
 - Horizon now exposes the stellar network protocol in several places:  It shows the currently reported protocol version (as returned by the stellar-core `info` command) on the root endpoint, and it reports the protocol version of each ledger resource.
-- Trade resources now include a `created_at` timestamp
+- Trade resources now include a `created_at` timestamp.
 
 ### Fixed
 
