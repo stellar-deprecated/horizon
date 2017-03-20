@@ -37,6 +37,7 @@ for i in $PACKAGES; do
   pg_dump $DATABASE_URL \
     --clean --if-exists --no-owner --no-acl --inserts \
     | sed '/SET idle_in_transaction_session_timeout/d' \
+    | sed '/SET row_security/d' \
     > $HORIZON_SQL
 done
 

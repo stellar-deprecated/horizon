@@ -11,7 +11,6 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET row_security = off;
 
 SET search_path = public, pg_catalog;
 
@@ -264,10 +263,10 @@ ALTER TABLE ONLY history_transaction_participants ALTER COLUMN id SET DEFAULT ne
 -- Data for Name: gorp_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2017-03-20 12:46:46.452365-05');
-INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2017-03-20 12:46:46.456119-05');
-INSERT INTO gorp_migrations VALUES ('3_use_sequence_in_history_accounts.sql', '2017-03-20 12:46:46.458332-05');
-INSERT INTO gorp_migrations VALUES ('4_add_protocol_version.sql', '2017-03-20 12:46:46.4642-05');
+INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2017-03-20 13:47:48.966395-05');
+INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2017-03-20 13:47:48.969897-05');
+INSERT INTO gorp_migrations VALUES ('3_use_sequence_in_history_accounts.sql', '2017-03-20 13:47:48.972262-05');
+INSERT INTO gorp_migrations VALUES ('4_add_protocol_version.sql', '2017-03-20 13:47:48.978883-05');
 
 
 --

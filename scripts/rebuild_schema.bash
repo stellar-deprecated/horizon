@@ -15,10 +15,12 @@ BLANK_PATH="src/github.com/stellar/horizon/test/scenarios/blank-horizon.sql"
 
 pg_dump postgres://localhost/horizon_schema?sslmode=disable $DUMP_OPTS \
   | sed '/SET idle_in_transaction_session_timeout/d'  \
+  | sed '/SET row_security/d' \
   > $LATEST_PATH
 pg_dump postgres://localhost/horizon_schema?sslmode=disable \
   --clean --if-exists $DUMP_OPTS \
   | sed '/SET idle_in_transaction_session_timeout/d'  \
+  | sed '/SET row_security/d' \
   > $BLANK_PATH
 
 gb generate github.com/stellar/horizon/db2/schema
