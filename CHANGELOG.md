@@ -6,15 +6,19 @@ file.  This project adheres to [Semantic Versioning](http://semver.org/).
 As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
-## [Unreleased]
+## [v0.9.1] - 2017-03-20
 
----
+### Fixed
+
+- Embedded sql files for the database schema have been fixed to be compatible with postgres 9.5. The configuration setting `idle_in_transaction_session_timeout` has been removed from the dumped files.
 
 ## [v0.9.0] - 2017-03-20
 
+This release was retracted due to a bug discovered after release.
+
 ### Added
 - Horizon now exposes the stellar network protocol in several places:  It shows the currently reported protocol version (as returned by the stellar-core `info` command) on the root endpoint, and it reports the protocol version of each ledger resource.
-- Trade resources now include a `created_at` timestamp
+- Trade resources now include a `created_at` timestamp.
 
 ### Fixed
 
@@ -147,7 +151,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.9.0...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.9.1...master
+[v0.9.1]: https://github.com/stellar/horizon/compare/v0.9.0...v0.9.1
 [v0.9.0]: https://github.com/stellar/horizon/compare/v0.8.0...v0.9.0
 [v0.8.0]: https://github.com/stellar/horizon/compare/v0.7.1...v0.8.0
 [v0.7.1]: https://github.com/stellar/horizon/compare/v0.7.0...v0.7.1

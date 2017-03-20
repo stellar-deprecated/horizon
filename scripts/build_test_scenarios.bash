@@ -34,7 +34,10 @@ for i in $PACKAGES; do
   $DIR/../bin/horizon db reingest
 
   # write horizon data to sql file
-  pg_dump $DATABASE_URL --clean --if-exists --no-owner --no-acl --inserts > $HORIZON_SQL
+  pg_dump $DATABASE_URL \
+    --clean --if-exists --no-owner --no-acl --inserts \
+    | sed '/SET idle_in_transaction_session_timeout/d' \
+    > $HORIZON_SQL
 done
 
 
