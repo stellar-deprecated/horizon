@@ -6,6 +6,18 @@ file.  This project adheres to [Semantic Versioning](http://semver.org/).
 As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
+## [v0.10.0] - 2017-03-20
+
+This is a fix release for v0.9.0 and v0.9.1
+
+
+### Added
+- Added `horizon db clear` helper command to clear previously ingested history.
+
+### Fixed
+
+- Embedded sql files for the database schema have been fixed agsain to be compatible with postgres 9.5. The configuration setting `row_security` has been removed from the dumped files.
+
 ## [v0.9.1] - 2017-03-20
 
 ### Fixed
@@ -151,7 +163,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.9.1...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.10.0...master
+[v0.10.0]: https://github.com/stellar/horizon/compare/v0.9.1...v0.10.0
 [v0.9.1]: https://github.com/stellar/horizon/compare/v0.9.0...v0.9.1
 [v0.9.0]: https://github.com/stellar/horizon/compare/v0.8.0...v0.9.0
 [v0.8.0]: https://github.com/stellar/horizon/compare/v0.7.1...v0.8.0
