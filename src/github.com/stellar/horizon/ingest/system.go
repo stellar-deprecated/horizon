@@ -11,6 +11,33 @@ import (
 	"github.com/stellar/horizon/toid"
 )
 
+// ClearAll removes all previously ingested historical data from the horizon
+// database.
+func (i *System) ClearAll() error {
+
+	hdb := i.HorizonDB.Clone()
+	ingestion := &Ingestion{DB: hdb}
+
+	err := ingestion.Start()
+	if err != nil {
+		return errors.Wrap(err, "failed to begin ingestion")
+	}
+
+	err = ingestion.ClearAll()
+	if err != nil {
+		return errors.Wrap(err, "failed to clear history tables")
+	}
+
+	err = ingestion.Close()
+	if err != nil {
+		return errors.Wrap(err, "failed to close ingestion")
+	}
+
+	log.Infof("cleared all history")
+
+	return nil
+}
+
 // ReingestAll re-ingests all ledgers
 func (i *System) ReingestAll() (int, error) {
 

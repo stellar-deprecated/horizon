@@ -7,6 +7,22 @@ import (
 	"github.com/stellar/horizon/test"
 )
 
+func TestClearAll(t *testing.T) {
+	tt := test.Start(t).Scenario("kahuna")
+	defer tt.Finish()
+	is := sys(tt)
+
+	err := is.ClearAll()
+
+	tt.Require.NoError(err)
+
+	// ensure no ledgers
+	var found int
+	err = tt.HorizonRepo().GetRaw(&found, "SELECT COUNT(*) FROM history_ledgers")
+	tt.Require.NoError(err)
+	tt.Assert.Equal(0, found)
+}
+
 func TestValidation(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()

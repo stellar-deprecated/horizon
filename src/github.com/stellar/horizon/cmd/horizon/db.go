@@ -21,6 +21,22 @@ var dbCmd = &cobra.Command{
 	Short: "commands to manage horizon's postgres db",
 }
 
+var dbClearCmd = &cobra.Command{
+	Use:   "clear",
+	Short: "clears all imported historical data",
+	Run: func(cmd *cobra.Command, args []string) {
+		initConfig()
+		hlog.DefaultLogger.Logger.Level = config.LogLevel
+
+		i := ingestSystem()
+		err := i.ClearAll()
+		if err != nil {
+			hlog.Error(err)
+			os.Exit(1)
+		}
+	},
+}
+
 var dbInitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "install schema",
@@ -101,22 +117,7 @@ var dbReingestCmd = &cobra.Command{
 		initConfig()
 		hlog.DefaultLogger.Logger.Level = config.LogLevel
 
-		hdb, err := db.Open("postgres", config.DatabaseURL)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		cdb, err := db.Open("postgres", config.StellarCoreDatabaseURL)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		passphrase := viper.GetString("network-passphrase")
-		if passphrase == "" {
-			log.Fatal("network-passphrase is blank: reingestion requires manually setting passphrase")
-		}
-
-		i := ingest.New(passphrase, config.StellarCoreURL, cdb, hdb)
+		i := ingestSystem()
 		i.SkipCursorUpdate = true
 		logStatus := func(stage string) {
 			count := i.Metrics.IngestLedgerTimer.Count()
@@ -159,9 +160,30 @@ var dbReingestCmd = &cobra.Command{
 
 func init() {
 	dbCmd.AddCommand(dbInitCmd)
+	dbCmd.AddCommand(dbClearCmd)
 	dbCmd.AddCommand(dbMigrateCmd)
 	dbCmd.AddCommand(dbReapCmd)
 	dbCmd.AddCommand(dbReingestCmd)
+}
+
+func ingestSystem() *ingest.System {
+	hdb, err := db.Open("postgres", config.DatabaseURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cdb, err := db.Open("postgres", config.StellarCoreDatabaseURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	passphrase := viper.GetString("network-passphrase")
+	if passphrase == "" {
+		log.Fatal("network-passphrase is blank: reingestion requires manually setting passphrase")
+	}
+
+	i := ingest.New(passphrase, config.StellarCoreURL, cdb, hdb)
+	return i
 }
 
 func reingest(i *ingest.System, args []string) (int, error) {

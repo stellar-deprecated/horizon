@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"math"
+
 	"github.com/guregu/null"
 	sq "github.com/lann/squirrel"
 	"github.com/stellar/go/xdr"
@@ -12,6 +14,11 @@ import (
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/db2/sqx"
 )
+
+// ClearAll clears the entire history database
+func (ingest *Ingestion) ClearAll() error {
+	return ingest.Clear(0, math.MaxInt64)
+}
 
 // Clear removes a range of data from the history database, exclusive of the end
 // id provided.
