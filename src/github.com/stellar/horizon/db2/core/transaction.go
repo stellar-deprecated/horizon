@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/guregu/null"
-	sq "github.com/lann/squirrel"
 	"github.com/stellar/go/strkey"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/utf8"

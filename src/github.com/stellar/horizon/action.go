@@ -35,7 +35,7 @@ type Action struct {
 // CoreQ provides access to queries that access the stellar core database.
 func (action *Action) CoreQ() *core.Q {
 	if action.cq == nil {
-		action.cq = &core.Q{Repo: action.App.CoreRepo(action.Ctx)}
+		action.cq = &core.Q{Session: action.App.CoreSession(action.Ctx)}
 	}
 
 	return action.cq
@@ -82,7 +82,7 @@ func (action *Action) GetPageQuery() db2.PageQuery {
 // horizon's database.
 func (action *Action) HistoryQ() *history.Q {
 	if action.hq == nil {
-		action.hq = &history.Q{Repo: action.App.HorizonRepo(action.Ctx)}
+		action.hq = &history.Q{Session: action.App.HorizonSession(action.Ctx)}
 	}
 
 	return action.hq

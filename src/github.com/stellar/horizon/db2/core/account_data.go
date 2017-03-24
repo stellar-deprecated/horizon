@@ -2,7 +2,8 @@ package core
 
 import (
 	"encoding/base64"
-	sq "github.com/lann/squirrel"
+
+	sq "github.com/Masterminds/squirrel"
 )
 
 // Raw returns the decoded, raw value of the account data

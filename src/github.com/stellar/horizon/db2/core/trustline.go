@@ -2,7 +2,8 @@ package core
 
 import (
 	"errors"
-	sq "github.com/lann/squirrel"
+
+	sq "github.com/Masterminds/squirrel"
 	"github.com/stellar/go/xdr"
 )
 

@@ -18,8 +18,8 @@ func initIngester(app *App) {
 	app.ingester = ingest.New(
 		app.networkPassphrase,
 		app.config.StellarCoreURL,
-		app.CoreRepo(nil),
-		app.HorizonRepo(nil),
+		app.CoreSession(nil),
+		app.HorizonSession(nil),
 	)
 
 	app.ingester.SkipCursorUpdate = app.config.SkipCursorUpdate

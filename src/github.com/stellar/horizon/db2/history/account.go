@@ -1,7 +1,7 @@
 package history
 
 import (
-	sq "github.com/lann/squirrel"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/stellar/horizon/db2"
 )
 

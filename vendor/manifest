@@ -8,6 +8,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/Masterminds/squirrel",
+			"repository": "https://github.com/Masterminds/squirrel",
+			"revision": "20f192218cf52a73397fa2df45bdda720f3e47c8",
+			"branch": "v1"
+		},
+		{
 			"importpath": "github.com/PuerkitoBio/throttled",
 			"repository": "https://github.com/PuerkitoBio/throttled",
 			"revision": "1c8297c643b774435df8df65f7502b37d014fb6b",
@@ -262,12 +268,6 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/lann/squirrel",
-			"repository": "https://github.com/lann/squirrel",
-			"revision": "e13dbacee404686afd0acf2d44b8d34869605e03",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/lib/pq",
 			"repository": "https://github.com/lib/pq",
 			"revision": "a8d8d01c4f91602f876bf5aa210274e8203a6b45",
@@ -318,7 +318,7 @@
 		{
 			"importpath": "github.com/nullstyle/go-xdr/xdr3",
 			"repository": "https://github.com/nullstyle/go-xdr",
-			"revision": "8bf8a5d05c8612d4039a7f67ddce3d49ee61b398",
+			"revision": "3c3a95da20cd1e19018bf098dce9c3ce358848df",
 			"branch": "master",
 			"path": "/xdr3"
 		},
@@ -418,7 +418,7 @@
 		{
 			"importpath": "github.com/stellar/go",
 			"repository": "https://github.com/stellar/go",
-			"revision": "6f020b600298ae09be03545efb717a20c39a6b63",
+			"revision": "79fa0dbbbc5a16ec5c9673929a0cad2ee381e2fe",
 			"branch": "master"
 		},
 		{

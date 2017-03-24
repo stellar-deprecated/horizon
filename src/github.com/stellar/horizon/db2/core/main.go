@@ -73,7 +73,7 @@ type OrderBookSummary []OrderBookSummaryPriceLevel
 // Q is a helper struct on which to hang common queries against a stellar
 // core database.
 type Q struct {
-	*db.Repo
+	*db.Session
 }
 
 // PriceLevel represents an aggregation of offers to trade at a certain

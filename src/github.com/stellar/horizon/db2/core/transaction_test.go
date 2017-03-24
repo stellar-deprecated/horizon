@@ -9,7 +9,7 @@ import (
 func TestTransactionsQueries(t *testing.T) {
 	tt := test.Start(t).Scenario("base")
 	defer tt.Finish()
-	q := &Q{tt.CoreRepo()}
+	q := &Q{tt.CoreSession()}
 
 	// Test TransactionsByLedger
 	var txs []Transaction

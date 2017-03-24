@@ -10,7 +10,7 @@ import (
 func TestGetOrderBookSummary(t *testing.T) {
 	tt := test.Start(t).Scenario("order_books")
 	defer tt.Finish()
-	q := &Q{tt.CoreRepo()}
+	q := &Q{tt.CoreSession()}
 
 	selling, err := AssetFromDB(xdr.AssetTypeAssetTypeCreditAlphanum4, "USD", "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
 	tt.Require.NoError(err)
@@ -68,7 +68,7 @@ func TestGetOrderBookSummary(t *testing.T) {
 func TestGetOrderBookSummary_Regress310(t *testing.T) {
 	tt := test.Start(t).Scenario("order_books_310")
 	defer tt.Finish()
-	q := &Q{tt.CoreRepo()}
+	q := &Q{tt.CoreSession()}
 
 	selling, err := AssetFromDB(xdr.AssetTypeAssetTypeCreditAlphanum4, "USD", "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
 	tt.Require.NoError(err)

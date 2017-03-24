@@ -24,7 +24,7 @@ func TestTradeActions_Index(t *testing.T) {
 	ht.UnmarshalPage(w.Body, &records)
 
 	l := history.Ledger{}
-	hq := history.Q{Repo: ht.HorizonRepo()}
+	hq := history.Q{Session: ht.HorizonSession()}
 	ht.Require.NoError(hq.LedgerBySequence(&l, 6))
 
 	ht.Assert.WithinDuration(l.ClosedAt, records[0].LedgerCloseTime, 1*time.Second)

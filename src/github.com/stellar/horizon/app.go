@@ -127,8 +127,8 @@ func (a *App) Close() {
 	a.cancel()
 	a.ticks.Stop()
 
-	a.historyQ.Repo.DB.Close()
-	a.coreQ.Repo.DB.Close()
+	a.historyQ.Session.DB.Close()
+	a.coreQ.Session.DB.Close()
 }
 
 // HistoryQ returns a helper object for performing sql queries against the
@@ -137,16 +137,16 @@ func (a *App) HistoryQ() *history.Q {
 	return a.historyQ
 }
 
-// HorizonRepo returns a new repo that loads data from the horizon database. The
-// returned repo is bound to `ctx`.
-func (a *App) HorizonRepo(ctx context.Context) *db.Repo {
-	return &db.Repo{DB: a.historyQ.Repo.DB, Ctx: ctx}
+// HorizonSession returns a new session that loads data from the horizon
+// database. The returned session is bound to `ctx`.
+func (a *App) HorizonSession(ctx context.Context) *db.Session {
+	return &db.Session{DB: a.historyQ.Session.DB, Ctx: ctx}
 }
 
-// CoreRepo returns a new repo that loads data from the stellar core
-// database. The returned repo is bound to `ctx`.
-func (a *App) CoreRepo(ctx context.Context) *db.Repo {
-	return &db.Repo{DB: a.coreQ.Repo.DB, Ctx: ctx}
+// CoreSession returns a new session that loads data from the stellar core
+// database. The returned session is bound to `ctx`.
+func (a *App) CoreSession(ctx context.Context) *db.Session {
+	return &db.Session{DB: a.coreQ.Session.DB, Ctx: ctx}
 }
 
 // CoreQ returns a helper object for performing sql queries aginst the
@@ -257,8 +257,8 @@ func (a *App) UpdateMetrics() {
 	a.coreLatestLedgerGauge.Update(int64(ls.CoreLatest))
 	a.coreElderLedgerGauge.Update(int64(ls.CoreElder))
 
-	a.horizonConnGauge.Update(int64(a.historyQ.Repo.DB.Stats().OpenConnections))
-	a.coreConnGauge.Update(int64(a.coreQ.Repo.DB.Stats().OpenConnections))
+	a.horizonConnGauge.Update(int64(a.historyQ.Session.DB.Stats().OpenConnections))
+	a.coreConnGauge.Update(int64(a.coreQ.Session.DB.Stats().OpenConnections))
 }
 
 // DeleteUnretainedHistory forwards to the app's reaper.  See

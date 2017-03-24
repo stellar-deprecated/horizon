@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math/big"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/go-errors/errors"
-	sq "github.com/lann/squirrel"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2"
 )

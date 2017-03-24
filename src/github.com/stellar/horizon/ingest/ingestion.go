@@ -7,8 +7,8 @@ import (
 
 	"math"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/guregu/null"
-	sq "github.com/lann/squirrel"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
@@ -329,7 +329,7 @@ func (ingest *Ingestion) getParticipantID(
 	aid xdr.AccountId,
 ) (result int64, err error) {
 
-	q := history.Q{Repo: ingest.DB}
+	q := history.Q{Session: ingest.DB}
 	var existing history.Account
 	err = q.AccountByAddress(&existing, aid.Address())
 

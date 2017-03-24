@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/go-errors/errors"
-	sq "github.com/lann/squirrel"
 )
 
 const (

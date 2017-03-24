@@ -13,8 +13,8 @@ func TestResultProvider(t *testing.T) {
 	defer tt.Finish()
 
 	rp := &DB{
-		Core:    &core.Q{Repo: tt.CoreRepo()},
-		History: &history.Q{Repo: tt.HorizonRepo()},
+		Core:    &core.Q{Session: tt.CoreSession()},
+		History: &history.Q{Session: tt.HorizonSession()},
 	}
 
 	// Regression: ensure a transaction that is not ingested still returns the

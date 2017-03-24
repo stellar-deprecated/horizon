@@ -10,7 +10,7 @@ import (
 func TestTransactionQueries(t *testing.T) {
 	tt := test.Start(t).Scenario("base")
 	defer tt.Finish()
-	q := &Q{tt.HorizonRepo()}
+	q := &Q{tt.HorizonSession()}
 
 	// Test TransactionByHash
 	var tx Transaction

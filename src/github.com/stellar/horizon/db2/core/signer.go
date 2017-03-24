@@ -1,7 +1,7 @@
 package core
 
 import (
-	sq "github.com/lann/squirrel"
+	sq "github.com/Masterminds/squirrel"
 )
 
 // SignersByAddress loads all signer rows for `addy`

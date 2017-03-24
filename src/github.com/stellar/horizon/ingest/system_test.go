@@ -18,7 +18,7 @@ func TestClearAll(t *testing.T) {
 
 	// ensure no ledgers
 	var found int
-	err = tt.HorizonRepo().GetRaw(&found, "SELECT COUNT(*) FROM history_ledgers")
+	err = tt.HorizonSession().GetRaw(&found, "SELECT COUNT(*) FROM history_ledgers")
 	tt.Require.NoError(err)
 	tt.Assert.Equal(0, found)
 }
@@ -27,13 +27,13 @@ func TestValidation(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
 
-	sys := New(network.TestNetworkPassphrase, "", tt.CoreRepo(), tt.HorizonRepo())
+	sys := New(network.TestNetworkPassphrase, "", tt.CoreSession(), tt.HorizonSession())
 
 	// intact chain
 	for i := int32(2); i <= 57; i++ {
 		tt.Assert.NoError(sys.validateLedgerChain(i))
 	}
-	_, err := tt.CoreRepo().ExecRaw(
+	_, err := tt.CoreSession().ExecRaw(
 		`DELETE FROM ledgerheaders WHERE ledgerseq = ?`, 5,
 	)
 	tt.Require.NoError(err)
@@ -49,7 +49,7 @@ func TestValidation(t *testing.T) {
 	tt.Assert.Contains(err.Error(), "failed to load prev ledger")
 
 	// mismatched header
-	_, err = tt.CoreRepo().ExecRaw(`
+	_, err = tt.CoreSession().ExecRaw(`
 		UPDATE ledgerheaders
 		SET ledgerhash = ?
 		WHERE ledgerseq = ?`, "00000", 8)

@@ -1,16 +1,17 @@
 package horizon
 
 import (
+	"net/http"
+
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/txsub"
-	"github.com/stellar/horizon/txsub/results/db"
+	results "github.com/stellar/horizon/txsub/results/db"
 	"github.com/stellar/horizon/txsub/sequence"
-	"net/http"
 )
 
 func initSubmissionSystem(app *App) {
-	cq := &core.Q{Repo: app.CoreRepo(nil)}
+	cq := &core.Q{Session: app.CoreSession(nil)}
 
 	app.submitter = &txsub.System{
 		Pending:         txsub.NewDefaultSubmissionList(),
@@ -18,7 +19,7 @@ func initSubmissionSystem(app *App) {
 		SubmissionQueue: sequence.NewManager(),
 		Results: &results.DB{
 			Core:    cq,
-			History: &history.Q{Repo: app.HorizonRepo(nil)},
+			History: &history.Q{Session: app.HorizonSession(nil)},
 		},
 		Sequences:         cq.SequenceProvider(),
 		NetworkPassphrase: app.networkPassphrase,

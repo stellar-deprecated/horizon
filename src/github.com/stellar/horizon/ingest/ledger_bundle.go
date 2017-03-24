@@ -7,8 +7,8 @@ import (
 )
 
 // Load runs queries against `core` to fill in the records of the bundle.
-func (lb *LedgerBundle) Load(db *db.Repo) error {
-	q := &core.Q{Repo: db}
+func (lb *LedgerBundle) Load(db *db.Session) error {
+	q := &core.Q{Session: db}
 	// Load Header
 	err := q.LedgerHeaderBySequence(&lb.Header, lb.Sequence)
 	if err != nil {

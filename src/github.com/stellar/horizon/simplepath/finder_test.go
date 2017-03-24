@@ -14,7 +14,7 @@ func TestFinder(t *testing.T) {
 	defer tt.Finish()
 
 	finder := &Finder{
-		Q: &core.Q{Repo: tt.CoreRepo()},
+		Q: &core.Q{Session: tt.CoreSession()},
 	}
 
 	native := makeAsset(xdr.AssetTypeAssetTypeNative, "", "")

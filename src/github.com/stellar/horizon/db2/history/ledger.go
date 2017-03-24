@@ -3,7 +3,7 @@ package history
 import (
 	"fmt"
 
-	sq "github.com/lann/squirrel"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/stellar/go/support/errors"
 	"github.com/stellar/horizon/db2"
 )
