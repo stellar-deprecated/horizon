@@ -11,7 +11,7 @@ func TestLedgerBundleLoad(t *testing.T) {
 	defer tt.Finish()
 
 	bundle := &LedgerBundle{Sequence: 2}
-	err := bundle.Load(tt.CoreRepo())
+	err := bundle.Load(tt.CoreSession())
 
 	if tt.Assert.NoError(err) {
 		tt.Assert.Equal(uint32(2), bundle.Header.Sequence)

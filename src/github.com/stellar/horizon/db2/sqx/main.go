@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	sq "github.com/lann/squirrel"
+	sq "github.com/Masterminds/squirrel"
 )
 
 // StringArray returns a sq.Expr suitable for inclusion in an insert that represents

@@ -52,7 +52,7 @@ func sys(tt *test.T) *System {
 	return New(
 		network.TestNetworkPassphrase,
 		"",
-		tt.CoreRepo(),
-		tt.HorizonRepo(),
+		tt.CoreSession(),
+		tt.HorizonSession(),
 	)
 }

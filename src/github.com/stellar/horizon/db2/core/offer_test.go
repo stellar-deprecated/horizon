@@ -10,7 +10,7 @@ import (
 func TestOffersByAddress(t *testing.T) {
 	tt := test.Start(t).Scenario("trades")
 	defer tt.Finish()
-	q := &Q{tt.CoreRepo()}
+	q := &Q{tt.CoreSession()}
 
 	var offers []Offer
 

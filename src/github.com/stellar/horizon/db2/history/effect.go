@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	sq "github.com/lann/squirrel"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2"

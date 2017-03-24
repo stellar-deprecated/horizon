@@ -2,11 +2,12 @@ package simplepath
 
 import (
 	"errors"
-	sq "github.com/lann/squirrel"
+	"math/big"
+
+	sq "github.com/Masterminds/squirrel"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db2/core"
-	"math/big"
 )
 
 // ErrNotEnough represents an error that occurs when pricing a trade on an

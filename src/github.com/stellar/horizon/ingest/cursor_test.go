@@ -14,7 +14,7 @@ func TestCursor(t *testing.T) {
 	c := Cursor{
 		FirstLedger: 7,
 		LastLedger:  10,
-		DB:          tt.CoreRepo(),
+		DB:          tt.CoreSession(),
 	}
 
 	// Ledger 7

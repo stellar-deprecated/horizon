@@ -3,7 +3,7 @@ package sqx
 import (
 	"testing"
 
-	sq "github.com/lann/squirrel"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/stellar/horizon/test"
 )
 

@@ -30,7 +30,7 @@ var Migrations migrate.MigrationSource = &migrate.AssetMigrationSource{
 }
 
 // Init installs the latest schema into db after clearing it first
-func Init(db *db.Repo) error {
+func Init(db *db.Session) error {
 	return db.ExecAll(string(MustAsset("latest.sql")))
 }
 

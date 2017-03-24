@@ -8,27 +8,27 @@ import (
 )
 
 func initHorizonDb(app *App) {
-	repo, err := db.Open("postgres", app.config.DatabaseURL)
+	session, err := db.Open("postgres", app.config.DatabaseURL)
 
 	if err != nil {
 		log.Panic(err)
 	}
-	repo.DB.SetMaxIdleConns(4)
-	repo.DB.SetMaxOpenConns(12)
+	session.DB.SetMaxIdleConns(4)
+	session.DB.SetMaxOpenConns(12)
 
-	app.historyQ = &history.Q{repo}
+	app.historyQ = &history.Q{session}
 }
 
 func initCoreDb(app *App) {
-	repo, err := db.Open("postgres", app.config.StellarCoreDatabaseURL)
+	session, err := db.Open("postgres", app.config.StellarCoreDatabaseURL)
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	repo.DB.SetMaxIdleConns(4)
-	repo.DB.SetMaxOpenConns(12)
-	app.coreQ = &core.Q{repo}
+	session.DB.SetMaxIdleConns(4)
+	session.DB.SetMaxOpenConns(12)
+	app.coreQ = &core.Q{session}
 }
 
 func init() {

@@ -10,7 +10,7 @@ func TestDeleteUnretainedHistory(t *testing.T) {
 	tt := test.Start(t).Scenario("kahuna")
 	defer tt.Finish()
 
-	db := tt.HorizonRepo()
+	db := tt.HorizonSession()
 
 	sys := New(0, db)
 

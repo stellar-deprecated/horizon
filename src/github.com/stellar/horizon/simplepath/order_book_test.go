@@ -21,7 +21,7 @@ func TestOrderBook(t *testing.T) {
 			xdr.AssetTypeAssetTypeCreditAlphanum4,
 			"USD",
 			"GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN"),
-		Q: &core.Q{Repo: tt.CoreRepo()},
+		Q: &core.Q{Session: tt.CoreSession()},
 	}
 
 	r, err := ob.Cost(ob.Buying, 10000000)
@@ -65,7 +65,7 @@ func TestOrderBook_BadCost(t *testing.T) {
 			xdr.AssetTypeAssetTypeCreditAlphanum4,
 			"USD",
 			"GDSBCQO34HWPGUGQSP3QBFEXVTSR2PW46UIGTHVWGWJGQKH3AFNHXHXN"),
-		Q: &core.Q{Repo: tt.CoreRepo()},
+		Q: &core.Q{Session: tt.CoreSession()},
 	}
 
 	r, err := ob.Cost(ob.Buying, 10000000)

@@ -12,7 +12,7 @@ import (
 
 // System represents the history reaping subsystem of horizon.
 type System struct {
-	HorizonDB      *db.Repo
+	HorizonDB      *db.Session
 	RetentionCount uint
 
 	nextRun time.Time
@@ -20,7 +20,7 @@ type System struct {
 
 // New initializes the reaper, causing it to begin polling the stellar-core
 // database for now ledgers and ingesting data into the horizon database.
-func New(retention uint, horizon *db.Repo) *System {
+func New(retention uint, horizon *db.Session) *System {
 	r := &System{
 		HorizonDB:      horizon,
 		RetentionCount: retention,

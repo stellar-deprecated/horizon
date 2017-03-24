@@ -9,9 +9,9 @@ import (
 	"github.com/stellar/horizon/ledger"
 )
 
-// CoreRepo returns a db.Repo instance pointing at the stellar core test database
-func (t *T) CoreRepo() *db.Repo {
-	return &db.Repo{
+// CoreSession returns a db.Session instance pointing at the stellar core test database
+func (t *T) CoreSession() *db.Session {
+	return &db.Session{
 		DB:  t.CoreDB,
 		Ctx: t.Ctx,
 	}
@@ -29,9 +29,10 @@ func (t *T) Finish() {
 	}
 }
 
-// HorizonRepo returns a db.Repo instance pointing at the horizon test database
-func (t *T) HorizonRepo() *db.Repo {
-	return &db.Repo{
+// HorizonSession returns a db.Session instance pointing at the horizon test
+// database
+func (t *T) HorizonSession() *db.Session {
+	return &db.Session{
 		DB:  t.HorizonDB,
 		Ctx: t.Ctx,
 	}
@@ -71,7 +72,7 @@ func (t *T) UnmarshalPage(r io.Reader, dest interface{}) {
 func (t *T) UpdateLedgerState() {
 	var next ledger.State
 
-	err := t.CoreRepo().GetRaw(&next, `
+	err := t.CoreSession().GetRaw(&next, `
 		SELECT
 			COALESCE(MIN(ledgerseq), 0) as core_elder,
 			COALESCE(MAX(ledgerseq), 0) as core_latest
@@ -82,7 +83,7 @@ func (t *T) UpdateLedgerState() {
 		panic(err)
 	}
 
-	err = t.HorizonRepo().GetRaw(&next, `
+	err = t.HorizonSession().GetRaw(&next, `
 			SELECT
 				COALESCE(MIN(sequence), 0) as history_elder,
 				COALESCE(MAX(sequence), 0) as history_latest

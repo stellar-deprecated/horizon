@@ -9,7 +9,7 @@ import (
 func TestLatestLedger(t *testing.T) {
 	tt := test.Start(t).Scenario("base")
 	defer tt.Finish()
-	q := &Q{tt.CoreRepo()}
+	q := &Q{tt.CoreSession()}
 
 	var seq int
 	err := q.LatestLedger(&seq)
@@ -22,7 +22,7 @@ func TestLatestLedger(t *testing.T) {
 func TestElderLedger(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
-	q := &Q{tt.CoreRepo()}
+	q := &Q{tt.CoreSession()}
 
 	var elder int32
 	err := q.ElderLedger(&elder)

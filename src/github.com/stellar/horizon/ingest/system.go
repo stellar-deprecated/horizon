@@ -48,7 +48,7 @@ func (i *System) ReingestAll() (int, error) {
 
 	var coreElder int32
 	var coreLatest int32
-	cq := core.Q{Repo: i.CoreDB}
+	cq := core.Q{Session: i.CoreDB}
 
 	err = cq.ElderLedger(&coreElder)
 	if err != nil {
@@ -71,7 +71,7 @@ func (i *System) ReingestAll() (int, error) {
 // ReingestOutdated finds old ledgers and reimports them.
 func (i *System) ReingestOutdated() (n int, err error) {
 
-	q := history.Q{Repo: i.HorizonDB}
+	q := history.Q{Session: i.HorizonDB}
 
 	err = i.trimAbandondedLedgers()
 	if err != nil {
@@ -266,7 +266,7 @@ func (i *System) runOnce() {
 // mode.
 func (i *System) trimAbandondedLedgers() error {
 	var coreElder int32
-	cq := core.Q{Repo: i.CoreDB}
+	cq := core.Q{Session: i.CoreDB}
 
 	err := cq.ElderLedger(&coreElder)
 	if err != nil {

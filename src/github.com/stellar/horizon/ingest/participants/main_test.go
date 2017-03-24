@@ -11,7 +11,7 @@ import (
 func TestForOperation(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
-	q := &core.Q{Repo: tt.CoreRepo()}
+	q := &core.Q{Session: tt.CoreSession()}
 
 	load := func(lg int32, tx int, op int) []xdr.AccountId {
 		var txs []core.Transaction
@@ -89,7 +89,7 @@ func TestForOperation(t *testing.T) {
 func TestForTransaction(t *testing.T) {
 	tt := test.Start(t).ScenarioWithoutHorizon("kahuna")
 	defer tt.Finish()
-	q := &core.Q{Repo: tt.CoreRepo()}
+	q := &core.Q{Session: tt.CoreSession()}
 
 	load := func(lg int32, tx int, op int) []xdr.AccountId {
 		var txs []core.Transaction
