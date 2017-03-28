@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"strings"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/guregu/null"
 	"github.com/stellar/go/strkey"
@@ -52,7 +54,9 @@ func (tx *Transaction) Memo() null.String {
 	case xdr.MemoTypeMemoNone:
 		value, valid = "", false
 	case xdr.MemoTypeMemoText:
-		value, valid = utf8.Scrub(tx.Envelope.Tx.Memo.MustText()), true
+		scrubbed := utf8.Scrub(tx.Envelope.Tx.Memo.MustText())
+		notnull := strings.Join(strings.Split(scrubbed, "\x00"), "")
+		value, valid = notnull, true
 	case xdr.MemoTypeMemoId:
 		value, valid = fmt.Sprintf("%d", tx.Envelope.Tx.Memo.MustId()), true
 	case xdr.MemoTypeMemoHash:
