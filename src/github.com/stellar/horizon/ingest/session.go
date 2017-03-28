@@ -465,12 +465,14 @@ func (is *Session) ingestTransaction() {
 	if !is.Cursor.Transaction().IsSuccessful() {
 		return
 	}
-
-	is.Ingestion.Transaction(
+	is.Err = is.Ingestion.Transaction(
 		is.Cursor.TransactionID(),
 		is.Cursor.Transaction(),
 		is.Cursor.TransactionFee(),
 	)
+	if is.Err != nil {
+		return
+	}
 
 	for is.Cursor.NextOp() {
 		is.ingestOperation()
