@@ -36,7 +36,7 @@ deploy:
   on:
     repo: stellar/horizon
     tags: true
-    go: '1.6'
+    go: '1.8'
 cache:
   directories:
   - vendor/src
