@@ -6,6 +6,11 @@ file.  This project adheres to [Semantic Versioning](http://semver.org/).
 As this project is pre 1.0, breaking changes may happen for minor version
 bumps.  A breaking change will get clearly notified in this log.
 
+## [v0.10.1] - 2017-03-29
+
+### Fixed
+- Ingestion was fixed to protect against text memos that contain null bytes.  While memos with null bytes are legal in stellar-core, PostgreSQL does not support such values in string columns.  Horizon now strips those null bytes to fix the issue. 
+
 ## [v0.10.0] - 2017-03-20
 
 This is a fix release for v0.9.0 and v0.9.1
@@ -163,7 +168,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.10.0...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.10.1...master
+[v0.10.1]: https://github.com/stellar/horizon/compare/v0.10.0...v0.10.1
 [v0.10.0]: https://github.com/stellar/horizon/compare/v0.9.1...v0.10.0
 [v0.9.1]: https://github.com/stellar/horizon/compare/v0.9.0...v0.9.1
 [v0.9.0]: https://github.com/stellar/horizon/compare/v0.8.0...v0.9.0
