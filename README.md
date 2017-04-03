@@ -31,3 +31,6 @@ More detailed intructions and [admin guide](/docs/reference/admin.md).
 ## Developing Horizon
 
 See [the development guide](docs/developing.md).
+
+## Contributing
+Please see the [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to contribute to this project.
