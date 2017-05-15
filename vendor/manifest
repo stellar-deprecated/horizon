@@ -521,7 +521,7 @@
 			"path": "/web"
 		},
 		{
-			"importpath": "goji.io",
+			"importpath": "github.com/goji/gogi",
 			"repository": "https://github.com/goji/goji",
 			"revision": "0d89ff54b2c18c9c4ba530e32496aef902d3c6cd",
 			"branch": "master"
