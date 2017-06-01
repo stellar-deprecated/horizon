@@ -20,7 +20,7 @@ func (res *Trade) Populate(
 		return
 	}
 
-	if row.LedgerSequence() != ledger.Sequence {
+	if row.GetLedgerSequence() != ledger.Sequence {
 		err = errors.New("invalid ledger; different sequence than trade")
 		return
 	}

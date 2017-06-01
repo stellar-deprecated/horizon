@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -16,13 +17,19 @@ import (
 func (res *Transaction) Populate(
 	ctx context.Context,
 	row history.Transaction,
+	ledger history.Ledger,
 ) (err error) {
+
+	if row.LedgerSequence != ledger.Sequence {
+		err = errors.New("invalid ledger; different sequence than transaction")
+		return
+	}
 
 	res.ID = row.TransactionHash
 	res.PT = row.PagingToken()
 	res.Hash = row.TransactionHash
 	res.Ledger = row.LedgerSequence
-	res.LedgerCloseTime = row.LedgerCloseTime
+	res.LedgerCloseTime = ledger.ClosedAt
 	res.Account = row.Account
 	res.AccountSequence = row.AccountSequence
 	res.FeePaid = row.FeePaid
@@ -36,6 +43,7 @@ func (res *Transaction) Populate(
 	res.Signatures = strings.Split(row.SignatureString, ",")
 	res.ValidBefore = res.timeString(row.ValidBefore)
 	res.ValidAfter = res.timeString(row.ValidAfter)
+	res.LedgerCloseTime = ledger.ClosedAt
 
 	lb := hal.LinkBuilder{Base: httpx.BaseURL(ctx)}
 	res.Links.Account = lb.Link("/accounts", res.Account)

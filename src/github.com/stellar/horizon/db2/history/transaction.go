@@ -100,7 +100,5 @@ var selectTransaction = sq.Select(
 		"ht.memo_type, " +
 		"ht.memo, " +
 		"lower(ht.time_bounds) AS valid_after, " +
-		"upper(ht.time_bounds) AS valid_before, " +
-		"hl.closed_at AS ledger_close_time").
-	From("history_transactions ht").
-	LeftJoin("history_ledgers hl ON ht.ledger_sequence = hl.sequence")
+		"upper(ht.time_bounds) AS valid_before").
+	From("history_transactions ht")

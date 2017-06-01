@@ -264,8 +264,9 @@ type TransactionSuccess struct {
 func NewEffect(
 	ctx context.Context,
 	row history.Effect,
+	ledger history.Ledger,
 ) (result hal.Pageable, err error) {
-	return effects.New(ctx, row)
+	return effects.New(ctx, row, ledger)
 }
 
 // NewOperation returns a resource of the appropriate sub-type for the provided
@@ -273,8 +274,9 @@ func NewEffect(
 func NewOperation(
 	ctx context.Context,
 	row history.Operation,
+	ledger history.Ledger,
 ) (result hal.Pageable, err error) {
-	return operations.New(ctx, row)
+	return operations.New(ctx, row, ledger)
 }
 
 // KeyTypeFromAddress converts the version byte of the provided strkey encoded

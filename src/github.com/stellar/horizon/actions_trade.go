@@ -24,7 +24,7 @@ type TradeIndexAction struct {
 	Records       []history.Effect
 	// LedgerRecords is a cache of loaded ledger data used to populate the time
 	// when a trade occurred.
-	LedgerRecords map[int32]history.Ledger
+	LedgerRecords history.LedgerMap
 	Page          hal.Page
 }
 
@@ -73,30 +73,16 @@ func (action *TradeIndexAction) loadRecords() {
 
 // loadLedgers collects the unique ledgers referenced in the loaded trades and loads the details for each.
 func (action *TradeIndexAction) loadLedgers() {
-	if len(action.Records) == 0 {
-		return
+	loader := history.LedgerCache{
+		DB: action.HistoryQ(),
 	}
 
-	ledgerSequences := make([]interface{}, len(action.Records))
-
-	// populate the unique sequences
-	for i, trade := range action.Records {
-		ledgerSequences[i] = trade.LedgerSequence()
+	sequences := make([]history.LedgerSequencer, len(action.Records))
+	for i, r := range action.Records {
+		sequences[i] = &action.Records[i]
 	}
 
-	var ledgers []history.Ledger
-	action.Err = action.HistoryQ().LedgersBySequence(
-		&ledgers,
-		ledgerSequences...,
-	)
-	if action.Err != nil {
-		return
-	}
-
-	action.LedgerRecords = map[int32]history.Ledger{}
-	for _, l := range ledgers {
-		action.LedgerRecords[l.Sequence] = l
-	}
+	action.LedgerRecords, action.Err = loader.LoadLedgers(sequences)
 }
 
 // loadPage populates action.Page
@@ -104,9 +90,9 @@ func (action *TradeIndexAction) loadPage() {
 	for _, record := range action.Records {
 		var res resource.Trade
 
-		ledger, found := action.LedgerRecords[record.LedgerSequence()]
+		ledger, found := action.LedgerRecords[record.GetLedgerSequence()]
 		if !found {
-			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
+			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.GetLedgerSequence())
 			action.Err = errors.New(msg)
 			return
 		}

@@ -1,6 +1,9 @@
 package effects
 
 import (
+	"time"
+
+	"github.com/pkg/errors"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/resource/base"
@@ -37,10 +40,15 @@ var TypeNames = map[history.EffectType]string{
 func New(
 	ctx context.Context,
 	row history.Effect,
+	ledger history.Ledger,
 ) (result hal.Pageable, err error) {
 
 	basev := Base{}
-	basev.Populate(ctx, row)
+	err = basev.Populate(ctx, row, ledger)
+	if err != nil {
+		err = errors.Wrap(err, "base populate failed")
+		return
+	}
 
 	switch row.Type {
 	case history.EffectAccountCreated:
@@ -128,11 +136,12 @@ type Base struct {
 		Precedes  hal.Link `json:"precedes"`
 	} `json:"_links"`
 
-	ID      string `json:"id"`
-	PT      string `json:"paging_token"`
-	Account string `json:"account"`
-	Type    string `json:"type"`
-	TypeI   int32  `json:"type_i"`
+	ID              string    `json:"id"`
+	PT              string    `json:"paging_token"`
+	Account         string    `json:"account"`
+	Type            string    `json:"type"`
+	TypeI           int32     `json:"type_i"`
+	LedgerCloseTime time.Time `json:"created_at"`
 }
 
 type AccountCreated struct {

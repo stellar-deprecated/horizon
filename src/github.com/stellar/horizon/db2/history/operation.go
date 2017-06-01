@@ -4,11 +4,17 @@ import (
 	"encoding/json"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/go-errors/errors"
+	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/toid"
 )
+
+// LedgerSequence return the ledger in which the operation occurred.
+func (r *Operation) LedgerSequence() int32 {
+	id := toid.Parse(r.ID)
+	return id.LedgerSequence
+}
 
 // UnmarshalDetails unmarshals the details of this operation into `dest`
 func (r *Operation) UnmarshalDetails(dest interface{}) error {
@@ -18,7 +24,7 @@ func (r *Operation) UnmarshalDetails(dest interface{}) error {
 
 	err := json.Unmarshal([]byte(r.DetailsString.String), &dest)
 	if err != nil {
-		err = errors.Wrap(err, 1)
+		err = errors.Wrap(err, "unmarshal failed")
 	}
 
 	return err

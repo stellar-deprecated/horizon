@@ -27,6 +27,7 @@ type EffectIndexAction struct {
 
 	PagingParams db2.PageQuery
 	Records      []history.Effect
+	Ledgers      []history.LedgerCache
 	Page         hal.Page
 }
 
@@ -60,7 +61,7 @@ func (action *EffectIndexAction) SSE(stream sse.Stream) {
 			records := action.Records[stream.SentCount():]
 
 			for _, record := range records {
-				res, err := resource.NewEffect(action.Ctx, record)
+				res, err := resource.NewEffect(action.Ctx, record, ledger)
 
 				if err != nil {
 					stream.Err(action.Err)

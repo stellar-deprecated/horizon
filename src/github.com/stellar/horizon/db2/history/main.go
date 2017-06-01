@@ -5,6 +5,8 @@ package history
 import (
 	"time"
 
+	"sync"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/guregu/null"
 	"github.com/stellar/go/support/db"
@@ -122,6 +124,8 @@ type Effect struct {
 	DetailsString      null.String `db:"details"`
 }
 
+var _ LedgerSequencer = &Effect{}
+
 // EffectsQ is a helper struct to aid in configuring queries that loads
 // slices of Ledger structs.
 type EffectsQ struct {
@@ -154,6 +158,24 @@ type Ledger struct {
 	ProtocolVersion    int32       `db:"protocol_version"`
 }
 
+// LedgerCache represents an intra-request of ledger data.  It is intended to
+// provide a simple way to batch load ledgers in individual http actions.
+type LedgerCache struct {
+	DB *Q
+
+	lock  sync.RWMutex
+	cache LedgerMap
+}
+
+// LedgerMap represents a batch of ledgers accessible by sequence number
+type LedgerMap map[int32]Ledger
+
+// LedgerSequencer represents a type that knows what stellar ledger it was
+// committed to.
+type LedgerSequencer interface {
+	GetLedgerSequence() int32
+}
+
 // LedgersQ is a helper struct to aid in configuring queries that loads
 // slices of Ledger structs.
 type LedgersQ struct {
@@ -172,6 +194,8 @@ type Operation struct {
 	DetailsString    null.String       `db:"details"`
 	SourceAccount    string            `db:"source_account"`
 }
+
+var _ LedgerSequencer = &Transaction{}
 
 // OperationsQ is a helper struct to aid in configuring queries that loads
 // slices of Operation structs.
@@ -193,12 +217,13 @@ type TotalOrderID struct {
 	ID int64 `db:"id"`
 }
 
+var _ LedgerSequencer = &TotalOrderID{}
+
 // Transaction is a row of data from the `history_transactions` table
 type Transaction struct {
 	TotalOrderID
 	TransactionHash  string      `db:"transaction_hash"`
 	LedgerSequence   int32       `db:"ledger_sequence"`
-	LedgerCloseTime  time.Time   `db:"ledger_close_time"`
 	ApplicationOrder int32       `db:"application_order"`
 	Account          string      `db:"account"`
 	AccountSequence  string      `db:"account_sequence"`
@@ -216,6 +241,8 @@ type Transaction struct {
 	CreatedAt        time.Time   `db:"created_at"`
 	UpdatedAt        time.Time   `db:"updated_at"`
 }
+
+var _ LedgerSequencer = &Transaction{}
 
 // TransactionsQ is a helper struct to aid in configuring queries that loads
 // slices of transaction structs.

@@ -12,6 +12,22 @@ import (
 	"github.com/stellar/horizon/toid"
 )
 
+// GetLedgerSequence return the ledger in which the effect occurred.
+func (r *Effect) GetLedgerSequence() int32 {
+	id := toid.Parse(r.HistoryOperationID)
+	return id.LedgerSequence
+}
+
+// ID returns a lexically ordered id for this effect record
+func (r *Effect) ID() string {
+	return fmt.Sprintf("%019d-%010d", r.HistoryOperationID, r.Order)
+}
+
+// PagingToken returns a cursor for this effect
+func (r *Effect) PagingToken() string {
+	return fmt.Sprintf("%d-%d", r.HistoryOperationID, r.Order)
+}
+
 // UnmarshalDetails unmarshals the details of this effect into `dest`
 func (r *Effect) UnmarshalDetails(dest interface{}) error {
 	if !r.DetailsString.Valid {
@@ -24,22 +40,6 @@ func (r *Effect) UnmarshalDetails(dest interface{}) error {
 	}
 
 	return err
-}
-
-// ID returns a lexically ordered id for this effect record
-func (r *Effect) ID() string {
-	return fmt.Sprintf("%019d-%010d", r.HistoryOperationID, r.Order)
-}
-
-// LedgerSequence return the ledger in which the effect occurred.
-func (r *Effect) LedgerSequence() int32 {
-	id := toid.Parse(r.HistoryOperationID)
-	return id.LedgerSequence
-}
-
-// PagingToken returns a cursor for this effect
-func (r *Effect) PagingToken() string {
-	return fmt.Sprintf("%d-%d", r.HistoryOperationID, r.Order)
 }
 
 // Effects provides a helper to filter rows from the `history_effects`
