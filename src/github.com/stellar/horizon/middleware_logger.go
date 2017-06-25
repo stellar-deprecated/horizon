@@ -36,7 +36,7 @@ func LoggerMiddleware(c *web.C, h http.Handler) http.Handler {
 		// is reset before sending the first event no Content-Type header is sent in a response.
 		acceptHeader := r.Header.Get("Accept")
 		streaming := strings.Contains(acceptHeader, render.MimeEventStream)
-		logEndOfRequest(ctx, duration, mw, streaming)
+		logEndOfRequest(ctx, r, duration, mw, streaming)
 	}
 
 	return http.HandlerFunc(fn)
@@ -51,8 +51,12 @@ func logStartOfRequest(ctx context.Context, r *http.Request) {
 	}).Info("Starting request")
 }
 
-func logEndOfRequest(ctx context.Context, duration time.Duration, mw mutil.WriterProxy, streaming bool) {
+func logEndOfRequest(ctx context.Context, r *http.Request, duration time.Duration, mw mutil.WriterProxy, streaming bool) {
 	log.Ctx(ctx).WithFields(log.F{
+		"path":      r.URL.String(),
+		"method":    r.Method,
+		"ip":        r.RemoteAddr,
+		"host":      r.Host,
 		"status":    mw.Status(),
 		"bytes":     mw.BytesWritten(),
 		"duration":  duration,
