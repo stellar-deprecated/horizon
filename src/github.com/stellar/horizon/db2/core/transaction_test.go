@@ -39,15 +39,3 @@ func TestMemo(t *testing.T) {
 
 	tt.Assert.Equal("1.0.1owerride me", tx.Memo().String)
 }
-
-func TestSignatures(t *testing.T) {
-	tt := test.Start(t).Scenario("base")
-	defer tt.Finish()
-
-	var tx Transaction
-
-	// https://github.com/stellar/stellar-core/issues/1225
-	xdr.SafeUnmarshalBase64("AAAAAMIK9djC7k75ziKOLJcvMAIBG7tnBuoeI34x+Pi6zqcZAAAAZAAZphYAAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAynnCTTyw53VVRLOWX6XKTva63IM1LslPNW01YB0hz/8AAAAAAAAAAlQL5AAAAAAAAAAAAh0hz/8AAABA8qkkeKaKfsbgInyIkzXJhqJE5/Ufxri2LdxmyKkgkT6I3sPmvrs5cPWQSzEQyhV750IW2ds97xTHqTpOfuZCAnhSuFUAAAAA", &tx.Envelope)
-
-	tt.Assert.Equal(1, len(tx.Base64Signatures()))
-}
