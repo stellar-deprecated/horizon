@@ -184,15 +184,17 @@ func (ingest *Ingestion) Start() (err error) {
 	return
 }
 
-// Transaction ingests the provided transaction data into a new row in the
-// `history_transactions` table
-func (ingest *Ingestion) Transaction(
-	id int64,
-	tx *core.Transaction,
-	fee *core.TransactionFee,
-) error {
+// transactionInsertBuilder returns sql.InsertBuilder for a single transaction
+func (ingest *Ingestion) transactionInsertBuilder(id int64, tx *core.Transaction, fee *core.TransactionFee) sq.InsertBuilder {
+	// Enquote empty signatures
+	signatures := tx.Base64Signatures()
+	for i, sig := range signatures {
+		if len(sig) == 0 {
+			signatures[i] = `""`
+		}
+	}
 
-	sql := ingest.transactions.Values(
+	return ingest.transactions.Values(
 		id,
 		tx.TransactionHash,
 		tx.LedgerSequence,
@@ -205,14 +207,24 @@ func (ingest *Ingestion) Transaction(
 		tx.ResultXDR(),
 		tx.ResultMetaXDR(),
 		fee.ChangesXDR(),
-		sqx.StringArray(tx.Base64Signatures()),
+		sqx.StringArray(signatures),
 		ingest.formatTimeBounds(tx.Envelope.Tx.TimeBounds),
 		tx.MemoType(),
 		tx.Memo(),
 		time.Now().UTC(),
 		time.Now().UTC(),
 	)
+}
 
+// Transaction ingests the provided transaction data into a new row in the
+// `history_transactions` table
+func (ingest *Ingestion) Transaction(
+	id int64,
+	tx *core.Transaction,
+	fee *core.TransactionFee,
+) error {
+
+	sql := ingest.transactionInsertBuilder(id, tx, fee)
 	_, err := ingest.DB.Exec(sql)
 	if err != nil {
 		return err

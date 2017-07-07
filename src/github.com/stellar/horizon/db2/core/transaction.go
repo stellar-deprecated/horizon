@@ -17,14 +17,10 @@ import (
 // encoded representation of a signature attached to this transaction.
 func (tx *Transaction) Base64Signatures() []string {
 	raw := tx.Envelope.Signatures
-	// Maximum number of signatures TransactionEnvelope can contain is 20
-	results := make([]string, 0, 20)
+	results := make([]string, len(raw))
 
 	for i := range raw {
-		// Fix for https://github.com/stellar/stellar-core/issues/1225
-		if len(raw[i].Signature) > 0 {
-			results = append(results, base64.StdEncoding.EncodeToString(raw[i].Signature))
-		}
+		results[i] = base64.StdEncoding.EncodeToString(raw[i].Signature)
 	}
 	return results
 }

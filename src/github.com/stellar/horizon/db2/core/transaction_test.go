@@ -49,5 +49,9 @@ func TestSignatures(t *testing.T) {
 	// https://github.com/stellar/stellar-core/issues/1225
 	xdr.SafeUnmarshalBase64("AAAAAMIK9djC7k75ziKOLJcvMAIBG7tnBuoeI34x+Pi6zqcZAAAAZAAZphYAAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAynnCTTyw53VVRLOWX6XKTva63IM1LslPNW01YB0hz/8AAAAAAAAAAlQL5AAAAAAAAAAAAh0hz/8AAABA8qkkeKaKfsbgInyIkzXJhqJE5/Ufxri2LdxmyKkgkT6I3sPmvrs5cPWQSzEQyhV750IW2ds97xTHqTpOfuZCAnhSuFUAAAAA", &tx.Envelope)
 
-	tt.Assert.Equal(1, len(tx.Base64Signatures()))
+	signatures := tx.Base64Signatures()
+
+	tt.Assert.Equal(2, len(signatures))
+	tt.Assert.Equal("8qkkeKaKfsbgInyIkzXJhqJE5/Ufxri2LdxmyKkgkT6I3sPmvrs5cPWQSzEQyhV750IW2ds97xTHqTpOfuZCAg==", signatures[0])
+	tt.Assert.Equal("", signatures[1])
 }
