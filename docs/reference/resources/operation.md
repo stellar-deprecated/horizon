@@ -172,9 +172,10 @@ A path payment operation represents a payment from one account to another throug
 | asset_issuer | string | Destination asset issuer. |
 | asset_type | string | Destination asset type (native / alphanum4 / alphanum12) |
 | amount          | string | Amount received. |
-| send_asset_code | string | Code of the sent asset. |
-| send_asset_issuer | string | Sent asset issuer. |
-| send_asset_type | string | Sent asset type (native / alphanum4 / alphanum12) |
+| source_asset_code | string | Code of the source asset. |
+| source_asset_issuer | string | Source asset issuer. |
+| source_asset_type | string | Source asset type (native / alphanum4 / alphanum12) |
+| source_max | string | Max send amount. |
 | source_amount | string | Amount sent. |
 
 #### Example
@@ -206,10 +207,11 @@ A path payment operation represents a payment from one account to another throug
   "from": "GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU",
   "id": 25769807873,
   "paging_token": "25769807873",
-  "send_asset_code": "USD",
-  "send_asset_issuer": "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
-  "send_asset_type": "credit_alphanum4",
+  "source_asset_code": "USD",
+  "source_asset_issuer": "GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4",
+  "source_asset_type": "credit_alphanum4",
   "source_amount": "10.0",
+  "source_max": "10.0",
   "to": "GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2",
   "type_i": 2,
   "type": "path_payment"
