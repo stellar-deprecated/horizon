@@ -22,14 +22,14 @@ func TestPageQuery(t *testing.T) {
 	assert.Equal(uint64(15), p.Limit)
 
 	// Defaults
-	p, err = NewPageQuery("", "", 0)
+	p, err = NewPageQuery("", "", 1)
 	require.NoError(err)
 	assert.Equal("asc", p.Order)
 	c, err := p.CursorInt64()
 	require.NoError(err)
 	assert.Equal(int64(0), c)
-	assert.Equal(uint64(10), p.Limit)
-	p, err = NewPageQuery("", "desc", 0)
+	assert.Equal(uint64(1), p.Limit)
+	p, err = NewPageQuery("", "desc", 1)
 	require.NoError(err)
 	c, err = p.CursorInt64()
 	require.NoError(err)
@@ -40,7 +40,9 @@ func TestPageQuery(t *testing.T) {
 	require.NoError(err)
 
 	// Error states
-	_, err = NewPageQuery("", "foo", 0)
+	_, err = NewPageQuery("", "foo", 1)
+	assert.Error(err)
+	_, err = NewPageQuery("", "", 0)
 	assert.Error(err)
 	_, err = NewPageQuery("", "", 201)
 	assert.Error(err)
@@ -54,39 +56,39 @@ func TestPageQuery_CursorInt64(t *testing.T) {
 	var p PageQuery
 	var err error
 
-	p = MustPageQuery("1231-4456", "asc", 0)
+	p = MustPageQuery("1231-4456", "asc", 1)
 	l, r, err := p.CursorInt64Pair("-")
 	require.NoError(err)
 	assert.Equal(int64(1231), l)
 	assert.Equal(int64(4456), r)
 
 	// Defaults
-	p = MustPageQuery("", "asc", 0)
+	p = MustPageQuery("", "asc", 1)
 	l, r, err = p.CursorInt64Pair("-")
 	require.NoError(err)
 	assert.Equal(int64(0), l)
 	assert.Equal(int64(0), r)
-	p = MustPageQuery("", "desc", 0)
+	p = MustPageQuery("", "desc", 1)
 	l, r, err = p.CursorInt64Pair("-")
 	require.NoError(err)
 	assert.Equal(int64(math.MaxInt64), l)
 	assert.Equal(int64(math.MaxInt64), r)
-	p = MustPageQuery("0", "", 0)
+	p = MustPageQuery("0", "", 1)
 	_, r, err = p.CursorInt64Pair("-")
 	require.NoError(err)
 	assert.Equal(int64(math.MaxInt64), r)
 
 	// Errors
-	p = MustPageQuery("123-foo", "", 0)
+	p = MustPageQuery("123-foo", "", 1)
 	_, _, err = p.CursorInt64Pair("-")
 	assert.Error(err)
-	p = MustPageQuery("foo-123", "", 0)
+	p = MustPageQuery("foo-123", "", 1)
 	_, _, err = p.CursorInt64Pair("-")
 	assert.Error(err)
-	p = MustPageQuery("-1:123", "", 0)
+	p = MustPageQuery("-1:123", "", 1)
 	_, _, err = p.CursorInt64Pair("-")
 	assert.Error(err)
-	p = MustPageQuery("111:-123", "", 0)
+	p = MustPageQuery("111:-123", "", 1)
 	_, _, err = p.CursorInt64Pair("-")
 	assert.Error(err)
 
