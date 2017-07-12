@@ -7,7 +7,7 @@ import (
 
 	"github.com/PuerkitoBio/throttled"
 	"github.com/PuerkitoBio/throttled/store"
-	"github.com/rcrowley/go-metrics"
+	metrics "github.com/rcrowley/go-metrics"
 	"github.com/rs/cors"
 	"github.com/sebest/xff"
 	"github.com/stellar/horizon/render/problem"

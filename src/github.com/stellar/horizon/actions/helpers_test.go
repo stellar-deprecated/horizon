@@ -173,31 +173,41 @@ func TestGetLimit(t *testing.T) {
 
 	// happy path
 	action := makeTestAction()
-	limit := action.GetLimit("limit", 5)
+	limit := action.GetLimit("limit", 5, 200)
 	if tt.Assert.NoError(action.Err) {
 		tt.Assert.Equal(uint64(2), limit)
 	}
 
+	action = makeAction("/?limit=200", nil)
+	limit = action.GetLimit("limit", 5, 200)
+	if tt.Assert.NoError(action.Err) {
+		tt.Assert.Equal(uint64(200), limit)
+	}
+
 	// defaults
 	action = makeAction("/", nil)
-	limit = action.GetLimit("limit", 5)
+	limit = action.GetLimit("limit", 5, 200)
 	if tt.Assert.NoError(action.Err) {
 		tt.Assert.Equal(uint64(5), limit)
 	}
 
 	action = makeAction("/?limit=", nil)
-	limit = action.GetLimit("limit", 5)
+	limit = action.GetLimit("limit", 5, 200)
 	if tt.Assert.NoError(action.Err) {
 		tt.Assert.Equal(uint64(5), limit)
 	}
 
 	// invalids
 	action = makeAction("/?limit=0", nil)
-	_ = action.GetLimit("limit", 5)
+	_ = action.GetLimit("limit", 5, 200)
 	tt.Assert.Error(action.Err)
 
 	action = makeAction("/?limit=-1", nil)
-	_ = action.GetLimit("limit", 5)
+	_ = action.GetLimit("limit", 5, 200)
+	tt.Assert.Error(action.Err)
+
+	action = makeAction("/?limit=201", nil)
+	_ = action.GetLimit("limit", 5, 200)
 	tt.Assert.Error(action.Err)
 }
 
@@ -215,7 +225,7 @@ func TestGetPageQuery(t *testing.T) {
 
 	// regression: GetPagQuery does not overwrite err
 	action = makeAction("/?limit=foo", nil)
-	_ = action.GetLimit("limit", 1)
+	_ = action.GetLimit("limit", 1, 200)
 	tt.Assert.Error(action.Err)
 	_ = action.GetPageQuery()
 	tt.Assert.Error(action.Err)

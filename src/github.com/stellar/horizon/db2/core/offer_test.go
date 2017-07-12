@@ -29,17 +29,17 @@ func TestOffersByAddress(t *testing.T) {
 	}
 
 	// Works for native offers
-	if load("GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU", "", "asc", 0) {
+	if load("GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU", "", "asc", db2.DefaultPageSize) {
 		tt.Assert.Len(offers, 1)
 		tt.Assert.Equal(int64(4), offers[0].OfferID)
 	}
 
 	// Filters properly
-	if load("GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", "", "asc", 0) {
+	if load("GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H", "", "asc", db2.DefaultPageSize) {
 		tt.Assert.Len(offers, 0)
 	}
 
-	if load("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2", "", "asc", 0) {
+	if load("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2", "", "asc", db2.DefaultPageSize) {
 		tt.Assert.Len(offers, 3)
 	}
 
@@ -49,7 +49,7 @@ func TestOffersByAddress(t *testing.T) {
 	}
 
 	// ordering works
-	if load("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2", "", "desc", 0) {
+	if load("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2", "", "desc", db2.DefaultPageSize) {
 		for i := range offers {
 			// if there is no next element, break
 			if i+1 == len(offers) {
@@ -60,11 +60,11 @@ func TestOffersByAddress(t *testing.T) {
 	}
 
 	// cursor works
-	if load("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2", "1", "asc", 0) {
+	if load("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2", "1", "asc", db2.DefaultPageSize) {
 		tt.Assert.Len(offers, 2)
 		tt.Assert.Equal(int64(2), offers[0].OfferID)
 	}
-	if load("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2", "3", "desc", 0) {
+	if load("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2", "3", "desc", db2.DefaultPageSize) {
 		tt.Assert.Len(offers, 2)
 		tt.Assert.Equal(int64(2), offers[0].OfferID)
 	}
