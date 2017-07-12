@@ -2,6 +2,7 @@ package actions
 
 import (
 	"mime"
+	"net/url"
 	"strconv"
 
 	"github.com/stellar/go/amount"
@@ -31,7 +32,14 @@ func (base *Base) GetString(name string) string {
 	fromURL, ok := base.GojiCtx.URLParams[name]
 
 	if ok {
-		return fromURL
+		// TODO: switch to `PathUnescape` when using a go version that has it
+		ret, err := url.QueryUnescape(fromURL)
+		if err != nil {
+			base.SetInvalidField(name, err)
+			return ""
+		}
+
+		return ret
 	}
 
 	fromForm := base.R.FormValue(name)

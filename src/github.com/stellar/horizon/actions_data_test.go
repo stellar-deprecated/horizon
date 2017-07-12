@@ -35,4 +35,11 @@ func TestDataActions_Show(t *testing.T) {
 	// missing
 	w = ht.Get(prefix+"/data/missing", test.RequestHelperRaw)
 	ht.Assert.Equal(404, w.Code)
+
+	// regression: https://github.com/stellar/horizon/issues/325
+	// names with special characters do not work
+	w = ht.Get(prefix+"/data/name%20", test.RequestHelperRaw)
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Equal("its got spaces!", w.Body.String())
+	}
 }
