@@ -8,8 +8,10 @@ import (
 	"testing"
 
 	"github.com/stellar/go/xdr"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/toid"
 	"github.com/zenazn/goji/web"
 )
 
@@ -69,6 +71,26 @@ func TestGetAssetType(t *testing.T) {
 	ts = action.GetAssetType("12_asset_type")
 	if tt.Assert.NoError(action.Err) {
 		tt.Assert.Equal(xdr.AssetTypeAssetTypeCreditAlphanum12, ts)
+	}
+}
+func TestGetCursor(t *testing.T) {
+	tt := test.Start(t)
+	defer tt.Finish()
+
+	// now uses the ledger state
+	action := makeAction("/?cursor=now", nil)
+	cursor := action.GetCursor("cursor")
+	if tt.Assert.NoError(action.Err) {
+		expected := toid.AfterLedger(ledger.CurrentState().HistoryLatest).String()
+		tt.Assert.Equal(expected, cursor)
+	}
+
+	//Last-Event-ID overrides cursor
+	action = makeTestAction()
+	action.R.Header.Set("Last-Event-ID", "from_header")
+	cursor = action.GetCursor("cursor")
+	if tt.Assert.NoError(action.Err) {
+		tt.Assert.Equal("from_header", cursor)
 	}
 }
 
@@ -145,29 +167,62 @@ func TestGetInt64(t *testing.T) {
 	tt.Assert.Equal(int64(math.MinInt64), result)
 }
 
-func TestGetPagingParams(t *testing.T) {
+func TestGetLimit(t *testing.T) {
+	tt := test.Start(t)
+	defer tt.Finish()
+
+	// happy path
+	action := makeTestAction()
+	limit := action.GetLimit("limit", 5)
+	if tt.Assert.NoError(action.Err) {
+		tt.Assert.Equal(uint64(2), limit)
+	}
+
+	// defaults
+	action = makeAction("/", nil)
+	limit = action.GetLimit("limit", 5)
+	if tt.Assert.NoError(action.Err) {
+		tt.Assert.Equal(uint64(5), limit)
+	}
+
+	action = makeAction("/?limit=", nil)
+	limit = action.GetLimit("limit", 5)
+	if tt.Assert.NoError(action.Err) {
+		tt.Assert.Equal(uint64(5), limit)
+	}
+
+	// invalids
+	action = makeAction("/?limit=0", nil)
+	_ = action.GetLimit("limit", 5)
+	tt.Assert.Error(action.Err)
+
+	action = makeAction("/?limit=-1", nil)
+	_ = action.GetLimit("limit", 5)
+	tt.Assert.Error(action.Err)
+}
+
+func TestGetPageQuery(t *testing.T) {
 	tt := test.Start(t)
 	defer tt.Finish()
 	action := makeTestAction()
 
 	// happy path
-	cursor, order, limit := action.GetPagingParams()
+	pq := action.GetPageQuery()
 	tt.Assert.NoError(action.Err)
-	tt.Assert.Equal("hello", cursor)
-	tt.Assert.Equal(uint64(2), limit)
-	tt.Assert.Equal("", order)
-
-	//Last-Event-ID overrides cursor
-	action.R.Header.Set("Last-Event-ID", "from_header")
-	cursor, _, _ = action.GetPagingParams()
-	tt.Assert.NoError(action.Err)
-	tt.Assert.Equal("from_header", cursor)
+	tt.Assert.Equal("hello", pq.Cursor)
+	tt.Assert.Equal(uint64(2), pq.Limit)
+	tt.Assert.Equal("asc", pq.Order)
 
 	// regression: GetPagQuery does not overwrite err
-	r, _ := http.NewRequest("GET", "/?limit=foo", nil)
-	action.R = r
-	_, _, _ = action.GetPagingParams()
+	action = makeAction("/?limit=foo", nil)
+	_ = action.GetLimit("limit", 1)
 	tt.Assert.Error(action.Err)
+	_ = action.GetPageQuery()
+	tt.Assert.Error(action.Err)
+
+	// regression: https://github.com/stellar/horizon/issues/372
+	// (limit of 0 turns into 10)
+	makeAction("/?limit=0", nil)
 	_ = action.GetPageQuery()
 	tt.Assert.Error(action.Err)
 }
@@ -193,29 +248,37 @@ func TestPath(t *testing.T) {
 }
 
 func makeTestAction() *Base {
-	r, _ := http.NewRequest("GET", "/foo-bar/blah?limit=2&cursor=hello", nil)
+	return makeAction("/foo-bar/blah?limit=2&cursor=hello", testURLParams())
+}
+
+func makeAction(path string, body map[string]string) *Base {
+	r, _ := http.NewRequest("GET", path, nil)
 	action := &Base{
 		Ctx: test.Context(),
 		GojiCtx: web.C{
-			URLParams: map[string]string{
-				"blank":             "",
-				"zero":              "0",
-				"two":               "2",
-				"32min":             fmt.Sprint(math.MinInt32),
-				"32max":             fmt.Sprint(math.MaxInt32),
-				"64min":             fmt.Sprint(math.MinInt64),
-				"64max":             fmt.Sprint(math.MaxInt64),
-				"native_asset_type": "native",
-				"4_asset_type":      "credit_alphanum4",
-				"4_asset_code":      "USD",
-				"4_asset_issuer":    "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
-				"12_asset_type":     "credit_alphanum12",
-				"12_asset_code":     "USD",
-				"12_asset_issuer":   "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
-			},
-			Env: map[interface{}]interface{}{},
+			URLParams: body,
+			Env:       map[interface{}]interface{}{},
 		},
 		R: r,
 	}
 	return action
+}
+
+func testURLParams() map[string]string {
+	return map[string]string{
+		"blank":             "",
+		"zero":              "0",
+		"two":               "2",
+		"32min":             fmt.Sprint(math.MinInt32),
+		"32max":             fmt.Sprint(math.MaxInt32),
+		"64min":             fmt.Sprint(math.MinInt64),
+		"64max":             fmt.Sprint(math.MaxInt64),
+		"native_asset_type": "native",
+		"4_asset_type":      "credit_alphanum4",
+		"4_asset_code":      "USD",
+		"4_asset_issuer":    "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
+		"12_asset_type":     "credit_alphanum12",
+		"12_asset_code":     "USD",
+		"12_asset_issuer":   "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
+	}
 }
