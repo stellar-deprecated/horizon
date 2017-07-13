@@ -213,9 +213,7 @@ func NewPageQuery(
 
 	// Set limit
 	switch {
-	case limit == 0:
-		result.Limit = DefaultPageSize
-	case limit < 0:
+	case limit <= 0:
 		err = errors.New(ErrInvalidLimit)
 		return
 	case limit > MaxPageSize:

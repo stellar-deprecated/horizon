@@ -76,6 +76,15 @@ func TestTransactionActions_Index(t *testing.T) {
 	if ht.Assert.Equal(200, w.Code) {
 		ht.Assert.PageOf(2, w.Body)
 	}
+
+	// regression: https://github.com/stellar/horizon/issues/365
+	w = ht.Get("/transactions?limit=200")
+	ht.Require.Equal(200, w.Code)
+	w = ht.Get("/transactions?limit=201")
+	ht.Assert.Equal(400, w.Code)
+	w = ht.Get("/transactions?limit=0")
+	ht.Assert.Equal(400, w.Code)
+
 }
 
 func TestTransactionActions_Post(t *testing.T) {

@@ -6,10 +6,13 @@ import (
 
 	"github.com/stellar/go/amount"
 	"github.com/stellar/go/strkey"
+	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/assets"
 	"github.com/stellar/horizon/db2"
+	"github.com/stellar/horizon/ledger"
 	"github.com/stellar/horizon/render/problem"
+	"github.com/stellar/horizon/toid"
 )
 
 const (
@@ -20,6 +23,27 @@ const (
 	// ParamLimit is a query string param name
 	ParamLimit = "limit"
 )
+
+// GetCursor retrieves a string from either the URLParams, form or query string.
+// This method uses the priority (URLParams, Form, Query).
+func (base *Base) GetCursor(name string) string {
+	if base.Err != nil {
+		return ""
+	}
+
+	cursor := base.GetString(name)
+
+	if cursor == "now" {
+		tid := toid.AfterLedger(ledger.CurrentState().HistoryLatest)
+		cursor = tid.String()
+	}
+
+	if lei := base.R.Header.Get("Last-Event-ID"); lei != "" {
+		cursor = lei
+	}
+
+	return cursor
+}
 
 // GetString retrieves a string from either the URLParams, form or query string.
 // This method uses the priority (URLParams, Form, Query).
@@ -89,23 +113,36 @@ func (base *Base) GetInt32(name string) int32 {
 	return int32(asI64)
 }
 
-// GetPagingParams returns the cursor/order/limit triplet that is the
-// standard way of communicating paging data to a horizon endpoint.
-func (base *Base) GetPagingParams() (cursor string, order string, limit uint64) {
+// GetLimit retrieves a uint64 limit from the action parameter of the given
+// name. Populates err if the value is not a valid limit.  Uses the provided
+// default value if the limit parameter is a blank string.
+func (base *Base) GetLimit(name string, def uint64, max uint64) uint64 {
 	if base.Err != nil {
-		return
+		return 0
 	}
 
-	cursor = base.GetString(ParamCursor)
-	order = base.GetString(ParamOrder)
-	// TODO: add GetUint64 helpers
-	limit = uint64(base.GetInt64(ParamLimit))
+	limit := base.GetString(name)
 
-	if lei := base.R.Header.Get("Last-Event-ID"); lei != "" {
-		cursor = lei
+	if limit == "" {
+		return def
 	}
 
-	return
+	asI64, err := strconv.ParseInt(limit, 10, 64)
+
+	if asI64 <= 0 {
+		err = errors.New("invalid limit: non-positive value provided")
+	}
+
+	if asI64 > int64(max) {
+		err = errors.Errorf("invalid limit: value provided that is over limit max of %d", max)
+	}
+
+	if err != nil {
+		base.SetInvalidField(name, err)
+		return 0
+	}
+
+	return uint64(asI64)
 }
 
 // GetPageQuery is a helper that returns a new db.PageQuery struct initialized
@@ -115,7 +152,15 @@ func (base *Base) GetPageQuery() db2.PageQuery {
 		return db2.PageQuery{}
 	}
 
-	r, err := db2.NewPageQuery(base.GetPagingParams())
+	cursor := base.GetCursor(ParamCursor)
+	order := base.GetString(ParamOrder)
+	limit := base.GetLimit(ParamLimit, db2.DefaultPageSize, db2.MaxPageSize)
+
+	if base.Err != nil {
+		return db2.PageQuery{}
+	}
+
+	r, err := db2.NewPageQuery(cursor, order, limit)
 
 	if err != nil {
 		base.Err = err

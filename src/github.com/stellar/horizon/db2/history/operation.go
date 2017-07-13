@@ -107,6 +107,7 @@ func (q *OperationsQ) OnlyPayments() *OperationsQ {
 		xdr.OperationTypeCreateAccount,
 		xdr.OperationTypePayment,
 		xdr.OperationTypePathPayment,
+		xdr.OperationTypeAccountMerge,
 	}})
 	return q
 }
