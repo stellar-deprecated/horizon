@@ -311,6 +311,7 @@ close_ledger #47
 
   set_data :dataman, "name1", "1234"
   set_data :dataman, "name2", "5678"
+  set_data :dataman, "name ", "its got spaces!"
   close_ledger #49
 
   clear_data :dataman, "name2"
