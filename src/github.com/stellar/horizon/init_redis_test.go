@@ -1,40 +1,36 @@
 package horizon
 
 import (
-	"github.com/garyburd/redigo/redis"
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	"github.com/garyburd/redigo/redis"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRedis(t *testing.T) {
 
-	Convey("app.redis gets set when RedisURL is set", t, func() {
-		c := NewTestConfig()
-		c.RedisURL = "redis://127.0.0.1:6379/"
-		app, _ := NewApp(c)
-		defer app.Close()
-		So(app.redis, ShouldNotBeNil)
-	})
+	// app.redis gets set when RedisURL is set
+	c := NewTestConfig()
+	c.RedisURL = "redis://127.0.0.1:6379/"
+	app, _ := NewApp(c)
+	assert.NotNil(t, app.redis)
+	app.Close()
 
-	Convey("app.redis is nil when no RedisURL is set", t, func() {
-		c := NewTestConfig()
-		c.RedisURL = ""
-		app, _ := NewApp(c)
-		defer app.Close()
-		So(app.redis, ShouldBeNil)
-	})
+	// app.redis is nil when no RedisURL is set
+	c = NewTestConfig()
+	c.RedisURL = ""
+	app, _ = NewApp(c)
+	assert.Nil(t, app.redis)
+	app.Close()
 
-	Convey("app.redis can successfully connect to redis", t, func() {
-		conf := NewTestConfig()
-		conf.RedisURL = "redis://127.0.0.1:6379/"
-		app, _ := NewApp(conf)
-		defer app.Close()
-
-		c := app.redis.Get()
-		defer c.Close()
-
-		c.Do("SET", "hello", "World")
-		world, _ := redis.String(c.Do("GET", "hello"))
-		So(world, ShouldEqual, "World")
-	})
+	// app.redis can successfully connect to redis
+	c = NewTestConfig()
+	c.RedisURL = "redis://127.0.0.1:6379/"
+	app, _ = NewApp(c)
+	conn := app.redis.Get()
+	conn.Do("SET", "hello", "World")
+	world, _ := redis.String(conn.Do("GET", "hello"))
+	assert.Equal(t, "World", world)
+	conn.Close()
+	app.Close()
 }

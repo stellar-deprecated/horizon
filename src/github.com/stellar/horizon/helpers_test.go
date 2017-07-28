@@ -11,6 +11,8 @@ import (
 	"github.com/stellar/horizon/test"
 )
 
+const TestRateLimit = 1000
+
 func NewTestApp() *App {
 	app, err := NewApp(NewTestConfig())
 
@@ -25,7 +27,7 @@ func NewTestConfig() Config {
 	return Config{
 		DatabaseURL:            test.DatabaseURL(),
 		StellarCoreDatabaseURL: test.StellarCoreDatabaseURL(),
-		RateLimit:              throttled.PerHour(1000),
+		RateLimit:              throttled.PerHour(TestRateLimit),
 		LogLevel:               hlog.InfoLevel,
 	}
 }
