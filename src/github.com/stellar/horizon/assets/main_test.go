@@ -3,56 +3,90 @@ package assets
 import (
 	"testing"
 
-	"github.com/go-errors/errors"
-	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/go/xdr"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestAssets(t *testing.T) {
-	Convey("Parse", t, func() {
-		var (
-			result xdr.AssetType
-			err    error
-		)
+func TestAssets_Parse(t *testing.T) {
+	cases := []struct {
+		Input       string
+		Expected    xdr.AssetType
+		ExpectedErr string
+	}{
+		{"native", xdr.AssetTypeAssetTypeNative, ""},
+		{"credit_alphanum4", xdr.AssetTypeAssetTypeCreditAlphanum4, ""},
+		{"credit_alphanum12", xdr.AssetTypeAssetTypeCreditAlphanum12, ""},
+		{
+			"not_real",
+			xdr.AssetType(0),
+			"invalid asset type: was not one of 'native', 'credit_alphanum4', 'credit_alphanum12'",
+		},
+		{
+			"",
+			xdr.AssetType(0),
+			"invalid asset type: was not one of 'native', 'credit_alphanum4', 'credit_alphanum12'",
+		},
+	}
 
-		result, err = Parse("native")
-		So(result, ShouldEqual, xdr.AssetTypeAssetTypeNative)
-		So(err, ShouldBeNil)
+	for _, kase := range cases {
+		_ = kase
 
-		result, err = Parse("credit_alphanum4")
-		So(result, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum4)
-		So(err, ShouldBeNil)
+		actual, err := Parse(kase.Input)
 
-		result, err = Parse("credit_alphanum12")
-		So(result, ShouldEqual, xdr.AssetTypeAssetTypeCreditAlphanum12)
-		So(err, ShouldBeNil)
+		if kase.ExpectedErr != "" {
+			assert.EqualError(t, err, kase.ExpectedErr)
+		} else {
+			if assert.NoError(t, err) {
+				assert.Equal(t, kase.Expected, actual)
+			}
+		}
+	}
+}
 
-		_, err = Parse("not_real")
-		So(errors.Is(err, ErrInvalidString), ShouldBeTrue)
+func TestAssets_String(t *testing.T) {
+	cases := []struct {
+		Name        string
+		Input       xdr.AssetType
+		Expected    string
+		ExpectedErr string
+	}{
+		{
+			"native",
+			xdr.AssetTypeAssetTypeNative,
+			"native",
+			"",
+		},
+		{
+			"credit_alphanum4",
+			xdr.AssetTypeAssetTypeCreditAlphanum4,
+			"credit_alphanum4",
+			"",
+		},
+		{
+			"credit_alphanum12",
+			xdr.AssetTypeAssetTypeCreditAlphanum12,
+			"credit_alphanum12",
+			"",
+		},
+		{
+			"bad",
+			xdr.AssetType(15),
+			"",
+			"unknown asset type, cannot convert to string",
+		},
+	}
 
-		_, err = Parse("")
-		So(errors.Is(err, ErrInvalidString), ShouldBeTrue)
-	})
+	for _, kase := range cases {
+		_ = kase
 
-	Convey("String", t, func() {
-		var (
-			result string
-			err    error
-		)
+		actual, err := String(kase.Input)
 
-		result, err = String(xdr.AssetTypeAssetTypeNative)
-		So(result, ShouldEqual, "native")
-		So(err, ShouldBeNil)
-
-		result, err = String(xdr.AssetTypeAssetTypeCreditAlphanum4)
-		So(result, ShouldEqual, "credit_alphanum4")
-		So(err, ShouldBeNil)
-
-		result, err = String(xdr.AssetTypeAssetTypeCreditAlphanum12)
-		So(result, ShouldEqual, "credit_alphanum12")
-		So(err, ShouldBeNil)
-
-		_, err = String(xdr.AssetType(15))
-		So(errors.Is(err, ErrInvalidValue), ShouldBeTrue)
-	})
+		if kase.ExpectedErr != "" {
+			assert.EqualError(t, err, kase.ExpectedErr)
+		} else {
+			if assert.NoError(t, err) {
+				assert.Equal(t, kase.Expected, actual)
+			}
+		}
+	}
 }
