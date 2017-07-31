@@ -4,10 +4,13 @@ import (
 	"testing"
 
 	"github.com/stellar/go/xdr"
-	"github.com/stretchr/testify/assert"
+	"github.com/stellar/horizon/test"
 )
 
 func TestAssets_Parse(t *testing.T) {
+	tt := test.Start(t)
+	defer tt.Finish()
+
 	cases := []struct {
 		Input       string
 		Expected    xdr.AssetType
@@ -34,16 +37,19 @@ func TestAssets_Parse(t *testing.T) {
 		actual, err := Parse(kase.Input)
 
 		if kase.ExpectedErr != "" {
-			assert.EqualError(t, err, kase.ExpectedErr)
+			tt.Assert.EqualError(err, kase.ExpectedErr)
 		} else {
-			if assert.NoError(t, err) {
-				assert.Equal(t, kase.Expected, actual)
+			if tt.Assert.NoError(err) {
+				tt.Assert.Equal(kase.Expected, actual)
 			}
 		}
 	}
 }
 
 func TestAssets_String(t *testing.T) {
+	tt := test.Start(t)
+	defer tt.Finish()
+
 	cases := []struct {
 		Name        string
 		Input       xdr.AssetType
@@ -82,10 +88,10 @@ func TestAssets_String(t *testing.T) {
 		actual, err := String(kase.Input)
 
 		if kase.ExpectedErr != "" {
-			assert.EqualError(t, err, kase.ExpectedErr)
+			tt.Assert.EqualError(err, kase.ExpectedErr)
 		} else {
-			if assert.NoError(t, err) {
-				assert.Equal(t, kase.Expected, actual)
+			if tt.Assert.NoError(err) {
+				tt.Assert.Equal(kase.Expected, actual)
 			}
 		}
 	}

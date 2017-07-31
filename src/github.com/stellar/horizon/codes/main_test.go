@@ -1,41 +1,45 @@
 package codes
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stellar/go/xdr"
 	"testing"
+
+	"github.com/stellar/go/xdr"
+	"github.com/stellar/horizon/test"
 )
 
-func TestCodes(t *testing.T) {
-	Convey("codes.String", t, func() {
-		tests := []struct {
-			Input    interface{}
-			Expected string
-			Err      error
-		}{
-			{xdr.TransactionResultCodeTxSuccess, "tx_success", nil},
-			{xdr.OperationResultCodeOpBadAuth, "op_bad_auth", nil},
-			{xdr.CreateAccountResultCodeCreateAccountLowReserve, "op_low_reserve", nil},
-			{xdr.PaymentResultCodePaymentSrcNoTrust, "op_src_no_trust", nil},
-			{0, "", ErrUnknownCode},
-		}
+func TestCodes_String(t *testing.T) {
+	tt := test.Start(t)
+	defer tt.Finish()
 
-		for _, test := range tests {
-			actual, err := String(test.Input)
+	tests := []struct {
+		Input       interface{}
+		Expected    string
+		ExpectedErr string
+	}{
+		{xdr.TransactionResultCodeTxSuccess, "tx_success", ""},
+		{xdr.OperationResultCodeOpBadAuth, "op_bad_auth", ""},
+		{xdr.CreateAccountResultCodeCreateAccountLowReserve, "op_low_reserve", ""},
+		{xdr.PaymentResultCodePaymentSrcNoTrust, "op_src_no_trust", ""},
+		{0, "", "Unknown result code"},
+	}
 
-			if test.Err != nil {
-				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, test.Err.Error())
-			} else {
-				So(err, ShouldBeNil)
-				So(actual, ShouldEqual, test.Expected)
+	for _, test := range tests {
+		actual, err := String(test.Input)
+
+		if test.ExpectedErr != "" {
+			tt.Assert.EqualError(err, test.ExpectedErr)
+		} else {
+			if tt.Assert.NoError(err) {
+				tt.Assert.Equal(test.Expected, actual)
 			}
 		}
-	})
+	}
+}
 
-	Convey("codes.ForOperationResult", t, func() {
-		//TODO: op_inner refers to inner result code
-		//TODO: non op_inner uses the outer result code
-		//TODO: one test for each operation type
-	})
+func TestCodes_ForOperationResult(t *testing.T) {
+
+	//TODO: op_inner refers to inner result code
+	//TODO: non op_inner uses the outer result code
+	//TODO: one test for each operation type
+
 }
