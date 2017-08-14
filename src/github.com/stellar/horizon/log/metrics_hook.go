@@ -1,8 +1,8 @@
 package log
 
 import (
-	"github.com/Sirupsen/logrus"
-	"github.com/rcrowley/go-metrics"
+	metrics "github.com/rcrowley/go-metrics"
+	"github.com/sirupsen/logrus"
 )
 
 // Metrics is a logrus hook-compliant struct that records metrics about logging

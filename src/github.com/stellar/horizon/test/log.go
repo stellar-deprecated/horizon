@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/stellar/horizon/log"
 )
 

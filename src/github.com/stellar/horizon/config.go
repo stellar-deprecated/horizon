@@ -2,7 +2,7 @@ package horizon
 
 import (
 	"github.com/PuerkitoBio/throttled"
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 // Config is the configuration for horizon.  It get's populated by the

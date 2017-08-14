@@ -7,8 +7,8 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/Sirupsen/logrus"
 	ge "github.com/go-errors/errors"
+	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
