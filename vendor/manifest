@@ -20,15 +20,15 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/Sirupsen/logrus",
-			"repository": "https://github.com/Sirupsen/logrus",
-			"revision": "a283a10442df8dc09befd873fab202bf8a253d6a",
+			"importpath": "github.com/sirupsen/logrus",
+			"repository": "https://github.com/sirupsen/logrus",
+			"revision": "68cec9f21fbf3ea8d8f98c044bc6ce05f17b267a",
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/Sirupsen/logrus/hooks/test",
-			"repository": "https://github.com/Sirupsen/logrus",
-			"revision": "a283a10442df8dc09befd873fab202bf8a253d6a",
+			"importpath": "github.com/sirupsen/logrus/hooks/test",
+			"repository": "https://github.com/sirupsen/logrus",
+			"revision": "68cec9f21fbf3ea8d8f98c044bc6ce05f17b267a",
 			"branch": "master",
 			"path": "/hooks/test"
 		},
@@ -418,7 +418,7 @@
 		{
 			"importpath": "github.com/stellar/go",
 			"repository": "https://github.com/stellar/go",
-			"revision": "79fa0dbbbc5a16ec5c9673929a0cad2ee381e2fe",
+			"revision": "8ebb9467a2aca25263a485761babb78684ee1bcd",
 			"branch": "master"
 		},
 		{

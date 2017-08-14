@@ -4,8 +4,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/Sirupsen/logrus"
-	"github.com/segmentio/go-loggly"
+	loggly "github.com/segmentio/go-loggly"
+	"github.com/sirupsen/logrus"
 )
 
 // LogglyHook sends logs to loggly
