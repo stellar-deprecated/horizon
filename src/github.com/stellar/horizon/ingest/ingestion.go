@@ -188,11 +188,6 @@ func (ingest *Ingestion) Start() (err error) {
 func (ingest *Ingestion) transactionInsertBuilder(id int64, tx *core.Transaction, fee *core.TransactionFee) sq.InsertBuilder {
 	// Enquote empty signatures
 	signatures := tx.Base64Signatures()
-	for i, sig := range signatures {
-		if len(sig) == 0 {
-			signatures[i] = `""`
-		}
-	}
 
 	return ingest.transactions.Values(
 		id,
