@@ -8,9 +8,21 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+## [v0.11.0] - 2017-08-15
+
+### Bug fixes
+
+- The ingestion system can now properly imports envelopes that contain signatures that are zero-length strings.
+- BREAKING CHANGE: specifying a `limit` of `0` now triggers an error instead of interpreting the value to mean "use the default limit".
+- Requests that ask for more records than the maximum page size now trigger a bad request error, instead of an internal server error.
+- Upstream bug fixes to xdr decoding from `github.com/stellar/go`.
+
 ### Changed
 
 - BREAKING CHANGE: The payments endpoint now includes `account_merge` operations in the response.
+- "Finished Request" log lines now include additional fields: `streaming`, `path`, `ip`, and `host`.
+- Responses now include a `Content-Disposition: inline` header.
+
 
 ## [v0.10.1] - 2017-03-29
 
@@ -174,7 +186,8 @@ This release contains the initial implementation of the "Abridged History System
 ### Added
 - Github releases are created from tagged travis builds automatically
 
-[Unreleased]: https://github.com/stellar/horizon/compare/v0.10.1...master
+[Unreleased]: https://github.com/stellar/horizon/compare/v0.11.0...master
+[v0.11.0]: https://github.com/stellar/horizon/compare/v0.10.1...v0.11.0
 [v0.10.1]: https://github.com/stellar/horizon/compare/v0.10.0...v0.10.1
 [v0.10.0]: https://github.com/stellar/horizon/compare/v0.9.1...v0.10.0
 [v0.9.1]: https://github.com/stellar/horizon/compare/v0.9.0...v0.9.1
