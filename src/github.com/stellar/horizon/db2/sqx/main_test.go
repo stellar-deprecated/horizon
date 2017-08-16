@@ -18,5 +18,5 @@ func TestStringArray(t *testing.T) {
 	tt.Assert.Equal("?::character varying[]", sql)
 
 	tt.Assert.Len(args, 1)
-	tt.Assert.Equal("{1,2,3}", args[0])
+	tt.Assert.Equal(`{"1","2","3"}`, args[0])
 }
