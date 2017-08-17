@@ -12,7 +12,7 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ### Bug fixes
 
-- The ingestion system can now properly imports envelopes that contain signatures that are zero-length strings.
+- The ingestion system can now properly import envelopes that contain signatures that are zero-length strings.
 - BREAKING CHANGE: specifying a `limit` of `0` now triggers an error instead of interpreting the value to mean "use the default limit".
 - Requests that ask for more records than the maximum page size now trigger a bad request error, instead of an internal server error.
 - Upstream bug fixes to xdr decoding from `github.com/stellar/go`.
