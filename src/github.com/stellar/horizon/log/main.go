@@ -1,10 +1,11 @@
 package log
 
 import (
-	"github.com/Sirupsen/logrus"
-	"github.com/go-errors/errors"
-	"golang.org/x/net/context"
 	"os"
+
+	"github.com/go-errors/errors"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/net/context"
 	// glog "log"
 )
 

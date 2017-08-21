@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 	hlog "github.com/stellar/horizon/log"
 	tdb "github.com/stellar/horizon/test/db"
 	"github.com/stretchr/testify/assert"

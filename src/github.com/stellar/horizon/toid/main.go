@@ -85,6 +85,13 @@ const (
 	OperationShift = 0
 )
 
+// AfterLedger returns a new toid that represents the ledger time _after_ any
+// contents (e.g. transactions, operations) that occur within the specified
+// ledger.
+func AfterLedger(seq int32) *ID {
+	return New(seq, TransactionMask, OperationMask)
+}
+
 // IncOperationOrder increments the operation order, rolling over to the next
 // ledger if overflow occurs.  This allows queries to easily advance a cursor to
 // the next operation.

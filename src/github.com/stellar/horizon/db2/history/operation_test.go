@@ -54,4 +54,13 @@ func TestOperationQueries(t *testing.T) {
 	if tt.Assert.NoError(err) {
 		tt.Assert.Len(ops, 10)
 	}
+
+	// payment filter includes account merges
+	tt.Scenario("account_merge")
+	ops = []Operation{}
+	err = q.Operations().OnlyPayments().Select(&ops)
+
+	if tt.Assert.NoError(err) {
+		tt.Assert.Len(ops, 3)
+	}
 }
