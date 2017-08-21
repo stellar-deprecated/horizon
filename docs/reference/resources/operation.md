@@ -10,20 +10,19 @@ To learn more about the concept of operations in the Stellar network, take a loo
 
 ## Operation Types
 
-There are 10 different operation types:
-
-| type                                          | type | description                                                                                                |
-|-----------------------------------------------|------|------------------------------------------------------------------------------------------------------------|
-| [CREATE_ACCOUNT](#create-account)             | 0    | Creates a new account in Stellar network.
-| [PAYMENT](#payment)                           | 1    | Sends a simple payment between two accounts in Stellar network.
-| [PATH_PAYMENT](#path-payment)                 | 2    | Sends a path payment between two accounts in the Stellar network.
-| [MANAGE_OFFER](#manage-offer)                 | 3    | Creates, updates or deletes an offer in the Stellar network.
-| [CREATE_PASSIVE_OFFER](#create-passive-offer) | 4    | Creates an offer that won't consume a counter offer that exactly matches this offer.
-| [SET_OPTIONS](#set-options)                   | 5    | Sets account options (inflation destination, adding signers, etc.)
-| [CHANGE_TRUST](#change-trust)                 | 6    | Creates, updates or deletes a trust line.
-| [ALLOW_TRUST](#allow-trust)                   | 7    | Updates the "authorized" flag of an existing trust line this is called by the issuer of the related asset.
-| [ACCOUNT_MERGE](#account-merge)               | 8    | Deletes account and transfers remaining balance to destination account.
-| [INFLATION](#inflation)                       | 9    | Runs inflation.
+| type                                          | type_i | description                                                                                                |
+|-----------------------------------------------|--------|------------------------------------------------------------------------------------------------------------|
+| [CREATE_ACCOUNT](#create-account)             | 0      | Creates a new account in Stellar network.
+| [PAYMENT](#payment)                           | 1      | Sends a simple payment between two accounts in Stellar network.
+| [PATH_PAYMENT](#path-payment)                 | 2      | Sends a path payment between two accounts in the Stellar network.
+| [MANAGE_OFFER](#manage-offer)                 | 3      | Creates, updates or deletes an offer in the Stellar network.
+| [CREATE_PASSIVE_OFFER](#create-passive-offer) | 4      | Creates an offer that won't consume a counter offer that exactly matches this offer.
+| [SET_OPTIONS](#set-options)                   | 5      | Sets account options (inflation destination, adding signers, etc.)
+| [CHANGE_TRUST](#change-trust)                 | 6      | Creates, updates or deletes a trust line.
+| [ALLOW_TRUST](#allow-trust)                   | 7      | Updates the "authorized" flag of an existing trust line this is called by the issuer of the related asset.
+| [ACCOUNT_MERGE](#account-merge)               | 8      | Deletes account and transfers remaining balance to destination account.
+| [INFLATION](#inflation)                       | 9      | Runs inflation.
+| [MANAGE_DATA](#manage-data)                   | 10     | Set, modify or delete a Data Entry (name/value pair) for an account.
 
 
 Every operation type shares a set of common attributes and links, some operations also contain
@@ -584,6 +583,42 @@ Runs inflation.
   "paging_token": "12884914177",
   "type_i": 9,
   "type": "inflation"
+}
+```
+
+<a id="manage-data"></a>
+### Manage Data
+
+Set, modify or delete a Data Entry (name/value pair) for an account.
+
+#### Example
+
+```json
+{
+  "_links": {
+    "self": {
+      "href": "/operations/5250180907536385"
+    },
+    "transaction": {
+      "href": "/transactions/e0710d3e410fe6b1ba77fcfec9e3789e94ff29b2424f1f4bf51e530dbbdf221c"
+    },
+    "effects": {
+      "href": "/operations/5250180907536385/effects"
+    },
+    "succeeds": {
+      "href": "/effects?order=desc&cursor=5250180907536385"
+    },
+    "precedes": {
+      "href": "/effects?order=asc&cursor=5250180907536385"
+    }
+  },
+  "id": "5250180907536385",
+  "paging_token": "5250180907536385",
+  "source_account": "GCGG3CIRBG2TTBR4HYZJ7JLDRFKZIYOAHFXRWLU62CA2QN52P2SUQNPJ",
+  "type": "manage_data",
+  "type_i": 10,
+  "name": "lang",
+  "value": "aW5kb25lc2lhbg=="
 }
 ```
 
