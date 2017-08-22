@@ -188,13 +188,15 @@ type Signer struct {
 // Trade represents a trade effect
 type Trade struct {
 	Links struct {
-		Self   hal.Link `json:"self"`
-		Seller hal.Link `json:"seller"`
-		Buyer  hal.Link `json:"buyer"`
+		Self      hal.Link `json:"self"`
+		Seller    hal.Link `json:"seller"`
+		Buyer     hal.Link `json:"buyer"`
+		Operation hal.Link `json:"operation"`
 	} `json:"_links"`
 
 	ID                string    `json:"id"`
 	PT                string    `json:"paging_token"`
+	OfferID           string    `json:"offer_id"`
 	Seller            string    `json:"seller"`
 	SoldAmount        string    `json:"sold_amount"`
 	SoldAssetType     string    `json:"sold_asset_type"`

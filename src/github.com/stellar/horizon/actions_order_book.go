@@ -1,10 +1,14 @@
 package horizon
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/stellar/go/xdr"
+	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/core"
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
 	"github.com/stellar/horizon/render/problem"
 	"github.com/stellar/horizon/render/sse"
@@ -78,4 +82,77 @@ func (action *OrderBookShowAction) SSE(stream sse.Stream) {
 		})
 	})
 
+}
+
+type OrderBookTradeIndexAction struct {
+	Action
+	Selling      xdr.Asset
+	Buying       xdr.Asset
+	PagingParams db2.PageQuery
+	Records      []history.Effect
+	Ledgers      history.LedgerCache
+	Page         hal.Page
+}
+
+// JSON is a method for actions.JSON
+func (action *OrderBookTradeIndexAction) JSON() {
+	action.Do(
+		action.EnsureHistoryFreshness,
+		action.loadParams,
+		action.loadRecords,
+		action.loadLedgers,
+		action.loadPage,
+		func() {
+			hal.Render(action.W, action.Page)
+		},
+	)
+}
+
+// loadLedgers populates the ledger cache for this action
+func (action *OrderBookTradeIndexAction) loadLedgers() {
+	for _, trade := range action.Records {
+		action.Ledgers.Queue(trade.LedgerSequence())
+	}
+
+	action.Err = action.Ledgers.Load(action.HistoryQ())
+}
+
+func (action *OrderBookTradeIndexAction) loadParams() {
+	action.PagingParams = action.GetPageQuery()
+	action.Selling = action.GetAsset("selling_")
+	action.Buying = action.GetAsset("buying_")
+}
+
+func (action *OrderBookTradeIndexAction) loadRecords() {
+	trades := action.HistoryQ().Effects().OfType(history.EffectTrade).ForOrderBook(action.Selling, action.Buying)
+
+	action.Err = trades.Page(action.PagingParams).Select(&action.Records)
+}
+
+// loadPage populates action.Page
+func (action *OrderBookTradeIndexAction) loadPage() {
+	for _, record := range action.Records {
+		var res resource.Trade
+
+		ledger, found := action.Ledgers.Records[record.LedgerSequence()]
+		if !found {
+			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
+			action.Err = errors.New(msg)
+			return
+		}
+
+		action.Err = res.PopulateFromEffect(action.Ctx, record, ledger)
+		if action.Err != nil {
+			return
+		}
+
+		action.Page.Add(res)
+	}
+
+	action.Page.BaseURL = action.BaseURL()
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.PagingParams.Limit
+	action.Page.Cursor = action.PagingParams.Cursor
+	action.Page.Order = action.PagingParams.Order
+	action.Page.PopulateLinks()
 }

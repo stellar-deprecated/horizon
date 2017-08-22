@@ -418,7 +418,7 @@
 		{
 			"importpath": "github.com/stellar/go",
 			"repository": "https://github.com/stellar/go",
-			"revision": "8ebb9467a2aca25263a485761babb78684ee1bcd",
+			"revision": "165d0af4cb611d438a618b2ef14ea935505908e3",
 			"branch": "master"
 		},
 		{

@@ -12,20 +12,15 @@ import (
 	"github.com/stellar/horizon/resource"
 )
 
-// TradeIndexAction renders a page of effect resources, filtered to include
-// only trades, identified by a normal page query and optionally filtered by an account
-// or order book
 type TradeIndexAction struct {
 	Action
-	AccountFilter string
-	Selling       xdr.Asset
-	Buying        xdr.Asset
-	PagingParams  db2.PageQuery
-	Records       []history.Effect
-	// LedgerRecords is a cache of loaded ledger data used to populate the time
-	// when a trade occurred.
-	LedgerRecords map[int32]history.Ledger
-	Page          hal.Page
+	OfferFilter       int64
+	SoldAssetFilter   xdr.Asset
+	BoughtAssetFilter xdr.Asset
+	PagingParams      db2.PageQuery
+	Records           []history.Trade
+	Ledgers           history.LedgerCache
+	Page              hal.Page
 }
 
 // JSON is a method for actions.JSON
@@ -44,59 +39,42 @@ func (action *TradeIndexAction) JSON() {
 
 // LoadQuery sets action.Query from the request params
 func (action *TradeIndexAction) loadParams() {
-	action.AccountFilter = action.GetString("account_id")
+	action.OfferFilter = action.GetInt64("offer_id")
 	action.PagingParams = action.GetPageQuery()
-
-	// scott: It is unfortunate that we have this string guard below.  Instead, we
-	// should probably add an alternative to `GetAsset` that returns a zero-value
-	// xdr.Asset when not provided by the request.  Perhaps `MaybeGetAsset`?.
-	if action.GetString("selling_asset_type") != "" {
-		action.Selling = action.GetAsset("selling_")
-		action.Buying = action.GetAsset("buying_")
-	}
+	action.SoldAssetFilter = action.MaybeGetAsset("sold_")
+	action.BoughtAssetFilter = action.MaybeGetAsset("bought_")
 }
 
 // loadRecords populates action.Records
 func (action *TradeIndexAction) loadRecords() {
-	trades := action.HistoryQ().Effects().OfType(history.EffectTrade)
+	trades := action.HistoryQ().Trades()
 
-	if action.AccountFilter != "" {
-		trades = trades.ForAccount(action.AccountFilter)
+	if action.OfferFilter > int64(0) {
+		trades = trades.ForOffer(action.OfferFilter)
 	}
 
-	if (action.Selling != xdr.Asset{} || action.Buying != xdr.Asset{}) {
-		trades = trades.ForOrderBook(action.Selling, action.Buying)
+	if (action.SoldAssetFilter != xdr.Asset{}) {
+		trades = trades.ForSoldAsset(action.SoldAssetFilter)
+	}
+
+	if (action.BoughtAssetFilter != xdr.Asset{}) {
+		trades = trades.ForBoughtAsset(action.BoughtAssetFilter)
 	}
 
 	action.Err = trades.Page(action.PagingParams).Select(&action.Records)
 }
 
-// loadLedgers collects the unique ledgers referenced in the loaded trades and loads the details for each.
+// loadLedgers populates the ledger cache for this action
 func (action *TradeIndexAction) loadLedgers() {
-	if len(action.Records) == 0 {
-		return
-	}
-
-	ledgerSequences := make([]interface{}, len(action.Records))
-
-	// populate the unique sequences
-	for i, trade := range action.Records {
-		ledgerSequences[i] = trade.LedgerSequence()
-	}
-
-	var ledgers []history.Ledger
-	action.Err = action.HistoryQ().LedgersBySequence(
-		&ledgers,
-		ledgerSequences...,
-	)
 	if action.Err != nil {
 		return
 	}
 
-	action.LedgerRecords = map[int32]history.Ledger{}
-	for _, l := range ledgers {
-		action.LedgerRecords[l.Sequence] = l
+	for _, trade := range action.Records {
+		action.Ledgers.Queue(trade.LedgerSequence())
 	}
+
+	action.Err = action.Ledgers.Load(action.HistoryQ())
 }
 
 // loadPage populates action.Page
@@ -104,7 +82,7 @@ func (action *TradeIndexAction) loadPage() {
 	for _, record := range action.Records {
 		var res resource.Trade
 
-		ledger, found := action.LedgerRecords[record.LedgerSequence()]
+		ledger, found := action.Ledgers.Records[record.LedgerSequence()]
 		if !found {
 			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
 			action.Err = errors.New(msg)
@@ -112,6 +90,81 @@ func (action *TradeIndexAction) loadPage() {
 		}
 
 		action.Err = res.Populate(action.Ctx, record, ledger)
+		if action.Err != nil {
+			return
+		}
+
+		action.Page.Add(res)
+	}
+
+	action.Page.BaseURL = action.BaseURL()
+	action.Page.BasePath = action.Path()
+	action.Page.Limit = action.PagingParams.Limit
+	action.Page.Cursor = action.PagingParams.Cursor
+	action.Page.Order = action.PagingParams.Order
+	action.Page.PopulateLinks()
+}
+
+type TradeEffectIndexAction struct {
+	Action
+	AccountFilter string
+	PagingParams  db2.PageQuery
+	Records       []history.Effect
+	Ledgers       history.LedgerCache
+	Page          hal.Page
+}
+
+// JSON is a method for actions.JSON
+func (action *TradeEffectIndexAction) JSON() {
+	action.Do(
+		action.EnsureHistoryFreshness,
+		action.loadParams,
+		action.loadRecords,
+		action.loadLedgers,
+		action.loadPage,
+		func() {
+			hal.Render(action.W, action.Page)
+		},
+	)
+}
+
+// loadLedgers populates the ledger cache for this action
+func (action *TradeEffectIndexAction) loadLedgers() {
+	if action.Err != nil {
+		return
+	}
+
+	for _, trade := range action.Records {
+		action.Ledgers.Queue(trade.LedgerSequence())
+	}
+
+	action.Err = action.Ledgers.Load(action.HistoryQ())
+}
+
+func (action *TradeEffectIndexAction) loadParams() {
+	action.AccountFilter = action.GetString("account_id")
+	action.PagingParams = action.GetPageQuery()
+}
+
+func (action *TradeEffectIndexAction) loadRecords() {
+	trades := action.HistoryQ().Effects().OfType(history.EffectTrade).ForAccount(action.AccountFilter)
+
+	action.Err = trades.Page(action.PagingParams).Select(&action.Records)
+}
+
+// loadPage populates action.Page
+func (action *TradeEffectIndexAction) loadPage() {
+	for _, record := range action.Records {
+		var res resource.Trade
+
+		ledger, found := action.Ledgers.Records[record.LedgerSequence()]
+		if !found {
+			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
+			action.Err = errors.New(msg)
+			return
+		}
+
+		action.Err = res.PopulateFromEffect(action.Ctx, record, ledger)
 		if action.Err != nil {
 			return
 		}

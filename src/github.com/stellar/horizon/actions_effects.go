@@ -13,7 +13,7 @@ import (
 
 // This file contains the actions:
 //
-// EffectIndexAction: pages of operations
+// EffectIndexAction: pages of effects
 
 // EffectIndexAction renders a page of effect resources, identified by
 // a normal page query and optionally filtered by an account, ledger,

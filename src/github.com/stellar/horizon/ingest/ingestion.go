@@ -9,6 +9,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/guregu/null"
+	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2/core"
 	"github.com/stellar/horizon/db2/history"
@@ -24,6 +25,7 @@ func (ingest *Ingestion) ClearAll() error {
 // id provided.
 func (ingest *Ingestion) Clear(start int64, end int64) error {
 	clear := ingest.DB.DeleteRange
+
 	err := clear(start, end, "history_effects", "history_operation_id")
 	if err != nil {
 		return err
@@ -45,6 +47,11 @@ func (ingest *Ingestion) Clear(start int64, end int64) error {
 		return err
 	}
 	err = clear(start, end, "history_ledgers", "id")
+	if err != nil {
+		return err
+	}
+
+	err = clear(start, end, "history_trades", "history_operation_id")
 	if err != nil {
 		return err
 	}
@@ -211,6 +218,66 @@ func (ingest *Ingestion) transactionInsertBuilder(id int64, tx *core.Transaction
 	)
 }
 
+// Trade records a trade into the history_trades table
+func (ingest *Ingestion) Trade(
+	opid int64,
+	order int32,
+	buyer xdr.AccountId,
+	trade xdr.ClaimOfferAtom,
+) error {
+
+	var (
+		soldType     string
+		soldCode     string
+		soldIssuer   string
+		boughtType   string
+		boughtCode   string
+		boughtIssuer string
+	)
+
+	buyerID, err := ingest.getParticipantID(buyer)
+	if err != nil {
+		return errors.Wrap(err, "failed to load buyer account id")
+	}
+
+	sellerID, err := ingest.getParticipantID(trade.SellerId)
+	if err != nil {
+		return errors.Wrap(err, "failed to load buyer account id")
+	}
+
+	err = trade.AssetSold.Extract(&soldType, &soldCode, &soldIssuer)
+	if err != nil {
+		return errors.Wrap(err, "failed to extract sold asset attributes")
+	}
+
+	err = trade.AssetBought.Extract(&boughtType, &boughtCode, &boughtIssuer)
+	if err != nil {
+		return errors.Wrap(err, "failed to extract bought asset attributes")
+	}
+
+	sql := ingest.trades.Values(
+		opid,
+		order,
+		trade.OfferId,
+		sellerID,
+		buyerID,
+		soldType,
+		soldIssuer,
+		soldCode,
+		trade.AmountSold,
+		boughtType,
+		boughtIssuer,
+		boughtCode,
+		trade.AmountBought,
+	)
+	_, err = ingest.DB.Exec(sql)
+	if err != nil {
+		return errors.Wrap(err, "failed to exec sql")
+	}
+
+	return nil
+}
+
 // Transaction ingests the provided transaction data into a new row in the
 // `history_transactions` table
 func (ingest *Ingestion) Transaction(
@@ -320,6 +387,22 @@ func (ingest *Ingestion) createInsertBuilders() {
 		"\"order\"",
 		"type",
 		"details",
+	)
+
+	ingest.trades = sq.Insert("history_trades").Columns(
+		"history_operation_id",
+		"\"order\"",
+		"offer_id",
+		"seller_id",
+		"buyer_id",
+		"sold_asset_type",
+		"sold_asset_issuer",
+		"sold_asset_code",
+		"sold_amount",
+		"bought_asset_type",
+		"bought_asset_issuer",
+		"bought_asset_code",
+		"bought_amount",
 	)
 }
 

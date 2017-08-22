@@ -28,12 +28,18 @@ func (q *Q) Ledgers() *LedgersQ {
 
 // LedgersBySequence loads the a set of ledgers identified by the sequences
 // `seqs` into `dest`.
-func (q *Q) LedgersBySequence(dest interface{}, seqs ...interface{}) error {
+func (q *Q) LedgersBySequence(dest interface{}, seqs ...int32) error {
 	if len(seqs) == 0 {
 		return errors.New("no sequence arguments provided")
 	}
 	in := fmt.Sprintf("sequence IN (%s)", sq.Placeholders(len(seqs)))
-	sql := selectLedger.Where(in, seqs...)
+
+	whereArgs := make([]interface{}, len(seqs))
+	for i, s := range seqs {
+		whereArgs[i] = s
+	}
+
+	sql := selectLedger.Where(in, whereArgs...)
 
 	return q.Select(dest, sql)
 }
