@@ -138,6 +138,10 @@ func (q *TradesQ) orderBookFilter(a xdr.Asset, prefix string) {
 		return
 	}
 
+	if !(prefix == "bought_" || prefix == "sold_") {
+		panic("invalid prefix: only bought_ and sold_ allowed")
+	}
+
 	clause := fmt.Sprintf(
 		`(htrd.%sasset_type = ? 
 		AND htrd.%sasset_code = ? 
