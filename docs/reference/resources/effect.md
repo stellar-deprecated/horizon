@@ -21,7 +21,7 @@ We can distinguish 4 effect groups:
 | Account Created             | create_account                                        |
 | Account Removed             | merge_account                                         |
 | Account Credited            | create_account, payment, path_payment, merge_account  |
-| Account Debited             | create_account, payment, path_payment, create_account |
+| Account Debited             | create_account, payment, path_payment, merge_account  |
 | Account Thresholds Updated  | set_options                                           |
 | Account Home Domain Updated | set_options                                           |
 | Account Flags Updated       | set_options                                           |
