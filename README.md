@@ -9,9 +9,9 @@ Horizon is the [client facing API](/docs) server for the Stellar ecosystem.  It 
 
 | Platform       | Binary file name                                                                         |
 |----------------|------------------------------------------------------------------------------------------|
-| Mac OSX 64 bit | [name-darwin-amd64](https://github.com/stellar/horizon/releases)      |
-| Linux 64 bit   | [name-linux-amd64](https://github.com/stellar/horizon/releases)       |
-| Windows 64 bit | [name-windows-amd64.exe](https://github.com/stellar/horizon/releases) |
+| Mac OSX 64 bit | [horizon-darwin-amd64](https://github.com/stellar/horizon/releases/download/v0.11.0/horizon-v0.11.0-darwin-amd64.tar.gz)      |
+| Linux 64 bit   | [horizon-linux-amd64](https://github.com/stellar/horizon/releases/download/v0.11.0/horizon-v0.11.0-linux-amd64.tar.gz)       |
+| Windows 64 bit | [horizon-windows-amd64.exe](https://github.com/stellar/horizon/releases/download/v0.11.0/horizon-v0.11.0-windows-amd64.zip) |
 
 Alternatively, you can [build](#building) the binary yourself.
 
