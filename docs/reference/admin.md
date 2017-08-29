@@ -21,7 +21,7 @@ In addition to the two required prerequisites above, you may optionally install 
 
 ## Installing
 
-To install horizon, you have a choice: either downloading a prebuilt release for your target architecture and operation system, or [building horizon yourself](#Building).  When either approach is complete, you will find yourself with a directory containing a file named `horizon`.  This file is a native binary.
+To install horizon, you have a choice: either downloading a [prebuilt release for your target architecture](https://github.com/stellar/horizon/releases/download/v0.11.0/horizon-v0.11.0-linux-amd64.tar.gz) and operation system, or [building horizon yourself](#Building).  When either approach is complete, you will find yourself with a directory containing a file named `horizon`.  This file is a native binary.
 
 After building or unpacking horizon, you simply need to copy the native binary into a directory that is part of your PATH.  Most unix-like systems have `/usr/local/bin` in PATH by default, so unless you have a preference or know better, we recommend you copy the binary there.
 
