@@ -3,6 +3,18 @@
 
 Horizon is the [client facing API](/docs) server for the Stellar ecosystem.  It acts as the interface between stellar-core and applications that want to access the Stellar network. It allows you to submit transactions to the network, check the status of accounts, subscribe to event streams, etc. See [an overview of the Stellar ecosystem](https://www.stellar.org/developers/guides/get-started/) for more details.
 
+## Downloading the server
+[Prebuilt binaries](https://github.com/stellar/horizon/releases) of horizon are available on the 
+[releases page](https://github.com/stellar/horizon/releases).
+
+| Platform       | Binary file name                                                                         |
+|----------------|------------------------------------------------------------------------------------------|
+| Mac OSX 64 bit | [name-darwin-amd64](https://github.com/stellar/horizon/releases)      |
+| Linux 64 bit   | [name-linux-amd64](https://github.com/stellar/horizon/releases)       |
+| Windows 64 bit | [name-windows-amd64.exe](https://github.com/stellar/horizon/releases) |
+
+Alternatively, you can [build](#building) the binary yourself.
+
 ## Dependencies
 
 Horizon requires go 1.6 or higher to build. See (https://golang.org/doc/install) for installation instructions.
