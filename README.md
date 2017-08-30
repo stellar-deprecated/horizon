@@ -18,6 +18,7 @@ Alternatively, you can [build](#building) the binary yourself.
 ## Dependencies
 
 Horizon requires go 1.6 or higher to build. See (https://golang.org/doc/install) for installation instructions.
+PostgreSQL version should be higher than 9.6
 
 ## Building
 
