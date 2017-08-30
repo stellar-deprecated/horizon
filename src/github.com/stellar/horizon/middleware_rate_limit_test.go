@@ -1,110 +1,102 @@
 package horizon
 
 import (
-	"strconv"
+	"fmt"
 	"testing"
 
-	"github.com/PuerkitoBio/throttled"
-	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stellar/horizon/test"
 )
 
 func TestRateLimitMiddleware(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
 
-	Convey("Rate Limiting", t, func() {
-		c := NewTestConfig()
-		c.RateLimit = throttled.PerHour(10)
-		app, _ := NewApp(c)
-		defer app.Close()
-		rh := NewRequestHelper(app)
+	w := ht.Get("/")
+	remaining := TestRateLimit - 1
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Equal(
+			fmt.Sprintf("%d", TestRateLimit),
+			w.Header().Get("X-RateLimit-Limit"),
+		)
+		ht.Assert.Equal(
+			fmt.Sprintf("%d", remaining),
+			w.Header().Get("X-RateLimit-Remaining"),
+		)
+		ht.Assert.Equal(
+			fmt.Sprintf("%d", 3599),
+			w.Header().Get("X-RateLimit-Reset"),
+		)
+	}
 
-		Convey("sets X-RateLimit-Limit headers correctly", func() {
-			w := rh.Get("/")
-			So(w.Code, ShouldEqual, 200)
-			So(w.Header().Get("X-RateLimit-Limit"), ShouldEqual, "10")
-		})
+	for remaining > 0 {
+		w := ht.Get("/")
+		remaining--
 
-		Convey("sets X-RateLimit-Remaining headers correctly", func() {
-			for i := 0; i < 10; i++ {
-				w := rh.Get("/")
-				expected := 10 - (i + 1)
-				So(w.Header().Get("X-RateLimit-Remaining"), ShouldEqual, strconv.Itoa(expected))
-			}
-
-			// confirm remaining stays at 0
-			for i := 0; i < 10; i++ {
-				w := rh.Get("/")
-				So(w.Header().Get("X-RateLimit-Remaining"), ShouldEqual, "0")
-			}
-		})
-
-		Convey("sets X-RateLimit-Reset header correctly", func() {
-			w := rh.Get("/")
-			So(w.Header().Get("X-RateLimit-Reset"), ShouldEqual, "3599")
-		})
-
-		Convey("Restricts based on RemoteAddr IP after too many requests", func() {
-			for i := 0; i < 10; i++ {
-				w := rh.Get("/")
-				So(w.Code, ShouldEqual, 200)
-			}
-
-			w := rh.Get("/")
-			So(w.Code, ShouldEqual, 429)
-
-			w = rh.Get("/", test.RequestHelperRemoteAddr("127.0.0.2"))
-			So(w.Code, ShouldEqual, 200)
-
-			// Ignores ports
-			w = rh.Get("/", test.RequestHelperRemoteAddr("127.0.0.1:4312"))
-			So(w.Code, ShouldEqual, 429)
-		})
-
-		Convey("Restrict based upon X-Forwarded-For correctly", func() {
-			for i := 0; i < 10; i++ {
-				w := rh.Get("/", test.RequestHelperXFF("4.4.4.4"))
-				So(w.Code, ShouldEqual, 200)
-			}
-
-			w := rh.Get("/", test.RequestHelperXFF("4.4.4.4"))
-			So(w.Code, ShouldEqual, 429)
-
-			// allow other ips
-			w = rh.Get("/", test.RequestHelperRemoteAddr("4.4.4.3"))
-			So(w.Code, ShouldEqual, 200)
-
-			// Ignores leading private ips
-			w = rh.Get("/", test.RequestHelperXFF("10.0.0.1, 4.4.4.4"))
-			So(w.Code, ShouldEqual, 429)
-
-			// Ignores trailing ips
-			w = rh.Get("/", test.RequestHelperXFF("4.4.4.4, 4.4.4.5, 127.0.0.1"))
-			So(w.Code, ShouldEqual, 429)
-
-		})
-	})
-
-	Convey("Rate Limiting works with redis", t, func() {
-		c := NewTestConfig()
-		c.RateLimit = throttled.PerHour(10)
-		c.RedisURL = "redis://127.0.0.1:6379/"
-		app, _ := NewApp(c)
-		defer app.Close()
-		rh := NewRequestHelper(app)
-
-		redis := app.redis.Get()
-		_, err := redis.Do("FLUSHDB")
-		So(err, ShouldBeNil)
-
-		for i := 0; i < 10; i++ {
-			w := rh.Get("/")
-			So(w.Code, ShouldEqual, 200)
+		if ht.Assert.Equal(200, w.Code) {
+			ht.Assert.Equal(
+				fmt.Sprintf("%d", remaining),
+				w.Header().Get("X-RateLimit-Remaining"),
+			)
 		}
+	}
 
-		w := rh.Get("/")
-		So(w.Code, ShouldEqual, 429)
+	w = ht.Get("/")
+	ht.Assert.Equal(429, w.Code)
 
-		w = rh.Get("/", test.RequestHelperRemoteAddr("127.0.0.2"))
-		So(w.Code, ShouldEqual, 200)
-	})
+	// rate limits are managed per IP
+	w = ht.Get("/", test.RequestHelperRemoteAddr("127.0.0.2"))
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Equal(
+			fmt.Sprintf("%d", TestRateLimit-1),
+			w.Header().Get("X-RateLimit-Remaining"),
+		)
+	}
+
+	// ports get ignored
+	w = ht.Get("/", test.RequestHelperRemoteAddr("127.0.0.2:123"))
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Equal(
+			fmt.Sprintf("%d", TestRateLimit-2),
+			w.Header().Get("X-RateLimit-Remaining"),
+		)
+	}
+
+	// XFF
+	w = ht.Get(
+		"/",
+		test.RequestHelperRemoteAddr("127.0.0.1:123"),
+		test.RequestHelperXFF("4.4.4.4"),
+	)
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Equal(
+			fmt.Sprintf("%d", TestRateLimit-1),
+			w.Header().Get("X-RateLimit-Remaining"),
+		)
+	}
+
+	// ignore private ips
+	w = ht.Get(
+		"/",
+		test.RequestHelperRemoteAddr("127.0.0.1:123"),
+		test.RequestHelperXFF("10.0.0.1, 4.4.4.4"),
+	)
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Equal(
+			fmt.Sprintf("%d", TestRateLimit-2),
+			w.Header().Get("X-RateLimit-Remaining"),
+		)
+	}
+
+	// ignore trailing ips
+	w = ht.Get(
+		"/",
+		test.RequestHelperRemoteAddr("127.0.0.1:123"),
+		test.RequestHelperXFF("4.4.4.4, 4.4.4.5, 127.0.0.1"),
+	)
+	if ht.Assert.Equal(200, w.Code) {
+		ht.Assert.Equal(
+			fmt.Sprintf("%d", TestRateLimit-3),
+			w.Header().Get("X-RateLimit-Remaining"),
+		)
+	}
 }

@@ -2,7 +2,7 @@
 package assets
 
 import (
-	"github.com/go-errors/errors"
+	"github.com/stellar/go/support/errors"
 	"github.com/stellar/go/xdr"
 )
 
@@ -26,7 +26,7 @@ func Parse(aType string) (result xdr.AssetType, err error) {
 	result, ok := AssetTypeMap[aType]
 
 	if !ok {
-		err = errors.New(ErrInvalidString)
+		err = ErrInvalidString
 	}
 
 	return
@@ -40,7 +40,7 @@ func String(aType xdr.AssetType) (string, error) {
 		}
 	}
 
-	return "", errors.New(ErrInvalidValue)
+	return "", ErrInvalidValue
 }
 
 // MustString is the panicky version of String.
