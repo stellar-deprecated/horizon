@@ -147,6 +147,23 @@ func (is *Session) ingestEffects() {
 	case xdr.OperationTypeManageOffer:
 		result := is.Cursor.OperationResult().MustManageOfferResult().MustSuccess()
 		is.ingestTrades(effects, source, result.OffersClaimed)
+
+		o := result.Offer
+		oe := o.OfferEntry
+		dets := map[string]interface{}{
+			"seller_id": oe.SellerId,
+			"offer_id": oe.OfferId,
+			"selling_amount": oe.Amount,
+			"price": map[string]interface{}{
+				"n": oe.Price.N,
+				"d": oe.Price.D,
+			},
+			"flags": oe.Flags,
+		}
+		is.assetDetails(dets, oe.Selling, "selling_")
+		is.assetDetails(dets, oe.Buying, "buying_")
+
+		effects.Add(source, o.ManageOfferEffect, dets)
 	case xdr.OperationTypeCreatePassiveOffer:
 		claims := []xdr.ClaimOfferAtom{}
 		result := is.Cursor.OperationResult()
