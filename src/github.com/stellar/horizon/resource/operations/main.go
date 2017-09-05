@@ -1,6 +1,8 @@
 package operations
 
 import (
+	"time"
+
 	"github.com/stellar/go/xdr"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
@@ -29,10 +31,11 @@ var TypeNames = map[xdr.OperationType]string{
 func New(
 	ctx context.Context,
 	row history.Operation,
+	ledger history.Ledger,
 ) (result hal.Pageable, err error) {
 
 	base := Base{}
-	base.Populate(ctx, row)
+	base.Populate(ctx, row, ledger)
 
 	switch row.Type {
 	case xdr.OperationTypeCreateAccount:
@@ -98,11 +101,12 @@ type Base struct {
 		Precedes    hal.Link `json:"precedes"`
 	} `json:"_links"`
 
-	ID            string `json:"id"`
-	PT            string `json:"paging_token"`
-	SourceAccount string `json:"source_account"`
-	Type          string `json:"type"`
-	TypeI         int32  `json:"type_i"`
+	ID              string    `json:"id"`
+	PT              string    `json:"paging_token"`
+	SourceAccount   string    `json:"source_account"`
+	Type            string    `json:"type"`
+	TypeI           int32     `json:"type_i"`
+	LedgerCloseTime time.Time `json:"created_at"`
 }
 
 // CreateAccount is the json resource representing a single operation whose type

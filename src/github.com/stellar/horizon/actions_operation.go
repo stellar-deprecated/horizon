@@ -1,6 +1,9 @@
 package horizon
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/ledger"
@@ -26,6 +29,7 @@ type OperationIndexAction struct {
 	TransactionFilter string
 	PagingParams      db2.PageQuery
 	Records           []history.Operation
+	Ledgers           history.LedgerCache
 	Page              hal.Page
 }
 
@@ -36,6 +40,7 @@ func (action *OperationIndexAction) JSON() {
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 		action.loadRecords,
+		action.loadLedgers,
 		action.loadPage)
 	action.Do(func() {
 		hal.Render(action.W, action.Page)
@@ -51,15 +56,23 @@ func (action *OperationIndexAction) SSE(stream sse.Stream) {
 	)
 	action.Do(
 		action.loadRecords,
+		action.loadLedgers,
 		func() {
 			stream.SetLimit(int(action.PagingParams.Limit))
 			records := action.Records[stream.SentCount():]
 
 			for _, record := range records {
-				res, err := resource.NewOperation(action.Ctx, record)
+				ledger, found := action.Ledgers.Records[record.LedgerSequence()]
+				if !found {
+					msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
+					stream.Err(errors.New(msg))
+					return
+				}
+
+				res, err := resource.NewOperation(action.Ctx, record, ledger)
 
 				if err != nil {
-					stream.Err(action.Err)
+					stream.Err(err)
 					return
 				}
 
@@ -96,10 +109,27 @@ func (action *OperationIndexAction) loadRecords() {
 	action.Err = ops.Page(action.PagingParams).Select(&action.Records)
 }
 
+// loadLedgers populates the ledger cache for this action
+func (action *OperationIndexAction) loadLedgers() {
+	for _, op := range action.Records {
+		action.Ledgers.Queue(op.LedgerSequence())
+	}
+
+	action.Err = action.Ledgers.Load(action.HistoryQ())
+}
+
 func (action *OperationIndexAction) loadPage() {
 	for _, record := range action.Records {
+
+		ledger, found := action.Ledgers.Records[record.LedgerSequence()]
+		if !found {
+			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
+			action.Err = errors.New(msg)
+			return
+		}
+
 		var res hal.Pageable
-		res, action.Err = resource.NewOperation(action.Ctx, record)
+		res, action.Err = resource.NewOperation(action.Ctx, record, ledger)
 		if action.Err != nil {
 			return
 		}
@@ -119,6 +149,7 @@ type OperationShowAction struct {
 	Action
 	ID       int64
 	Record   history.Operation
+	Ledger   history.Ledger
 	Resource interface{}
 }
 
@@ -130,8 +161,12 @@ func (action *OperationShowAction) loadRecord() {
 	action.Err = action.HistoryQ().OperationByID(&action.Record, action.ID)
 }
 
+func (action *OperationShowAction) loadLedger() {
+	action.Err = action.HistoryQ().LedgerBySequence(&action.Ledger, action.Record.LedgerSequence())
+}
+
 func (action *OperationShowAction) loadResource() {
-	action.Resource, action.Err = resource.NewOperation(action.Ctx, action.Record)
+	action.Resource, action.Err = resource.NewOperation(action.Ctx, action.Record, action.Ledger)
 }
 
 // JSON is a method for actions.JSON
@@ -141,6 +176,7 @@ func (action *OperationShowAction) JSON() {
 		action.loadParams,
 		action.verifyWithinHistory,
 		action.loadRecord,
+		action.loadLedger,
 		action.loadResource,
 	)
 	action.Do(func() {

@@ -275,8 +275,9 @@ func NewEffect(
 func NewOperation(
 	ctx context.Context,
 	row history.Operation,
+	ledger history.Ledger,
 ) (result hal.Pageable, err error) {
-	return operations.New(ctx, row)
+	return operations.New(ctx, row, ledger)
 }
 
 // KeyTypeFromAddress converts the version byte of the provided strkey encoded

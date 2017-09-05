@@ -1,6 +1,9 @@
 package horizon
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/stellar/horizon/db2"
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/render/hal"
@@ -17,6 +20,7 @@ type PaymentsIndexAction struct {
 	TransactionFilter string
 	PagingParams      db2.PageQuery
 	Records           []history.Operation
+	Ledgers           history.LedgerCache
 	Page              hal.Page
 }
 
@@ -27,6 +31,7 @@ func (action *PaymentsIndexAction) JSON() {
 		action.loadParams,
 		action.ValidateCursorWithinHistory,
 		action.loadRecords,
+		action.loadLedgers,
 		action.loadPage,
 	)
 	action.Do(func() {
@@ -48,10 +53,17 @@ func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
 			records := action.Records[stream.SentCount():]
 
 			for _, record := range records {
-				res, err := resource.NewOperation(action.Ctx, record)
+				ledger, found := action.Ledgers.Records[record.LedgerSequence()]
+				if !found {
+					msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
+					stream.Err(errors.New(msg))
+					return
+				}
+
+				res, err := resource.NewOperation(action.Ctx, record, ledger)
 
 				if err != nil {
-					stream.Err(action.Err)
+					stream.Err(err)
 					return
 				}
 
@@ -87,10 +99,27 @@ func (action *PaymentsIndexAction) loadRecords() {
 	action.Err = ops.Page(action.PagingParams).Select(&action.Records)
 }
 
+// loadLedgers populates the ledger cache for this action
+func (action *PaymentsIndexAction) loadLedgers() {
+	for _, op := range action.Records {
+		action.Ledgers.Queue(op.LedgerSequence())
+	}
+
+	action.Err = action.Ledgers.Load(action.HistoryQ())
+}
+
 func (action *PaymentsIndexAction) loadPage() {
 	for _, record := range action.Records {
 		var res hal.Pageable
-		res, action.Err = resource.NewOperation(action.Ctx, record)
+
+		ledger, found := action.Ledgers.Records[record.LedgerSequence()]
+		if !found {
+			msg := fmt.Sprintf("could not find ledger data for sequence %d", record.LedgerSequence())
+			action.Err = errors.New(msg)
+			return
+		}
+
+		res, action.Err = resource.NewOperation(action.Ctx, record, ledger)
 		if action.Err != nil {
 			return
 		}
