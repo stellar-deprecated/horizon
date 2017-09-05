@@ -134,19 +134,11 @@ func (is *Session) ingestEffects() {
 		effects.Add(op.Destination, history.EffectAccountCredited, dets)
 		effects.Add(source, history.EffectAccountDebited, dets)
 	case xdr.OperationTypePathPayment:
-		op := opbody.MustPathPaymentOp()
-		dets := map[string]interface{}{"amount": amount.String(op.DestAmount)}
-		is.assetDetails(dets, op.DestAsset, "")
-		effects.Add(op.Destination, history.EffectAccountCredited, dets)
-
-		result := is.Cursor.OperationResult().MustPathPaymentResult()
-		dets = map[string]interface{}{"amount": amount.String(result.SendAmount())}
-		is.assetDetails(dets, op.SendAsset, "")
-		effects.Add(source, history.EffectAccountDebited, dets)
-		is.ingestTrades(effects, source, result.MustSuccess().Offers)
+		result := is.Cursor.OperationResult().MustPathPaymentResult().MustSuccess()
+		is.ingestTradeEffects(effects, source, result.Offers)
 	case xdr.OperationTypeManageOffer:
 		result := is.Cursor.OperationResult().MustManageOfferResult().MustSuccess()
-		is.ingestTrades(effects, source, result.OffersClaimed)
+		is.ingestTradeEffects(effects, source, result.OffersClaimed)
 	case xdr.OperationTypeCreatePassiveOffer:
 		claims := []xdr.ClaimOfferAtom{}
 		result := is.Cursor.OperationResult()
@@ -159,7 +151,7 @@ func (is *Session) ingestEffects() {
 			claims = result.MustCreatePassiveOfferResult().MustSuccess().OffersClaimed
 		}
 
-		is.ingestTrades(effects, source, claims)
+		is.ingestTradeEffects(effects, source, claims)
 	case xdr.OperationTypeSetOptions:
 		op := opbody.MustSetOptionsOp()
 
@@ -358,6 +350,7 @@ func (is *Session) ingestOperation() {
 
 	is.ingestOperationParticipants()
 	is.ingestEffects()
+	is.ingestTrades()
 }
 
 func (is *Session) ingestOperationParticipants() {
@@ -425,7 +418,53 @@ func (is *Session) ingestSignerEffects(effects *EffectIngestion, op xdr.SetOptio
 
 }
 
-func (is *Session) ingestTrades(effects *EffectIngestion, buyer xdr.AccountId, claims []xdr.ClaimOfferAtom) {
+func (is *Session) ingestTrades() {
+	if is.Err != nil {
+		return
+	}
+
+	buyer := is.Cursor.OperationSourceAccount()
+	trades := []xdr.ClaimOfferAtom{}
+
+	switch is.Cursor.OperationType() {
+	case xdr.OperationTypePathPayment:
+		trades = is.Cursor.OperationResult().
+			MustPathPaymentResult().
+			MustSuccess().
+			Offers
+
+	case xdr.OperationTypeManageOffer:
+		trades = is.Cursor.OperationResult().MustManageOfferResult().MustSuccess().OffersClaimed
+	case xdr.OperationTypeCreatePassiveOffer:
+		result := is.Cursor.OperationResult()
+
+		// KNOWN ISSUE:  stellar-core creates results for CreatePassiveOffer operations
+		// with the wrong result arm set.
+		if result.Type == xdr.OperationTypeManageOffer {
+			trades = result.MustManageOfferResult().MustSuccess().OffersClaimed
+		} else {
+			trades = result.MustCreatePassiveOfferResult().MustSuccess().OffersClaimed
+		}
+	}
+
+	for i, trade := range trades {
+		is.Err = is.Ingestion.Trade(
+			is.Cursor.OperationID(),
+			int32(i),
+			buyer,
+			trade,
+		)
+		if is.Err != nil {
+			return
+		}
+	}
+}
+
+func (is *Session) ingestTradeEffects(effects *EffectIngestion, buyer xdr.AccountId, claims []xdr.ClaimOfferAtom) {
+	if is.Err != nil {
+		return
+	}
+
 	for _, claim := range claims {
 		seller := claim.SellerId
 		bd, sd := is.tradeDetails(buyer, seller, claim)

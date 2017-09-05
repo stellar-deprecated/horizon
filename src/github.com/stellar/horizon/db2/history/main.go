@@ -3,6 +3,7 @@
 package history
 
 import (
+	"sync"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -154,6 +155,15 @@ type Ledger struct {
 	ProtocolVersion    int32       `db:"protocol_version"`
 }
 
+// LedgerCache is a helper struct to load ledger data related to a batch of
+// sequences.
+type LedgerCache struct {
+	Records map[int32]Ledger
+
+	lock   sync.Mutex
+	queued map[int32]struct{}
+}
+
 // LedgersQ is a helper struct to aid in configuring queries that loads
 // slices of Ledger structs.
 type LedgersQ struct {
@@ -191,6 +201,31 @@ type Q struct {
 // "TotalOrderID".  See total_order_id.go in the `db` package for details.
 type TotalOrderID struct {
 	ID int64 `db:"id"`
+}
+
+// Trade is a row of data from the 'history_trades' table
+type Trade struct {
+	HistoryOperationID int64     `db:"history_operation_id"`
+	Order              int32     `db:"order"`
+	OfferID            int64     `db:"offer_id"`
+	SellerAddress      string    `db:"seller_address"`
+	BuyerAddress       string    `db:"buyer_address"`
+	SoldAssetType      string    `db:"sold_asset_type"`
+	SoldAssetCode      string    `db:"sold_asset_code"`
+	SoldAssetIssuer    string    `db:"sold_asset_issuer"`
+	SoldAmount         xdr.Int64 `db:"sold_amount"`
+	BoughtAssetType    string    `db:"bought_asset_type"`
+	BoughtAssetCode    string    `db:"bought_asset_code"`
+	BoughtAssetIssuer  string    `db:"bought_asset_issuer"`
+	BoughtAmount       xdr.Int64 `db:"bought_amount"`
+}
+
+// TradesQ is a helper struct to aid in configuring queries that loads
+// slices of trade structs.
+type TradesQ struct {
+	Err    error
+	parent *Q
+	sql    sq.SelectBuilder
 }
 
 // Transaction is a row of data from the `history_transactions` table

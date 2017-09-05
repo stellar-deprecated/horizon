@@ -1,8 +1,8 @@
 package horizon
 
 import (
-	"net/http"
 	"github.com/zenazn/goji/web"
+	"net/http"
 )
 
 // ServeHTTPC is a method for web.Handler
@@ -90,6 +90,13 @@ func (action OrderBookShowAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *
 }
 
 // ServeHTTPC is a method for web.Handler
+func (action OrderBookTradeIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	ap.Execute(&action)
+}
+
+// ServeHTTPC is a method for web.Handler
 func (action PathIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
 	ap := &action.Action
 	ap.Prepare(c, w, r)
@@ -112,6 +119,13 @@ func (action RateLimitExceededAction) ServeHTTPC(c web.C, w http.ResponseWriter,
 
 // ServeHTTPC is a method for web.Handler
 func (action RootAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
+	ap := &action.Action
+	ap.Prepare(c, w, r)
+	ap.Execute(&action)
+}
+
+// ServeHTTPC is a method for web.Handler
+func (action TradeEffectIndexAction) ServeHTTPC(c web.C, w http.ResponseWriter, r *http.Request) {
 	ap := &action.Action
 	ap.Prepare(c, w, r)
 	ap.Execute(&action)

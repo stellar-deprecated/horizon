@@ -11,6 +11,7 @@ docs/public
 /vendor/src
 /.vscode/last.sql
 /.vscode/temp.sql
+/.vscode/*
 *.bts
 *.swp
 *.swo

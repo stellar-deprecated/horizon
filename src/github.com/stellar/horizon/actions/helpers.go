@@ -300,6 +300,20 @@ func (base *Base) GetAsset(prefix string) (result xdr.Asset) {
 	return
 }
 
+// MaybeGetAsset decodes an asset from the request fields as GetAsset does, but
+// only if type field is populated.
+func (base *Base) MaybeGetAsset(prefix string) xdr.Asset {
+	if base.Err != nil {
+		return xdr.Asset{}
+	}
+
+	if base.GetString(prefix+"asset_type") == "" {
+		return xdr.Asset{}
+	}
+
+	return base.GetAsset(prefix)
+}
+
 // SetInvalidField establishes an error response triggered by an invalid
 // input field from the user.
 func (base *Base) SetInvalidField(name string, reason error) {

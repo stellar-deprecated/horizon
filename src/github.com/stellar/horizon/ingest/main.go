@@ -113,6 +113,7 @@ type Ingestion struct {
 	operation_participants   sq.InsertBuilder
 	effects                  sq.InsertBuilder
 	accounts                 sq.InsertBuilder
+	trades                   sq.InsertBuilder
 }
 
 // Session represents a single attempt at ingesting data into the history

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.2
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -28,6 +28,10 @@ DROP INDEX IF EXISTS public.index_history_ledgers_on_closed_at;
 DROP INDEX IF EXISTS public.index_history_effects_on_type;
 DROP INDEX IF EXISTS public.index_history_accounts_on_id;
 DROP INDEX IF EXISTS public.index_history_accounts_on_address;
+DROP INDEX IF EXISTS public.htrd_pid;
+DROP INDEX IF EXISTS public.htrd_by_offer;
+DROP INDEX IF EXISTS public.htr_by_sold;
+DROP INDEX IF EXISTS public.htr_by_bought;
 DROP INDEX IF EXISTS public.htp_by_htid;
 DROP INDEX IF EXISTS public.hs_transaction_by_id;
 DROP INDEX IF EXISTS public.hs_ledger_by_id;
@@ -47,6 +51,7 @@ ALTER TABLE IF EXISTS public.history_operation_participants ALTER COLUMN id DROP
 DROP TABLE IF EXISTS public.history_transactions;
 DROP SEQUENCE IF EXISTS public.history_transaction_participants_id_seq;
 DROP TABLE IF EXISTS public.history_transaction_participants;
+DROP TABLE IF EXISTS public.history_trades;
 DROP TABLE IF EXISTS public.history_operations;
 DROP SEQUENCE IF EXISTS public.history_operation_participants_id_seq;
 DROP TABLE IF EXISTS public.history_operation_participants;
@@ -190,6 +195,29 @@ CREATE TABLE history_operations (
 
 
 --
+-- Name: history_trades; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE history_trades (
+    history_operation_id bigint NOT NULL,
+    "order" integer NOT NULL,
+    offer_id bigint NOT NULL,
+    seller_id bigint NOT NULL,
+    buyer_id bigint NOT NULL,
+    sold_asset_type character varying(64) NOT NULL,
+    sold_asset_issuer character varying(56) NOT NULL,
+    sold_asset_code character varying(12) NOT NULL,
+    sold_amount bigint NOT NULL,
+    bought_asset_type character varying(64) NOT NULL,
+    bought_asset_issuer character varying(56) NOT NULL,
+    bought_asset_code character varying(12) NOT NULL,
+    bought_amount bigint NOT NULL,
+    CONSTRAINT history_trades_bought_amount_check CHECK ((bought_amount > 0)),
+    CONSTRAINT history_trades_sold_amount_check CHECK ((sold_amount > 0))
+);
+
+
+--
 -- Name: history_transaction_participants; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -263,10 +291,11 @@ ALTER TABLE ONLY history_transaction_participants ALTER COLUMN id SET DEFAULT ne
 -- Data for Name: gorp_migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2017-03-20 13:47:48.966395-05');
-INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2017-03-20 13:47:48.969897-05');
-INSERT INTO gorp_migrations VALUES ('3_use_sequence_in_history_accounts.sql', '2017-03-20 13:47:48.972262-05');
-INSERT INTO gorp_migrations VALUES ('4_add_protocol_version.sql', '2017-03-20 13:47:48.978883-05');
+INSERT INTO gorp_migrations VALUES ('1_initial_schema.sql', '2017-08-21 14:49:30.202073-05');
+INSERT INTO gorp_migrations VALUES ('2_index_participants_by_toid.sql', '2017-08-21 14:49:30.205419-05');
+INSERT INTO gorp_migrations VALUES ('3_use_sequence_in_history_accounts.sql', '2017-08-21 14:49:30.207133-05');
+INSERT INTO gorp_migrations VALUES ('4_add_protocol_version.sql', '2017-08-21 14:49:30.214204-05');
+INSERT INTO gorp_migrations VALUES ('5_create_trades_table.sql', '2017-08-21 14:49:30.218755-05');
 
 
 --
@@ -309,6 +338,12 @@ SELECT pg_catalog.setval('history_operation_participants_id_seq', 1, false);
 
 --
 -- Data for Name: history_operations; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: history_trades; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
@@ -431,6 +466,34 @@ CREATE UNIQUE INDEX hs_transaction_by_id ON history_transactions USING btree (id
 --
 
 CREATE INDEX htp_by_htid ON history_transaction_participants USING btree (history_transaction_id);
+
+
+--
+-- Name: htr_by_bought; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX htr_by_bought ON history_trades USING btree (bought_asset_type, bought_asset_code, bought_asset_issuer);
+
+
+--
+-- Name: htr_by_sold; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX htr_by_sold ON history_trades USING btree (sold_asset_type, sold_asset_code, sold_asset_issuer);
+
+
+--
+-- Name: htrd_by_offer; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX htrd_by_offer ON history_trades USING btree (offer_id);
+
+
+--
+-- Name: htrd_pid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX htrd_pid ON history_trades USING btree (history_operation_id, "order");
 
 
 --
