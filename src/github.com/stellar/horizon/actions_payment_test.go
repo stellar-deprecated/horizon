@@ -2,6 +2,10 @@ package horizon
 
 import (
 	"testing"
+	"time"
+
+	"github.com/stellar/horizon/db2/history"
+	"github.com/stellar/horizon/resource/operations"
 )
 
 func TestPaymentActions(t *testing.T) {
@@ -43,4 +47,19 @@ func TestPaymentActions(t *testing.T) {
 	if ht.Assert.Equal(200, w.Code) {
 		ht.Assert.PageOf(1, w.Body)
 	}
+}
+
+func TestPayment_CreatedAt(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
+
+	w := ht.Get("/ledgers/3/payments")
+	records := []operations.Base{}
+	ht.UnmarshalPage(w.Body, &records)
+
+	l := history.Ledger{}
+	hq := history.Q{Session: ht.HorizonSession()}
+	ht.Require.NoError(hq.LedgerBySequence(&l, 3))
+
+	ht.Assert.WithinDuration(l.ClosedAt, records[0].LedgerCloseTime, 1*time.Second)
 }
