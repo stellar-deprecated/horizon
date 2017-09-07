@@ -2,6 +2,7 @@ package operations
 
 import (
 	"fmt"
+
 	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/httpx"
 	"github.com/stellar/horizon/render/hal"
@@ -14,13 +15,18 @@ func (this Base) PagingToken() string {
 }
 
 // Populate fills out this resource using `row` as the source.
-func (this *Base) Populate(ctx context.Context, row history.Operation) {
+func (this *Base) Populate(
+	ctx context.Context,
+	row history.Operation,
+	ledger history.Ledger,
+) {
 	this.ID = fmt.Sprintf("%d", row.ID)
 	this.PT = row.PagingToken()
 	this.SourceAccount = row.SourceAccount
 	this.populateType(row)
+	this.LedgerCloseTime = ledger.ClosedAt
 
-	lb := hal.LinkBuilder{httpx.BaseURL(ctx)}
+	lb := hal.LinkBuilder{Base: httpx.BaseURL(ctx)}
 	self := fmt.Sprintf("/operations/%d", row.ID)
 	this.Links.Self = lb.Link(self)
 	this.Links.Succeeds = lb.Linkf("/effects?order=desc&cursor=%s", this.PT)

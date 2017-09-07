@@ -10,6 +10,12 @@ import (
 	"github.com/stellar/horizon/toid"
 )
 
+// LedgerSequence return the ledger in which the effect occurred.
+func (r *Operation) LedgerSequence() int32 {
+	id := toid.Parse(r.ID)
+	return id.LedgerSequence
+}
+
 // UnmarshalDetails unmarshals the details of this operation into `dest`
 func (r *Operation) UnmarshalDetails(dest interface{}) error {
 	if !r.DetailsString.Valid {

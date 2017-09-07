@@ -3,7 +3,9 @@ package horizon
 import (
 	"encoding/json"
 	"testing"
+	"time"
 
+	"github.com/stellar/horizon/db2/history"
 	"github.com/stellar/horizon/resource/operations"
 	"github.com/stellar/horizon/test"
 )
@@ -117,4 +119,19 @@ func TestOperationActions_Regressions(t *testing.T) {
 		ht.Assert.Equal(int32(1), result.PriceR.N)
 		ht.Assert.Equal(int32(1), result.PriceR.D)
 	}
+}
+
+func TestOperation_CreatedAt(t *testing.T) {
+	ht := StartHTTPTest(t, "base")
+	defer ht.Finish()
+
+	w := ht.Get("/ledgers/3/operations")
+	records := []operations.Base{}
+	ht.UnmarshalPage(w.Body, &records)
+
+	l := history.Ledger{}
+	hq := history.Q{Session: ht.HorizonSession()}
+	ht.Require.NoError(hq.LedgerBySequence(&l, 3))
+
+	ht.Assert.WithinDuration(l.ClosedAt, records[0].LedgerCloseTime, 1*time.Second)
 }
