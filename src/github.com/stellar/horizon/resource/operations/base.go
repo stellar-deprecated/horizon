@@ -25,6 +25,7 @@ func (this *Base) Populate(
 	this.SourceAccount = row.SourceAccount
 	this.populateType(row)
 	this.LedgerCloseTime = ledger.ClosedAt
+	this.TransactionHash = row.TransactionHash
 
 	lb := hal.LinkBuilder{Base: httpx.BaseURL(ctx)}
 	self := fmt.Sprintf("/operations/%d", row.ID)

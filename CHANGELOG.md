@@ -8,6 +8,10 @@ bumps.  A breaking change will get clearly notified in this log.
 
 ## [Unreleased]
 
+### Added
+
+- Operation and payment resources were changed to add a `transaction_hash` property.
+
 ## [v0.11.0] - 2017-08-15
 
 ### Bug fixes
