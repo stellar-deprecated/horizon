@@ -48,6 +48,7 @@ func (action *PaymentsIndexAction) SSE(stream sse.Stream) {
 	)
 	action.Do(
 		action.loadRecords,
+		action.loadLedgers,
 		func() {
 			stream.SetLimit(int(action.PagingParams.Limit))
 			records := action.Records[stream.SentCount():]
