@@ -24,7 +24,7 @@ func (this *Base) Populate(
 	this.PT = row.PagingToken()
 	this.SourceAccount = row.SourceAccount
 	this.populateType(row)
-	this.LedgerCloseTime = ledger.CreatedAt
+	this.LedgerCloseTime = ledger.ClosedAt
 
 	lb := hal.LinkBuilder{Base: httpx.BaseURL(ctx)}
 	self := fmt.Sprintf("/operations/%d", row.ID)
