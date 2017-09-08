@@ -85,6 +85,7 @@ func TestOperationActions_Show(t *testing.T) {
 		err := json.Unmarshal(w.Body.Bytes(), &result)
 		ht.Require.NoError(err, "failed to parse body")
 		ht.Assert.Equal("8589938689", result.PT)
+		ht.Assert.Equal("2374e99349b9ef7dba9a5db3339b78fda8f34777b1af33ba468ad5c0df946d4d", result.TransactionHash)
 	}
 
 	// doesn't exist

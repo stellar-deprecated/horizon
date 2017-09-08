@@ -107,6 +107,7 @@ type Base struct {
 	Type            string    `json:"type"`
 	TypeI           int32     `json:"type_i"`
 	LedgerCloseTime time.Time `json:"created_at"`
+	TransactionHash string    `json:"transaction_hash"`
 }
 
 // CreateAccount is the json resource representing a single operation whose type
