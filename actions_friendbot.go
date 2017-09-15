@@ -3,8 +3,8 @@ package horizon
 import (
 	"net/http"
 
-	"github.com/stellar/horizon/render/hal"
-	"github.com/stellar/horizon/render/problem"
+	"github.com/stellar/horizon/pkg/render/hal"
+	"github.com/stellar/horizon/pkg/render/problem"
 	"github.com/zenazn/goji/web"
 )
 

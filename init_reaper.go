@@ -1,7 +1,7 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/reap"
+	"github.com/stellar/horizon/pkg/reap"
 )
 
 func initReaper(app *App) {

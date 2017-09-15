@@ -1,6 +1,6 @@
 package horizon
 
-import "github.com/stellar/horizon/render/problem"
+import "github.com/stellar/horizon/pkg/render/problem"
 
 // NotFoundAction renders a 404 response
 type NotFoundAction struct {

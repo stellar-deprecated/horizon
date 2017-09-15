@@ -5,7 +5,7 @@ import (
 
 	"github.com/zenazn/goji/web"
 
-	"github.com/stellar/horizon/render/problem"
+	"github.com/stellar/horizon/pkg/render/problem"
 )
 
 // RateLimitExceededAction renders a 429 response

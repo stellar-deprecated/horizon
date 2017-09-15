@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/stellar/horizon/render/sse"
-	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/pkg/render/sse"
+	"github.com/stellar/horizon/pkg/test"
 )
 
 func TestNewApp(t *testing.T) {

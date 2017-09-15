@@ -3,7 +3,7 @@ package horizon
 import (
 	"testing"
 
-	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/pkg/test"
 )
 
 func TestAppInit(t *testing.T) {

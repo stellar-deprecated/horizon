@@ -1,11 +1,11 @@
 package horizon
 
 import (
-	"github.com/stellar/horizon/db2/core"
-	"github.com/stellar/horizon/db2/history"
-	"github.com/stellar/horizon/render/hal"
-	"github.com/stellar/horizon/render/sse"
-	"github.com/stellar/horizon/resource"
+	"github.com/stellar/horizon/pkg/db2/core"
+	"github.com/stellar/horizon/pkg/db2/history"
+	"github.com/stellar/horizon/pkg/render/hal"
+	"github.com/stellar/horizon/pkg/render/sse"
+	"github.com/stellar/horizon/pkg/resource"
 )
 
 // This file contains the actions:

@@ -2,9 +2,9 @@ package horizon
 
 import (
 	"github.com/stellar/go/support/db"
-	"github.com/stellar/horizon/db2/core"
-	"github.com/stellar/horizon/db2/history"
-	"github.com/stellar/horizon/log"
+	"github.com/stellar/horizon/pkg/db2/core"
+	"github.com/stellar/horizon/pkg/db2/history"
+	"github.com/stellar/horizon/pkg/log"
 )
 
 func initHorizonDb(app *App) {

@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stellar/horizon/db2/history"
-	"github.com/stellar/horizon/resource"
+	"github.com/stellar/horizon/pkg/db2/history"
+	"github.com/stellar/horizon/pkg/resource"
 )
 
 func TestTradeActions_Index(t *testing.T) {

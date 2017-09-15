@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stellar/horizon/db2/history"
-	"github.com/stellar/horizon/resource/operations"
-	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/pkg/db2/history"
+	"github.com/stellar/horizon/pkg/resource/operations"
+	"github.com/stellar/horizon/pkg/test"
 )
 
 func TestOperationActions_Index(t *testing.T) {

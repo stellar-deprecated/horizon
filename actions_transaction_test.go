@@ -5,9 +5,9 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/stellar/horizon/resource"
-	"github.com/stellar/horizon/txsub"
-	"github.com/stellar/horizon/txsub/sequence"
+	"github.com/stellar/horizon/pkg/resource"
+	"github.com/stellar/horizon/pkg/txsub"
+	"github.com/stellar/horizon/pkg/txsub/sequence"
 )
 
 func TestTransactionActions_Show(t *testing.T) {

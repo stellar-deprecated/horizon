@@ -3,11 +3,11 @@ package horizon
 import (
 	"net/http"
 
-	"github.com/stellar/horizon/db2/core"
-	"github.com/stellar/horizon/db2/history"
-	"github.com/stellar/horizon/txsub"
-	results "github.com/stellar/horizon/txsub/results/db"
-	"github.com/stellar/horizon/txsub/sequence"
+	"github.com/stellar/horizon/pkg/db2/core"
+	"github.com/stellar/horizon/pkg/db2/history"
+	"github.com/stellar/horizon/pkg/txsub"
+	results "github.com/stellar/horizon/pkg/txsub/results/db"
+	"github.com/stellar/horizon/pkg/txsub/sequence"
 )
 
 func initSubmissionSystem(app *App) {

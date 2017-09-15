@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/stellar/horizon/render/problem"
-	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/pkg/render/problem"
+	"github.com/stellar/horizon/pkg/test"
 	"github.com/stretchr/testify/assert"
 )
 

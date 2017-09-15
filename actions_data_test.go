@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/pkg/test"
 )
 
 func TestDataActions_Show(t *testing.T) {

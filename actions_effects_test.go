@@ -3,7 +3,7 @@ package horizon
 import (
 	"testing"
 
-	"github.com/stellar/horizon/test"
+	"github.com/stellar/horizon/pkg/test"
 )
 
 func TestEffectActions_Index(t *testing.T) {

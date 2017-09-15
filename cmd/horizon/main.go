@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stellar/horizon"
-	hlog "github.com/stellar/horizon/log"
+	hlog "github.com/stellar/horizon/pkg/log"
 )
 
 var app *horizon.App

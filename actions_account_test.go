@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/stellar/horizon/resource"
+	"github.com/stellar/horizon/pkg/resource"
 )
 
 func TestAccountActions_Show(t *testing.T) {
