@@ -20,3 +20,4 @@ docs/public
 /tls/*.crt
 /tls/*.key
 /tls/*.csr
+horizon
