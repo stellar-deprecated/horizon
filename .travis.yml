@@ -4,8 +4,8 @@ go:
 - '1.8'
 - tip
 install:
-  - go get github.com/constabulary/gb/...
-  - gb vendor restore -jobs 8
+- go get -u github.com/Masterminds/glide
+- glide install
 before_script:
 - psql -c 'create database "horizon_test";' -U postgres
 - psql -c 'create database "stellar-core_test";' -U postgres
@@ -39,5 +39,5 @@ deploy:
     go: '1.8'
 cache:
   directories:
-  - vendor/src
-  - pkg
+    - $HOME/.glide/cache
+    - _venv
