@@ -8,19 +8,19 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/stellar/horizon"
 	hlog "github.com/stellar/horizon/pkg/log"
+	"github.com/stellar/horizon/pkg/server"
 )
 
-var app *horizon.App
-var config horizon.Config
+var app *server.App
+var config server.Config
 var version string
 
 var rootCmd *cobra.Command
 
 func main() {
 	if version != "" {
-		horizon.SetVersion(version)
+		server.SetVersion(version)
 	}
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.Execute()
@@ -171,7 +171,7 @@ func initApp(cmd *cobra.Command, args []string) {
 	initConfig()
 
 	var err error
-	app, err = horizon.NewApp(config)
+	app, err = server.NewApp(config)
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -208,7 +208,7 @@ func initConfig() {
 		log.Fatal("Invalid TLS config: cert not configured")
 	}
 
-	config = horizon.Config{
+	config = server.Config{
 		DatabaseURL:            viper.GetString("db-url"),
 		StellarCoreDatabaseURL: viper.GetString("stellar-core-db-url"),
 		StellarCoreURL:         viper.GetString("stellar-core-url"),
