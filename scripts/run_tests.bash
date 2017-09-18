@@ -2,13 +2,13 @@
 
 set -e
 
-PACKAGES=$(find src/github.com/stellar/horizon -type d | sed -e 's/^src\///')
+PACKAGES=$(go list ./... | grep -v "/vendor/")
 
 for i in $PACKAGES; do
-	has_tests=`ls -1 src/$i/*_test.go 2>/dev/null | wc -l`
+	has_tests=`ls -1 $GOPATH/src/$i/*_test.go 2>/dev/null | wc -l`
 
 	if [ $has_tests != 0 ]; then
-		gb test $i
+		go test ${i}
 	else
 		echo "skipping $i, no tests"
 	fi

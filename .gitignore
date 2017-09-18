@@ -3,7 +3,6 @@ docs/public
 /.env
 /.go
 /tmp/
-/pkg
 /bin
 /dist
 /vendor/pkg
@@ -20,3 +19,4 @@ docs/public
 /tls/*.crt
 /tls/*.key
 /tls/*.csr
+horizon
