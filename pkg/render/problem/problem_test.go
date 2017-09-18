@@ -106,7 +106,7 @@ func TestProblemPackage(t *testing.T) {
 			So(w.Code, ShouldEqual, 500)
 			// simple assert that this file shows up in the error report
 			// TODO: make less brittle
-			So(log.String(), ShouldContainSubstring, "main_test.go:")
+			So(log.String(), ShouldContainSubstring, "problem_test.go:")
 		})
 	})
 

@@ -154,7 +154,7 @@ func TestLogPackage(t *testing.T) {
 			err := ge.New("broken")
 			l.WithStack(err).Error("test")
 			// simply ensure that the line creating the above error is in the log
-			So(output.String(), ShouldContainSubstring, "main_test.go:")
+			So(output.String(), ShouldContainSubstring, "log_test.go:")
 		})
 	})
 
