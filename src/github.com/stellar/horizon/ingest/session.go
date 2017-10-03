@@ -32,6 +32,10 @@ func (is *Session) Run() {
 		is.clearLedger()
 		is.ingestLedger()
 		is.flush()
+
+		if is.Err != nil {
+			break
+		}
 	}
 
 	if is.Err != nil {
@@ -448,6 +452,16 @@ func (is *Session) ingestTrades() {
 	}
 
 	for i, trade := range trades {
+		// stellar-core will opportunisticly garbage collect invalid offers (in the
+		// event that a trader spends down their balance).  These garbage collected
+		// offers get emitted in the result with the amount values set to zero.
+		//
+		// These zeroed ClaimOfferAtom values do not represent trades, and so we
+		// skip them.
+		if trade.AmountBought == 0 && trade.AmountSold == 0 {
+			continue
+		}
+
 		is.Err = is.Ingestion.Trade(
 			is.Cursor.OperationID(),
 			int32(i),
