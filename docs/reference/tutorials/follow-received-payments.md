@@ -183,14 +183,14 @@ Now, create `make_payment.js` file and paste the following code into it:
 ```js
 var StellarBase = require("stellar-base");
 
-var keypair = StellarBase.Keypair.fromSeed('SCU36VV2OYTUMDSSU4EIVX4UUHY3XC7N44VL4IJ26IOG6HVNC7DY5UJO');
-var account = new StellarBase.Account(keypair.accountId(), "713226564141056");
+var keypair = StellarBase.Keypair.fromSecret('SCU36VV2OYTUMDSSU4EIVX4UUHY3XC7N44VL4IJ26IOG6HVNC7DY5UJO');
+var account = new StellarBase.Account(keypair.publicKey(), "713226564141056");
 
 var asset = StellarBase.Asset.native();
 var amount = "100";
 var transaction = new StellarBase.TransactionBuilder(account)
   .addOperation(StellarBase.Operation.payment({
-    destination: StellarBase.Keypair.random().accountId(),
+    destination: StellarBase.Keypair.random().publicKey(),
     asset: asset,
     amount: amount
   }))
