@@ -390,6 +390,13 @@ func (is *Session) ingestSignerEffects(effects *EffectIngestion, op xdr.SetOptio
 		return
 	}
 
+	// Quickfix for:
+	// > invalid memory address or nil pointer dereference
+	// near `beforeAccount := be.Data.MustAccount()`
+	if be == nil || ae == nil {
+		return
+	}
+
 	beforeAccount := be.Data.MustAccount()
 	afterAccount := ae.Data.MustAccount()
 
