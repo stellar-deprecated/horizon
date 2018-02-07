@@ -131,4 +131,4 @@ Metrics are collected while a horizon process is running and they are exposed at
 
 ## I'm Stuck! Help!
 
-If any of the above steps don't work or you are otherwise prevented from correctly setting up horizon, please come to our community and tell us.  Either [post an issue in the horizon github repo](https://github.com/stellar/horizon/issues) or [chat with us on slack](http://slack.stellar.org/) to ask for help.
+If any of the above steps don't work or you are otherwise prevented from correctly setting up horizon, please come to our community and tell us.  Either [post a question at our Stack Exchange](https://stellar.stackexchange.com/) or [chat with us on slack](http://slack.stellar.org/) to ask for help.
