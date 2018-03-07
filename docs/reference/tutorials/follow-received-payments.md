@@ -76,7 +76,7 @@ can use to get testnet lumens for testing purposes. To fund your account, simply
 execute the following curl command:
 
 ```bash
-$ curl "https://horizon-testnet.stellar.org/friendbot?addr=GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3"
+$ curl "https://friendbot.stellar.org/?addr=GB7JFK56QXQ4DVJRNPDBXABNG3IVKIXWWJJRJICHRU22Z5R5PI65GAK3"
 ```
 
 Don't forget to replace the account id above with your own.  If the request
