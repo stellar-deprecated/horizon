@@ -196,7 +196,7 @@ func (action *TransactionCreateAction) loadResource() {
 			Detail: "The transaction failed when submitted to the stellar network. " +
 				"The `extras.result_codes` field on this response contains further " +
 				"details.  Descriptions of each code can be found at: " +
-				"https://www.stellar.org/developers/learn/concepts/list-of-operations.html",
+				"https://www.stellar.org/developers/guides/concepts/list-of-operations.html",
 			Extras: map[string]interface{}{
 				"envelope_xdr": action.Result.EnvelopeXDR,
 				"result_xdr":   err.ResultXDR,
